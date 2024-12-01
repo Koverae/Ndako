@@ -1,0 +1,19 @@
+PropertyType::create([
+    'name' => 'Apartment',
+    'description' => 'Multi-unit residential building',
+    'slug' => 'apartment',
+    'icon' => 'fa-building',
+    'attributes' => json_encode([
+        'bedrooms' => true,
+        'bathrooms' => true,
+        'parking_spots' => true,
+        'has_elevator' => true,
+        'has_pool' => false,
+    ]),
+    'default_settings' => json_encode([
+        'default_bedrooms' => 2,
+        'default_parking_spots' => 1,
+        'has_elevator' => false,
+        'has_pool' => false,
+    ]),
+]);
