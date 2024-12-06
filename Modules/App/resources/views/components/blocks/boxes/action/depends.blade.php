@@ -2,7 +2,7 @@
     'value',
     
 ])
-@if($value->data['parent'])
+@if($value->parent)
 <div>
     @if($value->type == 'link')
     <a wire:navigate href="{{ $value->action }}" class="outline-none btn btn-link k_web_settings_access_rights">

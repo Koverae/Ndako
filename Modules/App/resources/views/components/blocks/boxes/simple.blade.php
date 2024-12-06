@@ -44,6 +44,7 @@
                     <x-dynamic-component
                         :component="$input->component"
                         :value="$input"
+                        :data="$input->data"
                     >
                     </x-dynamic-component>
                 @endif

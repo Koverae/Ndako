@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/channelmanager",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ChannelManager\\": "app/",
+            "Modules\\ChannelManager\\Database\\Factories\\": "database/factories/",
+            "Modules\\ChannelManager\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\ChannelManager\\Tests\\": "tests/"
+        }
+    }
+}

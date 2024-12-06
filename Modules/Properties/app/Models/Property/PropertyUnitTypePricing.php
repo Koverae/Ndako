@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 
-// use Modules\Properties\Database\Factories\UnitStatusFactory;
-
-class UnitStatus extends Model
+class PropertyUnitTypePricing extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -23,12 +21,21 @@ class UnitStatus extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function scopeIsPropertyUnit(Builder $query, $property_id)
+    {
+        return $query->where('property_unit_type_id', $property_id);
+    }
+
     public function scopeIsProperty(Builder $query, $property_id)
     {
-        return $query->where('property_unit_id', $property_id);
+        return $query->where('property_id', $property_id);
     }
 
     public function propertyUnit() {
-        return $this->belongsToMany(PropertyUnit::class);
+        return $this->belongsToMany(PropertyUnitType::class);
+    }
+
+    public function property() {
+        return $this->belongsToMany(Property::class);
     }
 }

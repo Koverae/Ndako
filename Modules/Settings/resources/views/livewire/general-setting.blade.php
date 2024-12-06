@@ -79,6 +79,8 @@
             <livewire:settings::settings.general :setting="settings()" />
             @elseif($view == 'properties')
             <livewire:properties::settings.property-setting :setting="settings()" />
+            @elseif($view == 'channel-manager')
+            <livewire:channelmanager::settings.channel-manager-setting :setting="settings()" />
             @endif
 
         </div>

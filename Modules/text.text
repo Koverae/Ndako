@@ -17,3 +17,15 @@ PropertyType::create([
         'has_pool' => false,
     ]),
 ]);
+
+$unitTypes = UnitType::with(['unitTypePricings' => function ($query) use ($property) {
+    $query->where('property_id', $property->id)
+          ->where(function ($query) {
+              $query->where('start_date', '<=', now())
+                    ->orWhereNull('start_date');
+          })
+          ->where(function ($query) {
+              $query->where('end_date', '>=', now())
+                    ->orWhereNull('end_date');
+          });
+}])->get();

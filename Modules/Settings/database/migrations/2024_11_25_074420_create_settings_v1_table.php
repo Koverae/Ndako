@@ -87,11 +87,11 @@ return new class extends Migration
             $table->string('default_utility')->nullable();
             $table->boolean('has_floor_mapping')->default(false);
             $table->unsignedBigInteger('floor_mapping')->nullable();
-            $table->boolean('has_shared_amenties')->default(false);
+            $table->boolean('has_shared_amenities')->default(false);
             $table->string('shared_amenties')->nullable();
             $table->boolean('has_lease_term')->default(false);
-            $table->sting('lease_term')->nullable();
-            $table->boolean('has_base_rental')->default(false);
+            $table->string('lease_term')->nullable();
+            $table->boolean('has_base_rental')->default(true);
             $table->decimal('base_rental', $precision = 12, $scale = 2)->default(0);
             $table->boolean('has_utility_rules')->default(false);
             $table->enum('utility_rule', ['included', 'separate'])->default('included');
@@ -105,6 +105,7 @@ return new class extends Migration
             $table->date('default_check_in_time')->nullable();
             $table->date('default_check_out_time')->nullable();
             $table->boolean('has_online_payment')->default(false);
+            $table->string('minimum_payment_requested')->default(100);
             $table->boolean('has_lock_confirmed_booking')->default(false);
             $table->boolean('has_pro_formatçinvoice')->default(true);
             $table->boolean('has_overbooking_prevention')->default(true);
@@ -115,29 +116,29 @@ return new class extends Migration
             $table->boolean('has_maintenance_requests')->default(true);
             $table->boolean('has_in_room_services')->comment("Enable ordering of room service or add-ons through a guest portal.")->default(false);
             $table->boolean('has_guest_note')->comment("Record specific guest preferences or past feedback for repeat stays.")->default(false);
-            // Product
-            $table->boolean('has_variant')->default(false);
-            $table->boolean('has_uom')->default(false);
-            $table->boolean('has_packaging')->default(false);
-            $table->boolean('has_package')->default(false);
-            $table->boolean('send_mail_after_confirmation')->default(false);
             // Princing
             $table->boolean('has_discount')->default(false);
             $table->boolean('has_sale_program')->default(false);
             $table->boolean('has_margin')->default(false);
             $table->boolean('has_pricelist_check')->default(true);
             $table->enum('pricelist', ['multiple', 'advanced'])->default('multiple');
-            // Quotation & Order
-            $table->boolean('has_online_signature')->default(true);
-            $table->boolean('has_online_payment')->default(false);
-            $table->string('minimum_payment_requested')->default(100);
-            $table->boolean('has_sale_warnings')->default(false);
-            $table->boolean('lock_confirmed_sales')->default(false);
-            $table->boolean('has_pro_format_invoice')->default(false);
-            // Delivery
-            $table->boolean('has_shipping_cost')->default(false);
+            // Channel Manager
+            $table->boolean('has_room_mapping')->default(false);
+            $table->boolean('has_cut_off_times')->default(false);
+            $table->boolean('has_airbnb_integration')->default(false);
+            $table->string("airbnb_api_key")->nullable();
+            $table->string("airbnb_oauth_token")->nullable();
+            $table->string("airbnb_webhooks_url")->nullable();
+            $table->boolean('has_bookingcom_integration')->default(false);
+            $table->string("bookingcom_hotel_id")->nullable();
+            $table->string("bookingcom_api_key")->nullable();
+            $table->string("bookingcom_username")->nullable();
+            $table->string("bookingcom_xml_connection")->nullable();
+            $table->boolean('has_google_hotel_integration')->default(false);
+            $table->string("google_hotel_client_id")->nullable();
+            $table->string("google_hotel_api_key")->nullable();
+            $table->string("google_hotel_bid")->nullable();
             // Invoicing
-            $table->enum('invoice_policy', ['ordered', 'delivered'])->default('ordered');
             $table->unsignedBigInteger('down_payment')->nullable();
             $table->enum('bill_policy', ['ordered', 'delivered'])->default('delivered');
             $table->boolean('has_way_matching')->default(false);
@@ -147,7 +148,6 @@ return new class extends Migration
             $table->decimal('minimum_order_ammount', $precision = 12, $scale = 2)->default(0);
             $table->boolean('has_lock_confirm_order')->default(false);
             $table->boolean('has_warnings')->default(false);
-            $table->boolean('has_purchase_agreements')->default(false);
             $table->boolean('has_receipt_reminder')->default(true);
             // Operation
             $table->boolean('has_batch_tranfer')->default(false);
@@ -299,6 +299,45 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
         });
+        
+        // Currencies
+        Schema::create('currencies', function (Blueprint $table) {
+            $table->foreignId('company_id');
+            $table->string('currency_name');
+            $table->string('code')->nullable();
+            $table->string('symbol');
+            $table->string('thousand_separator')->default('.');
+            $table->enum('symbol_position', ['prefix', 'suffix'])->default('suffix');
+            $table->string('decimal_separator')->default(',');
+            $table->integer('exchange_rate')->default(1);
+            
+            $table->timestamps();
+        });
+
+        // Languages
+        Schema::create('languages', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->string('name')->nullable();
+            $table->string('icon')->nullable();
+            $table->string('locale_code')->nullable();
+            $table->string('iso_code')->nullable();
+            $table->string('url_code')->nullable();
+            $table->enum('direction', ['left_to_right', 'right_to_left'])->nullable();
+            $table->string('separator_format')->nullable();
+            $table->string('decimal_separator')->nullable();
+            $table->string('thousand_separator')->nullable();
+            $table->string('date_format')->nullable();
+            $table->string('time_format')->nullable();
+            $table->enum('first_day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])->default('monday'); //First day of the week
+            $table->boolean('is_active')->default(false);
+            $table->boolean('is_archive')->default(false);
+            $table->boolean('is_reference')->default(false);
+            
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
 
     }
 
@@ -309,5 +348,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('system_parameters');
         Schema::dropIfExists('settings');
+        Schema::dropIfExists('currencies');
+        Schema::dropIfExists('languages');
     }
 };

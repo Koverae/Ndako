@@ -1,0 +1,11 @@
+{
+    "name": "ChannelManager",
+    "alias": "channelmanager",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ChannelManager\\Providers\\ChannelManagerServiceProvider"
+    ],
+    "files": []
+}

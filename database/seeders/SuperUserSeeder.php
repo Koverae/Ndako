@@ -10,6 +10,7 @@ use App\Models\Team\Team;
 use App\Models\Company\Company;
 use App\Models\User;
 use Modules\App\Handlers\AppManagerHandler;
+use Modules\Properties\Handlers\PropertiesAppHandler;
 
 class SuperUserSeeder extends Seeder
 {
@@ -66,5 +67,9 @@ class SuperUserSeeder extends Seeder
         // Install Modules
         $appManager = new AppManagerHandler;
         $appManager->installModules($company->id, $user->id);
+
+        // Install Properties Module
+        $propertyManager = new PropertiesAppHandler;
+        $propertyManager->install($company->id, $user->id);
     }
 }
