@@ -37,7 +37,7 @@ class SettingsAppHandler extends AppHandler
     private function installCompanySettings(int $companyId): void
     {
         $company = Company::find($companyId)->first();
-        $defaultCurrency = Currency::where('code', $company->default_currency)->firstOrFail();
+        $defaultCurrency = Currency::isCompany($companyId)->where('code', $company->default_currency)->first();
 
         $database_uuid = Uuid::uuid4();
         $database_secret = generate_unique_database_secret();

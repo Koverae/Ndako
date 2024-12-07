@@ -124,6 +124,8 @@ return new class extends Migration
             $table->enum('pricelist', ['multiple', 'advanced'])->default('multiple');
             // Channel Manager
             $table->boolean('has_room_mapping')->default(false);
+            $table->unsignedBigInteger('default_channel')->nullable();
+            $table->enum('rate_sync', ['automatically', 'manually'])->default('automatically');
             $table->boolean('has_cut_off_times')->default(false);
             $table->boolean('has_airbnb_integration')->default(false);
             $table->string("airbnb_api_key")->nullable();
@@ -184,12 +186,13 @@ return new class extends Migration
             //Logisitc
             $table->boolean('has_dropshipping')->default(false);
             // Taxes
+            $table->string('fiscal_localization')->default('kenya');
+            $table->string('fiscal_country')->default('kenya');
             $table->unsignedBigInteger('default_sales_tax_id')->nullable();
             $table->unsignedBigInteger('default_purchase_tax_id')->nullable();
             $table->enum('rounding_method', ['round_per_line', 'round_globally'])->default('round_per_line');
-            $table->unsignedBigInteger('fiscal_country')->nullable();
             // Currencies
-            $table->integer('default_currency_id')->nullable();
+            $table->unsignedBigInteger('default_currency_id')->nullable();
             $table->string('default_currency_position')->default('suffix');
             $table->boolean('has_automatic_currency_rate')->default(false);
             $table->unsignedBigInteger('currency_converter_id')->nullable();
@@ -302,7 +305,8 @@ return new class extends Migration
         
         // Currencies
         Schema::create('currencies', function (Blueprint $table) {
-            $table->foreignId('company_id');
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->string('currency_name');
             $table->string('code')->nullable();
             $table->string('symbol');

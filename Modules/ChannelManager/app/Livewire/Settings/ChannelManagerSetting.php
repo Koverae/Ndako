@@ -10,16 +10,19 @@ use Modules\App\Livewire\Components\Settings\BoxInput;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
+use Modules\ChannelManager\Models\Channel\Channel;
 
 class ChannelManagerSetting extends AppSetting
 {
     public $setting;
     public bool $has_room_mapping, $has_cut_off_times, $has_airbnb_integration, $has_bookingcom_integration, $has_google_hotel_integration;
     public array $channels = [], $rateSync = [];
-    public $airbnb_api_key, $airbnb_oauth_token, $airbnb_webhooks_url, $bookingcom_hotel_id, $bookingcom_api_key, $bookingcom_username, $booking_xml_connection, $google_hotel_client_id, $google_hotel_api_key, $google_hotel_bid;
+    public $default_channel, $rate_sync, $airbnb_api_key, $airbnb_oauth_token, $airbnb_webhooks_url, $bookingcom_hotel_id, $bookingcom_api_key, $bookingcom_username, $booking_xml_connection, $google_hotel_client_id, $google_hotel_api_key, $google_hotel_bid;
 
     public function mount($setting){
         $this->setting = $setting;
+        $this->default_channel = $setting->default_channel;
+        $this->rate_sync = $setting->rate_sync;
         $this->has_room_mapping = $setting->has_room_mapping;
         $this->has_cut_off_times = $setting->has_cut_off_times;
         $this->has_airbnb_integration = $setting->has_airbnb_integration;
@@ -36,12 +39,7 @@ class ChannelManagerSetting extends AppSetting
         $this->google_hotel_api_key = $setting->google_hotel_api_key;
         $this->google_hotel_bid = $setting->google_hotel_bid;
         
-        $channels = [
-            ['id' => 'airbnb', 'label' => 'Airbnb'],
-            ['id' => 'booking.com', 'label' => 'Booking.com'],
-            ['id' => 'google_hotel', 'label' => 'Google Hotels Ads'],
-        ];
-        $this->channels = toSelectOptions($channels, 'id', 'label');
+        $this->channels = toSelectOptions(Channel::isCompany(current_company()->id)->get(), 'id', 'name');
         
         $rateSync = [
             ['id' => 'automatically', 'label' => 'Automatically'],
@@ -62,7 +60,7 @@ class ChannelManagerSetting extends AppSetting
     public function boxes() : array
     {
         return [
-            Box::make('default-channel', "Default Channel Priority", 'default_channel', "Specify which platform overrides others in case of conflicting bookings.", 'general-settings', false, "", null),
+            Box::make('default-channel', "Default Channel Priority", ',', "Specify which platform overrides others in case of conflicting bookings.", 'general-settings', false, "", null),
             Box::make('room-mapping', "Room/Unit Mapping", 'has_room_mapping', "Map internal room/unit names to those on external platforms.", 'general-settings', true, "", null),
             // Rates Availability
             Box::make('rate-sync', "Rate Sync Rules", 'has_rate_sync', "Define whether rates are synced automatically or require manual approval.", 'rate-availability', false, "", null),
@@ -78,7 +76,7 @@ class ChannelManagerSetting extends AppSetting
     {
         return [
             BoxInput::make('default-channel', "", 'select', 'default_channel', 'default-channel', '', false, $this->channels),
-            BoxInput::make('default-channel', "", 'select', 'default_channel', 'rate-sync', '', false, $this->rateSync),
+            BoxInput::make('rate-sync', "", 'select', 'rate_sync', 'rate-sync', '', false, $this->rateSync),
             // Airbnb
             BoxInput::make('api-key', "API Key", 'text', 'airbnb_api_key', 'airbnb', '', false, [], $this->has_airbnb_integration)->component('app::blocks.boxes.input.depends'),
             BoxInput::make('oauth-token', "OAuth Token", 'text', 'airbnb_api_key', 'airbnb', '', false, [], $this->has_airbnb_integration)->component('app::blocks.boxes.input.depends'),

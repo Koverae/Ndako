@@ -34,7 +34,7 @@ class PropertiesAppHandler extends AppHandler
         // Define property types data
         $propertyTypes = [
             [
-                'company_id' => 1,
+                'company_id' => $companyId,
                 'name' => 'Single-Family Homes',
                 'description' => 'Standalone houses designed for one family.',
                 'slug' => Str::slug('Single-Family Homes'),
@@ -52,7 +52,7 @@ class PropertiesAppHandler extends AppHandler
                 ]),
             ],
             [
-                'company_id' => 1,
+                'company_id' => $companyId,
                 'name' => 'Apartments/Flats',
                 'description' => 'Multi-unit buildings with individual units.',
                 'slug' => Str::slug('Apartments/Flats'),
@@ -70,7 +70,7 @@ class PropertiesAppHandler extends AppHandler
                 ]),
             ],
             [
-                'company_id' => 1,
+                'company_id' => $companyId,
                 'name' => 'Hotels',
                 'description' => 'Temporary accommodations for travelers.',
                 'slug' => Str::slug('Hotels'),
@@ -88,7 +88,7 @@ class PropertiesAppHandler extends AppHandler
                 ]),
             ],
             [
-                'company_id' => 1,
+                'company_id' => $companyId,
                 'name' => 'Serviced Apartments',
                 'description' => 'Fully furnished apartments with hotel-like services.',
                 'slug' => Str::slug('Serviced Apartments'),

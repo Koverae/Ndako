@@ -11,6 +11,7 @@ use App\Models\Company\Company;
 use App\Models\User;
 use Modules\App\Handlers\AppManagerHandler;
 use Modules\Properties\Handlers\PropertiesAppHandler;
+use Modules\ChannelManager\Handlers\ChannelManagerAppHandler;
 
 class SuperUserSeeder extends Seeder
 {
@@ -71,5 +72,8 @@ class SuperUserSeeder extends Seeder
         // Install Properties Module
         $propertyManager = new PropertiesAppHandler;
         $propertyManager->install($company->id, $user->id);
+
+        $channelManager = new ChannelManagerAppHandler;
+        $channelManager->install($company->id, $user->id);
     }
 }

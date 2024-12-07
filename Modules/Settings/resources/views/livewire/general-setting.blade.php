@@ -81,6 +81,8 @@
             <livewire:properties::settings.property-setting :setting="settings()" />
             @elseif($view == 'channel-manager')
             <livewire:channelmanager::settings.channel-manager-setting :setting="settings()" />
+            @elseif($view == 'revenue-manager')
+            <livewire:revenuemanager::settings.revenue-manager-setting :setting="settings()" />
             @endif
 
         </div>
