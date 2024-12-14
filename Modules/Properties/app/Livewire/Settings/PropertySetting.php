@@ -185,7 +185,7 @@ class PropertySetting extends AppSetting
             'has_default_check_times' => $this->has_default_check_times,
             'has_online_payment' => $this->has_online_payment,
             'has_lock_confirmed_booking' => $this->has_lock_confirmed_booking,
-            'has_pro_formatçinvoice' => $this->has_pro_formatçinvoice,
+            'has_pro_formatçinvoice' => $this->has_pro_format_invoice,
             'has_overbooking_prevention' => $this->has_overbooking_prevention,
             'has_stay_rule_per_unit' => $this->has_stay_rule_per_unit,
             'has_cleaning_frequency' => $this->has_cleaning_frequency,
@@ -197,7 +197,6 @@ class PropertySetting extends AppSetting
             'has_guest_note' => $this->has_guest_note,
         ]);
         $setting->save();
-        
 
         cache()->forget('settings');
 

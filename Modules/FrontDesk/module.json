@@ -1,0 +1,11 @@
+{
+    "name": "FrontDesk",
+    "alias": "frontdesk",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FrontDesk\\Providers\\FrontDeskServiceProvider"
+    ],
+    "files": []
+}

@@ -1,4 +1,10 @@
 @section('title', "Settings")
+
+<!-- Control Panel -->
+@section('control-panel')
+<livewire:settings::navbar.setting-panel />
+@endsection
+
 <!-- Page Content -->
 <section class="page-body">
     <!-- Settings -->
@@ -83,6 +89,8 @@
             <livewire:channelmanager::settings.channel-manager-setting :setting="settings()" />
             @elseif($view == 'revenue-manager')
             <livewire:revenuemanager::settings.revenue-manager-setting :setting="settings()" />
+            @elseif($view == 'front-desk')
+            <livewire:frontdesk::settings.front-desk-setting :front="1" :setting="settings()" />
             @endif
 
         </div>

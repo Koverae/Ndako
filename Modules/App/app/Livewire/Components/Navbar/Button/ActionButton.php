@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Navbar\Button;
 
 class ActionButton{
 
-    public string $component = 'button.action.special-button';
+    public string $component = 'app::button.action.special-button';
 
     public string $key;
 

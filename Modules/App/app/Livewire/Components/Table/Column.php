@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Column
 {
-    public string $component = 'table.column.simple';
+    public string $component = 'app::table.column.simple';
 
     public string $key;
 

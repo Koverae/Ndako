@@ -14,8 +14,9 @@ class Box{
     public $help;
     public bool $checkbox;
     public $icon;
+    public $comment;
 
-    public function __construct($key, $label, $model, $description, $block, $checkbox, $help = null, $icon = null)
+    public function __construct($key, $label, $model, $description, $block, $checkbox, $help = null, $icon = null, $comment = null)
     {
         $this->key = $key;
         $this->label = $label;
@@ -25,11 +26,12 @@ class Box{
         $this->checkbox = $checkbox;
         $this->help = $help;
         $this->icon = $icon;
+        $this->comment = $comment;
     }
 
-    public static function make($key, $label, $model, $description, $block, $checkbox, $help = null, $icon = null)
+    public static function make($key, $label, $model, $description, $block, $checkbox, $help = null, $icon = null, $comment = null)
     {
-        return new static($key, $label, $model, $description, $block, $checkbox, $help, $icon);
+        return new static($key, $label, $model, $description, $block, $checkbox, $help, $icon, $comment);
     }
 
     public function component($component)

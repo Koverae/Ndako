@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Form;
 
 class Capsule{
 
-    public string $component = 'form.capsule.simple';
+    public string $component = 'app::form.capsule.simple';
 
     public string $key;
 

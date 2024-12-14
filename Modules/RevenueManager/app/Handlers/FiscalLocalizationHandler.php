@@ -4,15 +4,20 @@ namespace Modules\RevenueManager\Handlers;
 use App\Models\Company\Company;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Modules\RevenueManager\Models\Tax;
+use Modules\App\Handlers\AppHandler;
+use Modules\RevenueManager\Models\Accounting\FiscalPackage;
+use Modules\RevenueManager\Models\Tax\Tax;
 
-class FiscalLocalizationHandler
+class FiscalLocalizationHandler extends AppHandler
 {
+    protected function getModuleSlug()
+    {
+        return 'revenue-manager';
+    }
 
     protected function handleInstallation($company)
     {
         // Example: Create fiscal-localization data and initial configuration
-        $this->createChartOfAccount($company);
         $this->createGenericFiscalLocalization($company);
         $this->createKenyaFiscalLocalization($company);
     }
@@ -51,7 +56,7 @@ class FiscalLocalizationHandler
             ],
         ];
         foreach($fiscalPackages as $localization){
-            Tax::create(array_merge(['company_id' => $companyId], $localization));
+            FiscalPackage::create(array_merge(['company_id' => $companyId], $localization));
         }
 
         // Taxes

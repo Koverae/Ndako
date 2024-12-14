@@ -30,9 +30,10 @@ class SuperUserSeeder extends Seeder
             'name' => 'Arden BOUET',
             'email' => 'laudbouetoumoussa@gmail.com',
             'password' => Hash::make('koverae'),
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
         $user->save();
+        $user->generateAvatar();
         
         $team->update([
             'user_id' => $user->id
@@ -59,21 +60,21 @@ class SuperUserSeeder extends Seeder
         ]);
         $company->save();
 
-        $user->update([
-            'company_id' => $company->id,
-            'current_company_id' => $company->id
-        ]);
-        $user->save();
-
         // Install Modules
         $appManager = new AppManagerHandler;
         $appManager->installModules($company->id, $user->id);
 
-        // Install Properties Module
-        $propertyManager = new PropertiesAppHandler;
-        $propertyManager->install($company->id, $user->id);
+        $user->update([
+            'company_id' => $company->id,
+            'current_company_id' => $company->id,
+            'language_id' => $company->languages()->first()->id
+        ]);
+        $user->save();
+        // // Install Properties Module
+        // $propertyManager = new PropertiesAppHandler;
+        // $propertyManager->install($company->id, $user->id);
 
-        $channelManager = new ChannelManagerAppHandler;
-        $channelManager->install($company->id, $user->id);
+        // $channelManager = new ChannelManagerAppHandler;
+        // $channelManager->install($company->id, $user->id);
     }
 }

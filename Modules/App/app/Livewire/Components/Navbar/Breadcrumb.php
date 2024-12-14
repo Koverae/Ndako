@@ -12,7 +12,7 @@ class Breadcrumb{
     public string $key;
 
     public string $label;
-    public string $component = 'navbar.breadcrumb';
+    public string $component = 'app::navbar.breadcrumb';
 
     public function __construct($key, $label)
     {

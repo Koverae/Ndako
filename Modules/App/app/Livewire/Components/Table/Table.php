@@ -31,7 +31,7 @@ abstract class Table extends Component
         ],
     ];
 
-    public $perPage = 50;
+    public $perPage = 20;
 
     public $page = 1;
 

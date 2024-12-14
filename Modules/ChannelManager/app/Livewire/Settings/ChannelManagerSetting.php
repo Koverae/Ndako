@@ -92,4 +92,39 @@ class ChannelManagerSetting extends AppSetting
             BoxInput::make('bid', "Bid Management Settings", 'text', 'google_hotel_bid', 'google-hotels', '', false, [], $this->has_google_hotel_integration)->component('app::blocks.boxes.input.depends'),
         ];
     }
+
+    #[On('save')]
+    public function save(){
+        $setting = $this->setting;
+
+        $setting->update([
+            'default_channel' => $this->default_channel,
+            'rate_sync' => $this->rate_sync,
+            'has_room_mapping' => $this->has_room_mapping,
+            'has_cut_off_times' => $this->has_cut_off_times,
+            'has_airbnb_integration' => $this->has_airbnb_integration,
+            'airbnb_api_key' => $this->airbnb_api_key,
+            'airbnb_oauth_token' => $this->airbnb_oauth_token,
+            'airbnb_webhooks_url' => $this->airbnb_webhooks_url,
+            'has_bookingcom_integration' => $this->has_bookingcom_integration,
+            'bookingcom_hotel_id' => $this->bookingcom_hotel_id,
+            'bookingcom_api_key' => $this->bookingcom_api_key,
+            'bookingcom_username' => $this->bookingcom_username,
+            'booking_xml_connection' => $this->booking_xml_connection,
+            'has_google_hotel_integration' => $this->has_google_hotel_integration,
+            'google_hotel_client_id' => $this->google_hotel_client_id,
+            'google_hotel_api_key' => $this->google_hotel_api_key,
+            'google_hotel_bid' => $this->google_hotel_bid,
+        ]);
+        $setting->save();
+
+        cache()->forget('settings');
+
+        // notify()->success('Updates saved!');
+        $this->dispatch('undo-change');
+
+    }
+    public function updated(){
+        $this->dispatch('change');
+    }
 }

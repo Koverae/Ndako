@@ -10,34 +10,27 @@ use Modules\App\Livewire\Components\Settings\BoxInput;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
+use Modules\RevenueManager\Models\Accounting\FiscalPackage;
+use Modules\RevenueManager\Models\Tax\Tax;
 use Modules\Settings\Models\Currency\Currency;
 
 class RevenueManagerSetting extends AppSetting
 {
     public $setting;
     public $fiscal_localization='kenya', $fiscal_country = 'kenya', $default_currency = 'kenyan_shilling', $default_term_note, $digitize_customer_invoices = 'digitize_on_demand';
-    public array $localizations = [], $fiscalCountriesOptions = [], $currenciesOptions = [], $digitizationOptions = [];
+    public array $localizations = [], $fiscalCountriesOptions = [], $currenciesOptions = [], $digitizationOptions = [], $salesTaxes = [];
 
     public function mount($setting){
         $this->setting = $setting;
         $this->fiscal_localization = $setting->fiscal_localization;
         $this->fiscal_country = $setting->fiscal_country;
         $this->default_currency = $setting->default_currency_id;
-        $this->fiscal_localization = $setting->fiscal_localization;
-        $this->fiscal_localization = $setting->fiscal_localization;
-        $this->fiscal_localization = $setting->fiscal_localization;
 
-
-        $localizations = [
-            ['id' => 'generic_chart', 'label' => 'Generic Chart Template'],
-            ['id' => 'kenya', 'label' => 'ᴋᴇ Kenya'],
-            ['id' => 'uganda', 'label' => 'ᴜɢ Uganda'],
-            ['id' => 'ethiopia', 'label' => 'ᴇᴛʜ Ethiopia'],
-            ['id' => 'rwanda', 'label' => 'ʀᴡ Rwanda'],
-        ];
-        $this->localizations = toSelectOptions($localizations, 'id', 'label');
+        $this->localizations = toSelectOptions(FiscalPackage::isCompany(current_company()->id)->get(), 'id', 'name');
 
         $this->currenciesOptions = toSelectOptions(Currency::isCompany(current_company()->id)->get(), 'id', 'currency_name');
+        
+        $this->salesTaxes = toSelectOptions(Tax::isCompany(current_company()->id)->isType('sales')->get(), 'id', 'name');
 
         $countries = [
             ['id' => 'uganda', 'label' => 'ᴜɢ Uganda'],
@@ -120,10 +113,32 @@ class RevenueManagerSetting extends AppSetting
     {
         return [
             BoxInput::make('fiscal-localization-package', __('Package'), 'select', 'fiscal_localization', 'fiscal-localization', '', false, $this->localizations),
-            BoxInput::make('sales-tax', __('Sales Tax'), 'select', 'sales_tax', 'default-taxes', '', false, $this->localizations),
-            BoxInput::make('purchase-tax', __('Purchase Tax'), 'select', 'purchase_tax', 'default-taxes', '', false, $this->localizations),
+            BoxInput::make('sales-tax', __('Sales Tax'), 'select', 'sales_tax', 'default-taxes', '', false, $this->salesTaxes),
+            // BoxInput::make('purchase-tax', __('Purchase Tax'), 'select', 'purchase_tax', 'default-taxes', '', false, $this->localizations),
             BoxInput::make('fiscal-country', null, 'select', 'fiscal_country', 'fiscal-country', '', false, $this->fiscalCountriesOptions),
             BoxInput::make('main-currency', null, 'select', 'default_currency', 'main-currency', '', false, $this->currenciesOptions),
         ];
+    }
+
+    #[On('save')]
+    public function save(){
+        $setting = $this->setting;
+
+        $setting->update([
+            'fiscal_localization' => $this->fiscal_localization,
+            'fiscal_country' => $this->fiscal_country,
+            'default_currency_id' => $this->default_currency,
+        ]);
+        $setting->save();
+
+        cache()->forget('settings');
+
+        // notify()->success('Updates saved!');
+        
+        $this->dispatch('undo-change');
+
+    }
+    public function updated(){
+        $this->dispatch('change');
     }
 }

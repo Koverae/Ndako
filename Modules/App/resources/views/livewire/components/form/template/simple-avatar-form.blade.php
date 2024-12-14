@@ -1,5 +1,5 @@
 <div>
-    <div class="k_form_sheet_bg">
+    <div class="k-form-sheet-bg">
 
         @if (session()->has('message'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -10,10 +10,10 @@
             </div>
         @endif
 
-        <div class="pb-2 mb-0 k_form_statusbar position-relative d-flex justify-content-between mb-md-2 pb-md-0">
+        <div class="pb-2 mb-0 k-form-statusbar position-relative d-flex justify-content-between mb-md-2 pb-md-0">
             <!-- Action Bar -->
             @if($this->actionBarButtons())
-                <div id="action-bar" class="flex-wrap gap-1 k_statusbar_buttons d-none d-lg-flex align-items-center align-content-around">
+                <div id="action-bar" class="flex-wrap gap-1 k-statusbar-buttons d-none d-lg-flex align-items-center align-content-around">
 
                     @foreach($this->actionBarButtons() as $action)
                     <x-dynamic-component
@@ -43,15 +43,43 @@
                     </ul>
                 </div>
             @endif
+            
+            <!-- Status Bar -->
+            @if($this->statusBarButtons())
+                <div id="status-bar" class="k-statusbar-buttons-arrow d-none d-md-flex align-items-center align-content-around ">
+
+                    @foreach($this->statusBarButtons() as $status_button)
+                    <x-dynamic-component
+                        :component="$status_button->component"
+                        :value="$status_button"
+                        :status="$status"
+                    >
+                    </x-dynamic-component>
+                    @endforeach
+                </div>
+                <div id="status-bar" class="k-statusbar-buttons-arrow d-flex d-md-none align-items-center align-content-around ">
+
+                    @foreach($this->statusBarButtons() as $status_button)
+                        @if($this->status == $status_button->primary)
+                        <x-dynamic-component
+                            :component="$status_button->component"
+                            :value="$status_button"
+                            :status="$status"
+                        >
+                        </x-dynamic-component>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
 
         </div>
         <form wire:submit.prepend="{{ $this->form() }}">
             @csrf
             <!-- Sheet Card -->
-            <div class="k_form_sheet position-relative">
+            <div class="k-form-sheet position-relative">
                 <!-- Capsule -->
                 @if(count($this->capsules()) >= 1)
-                <div class="overflow-x-auto overflow-y-hidden k_horizontal_asset mb-md-3" id="k_horizontal_capsule">
+                <div class="overflow-x-auto overflow-y-hidden k-horizontal-asset mb-md-3" id="k-horizontal-capsule">
                     @foreach($this->capsules() as $capsule)
                     <x-dynamic-component
                         :component="$capsule->component"
@@ -63,7 +91,7 @@
                 @endif
                 <!-- title-->
                 <div class="m-0 mb-2 row justify-content-between position-relative w-100">
-                    <div class="ke_title mw-75 pe-2 ps-0">
+                    <div class="ke-title mw-75 pe-2 ps-0">
                         @foreach($this->inputs() as $input)
                             @if($input->position == 'top-title' && $input->tab == 'none')
                                 <x-dynamic-component
@@ -170,14 +198,18 @@
 
                 <!-- Tab Link -->
                 @if($this->tabs())
-                <div class="k_notebokk_headers" wire:ignore>
-                    <ul class="overflow-x-auto overflow-y-hidden nav nav-tabs d-flex" data-bs-toggle="tabs">
+                <div class="k_notebook_headers">
+                    <!-- Tab Link -->
+                    <ul class="flex-row overflow-x nav nav-tabs flex-nowrap" data-bs-toggle="tabs">
                         @foreach ($this->tabs() as $tab)
                         <li class="nav-item {{ $tab->condition == true ? 'd-none' : '' }}">
-                            <a class="nav-link {{ $tab->key == 'work_info' || $tab->key == 'general' ? 'active' : '' }}" data-bs-toggle="tab" href="#{{ $tab->key }}">{{ $tab->label }}</a>
+                            <a class="nav-link {{ $tab->key === 'general' ? 'active' : '' }}" data-bs-toggle="tab" href="#{{ $tab->key }}">
+                                {{ $tab->label }}
+                            </a>
                         </li>
                         @endforeach
-                      </ul>
+                    </ul>
+                    <!-- Tab Link End -->
                 </div>
 
                 @endif

@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Form;
 
 class Input{
 
-    public string $component = 'form.input.simple';
+    public string $component = 'app::form.input.simple';
     public string $key;
 
     public $label;

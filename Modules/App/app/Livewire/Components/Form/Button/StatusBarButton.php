@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Form\Button;
 
 class StatusBarButton{
 
-    public string $component = 'button.status-bar.simple';
+    public string $component = 'app::form.button.status-bar.simple';
 
     public string $key;
 

@@ -171,8 +171,9 @@
         <!-- Navbar Menu End -->
 
     </div>
-
+    
     <!-- Controls Panel -->
-    <!-- Controls Panel End -->
+    @yield('control-panel')
+    <!-- Controls Panel -->
 
 </nav>

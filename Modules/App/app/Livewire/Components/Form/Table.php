@@ -5,7 +5,7 @@ namespace Modules\App\Livewire\Components\Form;
 use Illuminate\Database\Eloquent\Builder;
 class Table{
 
-    public string $component = 'form.tab.table.simple';
+    public string $component = 'app::form.tab.table.simple';
 
     public string $key;
     public $type;

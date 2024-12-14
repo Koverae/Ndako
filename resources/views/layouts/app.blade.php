@@ -17,10 +17,23 @@
     <!-- Bootstrap Icons -->
 
     <!-- Leaflet.js CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha384-kr7knlC+7+03I2GzYDBHmxOStG8VIEyq6whWqn2oBoo1ddubZe6UjI+P5bn/f8O5"/>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha384-kgpA7T5GkjxAeLPMFlGLlQQGqMAwq8ciFnjsbPvZaFUHZvbRYPftvBcRea/Gozbo"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha384-kr7knlC+7+03I2GzYDBHmxOStG8VIEyq6whWqn2oBoo1ddubZe6UjI+P5bn/f8O5" data-navigate-track/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha384-kgpA7T5GkjxAeLPMFlGLlQQGqMAwq8ciFnjsbPvZaFUHZvbRYPftvBcRea/Gozbo" data-navigate-track></script>
     <!-- Leaflet.js CSS -->
     
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/de3e85d402.js" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+
+    <!-- Libs JS -->
+    <script src="{{asset('assets/libs/list.js/dist/list.min.js')}}" data-navigate-track ></script>
+    <script src="{{asset('assets/libs/apexcharts/dist/apexcharts.min.js')}}" data-navigate-track ></script>
+    <!-- Libs JS -->
+
+    <!-- Scripts -->
+    <script src="{{ asset('assets/js/koverae.js?'.time())}}" data-navigate-track></script>
+    {{-- <script src="{{ asset('assets/js/demo.min.js?'.time())}}" defer></script> --}}
+    <!-- Scripts -->
     @livewireStyles
     @livewireScripts
 </head>
@@ -225,14 +238,5 @@
     <!-- Custom JS -->
     <!-- Custom JS -->
 
-    <!-- Libs JS -->
-    <script src="{{asset('assets/libs/list.js/dist/list.min.js')}}" ></script>
-    <script src="{{asset('assets/libs/apexcharts/dist/apexcharts.min.js')}}" ></script>
-    <!-- Libs JS -->
-
-    <!-- Scripts -->
-    <script src="{{ asset('assets/js/koverae.js?'.time())}}" defer></script>
-    <script src="{{ asset('assets/js/demo.min.js?'.time())}}" defer></script>
-    <!-- Scripts -->
 </body>
 </html>

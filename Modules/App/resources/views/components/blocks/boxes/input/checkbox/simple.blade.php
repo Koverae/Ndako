@@ -2,16 +2,10 @@
     'value'
 ])
 
-<div class="mt-3 ps-3">
-    @if($value->label)
-    <span class="" style="margin-right: 5px;">
-        {{ $value->label }}
-    </span>
-    @endif
-    <div class="d-inline-block">
-        <input type="{{ $value->type }}" wire:model="{{ $value->model }}" class="form-check-input" style="" id="{{ $value->model }}" onclick="checkStatus(this)" {{ $this->blocked ? 'disabled' : '' }}>
+<div class="mt-2 d-flex ps-3">
+    <div class="k-checkbox form-check d-inline-block">
+        <input type="checkbox" class="form-check-input" wire:model="{{ $value->model }}" class="form-check-input" style="" id="{{ $value->model }}">
     </div>
-    {{-- <input type="{{ $value->type }}" wire:model="{{ $value->model }}" class="w-auto k_input" placeholder="{{ $value->placeholder }}" id="{{ $value->model }}"> --}}
-    {{-- @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror --}}
-    {{-- <i class="cursor-pointer bi bi-arrow-right-short fw-bold"></i> --}}
+    <label>{{ $value->label }}</label>
+    @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror
 </div>

@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Form;
 
 class Group{
 
-    public string $component = 'form.tab.group.simple';
+    public string $component = 'app::form.tab.group.simple';
 
     public string $key;
 

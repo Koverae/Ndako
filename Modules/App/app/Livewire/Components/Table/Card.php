@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Card
 {
-    public string $component = 'table.card.simple';
+    public string $component = 'app::table.card.simple';
 
     public string $key;
 

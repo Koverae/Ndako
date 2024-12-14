@@ -32,4 +32,9 @@ class Journal extends Model
         return $query->where('short_code', $short_code);
     }
 
+    public function scopeIsType(Builder $query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
 }

@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Form;
 
 class Tabs{
 
-    public string $component = 'form.tab.simple';
+    public string $component = 'app::form.tab.simple';
 
     public string $key;
 

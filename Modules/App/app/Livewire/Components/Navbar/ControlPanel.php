@@ -5,27 +5,22 @@ namespace Modules\App\Livewire\Components\Navbar;
 use Illuminate\Support\Arr;
 use Livewire\Component;
 use Illuminate\Support\Facades\Route;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 
 abstract class ControlPanel extends Component
 {
-    #[Url(as: 'view_type')]
-    public $view = 'lists';
+    #[Url(as: 'view_type', keep: true)]
+    public $view_type = 'lists';
 
-    public $showBreadcrumbs = true, $showCreateButton = true, $showPagination = false, $showIndicators= false;
-    public $createButtonLabel = 'Nouveau';
-
-    public $breadcrumbs = [];
+    public bool $change = false, $showBreadcrumbs = true, $showCreateButton = true, $showPagination = false, $showIndicators= false, $isForm = false;
 
     // Configurable options
-    public $separator = '/';
-    public $urlPrefix = '';
+    public $separator = '/', $urlPrefix = '', $currentPage, $new, $add, $event, $createButtonLabel = 'Nouveau';
 
-    public $currentPage;
-    public $new;
-    public $add;
-    public $event;
-    public $view_type = 'lists';
+    public array $breadcrumbs = [];
+
+    // public $view_type = 'lists';
 
     public function mount(){
         $this->view_type = $this->view;
@@ -58,6 +53,11 @@ abstract class ControlPanel extends Component
         }
     }
 
+    #[On('change')]
+    public function changeDetected(){
+        $this->change = true;
+    }
+
     public function saveUpdate(){
         $this->dispatch($this->event);
         // $this->dispatch('saveChange');
@@ -72,8 +72,8 @@ abstract class ControlPanel extends Component
     }
 
     public function switchView($view){
-        $this->view_type = $view;
         $this->dispatch('switch-view', view: $view);
+        return $this->view_type = $view;
     }
 
 }

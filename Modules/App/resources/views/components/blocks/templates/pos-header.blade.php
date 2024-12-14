@@ -2,21 +2,27 @@
     'value',
 
 ])
-<div>
 
-    <div id="{{ $value->key }}" class="p-3 setting_block_pos">
-        <h4><b>{{ $value->label }}</b></h4>
-        <div class="p-1">
-            <select wire:model="pos" class="w-auto k_input d-inline" style="background-color: transparent;" id="pos">
-                @foreach($this->shops as $key => $shop)
-                <option value="{{ $shop->id }}" {{ $this->pos->id = $shop->id ? 'selected' : '' }}>{{ $shop->name }}</option>
+<div class="setting_block">
+    <div class="gap-5 p-3 app_settings_header d-md-flex d-block">
+        <h3>Front Desk</h3>
+        <!-- Box Input -->
+        <div class="gap-4 d-flex">
+            <select id="Fiscal Localization" class="k-input">
+                <option value=""></option>
+                @foreach($this->frontDesks as $value => $text)
+                <option value="{{ $value }}" {{ $this->front->id == $value ? 'selected' : '' }}>{{ $text }}</option>
                 @endforeach
             </select>
-            
-            <span class="cursor-pointer " style="color: #017E84; font-weight: 500;" onclick="Livewire.dispatch('openModal', {component: 'settings::modal.add-language'})">
-                <i class="bi bi-plus k_button_icon"></i> <span>{{ __('New Shop') }}</span>
-            </span>
+            <span class="cursor-pointer text-primary font-weight-bold" style="font-weight: 600;"><i class="bi bi-plus-circle"></i> New Front Desk</span>
         </div>
+        <!-- Box Input End -->
     </div>
-
+    @if($this->front->activeSession)
+    <div class="mt-2 alert alert-warning">
+        A session is currently opened for this Front Desk. Some settings can only be changed after the session is closed. 
+        <span class="cursor-pointer text-primary" style="font-weight: 600;" wire:click="closeSession">Click here to close session</span>
+    </div>
+    @endif
 </div>
+

@@ -13,27 +13,31 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->nullable();
-            $table->foreignId('company_id')->nullable();
+            $table->unsignedBigInteger('team_id')->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('current_company_id')->default(0);
 
+            $table->string('avatar')->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->unique()->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->rememberToken();
-
-            $table->string('social_id')->nullable();
-            $table->string('social_type')->nullable(); 
+            // Preferences
+            $table->unsignedBigInteger('language_id')->nullable();
+            $table->string('timezone')->default('eat');
             
             // Connection & Security
+            $table->string('social_id')->nullable();
+            $table->string('social_type')->nullable(); 
             $table->string('password');
             $table->timestamp('password_updated_at')->nullable();
             $table->boolean('two_factor_enabled')->default(true);
             $table->string('two_factor_code')->nullable();
             $table->enum('two_factor_second_step', ['email', 'phone', 'access-key', 'authentificator', 'emergency-code'])->default('email');
             $table->dateTime('two_factor_expires_at')->nullable();
+            $table->enum('status', ['confirmed', 'never-connected'])->default('never-connected');
             $table->boolean('is_active')->default(true);
             $table->string('last_login_ip')->nullable();// Add a nullable string field to store the IP address from which the user last logged in
 

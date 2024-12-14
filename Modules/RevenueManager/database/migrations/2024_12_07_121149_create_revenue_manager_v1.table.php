@@ -186,6 +186,53 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+        // Journals
+        Schema::create('journals', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->string('name');
+            $table->enum('type', ['sale','purchase', 'cash', 'bank','miscellaneous'])->nullable();
+            $table->string('short_code');
+            $table->unsignedBigInteger('default_account_id')->nullable();
+            // Accounting Informations
+                // Sale
+                $table->unsignedBigInteger('default_income_account_id')->nullable();
+                $table->boolean('dedicated_credit_sequence')->default(false);
+                // Purchase
+                $table->unsignedBigInteger('default_expense_account_id')->nullable();
+                //Cash
+                $table->unsignedBigInteger('cash_account_id')->nullable();
+                $table->unsignedBigInteger('profit_account_id')->nullable();
+                $table->unsignedBigInteger('loss_account_id')->nullable();
+                $table->boolean('dedicated_payment_sequence')->default(false);
+                // Bank
+                $table->unsignedBigInteger('bank_account_id')->nullable();
+                $table->string('account_number')->nullable();
+            //Advanced Settings
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        // Journal Entries
+        Schema::create('journal_entries', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('journal_id');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->string('journal_entry');
+            $table->unsignedBigInteger('partner_id')->nullable();
+            $table->string('label');
+            $table->decimal('debit', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('credit', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('balance', $precision = 12, $scale = 2)->default(0);
+            $table->boolean('is_matching')->default(false);
+            $table->enum('status', ['draft', 'posted', 'cancelled'])->default('posted');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
 
     }
 
@@ -216,6 +263,12 @@ return new class extends Migration
             $table->dropSoftDeletes();
         });
         Schema::table('invoice_payments', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('journals', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('journal_entries', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }

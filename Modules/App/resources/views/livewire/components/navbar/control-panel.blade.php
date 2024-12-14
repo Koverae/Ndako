@@ -1,19 +1,21 @@
 <div>
+    
     <div class="gap-3 px-3 k_control_panel d-flex flex-column gap-lg-1 sticky-top">
-      <div class="flex-wrap gap-5 k_control_panel_main d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
-          <!-- Breadcrumbs -->
-          <div class="gap-1 k_control_panel_breadcrumbs d-flex align-items-center order-0 h-lg-100">
-              <!-- Create Button -->
-              @if($this->new)
-              <a href="{{ $new }}" wire:navigate class="btn btn-outline-primary k_form_button_create">
-                  {{ __('translator::components.control-panel.new') }}
-              </a>
-              @endif
-              @if($this->add)
-              <a wire:click="add" class="btn btn-outline-primary k_form_button_create">
-                  {{ $createButtonLabel }}
-              </a>
-              @endif
+        <div class="gap-5 k_control_panel_main d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
+            <!-- Breadcrumbs -->
+            <div class="gap-1 k_control_panel_breadcrumbs d-flex align-items-center order-0 h-lg-100">
+                <!-- Create Button -->
+                @if($this->new)
+                <a href="{{ $new }}" wire:navigate class="btn btn-outline-primary k_form_button_create">
+                    {{ __('New') }}
+                </a>
+                @endif
+                @if($this->add)
+                <a wire:click="add" class="btn btn-outline-primary k_form_button_create">
+                    {{ $createButtonLabel }}
+                </a>
+                @endif
+                
                 @php
                     $filteredBreadcrumbs = array_filter($breadcrumbs, function($breadcrumb) {
                         return $breadcrumb['url'] && $breadcrumb['url'] != route('main', ['subdomain' => current_company()->domain_name]) && $breadcrumb['label'] != 'Inventory' && $breadcrumb['url'] != url()->current();
@@ -25,12 +27,9 @@
                         <span>
                             @foreach($filteredBreadcrumbs as $breadcrumb)
                                 @if($breadcrumb['url'])
-                                <a href="{{ $breadcrumb['url'] }}" wire:navigate class="fw-bold text-truncate text-decoration-none">
-                                    {{ $loop->index > 0 ? "/" : '' }}{{ $breadcrumb['label'] }}
-                                </a>
-                                @else
-                                <a class="fw-bold text-truncate text-decoration-none" aria-current="page">
-                                    {{ $breadcrumb['label'] }} {{ config('inventory.config.name') }}
+                                <a href="{{ $breadcrumb['url'] }}" wire:navigate class="fw-bold text-truncate text-decoration-none" aria-current="page">
+                                    {{-- {{ $loop->index > 0 ? '/' : '' }}  --}}
+                                    {{ $breadcrumb['label'] }}
                                 </a>
                                 @endif
                             @endforeach
@@ -42,63 +41,147 @@
                             {{ $this->currentPage }}
                         </span>
                         <div class="gap-1 k_cp_action_menus d-flex align-items-center pe-2">
-                            <div class="k_dropdown dropdown lh-1 dropdown-no-caret" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-gear" wire:loading.remove></i>
-                                <span wire:loading>...</span>
+                            
+                            <div class="k_dropdown dropdown dropend lh-1 dropdown-no-caret">
+                                <a href="#" class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-gear" wire:loading.remove></i>
+                                </a>
+                                <div class="k_dropdown_menu dropdown-menu dropdown-menu-end">
+
+                                    @foreach($this->actionButtons() as $action_button)
+                                    <x-dynamic-component
+                                        :component="$action_button->component"
+                                        :value="$action_button"
+                                    >
+                                    </x-dynamic-component>
+                                    @endforeach
+                                </div>
                             </div>
-                            <ul class="k_dropdown_menu dropdown-menu lh-base">
-
-                                @foreach($this->actionButtons() as $action_button)
-                                <x-dynamic-component
-                                    :component="$action_button->component"
-                                    :value="$action_button"
-                                >
-                                </x-dynamic-component>
-                                @endforeach
-
-                            </ul>
                         </div>
                         @if($this->showIndicators)
                         <div class="k_form_status_indicator_buttons d-flex">
-                            <button wire:loading.remove wire:click.prevent="saveUpdate()" wire:target="saveUpdate()" class="px-1 py-0 k_form_button_save btn-light rounded-1 lh-sm">
+                            <span wire:loading.remove wire:click.prevent="saveUpdate()" wire:target="saveUpdate()" class="px-1 py-0 cursor-pointer k_form_button_save btn-light rounded-1 lh-sm">
                                 <i class="bi bi-cloud-arrow-up-fill"></i>
-                            </button>
-                            <button wire:click.prevent="resetForm()" wire:loading.remove class="px-1 py-0 k_form_button_save btn-light lh-sm">
+                            </span>
+                            <span wire:click.prevent="resetForm()" wire:loading.remove class="px-1 py-0 cursor-pointer k_form_button_save btn-light lh-sm">
                                 <i class="bi bi-arrow-return-left"></i>
-                            </button>
+                            </span>
                             <span wire:loading wire:target="saveUpdate()">...</span>
                         </div>
                         @endif
+                        @if($this->change)
+                        <span class="p-0 ml-2 fs-4">{{ __('Usaved changes') }}</span>
+                        @endif
                     </div>
                 </div>
-          </div>
-
-          <!-- Actions / Search Bar -->
-          <div class="order-2 k_panel_control_actions d-flex align-items-center justify-content-start order-lg-1 w-100 w-lg-auto justify-content-lg-around">
-
-          </div>
-
-          <!-- Navigations -->
-          <div class="flex-wrap order-1 k_control_panel_navigation d-flex flex-md-wrap align-items-center justify-content-end gap-l-1 gap-xl-5 order-lg-2 flex-grow-1">
-            <!-- Pagination -->
-            {{-- @if($showPagination)
-                {{ $this->data()->links() }}
-            @endif --}}
-            <!-- End Pagination -->
-
-            <!-- Display panel buttons -->
-            <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group">
-                <!-- Button view -->
-                @foreach($this->switchButtons() as $switchButton)
-                <x-dynamic-component
-                    :component="$switchButton->component"
-                    :value="$switchButton"
-                    {{-- :status="$status" --}}
-                >
-                </x-dynamic-component>
-                @endforeach
             </div>
-          </div>
-      </div>
+
+            @if(!$this->isForm)
+            <!-- Actions / Search Bar -->
+            <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions_search d-flex align-items-center justify-content-start order-lg-1 ">
+                <span class="p-1 border-0 cursor-pointer">
+                    <i class="bi bi-search"></i>
+                </span>
+                <div class="gap-1 d-flex">
+                    <div class="gap-1 pb-1 mt-1 rounded k_searchview_filters_span d-flex">
+                        <i class="m-0 bi bi-funnel-fill" style="color: #0E6163;"></i>
+                        <span class="">Hotels</span>
+                        <i class="cursor-pointer bi bi-x remove"></i>
+                    </div>
+                    <input type="text" placeholder="Search..." class="k_searchview">
+                    <div class="dropdown k_filter_search">
+                        <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                          
+                        </span>
+                        <ul class="filter_search_popover" aria-labelledby="dropdownMenu2">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-4 k_search_filter_menu" style="border-right: 1px solid #d8dadd;">
+                                        <div class="gap-1 d-flex align-items-start">
+                                            <i class="bi bi-funnel-fill" style="color: #0E6163;"></i>
+                                            <h5 class="d-inline h3">
+                                                Filters
+                                            </h5>
+                                        </div>
+                                        <span class="dropdown-item" type="button">Hospitality</span>
+                                        <span class="dropdown-item" type="button">Residential</span>
+                                        <span class="dropdown-item" type="button">Commercial</span>
+                                    </div>
+
+                                    <div class="col-md-4 k_search_filter_menu" style="border-right: 1px solid #d8dadd;">
+                                        <div class="gap-1 d-flex align-items-start">
+                                            <i class="bi bi-funnel-fill" style="color: #6f9999;"></i>
+                                            <h5 class="d-inline h3">
+                                                Group By
+                                            </h5>
+                                        </div>
+                                        <span class="dropdown-item" type="button">Apartments</span>
+                                        <span class="dropdown-item" type="button">Single-Family Homes</span>
+                                        <span class="dropdown-item" type="button">Retail Stores</span>
+                                        <span class="dropdown-item" type="button">Hotels</span>
+                                        <span class="dropdown-item" type="button">Motels</span>
+                                        <span class="dropdown-item" type="button">Townhouses</span>
+                                    </div>
+
+                                    <div class="col-md-4 k_search_filter_menu">
+                                        <div class="gap-1 d-flex align-items-start">
+                                            <i class="bi bi-star-fill" style="color: gold;"></i>
+                                            <h5 class="d-inline h3">
+                                                Favorites
+                                            </h5>
+                                        </div>
+                                        <span class="dropdown-item" type="button">Save this search</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {{-- <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions d-flex align-items-center justify-content-start order-lg-1">
+                <div class="container gap-1 k-list-selection d-flex w-100 w-md-auto">
+                    <span class="gap-1 p-2 list-group-item active d-flex align-items-center pe-0 rounded-1 flex-grow-1">
+                        <b>2</b> selected
+                        <i class="bi bi-x"></i>
+                    </span>
+                    <span class="btn btn-secondary">
+                        Print Records
+                    </span>
+                    <div class="btn-group rounded-1">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                          Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"> <i class="bi bi-upload"></i> <span>Action</span></a></li>
+                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"><i class="bi bi-archive-fill"></i> <span>Archive</span></a></li>
+                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"><i class="bi bi-copy"></i> <span>Duplicate</span></a></li>
+                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"><i class="bi bi-trash-fill"></i> <span>Delete</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div> --}}
+            <!-- Actions / Search Bar -->
+            @endif
+
+            <!-- Navigations -->
+            @if(!$this->isForm)
+            <div class="flex-wrap order-3 align-items-end k_control_panel_navigation d-flex flex-md-wrap align-items-center justify-content-end gap-l-1 gap-xl-5 order-lg-2 flex-grow-1">
+                <!-- Display panel buttons -->
+                <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group">
+                    <!-- Button view -->
+                    @foreach($this->switchButtons() as $switchButton)
+                    <x-dynamic-component
+                        :component="$switchButton->component"
+                        :value="$switchButton"
+                        {{-- :status="$status" --}}
+                    >
+                    </x-dynamic-component>
+                    @endforeach
+                    
+                </div>
+            </div>
+            @endif
+            
+        </div>
     </div>
 </div>

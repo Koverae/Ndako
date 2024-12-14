@@ -4,7 +4,7 @@ namespace Modules\App\Livewire\Components\Navbar;
 
 class SwitchButton{
 
-    public string $component = 'navbar.switch-button';
+    public string $component = 'app::navbar.switch-button';
     public string $key;
     public string $action;
 

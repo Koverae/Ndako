@@ -3,5 +3,6 @@
     "App": true,
     "Properties": true,
     "ChannelManager": true,
-    "RevenueManager": true
+    "RevenueManager": true,
+    "FrontDesk": true
 }

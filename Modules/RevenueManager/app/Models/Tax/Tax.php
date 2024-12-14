@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\RevenueManager\Models;
+namespace Modules\RevenueManager\Models\Tax;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

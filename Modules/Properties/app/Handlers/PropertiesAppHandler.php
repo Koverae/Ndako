@@ -8,6 +8,7 @@ use Modules\Properties\Models\Property\LeaseTerm;
 use Modules\Properties\Models\Property\PropertyType;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\UnitStatus;
 use Modules\Properties\Models\Property\Utility;
 
@@ -21,7 +22,7 @@ class PropertiesAppHandler extends AppHandler
     protected function handleInstallation($company)
     {
         // Example: Create settings-related data and initial configuration
-        $this->installData($company);
+        $this->configure($company);
     }
 
     protected function handleUninstallation()
@@ -29,7 +30,7 @@ class PropertiesAppHandler extends AppHandler
         // Example: Drop blog-related tables and clean up configurations
     }
 
-    private function installData(int $companyId) : void
+    private function configure($companyId) : void
     {
         // Define property types data
         $propertyTypes = [
@@ -168,5 +169,27 @@ class PropertiesAppHandler extends AppHandler
             Amenity::create($amenity);
         }
 
+        // For test only
+        $this->buildProperty($companyId, PropertyType::isCompany($companyId)->first()->id);
+
+    }
+
+    public function buildProperty($company, $type){
+        Property::create([
+            'company_id' => $company,
+            'property_type_id' => $type, // Replace with a valid ID
+            'name' => 'Sunset Residences',
+            'description' => 'A luxury residential property with modern amenities.',
+            'country_id' => 1, // Replace with a valid Country ID
+            'state_id' => 1, // Replace with a valid State ID
+            'city_id' => 1, // Replace with a valid City ID
+            'zip' => '12345',
+            'latitude' => '1.2921',
+            'longitude' => '36.8219',
+            'address' => '123 Sunset Blvd',
+            'amenities' => json_encode(['Swimming Pool', 'Gym', 'Wi-Fi']),
+            'status' => 'active'
+
+        ]);
     }
 }

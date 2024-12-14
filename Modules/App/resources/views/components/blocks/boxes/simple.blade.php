@@ -17,7 +17,7 @@
         @endif
         <!-- Right pane -->
         <div class="k_setting_right_pane">
-            <div class="mt12">
+            <div class="mt12" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ $value->comment }}">
                 <div class="w-auto k_field_widget k_field_chat k_read_only modify ps-3 fw-bold">
                     @if($value->icon)
                         <i class="inline-block bi {{ $value->icon }}"></i>

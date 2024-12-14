@@ -3,9 +3,13 @@
 namespace Modules\App\Livewire\Components\Form\Template;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 abstract class SimpleAvatarForm extends Component
 {
+    use WithFileUploads;
+    
+    public $photo, $image_path, $status;
     public bool $checkboxes = false, $blocked = false, $has_avatar = false;
 
     public function render()

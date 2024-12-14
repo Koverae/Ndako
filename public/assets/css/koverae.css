@@ -2844,7 +2844,7 @@ Koverae Form
 }
 
 .k-form-statusbar {
-    background-color: #f1f5f9;
+    /* background-color: #f1f5f9; */
     margin: 0 0 8px 0;
     position: relative;
 }
@@ -3133,8 +3133,6 @@ Koverae Form
   padding: 1px 0 1px 0;
 }
 
-
-
 .k_inner_group {
   margin: 0 0 8px 0;
   /* padding: 0 16px 0 16px; */
@@ -3196,7 +3194,7 @@ Koverae Form
   min-width: auto;
 }
 .k_notebook_headers .nav {
-  border-bottom: 1px solid #d8dadd;
+  /* border-bottom: 1px solid #d8dadd; */
   border-radius: 0px;
   padding: 0 24px 0 24px;
 }
@@ -5533,8 +5531,8 @@ Control Panel
   width: auto;
 }
 #current-page {
-  font-size: 18px;
-  height: 18px;
+  font-size: 14px;
+  height: 14px;
 }
 .k_control_panel_breadcrumbs .k_last_breadcrumb_item .k_cp_action_menus {
   height: 17px;

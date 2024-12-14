@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/frontdesk",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\FrontDesk\\": "app/",
+            "Modules\\FrontDesk\\Database\\Factories\\": "database/factories/",
+            "Modules\\FrontDesk\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\FrontDesk\\Tests\\": "tests/"
+        }
+    }
+}

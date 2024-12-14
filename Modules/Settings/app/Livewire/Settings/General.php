@@ -190,7 +190,7 @@ class General extends AppSetting
 
         cache()->forget('settings');
 
-        notify()->success('Updates saved!');
+        // notify()->success('Updates saved!');
         $this->dispatch('undo-change');
 
     }

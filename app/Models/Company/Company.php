@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Settings\Models\System\Setting;
 use App\Models\User;
+use Modules\Settings\Models\Language\Language;
 
 class Company extends Model
 {
@@ -39,6 +40,14 @@ class Company extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'company_id', 'id');
+    }
+    
+    /**
+     * Get languages for the company.
+     */
+    public function languages()
+    {
+        return $this->hasMany(Language::class, 'company_id', 'id');
     }
 
 }

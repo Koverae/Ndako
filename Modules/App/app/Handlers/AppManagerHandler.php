@@ -4,9 +4,14 @@ namespace Modules\App\Handlers;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Modules\ChannelManager\Handlers\ChannelManagerAppHandler;
 // use Modules\Dashboards\Handlers\DashboardsAppHandler;
 use Modules\Inventory\Entities\UoM\UnitOfMeasureCategory;
 use Modules\Inventory\Entities\UoM\UnitOfMeasure;
+use Modules\Properties\Handlers\PropertiesAppHandler;
+use Modules\FrontDesk\Handlers\FrontDeskAppHandler;
+use Modules\RevenueManager\Handlers\FiscalLocalizationHandler;
+use Modules\RevenueManager\Handlers\RevenueManagerAppHandler;
 use Modules\Settings\Handlers\SettingsAppHandler;
 use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Models\Language\Language;
@@ -44,6 +49,11 @@ class AppManagerHandler extends AppHandler
         $modules = [
             new AppManagerHandler(),
             new SettingsAppHandler(),
+            new PropertiesAppHandler(),
+            new ChannelManagerAppHandler(),
+            new RevenueManagerAppHandler(),
+            new FiscalLocalizationHandler(),
+            new FrontDeskAppHandler(),
             // new DashboardsAppHandler(),
             // Add other module handlers as needed
         ];
