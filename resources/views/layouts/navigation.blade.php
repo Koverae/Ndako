@@ -9,7 +9,7 @@
         <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href="{{ Route::subdomainRoute('dashboard') }}" wire:navigate>
                 <i class="bi bi-chevron-left icon"></i>
-                <img src="{{ asset('assets/images/apps/'.current_module()->icon.'.png') }}" alt="Ndako Logo" class="rounded navbar-brand-image logo">
+                {{-- <img src="{{ asset('assets/images/apps/'.current_module()->icon.'.png') }}" alt="Ndako Logo" class="rounded navbar-brand-image logo"> --}}
                 {{ current_module()->short_name }}
             </a>
         </h1>

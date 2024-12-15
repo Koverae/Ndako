@@ -26,6 +26,12 @@ class NavbarManager extends Component
                 'id' => 2,
                 'slug' => 'settings'
             ],
+            3 => [
+                'name' => 'Properties',
+                'path' => 'properties::layouts.navbar-menu',
+                'id' => 2,
+                'slug' => 'properties'
+            ],
         ];
 
         // Set the navbar based on the menu variable

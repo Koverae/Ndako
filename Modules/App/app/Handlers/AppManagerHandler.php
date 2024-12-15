@@ -15,6 +15,8 @@ use Modules\RevenueManager\Handlers\RevenueManagerAppHandler;
 use Modules\Settings\Handlers\SettingsAppHandler;
 use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Models\Language\Language;
+use Illuminate\Support\Facades\Http;
+use Modules\Settings\Models\Localization\Country;
 
 class AppManagerHandler extends AppHandler
 {
@@ -26,6 +28,7 @@ class AppManagerHandler extends AppHandler
     protected function handleInstallation($company)
     {
         // Example: Create app-manager related data and initial configuration
+        $this->createCountries($company);
         $this->installCurrencies($company);
         $this->installLanguages($company);
         // $this->installUnitsOfMeasure($company);
@@ -79,6 +82,31 @@ class AppManagerHandler extends AppHandler
             // Roll back the transaction if any installation fails.
             Log::error("Error installing modules: " . $e->getMessage());
             throw $e;
+        }
+    }
+
+    /**
+     * Create honorifics titles.
+     *
+     * @param int $companyId
+     */
+    private function createCountries(int $companyId){
+
+        $response = Http::timeout(30)->retry(3, 100)->get('https://restcountries.com/v3.1/all?fields=name,flags');
+        $countries = $response->json();
+
+        foreach($countries as $country){
+            Country::create([
+                'company_id' => $companyId,
+                'common_name' => $country['name']['common'],
+                'official_name' => $country['name']['official'],
+                'country_code' => 'nne',
+                // // 'currency_code' => ,
+                'flag' => $country['flags']['svg'],
+                // 'start_of_week' => $country['startOfWeek'],
+                // 'googleMaps' => $country['maps']['googleMaps'],
+                // 'openStreetMaps' => $country['maps']['openStreetMaps'],
+            ]);
         }
     }
     

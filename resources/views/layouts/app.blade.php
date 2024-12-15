@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{asset('assets/images/logo/favicon.ico')}}">
     <title>{{ current_company()->name }} - @yield('title')</title>
-
+    
     <!-- CSS -->
-    <link href="{{asset('assets/css/koverae.css')}}" rel="stylesheet"/>
+    <link href="{{asset('assets/css/koverae.css?'.time())}}" rel="stylesheet"/>
     <link href="{{ asset('assets/css/demo.min.css?'.time())}}" rel="stylesheet"/>
     <!-- CSS -->
     
@@ -235,6 +235,7 @@
 
     </main>
 
+    @livewire('wire-elements-modal')
     <!-- Custom JS -->
     <!-- Custom JS -->
 

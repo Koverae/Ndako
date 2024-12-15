@@ -9,7 +9,7 @@ abstract class SimpleAvatarForm extends Component
 {
     use WithFileUploads;
     
-    public $photo, $image_path, $status;
+    public $photo, $image_path, $default_img = 'user', $status;
     public bool $checkboxes = false, $blocked = false, $has_avatar = false;
 
     public function render()

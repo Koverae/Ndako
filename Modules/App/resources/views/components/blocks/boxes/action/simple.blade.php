@@ -7,9 +7,9 @@
         <i class="bi {{ $value->icon }} k_button_icon"></i> <span>{{ $value->label }}</span>
     </a>
     @elseif($value->type == 'modal')
-    <a class="outline-none btn btn-link k_web_settings_access_rights"  onclick="Livewire.dispatch('openModal', {!! $value->action !!})">
+    <span class="p-4 outline-none cursor-pointer k_web_settings_access_rights"  onclick="Livewire.dispatch('openModal', {!! $value->action !!})">
         <i class="bi {{ $value->icon }} k_button_icon"></i> <span>{{ $value->label }}</span>
-    </a>
+    </span>
     @endif
     
     <br>

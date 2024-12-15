@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Modules\Settings\Models\System\Setting;
 use App\Models\User;
 use Modules\Settings\Models\Language\Language;
+use Modules\Settings\Models\Localization\Country;
 
 class Company extends Model
 {
@@ -21,6 +22,10 @@ class Company extends Model
      */
     protected $guarded = [];
     
+    public function scopeIsCompany(Builder $query, $company_id)
+    {
+        return $query->where('status', 'active');
+    }
 
     public function isActive(Builder $builder) {
         return $builder->where('enabled', 1);
@@ -48,6 +53,14 @@ class Company extends Model
     public function languages()
     {
         return $this->hasMany(Language::class, 'company_id', 'id');
+    }
+    
+    /**
+     * Get countries for the company.
+     */
+    public function countries()
+    {
+        return $this->hasMany(Country::class, 'company_id', 'id');
     }
 
 }

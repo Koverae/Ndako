@@ -38,7 +38,7 @@ class TwoFactorMiddleware
                     $user->resetTwoFactorCode(); // Reset the two-factor code
                     auth()->logout(); // Log out the user
                     // Redirect to the login page with a status message
-                    return redirect()->route('login')
+                    return redirect()->intended(Route::subdomainRoute('login'))
                         ->withStatus('Your verification code expired. Please re-login.');
                 }
                 // Check if the current IP matches the last login IP and if the user is not on a verification route

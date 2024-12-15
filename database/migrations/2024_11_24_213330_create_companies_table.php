@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('fiscal_country')->default('KE'); // Default is Kenya
             $table->string('default_currency')->nullable();
             $table->string('name');
+            $table->string('avatar')->nullable();
             $table->string('reference')->nullable();
             $table->boolean('personal_company')->default(true);
             $table->string('domain_name')->nullable();

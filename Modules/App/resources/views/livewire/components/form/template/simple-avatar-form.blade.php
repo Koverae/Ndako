@@ -108,7 +108,7 @@
                         @if($this->photo != null)
                         <img src="{{ $this->photo->temporaryUrl() }}" alt="image" class="img img-fluid">
                         @else
-                        <img src="{{ $this->image_path ? Storage::url('avatars/' . $this->image_path) . '?v=' . time() : asset('assets/images/default/user.png') }}" alt="image" class="img img-fluid">
+                        <img src="{{ $this->image_path ? Storage::url('avatars/' . $this->image_path) . '?v=' . time() : asset('assets/images/default/'.$default_img.'.png') }}" alt="image" class="img img-fluid">
                         @endif
                         <!-- <small class="k_button_icon">
                             <i class="align-middle bi bi-circle text-success"></i>

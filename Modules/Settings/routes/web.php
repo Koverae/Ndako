@@ -6,6 +6,9 @@ use Modules\Settings\Livewire\GeneralSetting;
 use Modules\Settings\Livewire\Users\Lists as UserLists;
 use Modules\Settings\Livewire\Users\Show as UserShow;
 use Modules\Settings\Livewire\Users\Create as UserCreate;
+use Modules\Settings\Livewire\Companies\Lists as CompanyLists;
+use Modules\Settings\Livewire\Companies\Create as CompanyCreate;
+use Modules\Settings\Livewire\Companies\Show as CompanyShow;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +24,13 @@ use Modules\Settings\Livewire\Users\Create as UserCreate;
 Route::group([], function () {
     Route::get('/settings', GeneralSetting::class)->name('settings.general');
     Route::get('/users', UserLists::class)->name('settings.users');
-    Route::get('/users/create', UserCreate::class)->name('settings.users.create');
-    Route::get('/users/{user}', UserShow::class)->name('settings.users.show');
+    Route::prefix('/users')->name('settings.users.')->group(function() {
+        Route::get('/create', UserCreate::class)->name('create');
+        Route::get('/{user}', UserShow::class)->name('show');
+    });
+    Route::prefix('/companies')->name('settings.companies.')->group(function() {
+        Route::get('/', CompanyLists::class)->name('index');
+        Route::get('create', CompanyCreate::class)->name('create');
+        Route::get('/{company}', CompanyShow::class)->name('show');
+    });
 });

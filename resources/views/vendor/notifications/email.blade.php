@@ -1,7 +1,7 @@
 <x-mail::message>
 {{-- Greeting --}}
 @if (! empty($greeting))
-# {{ $greeting }}
+ {{ $greeting }}
 @else
 @if ($level === 'error')
 # @lang('Whoops!')
@@ -55,4 +55,5 @@
 ) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
 @endisset
+
 </x-mail::message>

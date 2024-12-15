@@ -99,6 +99,23 @@ class ModuleSeeder extends Seeder
                 'enabled'   => 1
             ],
 
+            // Properties
+            [
+                'name' => 'Properties',
+                'slug' => 'properties',
+                'short_name'    =>  'Properties',
+                'description'  =>  'Manage your properties effortlessly, from listings to tenant details, all in one place.',
+                'app_group' => 'app_settings',
+                'version'  => 'v1.0',
+                'author'    => 'Koverae Ltd',
+                'icon'  => 'reservation',
+                'is_default'    => 0,
+                'link'  => 'properties.index',
+                'path'  => "properties::layouts.navbar-menu",
+                'navbar_id' => 2,
+                'enabled'   => 1
+            ],
+
         ];
 
         foreach ($modules as $module) {

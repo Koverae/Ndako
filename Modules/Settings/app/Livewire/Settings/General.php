@@ -12,7 +12,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company\CompanyInvitation;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\On;
+use Modules\Settings\Notifications\CompanyInvitationNotification;
 
 class General extends AppSetting
 {
@@ -122,9 +124,9 @@ class General extends AppSetting
     public function actions(): array
     {
         return [
-            BoxAction::make('manage-users', 'active_users', __('Manage Users'), 'link', 'bi-arrow-right'),
+            BoxAction::make('manage-users', 'active_users', __('Manage Users'), 'link', 'bi-arrow-right', Route::subdomainRoute('settings.users')),
             BoxAction::make('email-digest-templates', 'email-digest', __('Configure'), 'link', 'bi-arrow-right'),
-            BoxAction::make('add-language', 'languages', __('Add a language'), 'modal', 'bi-plus-circle-fill', "{component: 'settings::modal.add-language'}"),
+            BoxAction::make('add-language', 'languages', __('Add a language'), 'modal', 'bi-plus-circle-fill', "{component: 'settings::modal.add-language-modal'}"),
             // BoxAction::make('manage-languages', 'languages', __('Manage languages'), 'link', 'bi-arrow-right'),
             BoxAction::make('update-company', 'current-company', __('Update Information'), 'link', 'bi-arrow-right'),
             BoxAction::make('configure-layout', 'document-layout', __('Configure'), 'link', 'bi-arrow-right'),
@@ -146,7 +148,7 @@ class General extends AppSetting
 
         // Generate a unique invitation token
         $token = Str::random(32);
-
+        
         // Create a new invitation record
         $invitation = CompanyInvitation::create([
             'team_id' => Auth::user()->team->id,
@@ -155,11 +157,11 @@ class General extends AppSetting
             'token' => $token,
             'role' => 'default',
             'expire_at' => now()->addDays(7),
-        ]);
-        $invitation->save();
-
+            ]);
+            $invitation->save();
+            
+            $invitation->notify(new CompanyInvitationNotification());
         // Send the invitation notification
-        // $invitation->notify(new CompanyInvitationNotification());
 
         $this->friend_email = '';
         $this->pending_invitations = CompanyInvitation::isCompany(current_company()->id)->get();

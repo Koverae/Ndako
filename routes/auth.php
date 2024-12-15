@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\CompanyInvitationController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -35,6 +36,9 @@ Route::middleware('guest')->prefix('/web')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+                        
+    Route::get('/join/{token}', [CompanyInvitationController::class, 'showJoinPage'])->name('company.invitations.accept')->middleware('valid.invitation');
+    Route::post('/join/{token}', [CompanyInvitationController::class, 'acceptInvitation'])->name('company.invitations.accept.post')->middleware('valid.invitation');
 });
 
 Route::middleware('auth')->prefix('/web')->group(function () {
