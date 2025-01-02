@@ -15,6 +15,7 @@ class Show extends Component
 
     public function render()
     {
-        return view('settings::livewire.companies.show')->extends('layouts.app');
+        return view('settings::livewire.companies.show')
+        ->extends('layouts.app');
     }
 }

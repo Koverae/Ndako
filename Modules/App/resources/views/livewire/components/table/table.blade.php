@@ -22,8 +22,11 @@
             </thead>
             
             <tbody class="bg-white ">
-                @foreach($this->data() as $row)
-                <tr class="cursor-pointer">
+                @foreach($this->data() as  $key => $row)
+                @php
+                    $expand = in_array($row->id, $this->expandedRows) ? 'Collapse' : 'Expand';
+                @endphp
+                <tr class="cursor-pointer kover-navlink" wire:click="toggleRowExpansion({{ $row->id }})">
                     <td>
                         <input class="m-0 align-middle form-check-input" type="checkbox" wire:model.defer="ids.{{ $row->id }}" wire:click="toggleCheckbox({{ $row->id }})" wire:loading.attr="disabled" defer>
                     </td>
@@ -37,10 +40,51 @@
                         </x-dynamic-component>
                     </td>
                     @endforeach
+                    
                     <div class="centered-section ">
 
                     </div>
                 </tr>
+                {{-- @php
+                    $subData = method_exists($this, 'subData') ? $this->subData() : null;
+                @endphp --}}
+               
+                @php
+                    $hasSubData = method_exists($this, 'subData') && method_exists($this, 'subColumns');
+                @endphp
+                @if($hasSubData && in_array($row->id, $this->expandedRows))
+                <tr class="expandable-row show" colspan="6">
+                    <td colspan="6">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead class="list-table">
+                                <tr>
+                                    @foreach($this->subColumns() as $column)
+                                    <th class="cursor-pointer fs-5" colspan="auto">
+                                        {{ $column->label }}
+                                    </th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                @foreach($this->subData($row->id) as  $key => $row)
+                                <tr class="cursor-pointer kover-navlink">
+                                    @foreach($this->subColumns() as $column)
+                                    <td>
+                                        <x-dynamic-component
+                                            :component="$column->component"
+                                            :value="$row[$column->key]"
+                                            :id="$row->id"
+                                        >
+                                        </x-dynamic-component>
+                                    </td>
+                                    @endforeach
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                @endif
                 @endforeach
 
             </tbody>

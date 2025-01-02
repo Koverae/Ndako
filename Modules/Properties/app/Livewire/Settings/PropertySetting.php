@@ -118,6 +118,8 @@ class PropertySetting extends AppSetting
             // Accommodations & Features
             Box::make('shared-amenities', "Shared Amenities", 'has_shared_amenities', "Specify shared features like swimming pools, gyms, or parking spots.", 'accommodations', true, "", null),
             Box::make('lease-terms', "Default Lease Terms", 'has_lease_term', "Set standard lease durations for residential properties (e.g., monthly, yearly).", 'accommodations', true, "", null),
+            Box::make('due-date', "Due Date", 'has_discounts', "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet.", 'accommodations', true, "", null),
+            // Pricing
             Box::make('base-rental', "Base Rental/Room Rates", 'has_base_rental', "Define monthly rent or nightly rates for properties.", 'pricing', true, "", null),
             Box::make('utility-rules', "Utility Billing Rules", 'has_utility_rules', "Allow landlords to set utility billing options (e.g., included or separate).", 'pricing', true, "", null),
             Box::make('pricelists', "Pricelists", 'has_pricelists', "Set multiple prices per unit, automated discounts, etc.", 'pricing', true, "", null),

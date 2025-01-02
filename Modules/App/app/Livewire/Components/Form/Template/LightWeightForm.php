@@ -3,10 +3,15 @@
 namespace Modules\App\Livewire\Components\Form\Template;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 abstract class LightWeightForm extends Component
 {
-    public bool $blocked = false;
+    use WithFileUploads;
+
+    public $photo, $image_path, $default_img = 'user', $status;
+    public bool $checkboxes = false, $blocked = false, $has_avatar = false;
+
     public function render()
     {
         return view('app::livewire.components.form.template.light-weight-form');
@@ -24,6 +29,10 @@ abstract class LightWeightForm extends Component
         return [];
     }
 
+    public function tags() : array{
+        return [];
+    }
+
     // Provide a default implementation that returns an empty array.
     public function groups(): array {
         return [];
@@ -32,4 +41,5 @@ abstract class LightWeightForm extends Component
     public function capsules() : array{
         return [];
     }
+    
 }

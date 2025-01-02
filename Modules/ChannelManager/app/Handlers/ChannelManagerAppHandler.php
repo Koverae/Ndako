@@ -28,6 +28,7 @@ class ChannelManagerAppHandler extends AppHandler
             [
                 'company_id' => $companyId,
                 'name' => 'Airbnb',
+                'avatar' => 'airbnb.png',
                 'api_endpoint' => 'https://api.airbnb.com/v2',
                 'credentials' => json_encode([
                     'api_key' => 'Your Airbnb API Key',
@@ -37,6 +38,7 @@ class ChannelManagerAppHandler extends AppHandler
             [
                 'company_id' => $companyId,
                 'name' => 'Booking.com',
+                'avatar' => 'booking.png',
                 'api_endpoint' => 'https://distribution-xml.booking.com',
                 'credentials' => json_encode([
                     'username' => 'Your Booking.com Username',
@@ -46,6 +48,7 @@ class ChannelManagerAppHandler extends AppHandler
             [
                 'company_id' => $companyId,
                 'name' => 'Google Hotel Ads',
+                'avatar' => 'google-hotel.png',
                 'api_endpoint' => 'https://hotelads.googleapis.com',
                 'credentials' => json_encode([
                     'client_id' => 'Your Google Client ID',

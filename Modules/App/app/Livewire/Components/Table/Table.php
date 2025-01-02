@@ -30,18 +30,10 @@ abstract class Table extends Component
             'component' => 'map',
         ],
     ];
+    public array $expandedRows = [];
 
-    public $perPage = 20;
-
-    public $page = 1;
-
-    public $sortBy = '';
-
-    public $sortDirection = 'asc';
-
-    public $ids = [];
-    public $headerText = "Users";
-
+    public $perPage = 20, $page = 1, $sortBy = '', $sortDirection = 'asc', $ids = [], $headerText = "Users";
+    public bool $hasSubData = false;
 
     public function render()
     {
@@ -151,5 +143,14 @@ abstract class Table extends Component
 
         // You can trigger an event to update the map on the frontend
         $this->dispatchBrowserEvent('map-updated', ['lat' => $lat, 'lng' => $lng]);
+    }
+
+    public function toggleRowExpansion($rowId)
+    {
+        if (in_array($rowId, $this->expandedRows)) {
+            $this->expandedRows = array_diff($this->expandedRows, [$rowId]);
+        } else {
+            $this->expandedRows[] = $rowId;
+        }
     }
 }

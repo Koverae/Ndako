@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();
             $table->string('name'); // e.g., Airbnb, Booking.com, Google Hotels
-            $table->string('avatae')->nullable();
+            $table->string('avatar')->nullable();
             $table->string('api_endpoint')->nullable(); // Base API URL
             $table->json('credentials')->nullable(); // API credentials in JSON
             $table->enum('integration_status', ['connected', 'disconnected'])->default('disconnected');

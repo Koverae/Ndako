@@ -29,8 +29,14 @@ class NavbarManager extends Component
             3 => [
                 'name' => 'Properties',
                 'path' => 'properties::layouts.navbar-menu',
-                'id' => 2,
+                'id' => 3,
                 'slug' => 'properties'
+            ],
+            4 => [
+                'name' => 'Channel Manager',
+                'path' => 'channelmanager::layouts.navbar-menu',
+                'id' => 4,
+                'slug' => 'channel-manager'
             ],
         ];
 

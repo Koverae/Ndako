@@ -131,14 +131,14 @@
                 <!-- User's Avatar -->
                 <div class="nav-item dropdown">
                     <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
-                        <span class="avatar avatar-sm" style="background-image: url(./assets/images/default/avatar-1.png)"></span>
+                        <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                         <a href="#" class="dropdown-item kover-navlink">Documentation</a>
                         <a href="#" class="dropdown-item kover-navlink divider">Support</a>
                         <a href="#" class="dropdown-item kover-navlink">Dark Mode</a>
                         <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item kover-navlink">My Preferences</a>
+                        <a href="{{ Route::subdomainRoute('settings.users.show', ['user' => auth()->user()->id]) }}" class="dropdown-item kover-navlink">My Profile</a>
                         <a href="#" class="dropdown-item kover-navlink">My Databases</a>
                         <a href="#" class="dropdown-item kover-navlink">My Subscription</a>
                         <hr class="dropdown-divider">

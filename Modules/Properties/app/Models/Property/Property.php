@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Settings\Models\Localization\Country;
 
 // use Modules\Properties\Database\Factories\PropertyFactory;
 
@@ -27,5 +28,13 @@ class Property extends Model
 
     public function propertyType() {
         return $this->belongsToMany(PropertyType::class);
+    }
+
+    public function propertyAmenities() {
+        return $this->hasMany(PropertyAmenity::class);
+    }
+
+    public function country() {
+        return $this->belongsTo(Country::class);
     }
 }

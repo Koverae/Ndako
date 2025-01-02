@@ -3,11 +3,13 @@
 ])
 
 <div class="d-flex" style="margin-bottom: 8px;">
+    @if($value->label)
     <div class="k_cell k_wrap_label flex-grow-1 text-break text-900">
         <label class="k_form_label">
             {{ $value->label }} :
         </label>
     </div>
+    @endif
     <div class="k_address_format w-100">
         <div class="row">
             <div class="col-12" style="margin-bottom: 10px;">
@@ -28,10 +30,10 @@
                 <input type="text" wire:model="zip" id="zip_0" class="p-0 k-input w-100" {{ $this->blocked ? 'disabled' : '' }} placeholder="{{ __('ZIP') }}">
             </div>
             <div class="col-12" style="margin-bottom: 10px;">
-                <select wire:model="country" class="p-0 k-input w-100" {{ $this->blocked ? 'disabled' : '' }} id="country_id_0">
+                <select wire:model="country" class="k-input w-100" {{ $this->blocked ? 'disabled' : '' }} id="country_id_0">
                     <option value="">{{ __('Country') }}</option>
                     @foreach(current_company()->countries as $key => $country)
-                    <option value="{{ $country->common_name }}">{{ $country->common_name }}</option>
+                    <option value="{{ $country->id }}">{{ $country->common_name }}</option>
                     @endforeach
                 </select>
             </div>

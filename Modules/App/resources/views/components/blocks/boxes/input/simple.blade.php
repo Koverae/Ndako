@@ -50,7 +50,7 @@
         <span>{{ $this->setting->currency->symbol }}</span>
         @endif
     </div>
-    
+
     @else
     <input type="{{ $value->type }}" wire:model="{{ $value->model }}" class="w-auto k-input" placeholder="{{ $value->placeholder }}" id="{{ $value->model }}">
     <i class="cursor-pointer bi bi-arrow-right-short fw-bold"></i>

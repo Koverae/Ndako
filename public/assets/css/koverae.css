@@ -2738,6 +2738,40 @@ Koverae Form
     padding: 24px 24px 24px 24px;
     position: relative;
 }
+.k_horizontal {
+    height: auto;
+    width: auto;
+    min-height: 23px;
+    min-width: 185px;
+    display: flex;
+}
+.k_horizontal .k_radio_item {
+    height: auto;
+    width: auto;
+    margin: 0 10px 2px 0;
+    padding: 0 0 0 22px;
+    min-height: 21px;
+    max-width: 208px;
+}
+.k_radio_item .k_radio_input {
+    height: 14px;
+    width: 14px;
+    margin: 4px 0 0 -21px;
+    cursor: pointer;
+}
+.k_radio_item .k_radio_input:checked {
+    background-color: #0E6163;
+}
+.k-radio{
+    background-color: #0E6163;
+}
+.k_radio_item .k_form_label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 21px;
+    cursor: pointer;
+}
+
 /* Ribbon */
 .k-folded-ribbon {
   height: 50px;
@@ -2759,6 +2793,7 @@ Koverae Form
   );
   background: #4bb543; /* #4BB543: success #FF7F50: pending */
   box-shadow: 0 calc(-1 * var(--f)) 0 inset #0005;
+  z-index: 9999;
 }
 .k-folded-ribbon.success {
   background: #4bb543; /* #4BB543: success #FF7F50: pending */
@@ -2957,6 +2992,7 @@ Koverae Form
 }
 #k-horizontal-capsule {
     height: auto;
+    width: auto;
     /* padding: 5px 0 5px 0; */
 }
 /* Smooth scrollbar */
@@ -3141,6 +3177,64 @@ Koverae Form
   min-height: auto;
   max-height: auto;
 }
+/*************************
+    Gallery Tabs
+**************************/
+.k-gallery-box{
+    display: flex;
+    flex-wrap: wrap; /* Ensure images wrap when they exceed the width */
+    gap: 10px; /* Add spacing between images */
+    max-width: 100%; /* Prevent the gallery from exceeding the container */
+    overflow: hidden; /* Hide any overflow */
+}
+.k-gallery-box .k-image-box{
+    min-height: auto;
+    max-width: 100%;
+    min-width: auto;
+    position: relative;
+    top: 0px;
+    bottom: 0px;
+    /* background-color: gray; */
+}
+.k-gallery-box .image{
+    height: 100px;
+    width: 100px;
+    cursor: pointer;
+    max-width: 100px; /* Set a maximum width for each image */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Crop images if necessary */
+}
+.k-image-box .select-file{
+    height: 34px;
+    width: 100px;
+    top: 56px;
+    display: flex;
+    visibility: hidden;
+}
+.k-image-box:hover .select-file {
+    /* Make it visible or opaque on hover */
+    visibility: visible;
+    /* opacity: 1; */
+}
+
+.k-image-box .k_select_file_button {
+    background-color: #e7e9ed;
+    height: 26px;
+    width: 26px;
+    margin: 4px 4px 4px 4px;
+    padding: 4px 4px 4px 4px;
+    min-height: auto;
+    min-width: auto;
+}
+.k-image-box .k_select_file_button:hover {
+    background-color: #d8dadd;
+}
+
+/*************************
+    Gallery Tabs End
+**************************/
+
+
 #k_inner_table {
   margin: 0;
 }
@@ -3357,6 +3451,15 @@ Input Field
 .k-input:focus {
     outline: none;
     border-bottom: 1px solid #cccccc;
+}
+.textearea {
+    height: auto;
+    min-height: 40px;
+    max-height: auto;
+    width: 100%;
+    resize: none;
+    white-space: pre-wrap;
+    display: inline-flex;
 }
 
 @media screen and (max-width: 760) {
@@ -23458,6 +23561,16 @@ Inline list
   -webkit-margin-end: 0.5rem;
           margin-inline-end: 0.5rem;
 }
+/* Loading */
+.k-loading {
+    position: fixed;
+    bottom: 0px; /* Distance from the bottom of the viewport */
+    right: 5px; /* Distance from the right of the viewport */
+    background-color: #036d73; /*rgba(0, 0, 0, 0.5);  Semi-transparent background */
+    color: white; /* Text color */
+    padding: 10px;
+    z-index: 1000; /* Ensure it stays on top of other content */
+}
 
 .loader {
   position: relative;
@@ -27166,8 +27279,6 @@ Settings Tabs
   color: #017e84;
 }
 
-
-
 /* Tags */
 .k_web_settings_users {
     font-size: 13.3px;
@@ -27335,7 +27446,7 @@ Settings Tabs
     outline: none;
 }
 .k_setting_right_pane .k_web_settings_access_rights .k_button_icon {
-    margin: 0 4px 0 0;
+    margin: 0 8px 0 0;
     height: 20px;
 }
 .k_setting_right_pane .k_field_radio {

@@ -12,6 +12,12 @@ class GeneralSetting extends Component
     #[Url(as: 'view', keep: true)]
     public $view = 'general';
 
+    public function mount($view = null){
+        if($view){
+            $this->view = $view;
+        }
+    }
+
     public function render()
     {
         // $team = Team::where('id', Auth::user()->team->id)->where('uuid', Auth::user()->team->uuid)->first();

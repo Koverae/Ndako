@@ -9,7 +9,7 @@
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><i class="bi bi-list"></i> {{ $this->headerText }}</b></header>
                   <ul class="mb-4 ml-2">
                     @foreach($this->data() as $row)
-                    <li class="text-decoration-none panel-category selected' py-1 pe-0 ps-0 cursor-pointer">
+                    <li class="text-decoration-none kover-navlink panel-category selected' py-1 pe-0 ps-0 cursor-pointer">
                       {{ $row->name }}
                     </li>
                     @endforeach
@@ -20,7 +20,7 @@
 
             <!-- Map -->
             {{-- <x-maps-leaflet :centerPoint="['lat' => 52.16, 'long' => 5]"></x-maps-leaflet> --}}
-            <iframe class="p-0 col-12 col-md-12 col-lg-10" height="700" src="https://www.openstreetmap.org/export/embed.html?bbox=26.015625%2C-5.8127569137510084%2C50.537109375%2C7.863381805309173&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/>
+            <iframe class="p-0 col-12 col-md-12 col-lg-10" height="700" src="https://www.openstreetmap.org/export/embed.html?bbox=30.673828125000004%2C-4.7078283752183046%2C42.93457031250001%2C2.141834969768584&amp;layer=mapnik&amp;marker=-1.2852925793638545%2C36.80419921875" style="border: 1px solid black"></iframe><br/>
         </div>
     </div>
 </div>

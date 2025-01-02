@@ -20,4 +20,11 @@ class Channel extends Model
     {
         return $query->where('company_id', $company_id);
     }
+
+    public function scopeIsActive(Builder $query)
+    {
+        return $query->where('is_active', true);
+    }
+
+
 }

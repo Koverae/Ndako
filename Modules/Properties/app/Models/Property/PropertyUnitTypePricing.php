@@ -31,6 +31,10 @@ class PropertyUnitTypePricing extends Model
         return $query->where('property_id', $property_id);
     }
 
+    public function lease() {
+        return $this->belongsTo(LeaseTerm::class, 'lease_term_id', 'id');
+    }
+
     public function propertyUnit() {
         return $this->belongsToMany(PropertyUnitType::class);
     }

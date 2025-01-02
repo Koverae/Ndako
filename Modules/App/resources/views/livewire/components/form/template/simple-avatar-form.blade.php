@@ -43,7 +43,7 @@
                     </ul>
                 </div>
             @endif
-            
+
             <!-- Status Bar -->
             @if($this->statusBarButtons())
                 <div id="status-bar" class="k-statusbar-buttons-arrow d-none d-md-flex align-items-center align-content-around ">
@@ -77,9 +77,17 @@
             @csrf
             <!-- Sheet Card -->
             <div class="k-form-sheet position-relative">
+                {{-- <div class="box col-9">
+                    <div class="k-folded-ribbon bg-danger">
+                        <span class="word">
+                            {{ __('Disconnected') }}
+                        </span>
+                    </div>
+                </div> --}}
+
                 <!-- Capsule -->
                 @if(count($this->capsules()) >= 1)
-                <div class="overflow-x-auto overflow-y-hidden k-horizontal-asset mb-md-3" id="k-horizontal-capsule">
+                <div class="gap-1 overflow-x-auto overflow-y-hidden k-horizontal-asset mb-md-3" id="k-horizontal-capsule">
                     @foreach($this->capsules() as $capsule)
                     <x-dynamic-component
                         :component="$capsule->component"
@@ -128,41 +136,6 @@
                         @error('photo') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- checkboxes -->
-                    @if($this->checkboxes)
-                    <div class="p-0">
-                        <!-- checkbox -->
-                        <span class="d-inline-block">
-                            <div class="k-checkbox form-check">
-                                <input type="checkbox" wire:model.blur="can_be_sold" onclick="checkStatus(this)" class="cursor-pointer form-check-input" id="sale_1">
-                                <label for="sale_1" class="cursor-pointer k_form_label">{{ __('translator::components.inputs.product-checkboxes.can-be-sold') }}</label>
-                            </div>
-                        </span>
-                        <!-- checkbox -->
-                        <span class="d-inline-block">
-                            <div class="k-checkbox form-check">
-                                <input type="checkbox" wire:model.blur="can_be_purchased" onclick="checkStatus(this)" class="cursor-pointer form-check-input" id="purchase_0">
-                                <label for="purchase_0" class="cursor-pointer k_form_label">{{ __('translator::components.inputs.product-checkboxes.can-be-purchased') }}</label>
-                            </div>
-                        </span>
-
-                        <!-- checkbox -->
-                        <span class="d-inline-block d-none">
-                            <div class="k-checkbox form-check">
-                                <input type="checkbox" wire:model.blur="can_be_subscribed" onclick="checkStatus(this)" class="cursor-pointer form-check-input" id="reccuring_0">
-                                <label for="purchase_0" class="cursor-pointer k_form_label">{{ __('translator::components.inputs.product-checkboxes.can-be-subscribed') }}</label>
-                            </div>
-                        </span>
-
-                        <!-- checkbox -->
-                        <span class="d-inline-block d-none">
-                            <div class="k-checkbox form-check">
-                                <input type="checkbox" wire:model.blur="can_be_rented" onclick="checkStatus(this)" class="cursor-pointer form-check-input" id="rent_1">
-                                <label for="purchase_0" class="cursor-pointer k_form_label">{{ __('translator::components.inputs.product-checkboxes.can-be-rented') }}</label>
-                            </div>
-                        </span>
-                    </div>
-                    @endif
                 </div>
 
                 <!-- Top Form -->
@@ -200,7 +173,7 @@
                 @if($this->tabs())
                 <div class="k_notebook_headers">
                     <!-- Tab Link -->
-                    <ul class="flex-row overflow-x nav nav-tabs flex-nowrap" data-bs-toggle="tabs">
+                    <ul class="flex-row overflow-x nav nav-tabs flex-nowrap border-bottom-0">
                         @foreach ($this->tabs() as $tab)
                         <li class="nav-item {{ $tab->condition == true ? 'd-none' : '' }}">
                             <a class="nav-link {{ $tab->key === 'general' ? 'active' : '' }}" data-bs-toggle="tab" href="#{{ $tab->key }}">
@@ -248,6 +221,6 @@
     </div> --}}
     <!-- Loading -->
     <div class="pb-1 cursor-pointer k-loading" wire:loading>
-        <p>En cours de chargement ...</p>
+        <p>Loading ...</p>
     </div>
 </div>

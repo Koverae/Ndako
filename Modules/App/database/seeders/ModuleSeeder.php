@@ -112,7 +112,24 @@ class ModuleSeeder extends Seeder
                 'is_default'    => 0,
                 'link'  => 'properties.index',
                 'path'  => "properties::layouts.navbar-menu",
-                'navbar_id' => 2,
+                'navbar_id' => 3,
+                'enabled'   => 1
+            ],
+
+            // Channel Manager
+            [
+                'name' => 'Channel Manager',
+                'slug' => 'channel-manager',
+                'short_name'    =>  'Channel Manager',
+                'description'  =>  'Simplifies property management by seamlessly synchronizing reservations, rates, and availability across multiple booking platforms in real-time.',
+                'app_group' => 'app_settings',
+                'version'  => 'v1.0',
+                'author'    => 'Koverae Ltd',
+                'icon'  => 'channel-manager',
+                'is_default'    => 0,
+                'link'  => 'channels.index',
+                'path'  => "channelmanager::layouts.navbar-menu",
+                'navbar_id' => 4,
                 'enabled'   => 1
             ],
 

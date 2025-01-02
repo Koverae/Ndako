@@ -27,4 +27,16 @@ class PropertyUnitType extends Model
     public function units() {
         return $this->hasMany(PropertyUnit::class);
     }
+
+    public function features() {
+        return $this->hasMany(PropertyFeature::class, 'property_unit_type_id', 'id');
+    }
+
+    public function utilities() {
+        return $this->hasMany(PropertyUtility::class, 'property_unit_type_id', 'id');
+    }
+
+    public function price() {
+        return $this->hasOne(PropertyUnitTypePricing::class);
+    }
 }

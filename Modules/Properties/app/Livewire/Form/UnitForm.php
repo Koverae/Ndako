@@ -1,0 +1,109 @@
+<?php
+
+namespace Modules\Properties\Livewire\Form;
+
+use Illuminate\Support\Facades\Route;
+use Livewire\Attributes\On;
+use Modules\App\Livewire\Components\Form\Button\StatusBarButton;
+use Modules\App\Livewire\Components\Form\Capsule;
+use Modules\App\Livewire\Components\Form\Template\SimpleAvatarForm;
+use Modules\App\Livewire\Components\Form\Input;
+use Modules\App\Livewire\Components\Form\Tabs;
+use Modules\App\Livewire\Components\Form\Group;
+use Modules\App\Livewire\Components\Form\Table;
+use Modules\App\Livewire\Components\Form\Template\LightWeightForm;
+use Modules\App\Livewire\Components\Table\Column;
+use Modules\Properties\Models\Property\LeaseTerm;
+use Modules\Properties\Models\Property\Property;
+use Modules\Properties\Models\Property\PropertyFloor;
+use Modules\Properties\Models\Property\PropertyUnitType;
+use Modules\Properties\Models\Property\PropertyUnitTypePricing;
+
+class UnitForm extends LightWeightForm
+{
+    public $unit;
+    public $name, $description, $property, $type, $status, $unitPrice = null, $floor, $indentifier;
+    public array $typeOptions = [], $statusOptions = [], $leaseTermOptions = [], $floorOptions = [], $propertyOptions = [];
+    
+    public function mount($unit = null){
+        if($unit){
+            $this->unit = $unit;
+            $this->name = $unit->name;
+            $this->description = $unit->description;
+            $this->status = $unit->status;
+            $this->floor = $unit->floor_id;
+            $this->indentifier = $unit->indentifier;
+            $this->type = $unit->property_unit_type_id;
+            $this->property = $unit->property_id;
+
+            $this->unitPrice = PropertyUnitType::find($this->type)->price;
+        }
+        $this->typeOptions = toSelectOptions(PropertyUnitType::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->leaseTermOptions = toSelectOptions(LeaseTerm::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->floorOptions = toSelectOptions(PropertyFloor::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->propertyOptions = toSelectOptions(Property::isCompany(current_company()->id)->get(), 'id', 'name');
+        
+        $status = [
+            ['id' => 'vacant', 'label' => 'Vacant (V)'],
+            ['id' => 'occupied', 'label' => 'Occupied (O)'],
+            ['id' => 'occupied-clean', 'label' => 'Occupied Clean (OC)'],
+            ['id' => 'occupied-dirty', 'label' => 'Occupied Dirty (OD)'],
+            ['id' => 'vacant-clean', 'label' => 'Vacant Clean (VC)'],
+            ['id' => 'vacant-dirty', 'label' => 'Vacant Dirty (VD)'],
+            ['id' => 'compliment', 'label' => 'Compliment (C)'],
+            ['id' => 'not-disturb', 'label' => 'Do Not Disturb (DND)'],
+            ['id' => 'Out-service', 'label' => 'Out Of Service (OS)'],
+            ['id' => 'due-out', 'label' => 'Due Out / Expected departure (DO/ED)'],
+            ['id' => 'expected-arrival', 'label' => 'Expected Arrival (EA)'],
+            ['id' => 'check-out', 'label' => 'Check Out (CO)'],
+            ['id' => 'late-check-out', 'label' => 'LAte Check Out (LCO)'],
+        ];
+        $this->statusOptions = toSelectOptions($status, 'id', 'label');
+    }
+
+    public function capsules() : array
+    {
+        return [
+            Capsule::make('property-type', __('Property Unit Type'), __('Unit type linked to this unit.'), 'link', 'fa fa-home-user', Route::subdomainRoute('properties.unit-types.show', ['type' => $this->type]) ),
+            Capsule::make('tenant', __('Tenant / Guest'), __('Guest or Tenant occuping the unit'), 'modal', 'fa fa-user'),
+            Capsule::make('reservations', __('Reservations'), __('Reservations made for this unit'), 'modal', 'fa fa-tasks'),
+            Capsule::make('maintenance-request', __('Maintenance Requests'), __('Maintenance requests made for this unit.'), 'modal', 'fa fa-tools'),
+        ];
+    }
+
+
+    public function groups() : array
+    {
+        return [
+            Group::make('general',__("Basic Details"), ""),
+            Group::make('pricing-availability',__("Pricing & Availability"), ""),
+            Group::make('feature-utility',__("Features & Utilities"), ""),
+            Group::make('image-note',__("Images & Notes"), "")->component('app::form.tab.group.gallery-photo'),
+        ];
+    }
+
+
+    public function inputs(): array
+    {
+        return [
+            Input::make('name', "Unit Name", 'text', 'name', 'top-title', 'none', 'none', __('e.g. Room 102'))->component('app::form.input.ke-title'),
+            Input::make('unit-property', 'Unit Property', 'select', 'property', 'left', 'none', 'general', "", "", $this->propertyOptions),
+            Input::make('unit-type', 'Unit Type', 'select', 'type', 'left', 'none', 'general', "", "", $this->typeOptions),
+            Input::make('unit-floor', 'Floor/Section', 'select', 'floor', 'left', 'none', 'general', "", "", $this->floorOptions),
+            Input::make('unit-indentifier', "Unit Identifier", 'text', 'indentifier', 'left', 'none', 'general'),
+            // Pricing & Availability
+            Input::make('unit-price', "Base Pricing", 'text', 'type', 'left', 'none', 'pricing-availability', __(''))->component('app::form.input.unit-price'),
+            // Input::make('unit-discounted-price', "Discounted Price", 'text', 'type', 'left', 'none', 'pricing-availability', __(''))->component('app::form.input.unit-price'),
+            Input::make('unit-status', 'Availability Status', 'select', 'status', 'left', 'none', 'pricing-availability', "", "", $this->statusOptions),
+            Input::make('unit-rental-status', 'Rental/Booking Status', 'select', 'status', 'left', 'none', 'pricing-availability', "", "", $this->statusOptions),
+            // Features & Utilities
+            Input::make('unit-capacity', "Capacity", 'text', 'capacity', 'left', 'none', 'feature-utility', __('Number of people the unit can accommodate')),
+            Input::make('unit-size', "Size", 'text', 'size', 'left', 'none', 'feature-utility', __('e.g. 500 sq. ft')),
+            Input::make('unit-features', "Unit Features", 'select', 'size', 'left', 'none', 'feature-utility', "", "", $this->statusOptions),
+            Input::make('unit-utilities', "Included Utilities", 'tag', 'size', 'left', 'none', 'feature-utility', "", "", ['data' => $this->floorOptions, 'options' => $this->statusOptions]),
+            // Images & Notes
+            Input::make('description', 'Description', 'textarea', 'description', 'left', 'none', 'image-note', "", ""),
+            // Input::make('unit-status', "Status", 'text', 'status', 'left', 'none', 'general', __('e.g. Airbnb')),
+        ];
+    }
+}

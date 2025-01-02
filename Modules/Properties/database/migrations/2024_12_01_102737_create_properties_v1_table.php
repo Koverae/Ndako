@@ -20,10 +20,11 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('icon')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->enum('property_type_group', ['residential', 'commercial', 'hospitality', 'mixed'])->nullable(); // Optional categorization
+            $table->enum('property_type', ['single', 'multi', 'custom'])->default('multi');
+            $table->enum('property_type_group', ['residential', 'commercial', 'hospitality', 'mixed'])->default('hospitality'); // Optional categorization
             $table->json('attributes')->nullable(); // Customizable attributes
             $table->json('default_settings')->nullable(); // Default attribute values
-            
+
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -33,18 +34,19 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('property_type_id')->nullable();
+            $table->enum('invoicing_type', ['rental', 'rate'])->nullable();
             $table->string('name');
             $table->string('description')->nullable();
             $table->unsignedBigInteger('country_id')->nullable();
             $table->unsignedBigInteger('state_id')->nullable();
-            $table->unsignedBigInteger('city_id')->nullable();
+            $table->string('city')->nullable();
             $table->string('zip')->nullable();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->string('address')->nullable();
             $table->json('amenities')->nullable();
             $table->enum('status', ['active', 'inactive', 'under-maintenance'])->nullable();
-            
+
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -57,7 +59,7 @@ return new class extends Migration
             $table->string('name')->comment('e.g., "Ground Floor", "First Floor"');
             $table->tinyText('description')->nullable();
             $table->boolean('is_available')->default(true);
-            
+
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -67,11 +69,15 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('property_id')->nullable();
-            $table->unsignedBigInteger('pricing_id');
+            $table->unsignedBigInteger('pricing_id')->nullable();
             $table->string('name')->comment("e.g., 'Premium Room', 'Cluster Room', 'Twin Room'");
             $table->tinyText('description')->nullable();
+            $table->integer('capacity')->nullable();
+            $table->string('size')->nullable();
+            $table->json('unit_features')->nullable();
+            $table->json('unit_utilities')->nullable();
             $table->boolean('is_available')->default(true);
-            
+
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -79,8 +85,9 @@ return new class extends Migration
         // Unit Type Pricings
         Schema::create('property_unit_type_pricings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('property_unit_type_id');
-            $table->unsignedBigInteger('property_id');
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('property_unit_type_id')->nullable();
+            $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('lease_term_id')->nullable();
             $table->string('name')->unique()->nullable()->comment('e.g., "Premium Room Price", "Twin Room Price"');
             $table->decimal('price', 12, 2);
@@ -97,6 +104,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('property_id');
+            $table->unsignedBigInteger('property_unit_type_id');
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->unsignedBigInteger('status_id')->nullable();
             $table->string('name');
@@ -105,8 +113,9 @@ return new class extends Migration
             $table->json('default_setttings')->nullable();
             $table->boolean('is_available')->default(true);
             $table->boolean('is_cleaned')->default(true);
+            $table->string('status')->default('vacant');
             $table->timestamp('last_cleaned_at')->nullable();
-            
+
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -132,7 +141,7 @@ return new class extends Migration
             $table->boolean('is_included')->default(true)->comment("e.g., cost per kWh, cubic meter, or flat rate");
             $table->enum('billing_cycle', ['weekly', 'monthly', 'quarterly ', 'yearly'])->default('monthly');
             $table->decimal('price_per_unit', $precision = 12, $scale = 2)->default(0);
-            
+
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -147,6 +156,49 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
+        });
+        // Features
+        Schema::create('features', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->string('name');
+            $table->string('category')->nullable(); // Optional: Categorize features
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        // Properties Amenities
+        Schema::create('property_amenities', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('property_id');
+            $table->unsignedBigInteger('amenity_id');
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+        });
+        // Properties Utilities
+        Schema::create('property_utilities', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('property_id')->nullable();
+            $table->unsignedBigInteger('property_unit_type_id')->nullable();
+            $table->unsignedBigInteger('utility_id');
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+        });
+        // Features
+        Schema::create('property_features', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('feature_id');
+            $table->unsignedBigInteger('property_id')->nullable();
+            $table->unsignedBigInteger('property_unit_type_id')->nullable();
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
         });
         // LeaseTerm
         Schema::create('lease_terms', function (Blueprint $table) {
@@ -193,7 +245,19 @@ return new class extends Migration
         Schema::table('utilities', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
+        Schema::table('property_utilities', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
         Schema::table('amenities', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('property_amenities', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('features', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('property_features', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
         Schema::table('lease_terms', function (Blueprint $table) {

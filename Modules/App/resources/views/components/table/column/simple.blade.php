@@ -3,5 +3,5 @@
 ])
 
 <div>
-    {{ $value }} 
+    {{ Str::ucfirst($value) }} 
 </div>

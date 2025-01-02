@@ -176,6 +176,32 @@ if (!function_exists('generate_unique_database_secret')) {
     }
 }
 
+//************ ****************//
+// Currency ********************
+//************ ****************//
+
+if (!function_exists('format_currency')) {
+    function format_currency($value, $format = true) {
+        if (!$format) {
+            return $value;
+        }
+
+        $settings = settings();
+        $currency = settings()->currency;
+        $position = $currency->symbol_position;
+        $symbol = $currency->symbol;
+        $decimal_separator = $currency->decimal_separator;
+        $thousand_separator = $currency->thousand_separator;
+
+        if ($position == 'prefix') {
+            $formatted_value = $symbol . number_format((float) $value, 2, $decimal_separator, $thousand_separator);
+        } else {
+            $formatted_value = number_format((float) $value, 2, $decimal_separator, $thousand_separator) .' '. $symbol;
+        }
+
+        return $formatted_value;
+    }
+}
 
 //************ ****************//
 // Input ***********************
@@ -253,5 +279,24 @@ if (!function_exists('toRadioOptions')) {
         }
 
         return $options;
+    }
+}
+
+if (!function_exists('subdomainRoute')) {
+    /**
+     * Generate a route with a subdomain parameter based on the current company.
+     *
+     * @param string $name The name of the route.
+     * @param array $parameters The route parameters.
+     * @param bool $absolute Whether the URL should be absolute.
+     * @return string
+     */
+    function subdomainRoute(string $name, array $parameters = [], bool $absolute = true): string
+    {
+        if (function_exists('current_company') && $domain = current_company()->domain_name) {
+            $parameters['subdomain'] = $domain;
+        }
+
+        return route($name, $parameters, $absolute);
     }
 }

@@ -7598,7 +7598,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
-
 // Show / Hide Password
 function togglePassword() {
     const passwordField = document.getElementById('password');
