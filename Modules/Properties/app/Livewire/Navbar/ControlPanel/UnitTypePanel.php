@@ -15,10 +15,12 @@ class UnitTypePanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->new = Route::subdomainRoute('properties.unit-types.create');
-        if($type){
+        if($isForm){
             $this->showIndicators = true;
-            $this->type = $type;
+        }
+        if($type){
             $this->isForm = true;
+            $this->type = $type;
             $this->currentPage = $type->name;
         }else{
             $this->currentPage = "Unit Types";

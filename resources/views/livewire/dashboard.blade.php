@@ -1,9 +1,9 @@
 
 @section('title', "Home")
-<section class="page-body">
+<section class="m-2 mb-4">
 
     <!-- My To Dos -->
-    <div class="mb-4 container-xl">
+    <div class=" container-fluid">
         <div class="mb-2 row g-2 align-items-center">
             <div class="col">
                 <h2 class="page-title">
@@ -119,7 +119,7 @@
     <!-- My To Dos End -->
 
     <!-- My Insights -->
-    <div class="mb-4 container-xl">
+    <div class="mb-4 container-fluid">
         <div class="mb-3 row g-2 align-items-center">
             <div class="col">
                 <h2 class="page-title">
@@ -132,7 +132,7 @@
             <div class="col-12 col-lg-6">
                 <div class="border shadow-sm card" style="border-radius: 0.5rem">
                     <div class="card-body">
-                        <h2>43 Guests this day</h2>
+                        <h2 class="h2">43 Guests this day</h2>
                     </div>
                 </div>
             </div>
@@ -140,18 +140,19 @@
             <div class="col-12 col-lg-6">
                 <div class="border shadow-sm card" style="border-radius: 0.5rem">
                     <div class="card-body">
-                        <h2>12 Check-outs this day</h2>
+                        <h2 class="h2">12 Check-outs this day</h2>
                     </div>
                 </div>
             </div>
 
+            <!-- Guests Table -->
             <div class="col-lg-12">
                 <div class="border shadow-sm card">
                     <div class="card-header">
                         <div class="row ">
                             <div class="col-lg-12 d-flex justify-content-between">
                                 <div class="gap-3 d-flex">
-                                    <h3>Today Guests</h3>
+                                    <h3 class="h2">Current Guests</h3>
                                     <a href="#" class="btn btn-tool btn-sm" style="height:25px;">
                                         <i class="bi bi-download"></i>
                                     </a>
@@ -172,6 +173,7 @@
                                     <th class="text-center">Stay</th>
                                     <th>Day Left</th>
                                     <th>Outstanding Due</th>
+                                    <th>From</th>
                                     <th class="text-center">Status</th>
                                 </tr>
                             </thead>
@@ -198,6 +200,9 @@
                                         KSh. 32,500
                                     </td>
                                     <td>
+                                        Airbnb
+                                    </td>
+                                    <td>
                                         <span
                                             class="text-white justify-content-center badge bg-success">
                                             In Progress
@@ -214,31 +219,57 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="col-12 col-lg-6 col-xl-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex">
-                            <h2 class="card-title">Incoming guests check-ins</h2>
-                            <div class="ms-auto">
-                                <div class="dropdown">
-                                <a class="text-muted" href="#" aria-expanded="false">Per Month</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="chart-completion-tasks"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- Guests Table -->
 
             <div class="col-12 col-lg-6 col-xl-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex">
-                            <h2 class="card-title">Weekly Guests Chart</h2>
+                            <h2 class="mb-2 card-title h2">Channels</h2>
+                            {{-- <div class="ms-auto">
+                                <div class="dropdown">
+                                <a class="text-muted" href="#" aria-expanded="false">Per Month</a>
+                                </div>
+                            </div> --}}
+                        </div>
+                        <div class="d-block">
+                            <p class="text-muted">Connect your online platform. Match bookings automatically.</p>
+                        </div>
+                        <div class="mt-2 d-flex">
+                            <div class="gap-2 k-gallery-box" id="channel-box">
+                                <span class="inline-flex bg-gray-200 border rounded k-image-box">
+                                    <img src="{{ asset('assets/images/third-icons/channels/airbnb.png') }}" class="inline-flex rounded image">
+                                </span>
+                                <span class="inline-flex bg-gray-200 border rounded k-image-box">
+                                    <img src="{{ asset('assets/images/third-icons/channels/bookingcom.jpg') }}" class="inline-flex rounded image">
+                                </span>
+                                <span class="inline-flex bg-gray-200 border rounded k-image-box">
+                                    <img src="{{ asset('assets/images/third-icons/channels/expedia.jpg') }}" class="inline-flex rounded image">
+                                </span>
+                                <span class="inline-flex bg-gray-200 border rounded k-image-box">
+                                    <img src="{{ asset('assets/images/third-icons/channels/tripadvisor.png') }}" class="inline-flex rounded image">
+                                </span>
+                                <span class="inline-flex bg-gray-200 border rounded k-image-box">
+                                    <img src="{{ asset('assets/images/third-icons/channels/agoda.png') }}" class="inline-flex rounded image">
+                                </span>
+                                <span class="inline-flex bg-gray-200 border rounded k-image-box">
+                                    <img src="{{ asset('assets/images/third-icons/channels/hotelcom.png') }}" class="inline-flex rounded image">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservations by Channel -->
+            <div class="col-12 col-lg-6 col-xl-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h2 class="card-title h2">Channel Performance</h2>
                             <div class="ms-auto">
                                 <div class="dropdown">
-                                    <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">This Week</a>
+                                    <a class=" text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">This Week</a>
                                     <div class="dropdown-menu dropdown-menu-end">
                                         <a class="dropdown-item active" href="#">This Week</a>
                                         <a class="dropdown-item" href="#">This Month</a>
@@ -247,18 +278,67 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="chart-social-referrals"></div>
+                        <div class="row">
+                          <div class="col">
+                            <div id="channel-performance-chart"></div>
+                          </div>
+                          <div class="col-md-auto">
+                            <div class="divide-y divide-y-fill">
+                              <div class="px-3">
+                                <div class="text-secondary">
+                                  <span class="status-dot bg-primary"></span> Expedia
+                                </div>
+                                <div class="h2">11,425</div>
+                              </div>
+                              <div class="px-3">
+                                <div class="text-secondary">
+                                  <span class="status-dot bg-azure"></span> Airbnb
+                                </div>
+                                <div class="h2">6,458</div>
+                              </div>
+                              <div class="px-3">
+                                <div class="text-secondary">
+                                  <span class="status-dot bg-green"></span> Website
+                                </div>
+                                <div class="h2">3,985</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!-- Reservations by Channel -->
+
+            <!-- Total Reservations -->
+            <div class="col-12 col-lg-6 col-xl-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h2 class="card-title h2">Total Reservations Over Time</h2>
+                            <div class="ms-auto">
+                                <div class="dropdown">
+                                    <a class=" text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">This Week</a>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item active" href="#">This Week</a>
+                                        <a class="dropdown-item" href="#">This Month</a>
+                                        <a class="dropdown-item" href="#">3 Last Months</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="total-reservation-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Total Reservations -->
 
         </div>
-
     </div>
     <!-- My Insights End -->
 
     <!-- My Apps -->
-    <div class="mb-4 container-xl">
+    {{-- <div class="mb-4 container-fluid">
         <div class="mb-2 row g-2 align-items-center">
             <div class="col">
                 <h2 class="page-title">
@@ -281,7 +361,7 @@
         <div class="tab-content" id="nav-tabContent">
             <div class="p-3 mt-3 bg-white rounded shadow app_list tab-pane fade show active" id="my-app" role="tabpanel" aria-labelledby="my-app-tab">
                 <div class="row">
-                    
+
                     <!-- App -->
                     @foreach(modules() as $module)
                         @if(module($module->slug))
@@ -298,7 +378,7 @@
                         @endif
                     @endforeach
                     <!-- App End -->
-                    
+
                     <!-- App -->
                     <div class="pt-2 pb-2 mb-3 rounded cursor-pointer app kover-navlink col-6 col-lg-3">
                         <div class="gap-1 d-flex">
@@ -321,7 +401,7 @@
             </div>
         </div>
 
-    </div>
+    </div> --}}
     <!-- My Apps End -->
 
 </section>

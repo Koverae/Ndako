@@ -25,8 +25,16 @@ class PropertyUtility extends Model
         return $query->where('property_id', $property_id);
     }
 
+    public function scopeIsUtility(Builder $query, $property_id)
+    {
+        return $query->where('utility_id', $property_id);
+    }
+
     public function scopeIsUnitType(Builder $query, $type_id)
     {
         return $query->where('property_unit_type_id', $type_id);
+    }
+    public function utility() {
+        return $this->belongsTo(Utility::class);
     }
 }

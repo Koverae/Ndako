@@ -260,7 +260,7 @@ class PropertiesAppHandler extends AppHandler
             ['name' => 'Keyless Entry', 'category' => 'Miscellaneous'],
         ];
         foreach ($features as  $feature) {
-            Feature::create($feature);
+            Feature::create(array_merge(['company_id' => $companyId], $feature));
         }
 
         // For test only
@@ -283,7 +283,7 @@ class PropertiesAppHandler extends AppHandler
                 'latitude' => '-1.286389',
                 'longitude' => '36.817223',
                 'address' => '123 Green Street',
-                'amenities' => json_encode(['Swimming Pool', 'Gym', 'Wi-Fi']),
+                // 'amenities' => json_encode(['Swimming Pool', 'Gym', 'Wi-Fi']),
                 'status' => 'active',
             ],
             [
@@ -299,7 +299,7 @@ class PropertiesAppHandler extends AppHandler
                 'latitude' => '-4.043477',
                 'longitude' => '39.668206',
                 'address' => '456 Beach Road',
-                'amenities' => json_encode(['Swimming Pool', 'Gym', 'Wi-Fi']),
+                // 'amenities' => json_encode(['Swimming Pool', 'Gym', 'Wi-Fi']),
                 'status' => 'active',
             ],
         ];
@@ -411,7 +411,7 @@ class PropertiesAppHandler extends AppHandler
                 'company_id' => $company,
                 'property_unit_type_id' => 1, // Standard Apartment
                 'property_id' => 1, // Green Apartments
-                'lease_term_id' => 1, // (e.g., Monthly Lease Term)
+                'lease_term_id' => 2, // (e.g., Monthly Lease Term)
                 'name' => 'Standard Apartment Monthly Rent',
                 'price' => 50000.00,
                 'discounted_price' => 45000.00,
@@ -425,7 +425,7 @@ class PropertiesAppHandler extends AppHandler
                 'company_id' => $company,
                 'property_unit_type_id' => 2, // Deluxe Room
                 'property_id' => 2, // Safari Hotel
-                'lease_term_id' => null, // Not applicable for per-night pricing
+                'lease_term_id' => 1, // Not applicable for per-night pricing
                 'name' => 'Deluxe Room Nightly Rate',
                 'price' => 12000.00,
                 'discounted_price' => 10000.00,

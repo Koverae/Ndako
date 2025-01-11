@@ -11,6 +11,43 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Guest
+        Schema::create('guests', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('name')->nullable();
+            $table->string('company_name')->nullable();
+            $table->unsignedBigInteger('language_id')->nullable();
+            // Address
+            $table->string('street')->nullable();
+            $table->string('street2')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->string('zip')->nullable();
+            // Contact Info
+            $table->string('phone')->nullable();
+            $table->string('mobile')->nullable();
+            $table->string('email')->nullable();
+            $table->string('website')->nullable();
+            $table->string('tags')->nullable();
+            // Individual
+            $table->string('job')->nullable();
+            $table->boolean('has_receipt_reminder')->default(false);
+            $table->integer('days_before')->default(0);
+            // MISC
+            $table->string('companyID')->nullable();
+            $table->string('reference')->nullable();
+            $table->mediumText('note')->nullable();
+            $table->enum('type', ['individual', 'company'])->default('individual');
+            $table->enum('status', ['draft', 'process', 'posted'])->default('posted');
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
         Schema::create('channels', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();
@@ -50,33 +87,79 @@ return new class extends Migration
         // Bookings
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('channel_id')->nullable();
             $table->unsignedBigInteger('property_unit_id')->nullable();
-            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->unsignedBigInteger('guest_id')->nullable();
             // $table->unsignedBigInteger('price_list_id')->nullable();
+            $table->string('reference')->nullable();
             $table->integer('guests')->default(1);
             $table->mediumText('note')->nullable();
             $table->date('check_in');
             $table->date('check_out');
+            $table->decimal('unit_price', $precision = 12, $scale = 2)->default(0);
             $table->decimal('total_amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('paid_amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);
             $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
             $table->string('payment_method')->default('cash');
             $table->enum('status', ['pending', 'confirmed', 'canceled'])->default('pending');
+            $table->enum('invoice_status', ['not_invoiced', 'partial', 'invoiced'])->default('not_invoiced');
 
+            // Extended Hours
+            $table->boolean('early_check_in')->default(false);
+            $table->boolean('late_check_out')->default(false);
+            $table->integer('extra_hours')->nullable();
+            $table->decimal('extra_charge', 8, 2)->default(0);
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // Customer Invoice
+        Schema::create('booking_invoices', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('booking_id')->nullable();
+            $table->date('date')->nullable();
+            $table->string('reference');
+            $table->unsignedBigInteger('guest_id')->nullable();
+
+            $table->string('payment_reference')->nullable();
+            $table->date('due_date')->nullable();
+
+            // Invoice Ligne
+            $table->decimal('tax_percentage', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('tax_amount', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('discount_percentage', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('discount_amount', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('total_amount', $precision = 12, $scale = 2);
+            $table->decimal('paid_amount', $precision = 12, $scale = 2);
+            $table->decimal('due_amount', $precision = 12, $scale = 2);
+            $table->enum('status', ['draft', 'posted', 'canceled'])->default('draft');
+            $table->enum('payment_status', ['pending', 'partial', 'paid'])->default('pending');
+            $table->string('guest_reference')->nullable();
+            $table->unsignedBigInteger('agent_id')->nullable();
+
+            // Accounting
+            $table->string('auto_post')->nullable();
+            $table->boolean('to_checked')->default(false);
+
+            $table->string('terms')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
         Schema::create('booking_payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('booking_id');
-            $table->decimal('amount', $precision = 12, $scale = 2);
-            $table->decimal('left_to_pay', $precision = 12, $scale = 2);
-            $table->date('date');
+            $table->unsignedBigInteger('booking_invoice_id');
+            $table->unsignedBigInteger('journal_id')->nullable();
             $table->string('reference');
+            $table->decimal('amount', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);
+            $table->date('date');
             $table->string('payment_method');
+            $table->enum('type', ['debit', 'credit'])->default('debit');
             $table->text('note')->nullable();
 
             $table->timestamps();
@@ -90,6 +173,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('guests', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
         Schema::dropIfExists('channels');
         Schema::dropIfExists('channel_inventories');
         Schema::dropIfExists('sync_logs');

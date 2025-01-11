@@ -44,7 +44,7 @@ return new class extends Migration
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->string('address')->nullable();
-            $table->json('amenities')->nullable();
+            // $table->json('amenities')->nullable();
             $table->enum('status', ['active', 'inactive', 'under-maintenance'])->nullable();
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
@@ -72,7 +72,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pricing_id')->nullable();
             $table->string('name')->comment("e.g., 'Premium Room', 'Cluster Room', 'Twin Room'");
             $table->tinyText('description')->nullable();
-            $table->integer('capacity')->nullable();
+            $table->integer('capacity')->default(1);
             $table->string('size')->nullable();
             $table->json('unit_features')->nullable();
             $table->json('unit_utilities')->nullable();

@@ -63,10 +63,16 @@
                 <div class="dropdown-menu-columns">
                     <!-- Left Side -->
                     <div class="dropdown-menu-column">
-                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('properties.lists') }}">
+                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('bookings.lists') }}">
                             {{ __('Reservations') }}
                         </a>
-                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('properties.units.lists') }}">
+                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('bookings.lists') }}">
+                            {{ __('Payments') }}
+                        </a>
+                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('guests.lists') }}">
+                            {{ __('Guests') }}
+                        </a>
+                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('bookings.lists') }}">
                             {{ __('Sync Reservations') }}
                         </a>
 
@@ -75,7 +81,7 @@
             </div>
         </li>
 
-        {{-- <li class="nav-item dropdown" data-turbolinks>
+        <li class="nav-item dropdown" data-turbolinks>
             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
               <span class="nav-link-title">
                   {{ __('Rates & Availability') }}
@@ -95,7 +101,7 @@
                     </div>
                 </div>
             </div>
-        </li> --}}
+        </li>
 
         {{-- <li class="nav-item dropdown" data-turbolinks>
             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
@@ -131,12 +137,6 @@
                     <div class="dropdown-menu-column">
                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('settings.general', ['view' => 'channel-manager']) }}">
                             {{ __('Settings') }}
-                        </a>
-                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('settings.general', ['view' => 'channel-manager']) }}">
-                            {{ __('Property Type') }}
-                        </a>
-                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('properties.unit-types.lists') }}">
-                            {{ __('Unit Type') }}
                         </a>
                     </div>
                 </div>

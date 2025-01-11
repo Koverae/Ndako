@@ -30,6 +30,6 @@ class PropertyUnit extends Model
     }
 
     public function unitType() {
-        return $this->belongsToMany(PropertyUnitType::class);
+        return $this->belongsTo(PropertyUnitType::class, 'property_unit_type_id', 'id');
     }
 }

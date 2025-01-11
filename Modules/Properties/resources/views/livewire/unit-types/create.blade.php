@@ -2,7 +2,7 @@
 
 <!-- Control Panel -->
 @section('control-panel')
-<livewire:properties::navbar.control-panel.unit-type-panel :event="'create-unit-type'" :isForm="true" />
+<livewire:properties::navbar.control-panel.unit-type-panel :isForm="true" :event="'create-unit-type'"  />
 @endsection
 <!-- Page Content -->
 <section class="">

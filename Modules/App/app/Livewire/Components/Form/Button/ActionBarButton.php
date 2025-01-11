@@ -4,27 +4,22 @@ namespace Modules\App\Livewire\Components\Form\Button;
 
 class ActionBarButton{
 
-    public string $component = 'button.action-bar.simple';
+    public string $component = 'app::form.button.action-bar.simple';
 
-    public string $key;
+    public $key, $label, $action, $primary, $parent;
 
-    public string $label;
-
-    public string $action;
-
-    public $primary;
-
-    public function __construct($key, $label, $action, $primary = null)
+    public function __construct($key, $label, $action, $primary = null, $parent = null)
     {
         $this->key = $key;
         $this->label = $label;
         $this->action = $action;
         $this->primary = $primary;
+        $this->parent = $parent;
     }
 
-    public static function make($key, $label, $action, $primary = null)
+    public static function make($key, $label, $action, $primary = null, $parent = null)
     {
-        return new static($key, $label, $action, $primary);
+        return new static($key, $label, $action, $primary, $parent);
     }
 
     public function component($component)

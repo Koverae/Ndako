@@ -3,6 +3,7 @@
 use App\Models\Company\Company;
 use App\Models\Module\InstalledModule;
 use App\Models\Module\Module;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Modules\Settings\Models\System\Setting;
 use Modules\Settings\Models\SystemParameter;
@@ -135,7 +136,7 @@ if (!function_exists('update_menu')) {
     function update_menu($navbar){
         // Store company information in the session or a cookie
         session()->forget('current_menu');
-        
+
         $menu = session(['current_menu' => $navbar]);
 
         return $menu;
@@ -300,3 +301,45 @@ if (!function_exists('subdomainRoute')) {
         return route($name, $parameters, $absolute);
     }
 }
+
+//************ ****************//
+// Reference *******************
+//************ ****************//
+
+if (!function_exists('make_reference_id')) {
+    function make_reference_id($prefix, $number) {
+        $padded_text = $prefix . '-' . str_pad($number, 5, 0, STR_PAD_LEFT);
+
+        return $padded_text;
+    }
+}
+
+if (!function_exists('make_reference_with_id')) {
+    function make_reference_with_id($prefix, $number, $year) {
+        $padded_text = $prefix . '/'.$year.'/'. str_pad($number, 5, 0, STR_PAD_LEFT);
+
+        return $padded_text;
+    }
+}
+
+if (!function_exists('make_reference_with_month_id')) {
+    function make_reference_with_month_id($prefix, $number, $year, $month) {
+        $padded_text = $prefix . '/'.$year. '/'.$month.'/'. str_pad($number, 5, 0, STR_PAD_LEFT);
+
+        return $padded_text;
+    }
+}
+
+//************ ****************//
+// Dates ***********************
+//************ ****************//
+
+if (!function_exists('dateDaysDifference')) {
+    function dateDaysDifference($date1, $date2) {
+        $d1 = Carbon::parse($date1);
+        $d2 = Carbon::parse($date2);
+        $days = $d1->diffInDays($d2);
+        return $days;
+    }
+}
+

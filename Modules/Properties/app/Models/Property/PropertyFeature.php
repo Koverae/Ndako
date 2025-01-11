@@ -25,8 +25,18 @@ class PropertyFeature extends Model
         return $query->where('property_id', $property_id);
     }
 
+    public function scopeIsFeature(Builder $query, $property_id)
+    {
+        return $query->where('feature_id', $property_id);
+    }
+
+    public function feature() {
+        return $this->belongsTo(Feature::class);
+    }
+
     public function scopeIsUnitType(Builder $query, $type_id)
     {
         return $query->where('property_unit_type_id', $type_id);
     }
+
 }

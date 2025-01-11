@@ -34,6 +34,18 @@ class Property extends Model
         return $this->hasMany(PropertyAmenity::class);
     }
 
+    public function units() {
+        return $this->hasMany(PropertyUnit::class);
+    }
+
+    public function floors() {
+        return $this->hasMany(PropertyFloor::class);
+    }
+
+    public function amenities() {
+        return $this->hasMany(PropertyAmenity::class);
+    }
+
     public function country() {
         return $this->belongsTo(Country::class);
     }

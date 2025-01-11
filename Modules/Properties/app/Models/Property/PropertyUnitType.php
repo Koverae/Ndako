@@ -37,6 +37,6 @@ class PropertyUnitType extends Model
     }
 
     public function price() {
-        return $this->hasOne(PropertyUnitTypePricing::class);
+        return $this->belongsTo(PropertyUnitTypePricing::class, 'pricing_id', 'id');
     }
 }

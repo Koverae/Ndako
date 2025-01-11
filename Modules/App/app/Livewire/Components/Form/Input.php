@@ -7,24 +7,11 @@ class Input{
     public string $component = 'app::form.input.simple';
     public string $key;
 
-    public $label;
-
-    public string $type;
-
-    public string $model;
-
-    public string $position;
-
-    public string $tab;
-
-    public string $group;
-
-    public $placeholder;
-
-    public $help;
+    public $label, $type, $model, $position, $tab, $group, $placeholder, $help;
     public array $data = [];
+    public bool $disabled = false;
 
-    public function __construct($key, $label, $type, $model, $position, $tab, $group, $placeholder = null, $help = null, $data = [])
+    public function __construct($key, $label, $type, $model, $position, $tab, $group, $placeholder = null, $help = null, $data = [], $disabled = false)
     {
         $this->key = $key;
         $this->label = $label;
@@ -36,11 +23,12 @@ class Input{
         $this->placeholder = $placeholder;
         $this->help = $help;
         $this->data = $data;
+        $this->disabled = $disabled;
     }
 
-    public static function make($key, $label, $type, $model, $position, $tab, $group, $placeholder = null, $help = null, $data = [])
+    public static function make($key, $label, $type, $model, $position, $tab, $group, $placeholder = null, $help = null, $data = [], $disabled = false)
     {
-        return new static($key, $label, $type, $model, $position, $tab, $group, $placeholder, $help, $data);
+        return new static($key, $label, $type, $model, $position, $tab, $group, $placeholder, $help, $data, $disabled);
     }
 
 

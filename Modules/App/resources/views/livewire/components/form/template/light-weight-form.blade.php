@@ -29,12 +29,40 @@
                             <x-dynamic-component
                                 :component="$action->component"
                                 :value="$action"
-                                :status="'none'"
+                                :status="$status"
                             >
                             </x-dynamic-component>
                             @endforeach
                             <!--<li><hr class="dropdown-divider"></li>-->
                         </ul>
+                    </div>
+                @endif
+
+                <!-- Status Bar -->
+                @if($this->statusBarButtons())
+                    <div id="status-bar" class="gap-1 k-statusbar-buttons-arrow d-none d-md-flex align-items-center align-content-around ">
+
+                        @foreach($this->statusBarButtons() as $status_button)
+                        <x-dynamic-component
+                            :component="$status_button->component"
+                            :value="$status_button"
+                            :status="$status"
+                        >
+                        </x-dynamic-component>
+                        @endforeach
+                    </div>
+                    <div id="status-bar" class="gap-1 k-statusbar-buttons-arrow d-flex d-md-none align-items-center align-content-around ">
+
+                        @foreach($this->statusBarButtons() as $status_button)
+                            @if($this->status == $status_button->primary)
+                            <x-dynamic-component
+                                :component="$status_button->component"
+                                :value="$status_button"
+                                :status="$status"
+                            >
+                            </x-dynamic-component>
+                            @endif
+                        @endforeach
                     </div>
                 @endif
             </div>
@@ -58,6 +86,13 @@
                 <!-- title-->
                 <div class="m-0 mb-2 row justify-content-between position-relative w-100">
                     <div class="ke-title mw-75 pe-2 ps-0">
+                        <!-- title-->
+                        @if(isset($this->reference) && $this->reference)
+                        <!-- Name -->
+                        <h1 class="flex-row mb-2 d-flex align-items-center" style="font-size: 35px; font-weight: 600;">
+                            {{ $this->reference }}
+                        </h1>
+                        @endif
                         @foreach($this->inputs() as $input)
                             @if($input->position == 'top-title' && $input->tab == 'none')
                                 <x-dynamic-component
@@ -136,6 +171,82 @@
                     </x-dynamic-component>
                     @endforeach
                 </div>
+
+                <!-- Note and total part -->
+                <div class="k_group row align-items-start mt-md-0">
+
+                    <div class="k_inner_group col-lg-9">
+                        <div class="flex-grow-0 k_cell flex-sm-grow-0">
+                            <div class="note-editable" id="note_1">
+                                <textarea wire:model="term" id="term" style="width: 75%; padding-left: 5px; padding-top:10px;" id="" cols="30" rows="5" class="k-input textearea" placeholder="Termes & conditions">
+
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                    @if($this->nights >= 1)
+                    <div class="overflow-y-auto k_inner_group k_subtotal_footer col-lg-3 right h-100">
+                        <!-- Taxes -->
+                        <div>
+                            <label for="" class="k_text_label k_tax_total_label fs-3">{{ __('Room Price(per night)') }}:</label>
+                            <br>
+                            <span class="fs-4">(+) {{ format_currency($roomPrice) }} * {{ $nights }} {{ __('Days') }}</span>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="mt-2">
+                            <label for="" class="k_text_label k_tax_total_label fs-2"><b>{{ __('Total') }}:</b></label>
+                            <span class="fs-2">(=) {{ format_currency($totalAmount) }}</span>
+                        </div>
+                    </div>
+                    @endif
+                    @if($isInvoice)
+                    <div class="overflow-y-auto k_inner_group k_subtotal_footer col-lg-3 right h-100">
+                        <!-- SubTotal -->
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <label for="" class="k_text_label k_tax_total_label fs-4">{{ __('Untaxed Amount') }}:</label>
+                            <span class="fs-4 text-end">{{ format_currency($totalAmount) }}</span>
+                        </div>
+                        <!-- SubTotal -->
+
+                        <!-- Taxes -->
+                        <div class="mb-1 d-flex justify-content-between align-items-center">
+                            <label for="" class="k_text_label k_tax_total_label fs-4">{{ __('VAT 16%') }}:</label>
+                            <span class="fs-4 text-end">{{ format_currency(($totalAmount * 16)/100) }}</span>
+                        </div>
+                        <!-- Taxes -->
+
+                        <!-- Total -->
+                        <div class="mt-2 mb-4 d-flex justify-content-between align-items-center">
+                            <label for="" class="k_text_label k_tax_total_label fs-2"><b>{{ __('Total') }}:</b></label>
+                            <span class="fs-2 text-end">(=) {{ format_currency($totalAmount) }}</span>
+                        </div>
+                        <!-- Total -->
+
+                        <!-- Due Amount -->
+                        <div class="mb-1">
+
+                            @if($this->invoice->payments()->count() >= 1)
+                            @foreach($this->invoice->payments as $payment)
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">
+                                    <i class="bi bi-question-circle"></i> {{ __('Paid on ' . \Carbon\Carbon::parse($payment->date)->format('m/d/Y')) }}
+                                </span>
+                                <span class="text-end">{{ format_currency($payment->amount) }}</span>
+                            </div>
+                            @endforeach
+                            @endif
+
+                            <div class="mt-2 d-flex justify-content-between align-items-center">
+                                <label for="" class="k_text_label k_tax_total_label fs-4 text-muted">{{ __('Amount Due') }}:</label>
+                                <span class="fs-2 text-end border-top">{{ format_currency($dueAmount) }}</span>
+                            </div>
+                        </div>
+                        <!-- Due Amount -->
+                    </div>
+                    @endif
+                </div>
+
             </div>
         </form>
     </div>

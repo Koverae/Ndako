@@ -4,7 +4,6 @@ namespace Modules\ChannelManager\Models\Channel;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\ChannelManager\Database\Factories\Channel/ChannelFactory;
 use Illuminate\Database\Eloquent\Builder;
 
 class Channel extends Model
