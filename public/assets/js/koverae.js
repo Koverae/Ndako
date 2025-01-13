@@ -7778,3 +7778,29 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     })).render();
 });
+
+// Number Input
+function changeValue(delta) {
+    const input = document.getElementById('number-input');
+    let currentValue = parseInt(input.value) || 0;
+
+    // Ensure the value does not go below 0
+    const newValue = currentValue + delta;
+    input.value = newValue < 0 ? 0 : newValue;
+}
+
+document.querySelectorAll('[data-number-input]').forEach(wrapper => {
+    const input = wrapper.querySelector('.number-input');
+    const decrementBtn = wrapper.querySelector('[data-action="decrement"]');
+    const incrementBtn = wrapper.querySelector('[data-action="increment"]');
+
+    decrementBtn.addEventListener('click', () => {
+        let currentValue = parseInt(input.value) || 0;
+        input.value = Math.max(0, currentValue - 1); // Prevent negative values
+    });
+
+    incrementBtn.addEventListener('click', () => {
+        let currentValue = parseInt(input.value) || 0;
+        input.value = currentValue + 1;
+    });
+});

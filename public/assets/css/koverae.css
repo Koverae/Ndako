@@ -27559,6 +27559,51 @@ WIZARD
 .active-pick{
     border: 1px solid #017e84;
 }
+.selected-card{
+    width: auto;
+    height: auto;
+    gap: 10px;
+    bottom: 0px; /* Distance from the bottom */
+    right: 0px;  /* Distance from the right */
+}
+.selected-card i{
+    font-size: 25px;
+    color: #017e84;
+}
 /********************
 WIZARD END
 ********************/
+
+
+.number-input-wrapper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    width: auto;
+}
+
+.number-input {
+    text-align: center;
+    border: none;
+    outline: none;
+    width: 50px;
+    padding: 5px;
+    font-size: 16px;
+    -moz-appearance: textfield; /* Remove number spinner in Firefox */
+}
+
+.number-input::-webkit-inner-spin-button,
+.number-input::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Remove number spinner in Chrome */
+    margin: 0;
+}
+
+/* .minus {
+    border-right: 1px solid #ccc;
+}
+
+.plus {
+    border-left: 1px solid #ccc;
+} */

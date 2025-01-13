@@ -72,6 +72,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pricing_id')->nullable();
             $table->string('name')->comment("e.g., 'Premium Room', 'Cluster Room', 'Twin Room'");
             $table->tinyText('description')->nullable();
+            $table->decimal('price', 12, 2)->default(0);
             $table->integer('capacity')->default(1);
             $table->string('size')->nullable();
             $table->json('unit_features')->nullable();

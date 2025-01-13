@@ -18,6 +18,10 @@ class PropertyType extends Model
     {
         return $query->where('company_id', $company_id);
     }
+    public function scopeIsSlug(Builder $query, $slug)
+    {
+        return $query->where('slug', $slug);
+    }
 
     public function properties() {
         return $this->hasMany(Property::class);

@@ -43,7 +43,7 @@ unset($__defined_vars); ?>
 
             </div>
         </div>
-        <!-- Phot Box -->
+        <!-- Photo Box -->
         <div class="mb-3 d-flex">
             <div class="gap-2 k-gallery-box">
                 <span class="inline-flex bg-gray-200 border rounded k-image-box" onclick="document.getElementById('photo').click();">
@@ -53,7 +53,7 @@ unset($__defined_vars); ?>
                 
             </div>
         </div>
-        <!-- Phot Box -->
+        <!-- Photo Box -->
         
         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->inputs(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $input): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <!--[if BLOCK]><![endif]--><?php if($input->group == $value->key): ?>

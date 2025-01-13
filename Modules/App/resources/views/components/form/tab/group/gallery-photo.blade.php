@@ -11,7 +11,7 @@
                     {{ $value->label }}
             </div>
         </div>
-        <!-- Phot Box -->
+        <!-- Photo Box -->
         <div class="mb-3 d-flex">
             <div class="gap-2 k-gallery-box">
                 <span class="inline-flex bg-gray-200 border rounded k-image-box" onclick="document.getElementById('photo').click();">
@@ -34,7 +34,7 @@
                 @endforeach --}}
             </div>
         </div>
-        <!-- Phot Box -->
+        <!-- Photo Box -->
         
         @foreach($this->inputs() as $input)
             @if($input->group == $value->key)

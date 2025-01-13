@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Properties\Models\Property\Amenity;
 use Modules\Settings\Models\System\Setting;
 use App\Models\User;
+use Modules\Properties\Models\Property\Feature;
 use Modules\Settings\Models\Language\Language;
 use Modules\Settings\Models\Localization\Country;
 
@@ -61,6 +63,22 @@ class Company extends Model
     public function countries()
     {
         return $this->hasMany(Country::class, 'company_id', 'id');
+    }
+    
+    /**
+     * Get amenities for the company.
+     */
+    public function amenities()
+    {
+        return $this->hasMany(Amenity::class, 'company_id', 'id');
+    }
+    
+    /**
+     * Get features for the company.
+     */
+    public function features()
+    {
+        return $this->hasMany(Feature::class, 'company_id', 'id');
     }
 
 }

@@ -19,7 +19,8 @@
     <div class="gap-1 k_cell k_wrap_input flex-grow-1 d-flex">
         @if($this->unitPrice)
         <span>
-            {{ format_currency($this->unitPrice->price) ?? '' }} {{ $this->unitPrice->lease->name ?? '' }} 
+            {{ format_currency($this->unitPrice) ?? '' }} / {{ __('Night') }} 
+            {{-- {{ format_currency($this->unitPrice->price) ?? '' }} {{ $this->unitPrice->lease->name ?? '' }}  --}}
         </span>
         @endif
 

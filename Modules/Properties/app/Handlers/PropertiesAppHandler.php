@@ -61,7 +61,7 @@ class PropertiesAppHandler extends AppHandler
             [
                 'company_id' => $companyId,
                 'name' => 'Hotels',
-                'description' => 'Temporary accommodations for travelers.',
+                'description' => 'Accommodations for travellers often offering restaurants, meeting rooms and other guest services.',
                 'slug' => Str::slug('Hotels'),
                 'icon' => 'fas fa-hotel',
                 'is_active' => true,
@@ -264,7 +264,7 @@ class PropertiesAppHandler extends AppHandler
         }
 
         // For test only
-        $this->buildProperty($companyId, PropertyType::isCompany($companyId)->first()->id);
+        // $this->buildProperty($companyId, PropertyType::isCompany($companyId)->first()->id);
 
     }
 

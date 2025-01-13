@@ -62,10 +62,10 @@ class AddBookingWizard extends SimpleWizard
 
     public function stepPages(){
         return [
-            StepPage::make('identity', 'Identity Card', 0)->component('app::wizard.step-page.special.pick-guest'),
-            StepPage::make('people', 'How Many People', 1)->component('app::wizard.step-page.special.view-count'),
-            StepPage::make('room', 'Pick A Room', 2)->component('app::wizard.step-page.special.choose-room'),
-            StepPage::make('confirmation', 'Confirmation', 3)->component('app::wizard.step-page.special.confirmation'),
+            StepPage::make('identity', 'Identity Card', 0)->component('app::wizard.step-page.special.booking.pick-guest'),
+            StepPage::make('people', 'How Many People', 1)->component('app::wizard.step-page.special.booking.view-count'),
+            StepPage::make('room', 'Pick A Room', 2)->component('app::wizard.step-page.special.booking.choose-room'),
+            StepPage::make('confirmation', 'Confirmation', 3)->component('app::wizard.step-page.special.booking.confirmation'),
         ];
     }
     public function updatedSearch()
