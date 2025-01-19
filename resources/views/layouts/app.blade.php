@@ -29,10 +29,11 @@
     <script src="{{asset('assets/libs/list.js/dist/list.min.js')}}" data-navigate-track ></script>
     <script src="{{asset('assets/libs/apexcharts/dist/apexcharts.min.js')}}" data-navigate-track ></script>
     <!-- Libs JS -->
-
+    @yield('styles')
     <!-- Scripts -->
     <script src="{{ asset('assets/js/koverae.js?'.time())}}" data-navigate-track></script>
-    {{-- <script src="{{ asset('assets/js/demo.min.js?'.time())}}" defer></script> --}}
+
+    @yield('scripts')
     <!-- Scripts -->
     @livewireStyles
     @livewireScripts

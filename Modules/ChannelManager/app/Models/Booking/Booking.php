@@ -2,10 +2,13 @@
 
 namespace Modules\ChannelManager\Models\Booking;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\ChannelManager\Models\Guest\Guest;
+use Modules\Properties\Models\Property\PropertyUnit;
 
 class Booking extends Model
 {
@@ -34,5 +37,17 @@ class Booking extends Model
 
     public function invoice() {
         return $this->hasOne(BookingInvoice::class);
+    }
+
+    public function unit() {
+        return $this->belongsTo(PropertyUnit::class, 'property_unit_id', 'id');
+    }
+
+    public function agent() {
+        return $this->belongsTo(User::class, 'agent_id', 'id');
+    }
+
+    public function guest() {
+        return $this->belongsTo(Guest::class);
     }
 }

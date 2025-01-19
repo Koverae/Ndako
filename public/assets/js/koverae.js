@@ -7552,7 +7552,7 @@ function togglePassword() {
     } else {
         passwordField.setAttribute('type', 'password');
     }
-} 
+}
 // OTP Input
 document.addEventListener("DOMContentLoaded", function() {
     var inputs = document.querySelectorAll('[data-code-input]');
@@ -7608,7 +7608,7 @@ function togglePassword() {
     } else {
         passwordField.setAttribute('type', 'password');
     }
-} 
+}
 // OTP Input
 document.addEventListener("DOMContentLoaded", function() {
     var inputs = document.querySelectorAll('[data-code-input]');
@@ -7772,7 +7772,7 @@ document.addEventListener("DOMContentLoaded", function () {
         labels: [
             '2020-06-20', '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25', '2020-06-26'
         ],
-        colors: [tabler.getColor("primary")],
+        colors: ["#017E84"],
         legend: {
             show: false,
         },
@@ -7796,7 +7796,7 @@ document.querySelectorAll('[data-number-input]').forEach(wrapper => {
 
     decrementBtn.addEventListener('click', () => {
         let currentValue = parseInt(input.value) || 0;
-        input.value = Math.max(0, currentValue - 1); // Prevent negative values
+        input.value = total-reservation-chartMath.max(0, currentValue - 1); // Prevent negative values
     });
 
     incrementBtn.addEventListener('click', () => {

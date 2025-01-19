@@ -28,6 +28,8 @@ return new class extends Migration
             $table->unsignedBigInteger('country_id')->nullable();
             $table->string('zip')->nullable();
             // Contact Info
+            $table->enum('identity_proof', ['id_card', 'passport'])->default(('passport'));
+            $table->string('identity')->nullable();
             $table->string('phone')->nullable();
             $table->string('mobile')->nullable();
             $table->string('email')->nullable();
@@ -91,6 +93,7 @@ return new class extends Migration
             $table->unsignedBigInteger('channel_id')->nullable();
             $table->unsignedBigInteger('property_unit_id')->nullable();
             $table->unsignedBigInteger('guest_id')->nullable();
+            $table->unsignedBigInteger('agent_id')->nullable();
             // $table->unsignedBigInteger('price_list_id')->nullable();
             $table->string('reference')->nullable();
             $table->integer('guests')->default(1);
@@ -103,7 +106,7 @@ return new class extends Migration
             $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);
             $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
             $table->string('payment_method')->default('cash');
-            $table->enum('status', ['pending', 'confirmed', 'canceled'])->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending');
             $table->enum('invoice_status', ['not_invoiced', 'partial', 'invoiced'])->default('not_invoiced');
 
             // Extended Hours
@@ -111,6 +114,12 @@ return new class extends Migration
             $table->boolean('late_check_out')->default(false);
             $table->integer('extra_hours')->nullable();
             $table->decimal('extra_charge', 8, 2)->default(0);
+
+            // Additional fields for check-in/check-out process
+            $table->timestamp('actual_check_in')->nullable(); // Exact time of check-in
+            $table->timestamp('actual_check_out')->nullable(); // Exact time of check-out
+            $table->enum('check_in_status', ['pending', 'checked_in'])->default('pending'); // Track check-in status
+            $table->enum('check_out_status', ['pending', 'checked_out'])->default('pending'); // Track check-out status
 
             $table->timestamps();
             $table->softDeletes();
@@ -160,6 +169,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('payment_method');
             $table->enum('type', ['debit', 'credit'])->default('debit');
+            $table->enum('status', ['posted', 'pending'])->default('posted');
             $table->text('note')->nullable();
 
             $table->timestamps();

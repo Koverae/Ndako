@@ -65,16 +65,15 @@ unset($__defined_vars); ?>
                                 <div class="col-12 col-lg-7">
                                     <span class="text-muted fw-bolder"><?php echo e($room->capacity); ?> <?php echo e(__('People')); ?> <i class="fas fa-users"></i></span>
                                     <h5 class="mb-0 card-title"><?php echo e($room->name); ?> ~ <?php echo e($room->unitType->name); ?></h5>
-                                    <span class="mb-3 text-muted"><?php echo e(format_currency($room->unitType->price->price)); ?> / <?php echo e($room->unitType->price->lease->name ?? ''); ?></span>
+                                    <span class="mb-3 text-muted"><?php echo e(format_currency($room->unitType->price)); ?> / <?php echo e(__('Night')); ?></span>
                                     <p class="mt-2">
-                                        At sunt unde atque quod. Fuga atque iste ea ut nesciunt ut tenetur sed.
-                                        Eligendi dolorem quas adipisci nisi distinctio est suscipit.
-                                        Provident blanditiis laudantium voluptas eveniet.
+                                        <?php echo e($room->unitType->description); ?>
+
                                     </p>
                                     <p class="card-text">
                                         <i class="fas fa-bed"></i> <?php echo e($room->beds); ?> Beds <br>
                                         <i class="fas fa-bath"></i> <?php echo e($room->bathrooms); ?> Bathrooms <br>
-                                        <i class="fas fa-ruler-combined"></i> <?php echo e($room->area); ?> sq ft
+                                        <i class="fas fa-ruler-combined"></i> <?php echo e($room->unitType->size); ?> sq ft
                                     </p>
                                     <button class="mt-3 btn w-100" wire:click="pickRoom('<?php echo e($room->id); ?>')" <?php echo e($this->startDate == '' && $this->endDate == '' ? 'disabled' : ""); ?>  <?php if($this->selectedRoom): ?> <?php echo e($this->selectedRoom->id == $room->id ? 'disabled' : ''); ?> <?php endif; ?>><?php echo e(__('Choose')); ?></button>
                                 </div>
@@ -97,7 +96,7 @@ unset($__defined_vars); ?>
                 <span><i class="fas fa-user-md"></i> <?php echo e($this->guest->name); ?></span> <br>
                 <span><i class="bi bi-envelope"></i> <?php echo e($this->guest->email); ?></span> <br>
                 <span><i class="bi bi-phone"></i> <?php echo e($this->guest->phone); ?></span> <br>
-                <span><i class="bi bi-geo"></i> <?php echo e(__('Qwetu Parklands')); ?></span> <br>
+                <span><i class="bi bi-geo"></i> <?php echo e($this->guest->street); ?></span> <br>
             </div>
         </div>
     </div>

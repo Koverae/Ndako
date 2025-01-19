@@ -110,7 +110,7 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->nullable();
             $table->string('name');
             $table->tinyText('description')->nullable();
-            $table->json('attributes')->nullable();
+            $table->integer('capacity')->default(1);
             $table->json('default_setttings')->nullable();
             $table->boolean('is_available')->default(true);
             $table->boolean('is_cleaned')->default(true);

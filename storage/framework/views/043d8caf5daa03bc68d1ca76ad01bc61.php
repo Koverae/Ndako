@@ -44,7 +44,7 @@ unset($__defined_vars); ?>
                         <li><strong>Room:</strong> <?php echo e($this->selectedRoom->name); ?></li>
                         <li><strong>Type:</strong> <?php echo e($this->selectedRoom->unitType->name); ?></li>
                         <li><strong>Capacity:</strong> <?php echo e($this->selectedRoom->unitType->capacity); ?> guest(s)</li>
-                        <li><strong>Price/Day:</strong> <?php echo e(format_currency($this->selectedRoom->unitType->price->price)); ?></li>
+                        <li><strong>Price/Day:</strong> <?php echo e(format_currency($this->selectedRoom->unitType->price)); ?></li>
                     </ul>
                 </div>
                 <hr>

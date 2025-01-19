@@ -48,7 +48,7 @@ class UnitTypeTable extends Table
         return [
             Column::make('name', __('Name'))->component('app::table.column.special.show-title-link'),
             Column::make('property_id', __('Property'))->component('app::table.column.special.property'),
-            Column::make('pricing_id', __('Price'))->component('app::table.column.special.unit-price'),
+            Column::make('id', __('Price'))->component('app::table.column.special.unit-price'),
             // Column::make('status', __('Status')),
         ];
     }

@@ -49,7 +49,7 @@ class AddInvoicePaymentModal extends ModalComponent
             'date' => $this->date,
             'note' => 'Payment Received for Invoice #'. $this->invoice->reference,
             'type' => $this->type,
-            'status' => 'posted',
+            // 'status' => 'posted',
         ]);
         $payment->save();
 

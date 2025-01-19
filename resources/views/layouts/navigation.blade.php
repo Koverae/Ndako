@@ -212,86 +212,28 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('guests.lists') }}">
                                             {{ __('Guests') }}
                                         </a>
-                                        {{-- <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('bookings.lists') }}">
-                                            {{ __('Sync Reservations') }}
-                                        </a> --}}
-
                                     </div>
                                 </div>
                             </div>
                         </li>
 
-                        <li class="nav-item dropdown" data-turbolinks>
-                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                        <li class="nav-item" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="{{ Route::subdomainRoute('dashboards.index') }}" style="margin-right: 5px;">
                               <span class="nav-link-title">
                                   {{ __('Dashboard') }}
                               </span>
                             </a>
                         </li>
 
-                        <li class="nav-item dropdown" data-turbolinks>
-                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                        <li class="nav-item" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="{{ Route::subdomainRoute('settings.general', ['view' => 'general']) }}" style="margin-right: 5px;">
                               <span class="nav-link-title">
                                   {{ __('Configuration') }}
                               </span>
                             </a>
-                            <div class="dropdown-menu">
-                                <div class="dropdown-menu-columns">
-                                    <!-- Left Side -->
-                                    <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('settings.general', ['view' => 'channel-manager']) }}">
-                                            {{ __('Settings') }}
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('channels.lists') }}">
-                                            {{ __('Manage Channels') }}
-                                        </a>
-                                        <div class="dropend">
-                                            <a class=" kover-navlink dropdown-item"  href="#sidebar-cards" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                                {{ __('Rates & Availability') }}
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('channels.lists') }}">
-                                                    {{ __('Manage Rates') }}
-                                                </a>
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('channels.lists') }}">
-                                                    {{ __('Sync Rates') }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-menu-column">
-                                        <div class="dropend">
-                                            <a class=" kover-navlink dropdown-item"  href="#sidebar-cards" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                                {{ __('Properties & Units') }}
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('properties.types.lists') }}">
-                                                    {{ __('Property Types') }}
-                                                </a>
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('properties.unit-types.lists') }}">
-                                                    {{ __('Unit Types') }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="dropend">
-                                            <a class=" kover-navlink dropdown-item"  href="#sidebar-cards" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                                {{ __('Users & Enterprises') }}
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('settings.users') }}">
-                                                    {{ __('Users') }}
-                                                </a>
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="{{ Route::subdomainRoute('settings.companies.index') }}">
-                                                    {{ __('Enterprises') }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </li>
+
                     </div>
-                    {{-- <livewire:app::navbar.navbar-manager :key="time()" :menu="request('menu')" /> --}}
                     <!-- Navbar Menu -->
                 </ul>
             </div>

@@ -33,14 +33,12 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars); ?>
 <?php
     // $contact = \Modules\Contact\Entities\Contact::find($value);
-    $contact = \App\Models\User::find($value);
+    $contact = Modules\ChannelManager\Models\Guest\Guest::find($value);
 ?>
 <div>
     <!--[if BLOCK]><![endif]--><?php if($contact): ?>
-    <a style="text-decoration: none" class="primary" wire:navigate href="<?php echo e(Route::subdomainRoute('settings.users.show', ['user' => $contact->id])); ?>"  tabindex="-1">
-        <?php echo e($contact->name ?? ''); ?>
+    <?php echo e($contact->name ?? ''); ?>
 
-    </a>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>
 <?php /**PATH D:\My Laravel Startup\koverae-saas\Modules/App\resources/views/components/table/column/special/contact/simple.blade.php ENDPATH**/ ?>

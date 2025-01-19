@@ -15,7 +15,7 @@
                     <ul class="list-unstyled fs-3">
                         <li><strong>Property Name:</strong> {{ $this->name }}</li>
                         <li><strong>Type:</strong> {{ $this->type->name }}</li>
-                        <li class="{{ $this->street ? '' : 'd-none' }}"><strong>Location:{{ $this->street }}, {{ $this->city }}</strong> </li>
+                        <li class="{{ $this->street ? '' : 'd-none' }}"><strong>Location:</strong> {{ $this->street }}, {{ $this->city }}</li>
                         <li><strong>Number of Floors:</strong> {{ $this->floors }}</li>
                         <li>
                             <strong>Room Types:</strong>
@@ -29,9 +29,9 @@
                         <li><strong>Amenities:</strong> </li>
                     </ul>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <span>{{ __('Is everything okay?') }}</span>
-                    <button type="submit" wire:click='confirm' class="btn btn-primary text-end">Confirm 👌🏾</button>
+                <div class="bottom-0 d-flex justify-content-between">
+                    <span class="fs-3">{{ __('Is everything okay? 👌🏾') }}</span>
+                    <button type="submit" wire:click='confirm' class="btn btn-primary text-end">Confirm</button>
                 </div>
                 <!-- Property Summary End -->
             </div>

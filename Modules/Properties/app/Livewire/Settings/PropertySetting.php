@@ -50,7 +50,7 @@ class PropertySetting extends AppSetting
         $this->has_customer_portal = $setting->has_customer_portal;
         $this->has_in_room_services = $setting->has_in_room_services;
         $this->has_guest_note = $setting->has_guest_note;
-        
+
         $numberingSystems = [
             ['id' => 'sequential-numbering', 'label' => 'Sequential Numbering', 'desc' => 'Numbers are assigned sequentially, often starting at 101 for the first room on the first floor, 201 for the first room on the second floor, etc.'],
             ['id' => 'alphanumeric-numbering', 'label' => 'Alphanumeric Numbering', 'desc' => 'Combines letters for blocks or buildings (e.g., A, B, C) and numbers for units or floors (e.g., 101 for the first floor, unit 1).'],
@@ -58,7 +58,7 @@ class PropertySetting extends AppSetting
             ['id' => 'floor-based-numbering', 'label' => 'Floor-Based Numbering', 'desc' => 'The first digit indicates the floor number (e.g., 3 = 3rd floor), followed by the room number (e.g., 01 = first room).'],
         ];
         $this->numberingSystems = toSelectOptions($numberingSystems, 'id', 'label');
-        
+
         $this->utilities = toSelectOptions(Utility::all(), 'id', 'name');
 
         $utilityRules = [
@@ -75,7 +75,7 @@ class PropertySetting extends AppSetting
             ['id' => 'waste', 'label' => 'Waste Management'],
         ];
         $this->companyUtilities = toSelectOptions($companyUtilities, 'id', 'label');
-        
+
         $this->sharedAmenities = toSelectOptions(Amenity::isCompany(current_company()->id)->get(), 'id', 'name');
         $companyAmenities = [
             ['id' => 'swimming-pool', 'label' => 'Swimming Pool'],

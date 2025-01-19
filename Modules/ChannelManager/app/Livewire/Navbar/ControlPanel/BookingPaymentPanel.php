@@ -25,4 +25,5 @@ class BookingPaymentPanel extends ControlPanel
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
         ];
     }
+
 }

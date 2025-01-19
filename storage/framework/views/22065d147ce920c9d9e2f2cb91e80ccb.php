@@ -32,15 +32,14 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 <?php
-    $price = \Modules\Properties\Models\Property\PropertyUnitTypePricing::find($value);
-    // $price = $type->price;
-    // $lease = $type->price->lease;
+    $type = \Modules\Properties\Models\Property\PropertyUnitType::find($value);
 ?>
 <div>
-    <!--[if BLOCK]><![endif]--><?php if($price): ?>
+    <!--[if BLOCK]><![endif]--><?php if($type->price): ?>
     <a style="text-decoration: none" class="primary" tabindex="-1">
-        <?php echo e(format_currency($price->price) ?? ''); ?> / <?php echo e($price->lease->name ?? ''); ?>
+        <?php echo e(format_currency($type->price) ?? ''); ?> / <?php echo e(__('Night')); ?>
 
+        
     </a>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>

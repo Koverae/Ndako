@@ -1,5 +1,5 @@
 <div>
-    
+
     <div class="gap-3 px-3 k_control_panel d-flex flex-column gap-lg-1 sticky-top">
         <div class="gap-5 k_control_panel_main d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
             <!-- Breadcrumbs -->
@@ -15,7 +15,7 @@
                     {{ $createButtonLabel }}
                 </a>
                 @endif
-                
+
                 @php
                     $filteredBreadcrumbs = array_filter($breadcrumbs, function($breadcrumb) {
                         return $breadcrumb['url'] && $breadcrumb['url'] != route('main', ['subdomain' => current_company()->domain_name]) && $breadcrumb['label'] != 'Inventory' && $breadcrumb['url'] != url()->current();
@@ -41,7 +41,7 @@
                             {{ $this->currentPage }}
                         </span>
                         <div class="gap-1 k_cp_action_menus d-flex align-items-center pe-2">
-                            
+
                             <div class="k_dropdown dropdown dropend lh-1 dropdown-no-caret">
                                 <a href="#" class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-gear" wire:loading.remove></i>
@@ -78,88 +78,22 @@
 
             @if(!$this->isForm)
             <!-- Actions / Search Bar -->
-            <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions_search d-flex align-items-center justify-content-start order-lg-1 ">
+            <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions_search d-flex align-items-center justify-content-between order-lg-1 ">
                 <span class="p-1 border-0 cursor-pointer">
                     <i class="bi bi-search"></i>
                 </span>
-                <div class="gap-1 d-flex">
-                    <div class="gap-1 pb-1 mt-1 rounded k_searchview_filters_span d-flex">
-                        <i class="m-0 bi bi-funnel-fill" style="color: #0E6163;"></i>
-                        <span class="">Hotels</span>
-                        <i class="cursor-pointer bi bi-x remove"></i>
-                    </div>
-                    <input type="text" placeholder="Search..." class="k_searchview">
-                    <div class="dropdown k_filter_search">
-                        <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                          
-                        </span>
-                        <ul class="filter_search_popover" aria-labelledby="dropdownMenu2">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-md-4 k_search_filter_menu" style="border-right: 1px solid #d8dadd;">
-                                        <div class="gap-1 d-flex align-items-start">
-                                            <i class="bi bi-funnel-fill" style="color: #0E6163;"></i>
-                                            <h5 class="d-inline h3">
-                                                Filters
-                                            </h5>
-                                        </div>
-                                        <span class="dropdown-item" type="button">Hospitality</span>
-                                        <span class="dropdown-item" type="button">Residential</span>
-                                        <span class="dropdown-item" type="button">Commercial</span>
-                                    </div>
 
-                                    <div class="col-md-4 k_search_filter_menu" style="border-right: 1px solid #d8dadd;">
-                                        <div class="gap-1 d-flex align-items-start">
-                                            <i class="bi bi-funnel-fill" style="color: #6f9999;"></i>
-                                            <h5 class="d-inline h3">
-                                                Group By
-                                            </h5>
-                                        </div>
-                                        <span class="dropdown-item" type="button">Apartments</span>
-                                        <span class="dropdown-item" type="button">Single-Family Homes</span>
-                                        <span class="dropdown-item" type="button">Retail Stores</span>
-                                        <span class="dropdown-item" type="button">Hotels</span>
-                                        <span class="dropdown-item" type="button">Motels</span>
-                                        <span class="dropdown-item" type="button">Townhouses</span>
-                                    </div>
+                <input type="text" wire:model.live='search' placeholder="Search..." class="k_searchview">
 
-                                    <div class="col-md-4 k_search_filter_menu">
-                                        <div class="gap-1 d-flex align-items-start">
-                                            <i class="bi bi-star-fill" style="color: gold;"></i>
-                                            <h5 class="d-inline h3">
-                                                Favorites
-                                            </h5>
-                                        </div>
-                                        <span class="dropdown-item" type="button">Save this search</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </ul>
-                    </div>
+                <div class="dropdown k_filter_search align-items-end ">
+                    <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+
+                    </span>
+                    <!-- Filter dropdown -->
+                    <!-- Filter dropdown End -->
                 </div>
+
             </div>
-            {{-- <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions d-flex align-items-center justify-content-start order-lg-1">
-                <div class="container gap-1 k-list-selection d-flex w-100 w-md-auto">
-                    <span class="gap-1 p-2 list-group-item active d-flex align-items-center pe-0 rounded-1 flex-grow-1">
-                        <b>2</b> selected
-                        <i class="bi bi-x"></i>
-                    </span>
-                    <span class="btn btn-secondary">
-                        Print Records
-                    </span>
-                    <div class="btn-group rounded-1">
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"> <i class="bi bi-upload"></i> <span>Action</span></a></li>
-                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"><i class="bi bi-archive-fill"></i> <span>Archive</span></a></li>
-                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"><i class="bi bi-copy"></i> <span>Duplicate</span></a></li>
-                          <li><a class="gap-2 dropdown-item kover-navlink d-flex" href="#"><i class="bi bi-trash-fill"></i> <span>Delete</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div> --}}
             <!-- Actions / Search Bar -->
             @endif
 
@@ -177,11 +111,11 @@
                     >
                     </x-dynamic-component>
                     @endforeach
-                    
+
                 </div>
             </div>
             @endif
-            
+
         </div>
     </div>
 </div>

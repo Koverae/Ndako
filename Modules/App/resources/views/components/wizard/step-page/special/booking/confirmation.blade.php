@@ -14,7 +14,7 @@
                         <li><strong>Room:</strong> {{ $this->selectedRoom->name }}</li>
                         <li><strong>Type:</strong> {{ $this->selectedRoom->unitType->name }}</li>
                         <li><strong>Capacity:</strong> {{ $this->selectedRoom->unitType->capacity }} guest(s)</li>
-                        <li><strong>Price/Day:</strong> {{ format_currency($this->selectedRoom->unitType->price->price) }}</li>
+                        <li><strong>Price/Day:</strong> {{ format_currency($this->selectedRoom->unitType->price) }}</li>
                     </ul>
                 </div>
                 <hr>

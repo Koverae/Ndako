@@ -29,7 +29,7 @@ class RevenueManagerSetting extends AppSetting
         $this->localizations = toSelectOptions(FiscalPackage::isCompany(current_company()->id)->get(), 'id', 'name');
 
         $this->currenciesOptions = toSelectOptions(Currency::isCompany(current_company()->id)->get(), 'id', 'currency_name');
-        
+
         $this->salesTaxes = toSelectOptions(Tax::isCompany(current_company()->id)->isType('sales')->get(), 'id', 'name');
 
         $countries = [
@@ -134,7 +134,7 @@ class RevenueManagerSetting extends AppSetting
         cache()->forget('settings');
 
         // notify()->success('Updates saved!');
-        
+
         $this->dispatch('undo-change');
 
     }

@@ -25,7 +25,7 @@ class PropertyUnitType extends Model
     }
 
     public function units() {
-        return $this->hasMany(PropertyUnit::class);
+        return $this->hasMany(PropertyUnit::class, 'property_unit_type_id', 'id');
     }
 
     public function features() {

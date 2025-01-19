@@ -2,14 +2,13 @@
     'value',
 ])
 @php
-    $price = \Modules\Properties\Models\Property\PropertyUnitTypePricing::find($value);
-    // $price = $type->price;
-    // $lease = $type->price->lease;
+    $type = \Modules\Properties\Models\Property\PropertyUnitType::find($value);
 @endphp
 <div>
-    @if($price)
+    @if($type->price)
     <a style="text-decoration: none" class="primary" tabindex="-1">
-        {{ format_currency($price->price) ?? '' }} / {{ $price->lease->name ?? '' }}
+        {{ format_currency($type->price) ?? '' }} / {{ __('Night') }}
+        {{-- {{ format_currency($price->price) ?? '' }} / {{ $price->lease->name ?? '' }} --}}
     </a>
     @endif
 </div>

@@ -5966,6 +5966,10 @@ Control Panel
     min-height: auto;
     min-width: auto;
 }
+#share-dash{
+  width: auto;
+}
+
 .k_cp_switch_buttons .k_switch_view:hover, .k_cp_switch_buttons .k_switch_view:focus{
   background-color: #bdbcc0;
 }
@@ -27478,8 +27482,6 @@ Settings Tabs End
 ********************/
 
 
-
-
 .k_subtotal_footer {
     height: auto;
     /* min-height: auto; */
@@ -27607,3 +27609,82 @@ WIZARD END
 .plus {
     border-left: 1px solid #ccc;
 } */
+ 
+.app-sidebar{
+    overflow-y: auto;
+    height: 100vh;
+  }
+  .panel-category:hover{
+    background-color: #D8DADD;
+  }
+  .panel-category.selected{
+    background-color: #E6F2F3;
+  }
+    .app{
+        height: auto;
+        /* width: 340px; */
+        min-height: 115px;
+        min-width: auto;
+        display: flex;
+    }
+    .app .app_desc{
+        height: 77px;
+        width: 280px;
+        padding: 0 0 0 10px;
+        min-height: auto;
+    }
+    /* .app .app_desc .k_kanban_record_title{
+        font-weight: bold;
+        font-size: 15.6px;
+    } */
+    .app .app_icon{
+        height: 40px;
+        width: 40px;
+    }
+    
+    
+/********************
+Dashboards
+********************/
+.k-dash-card{
+    background-color: #E6F2F3;
+    cursor: pointer;
+}
+.k-dash-card.pink{
+    background-color: #FEF2F2;
+    /* cursor: pointer; */
+}
+.k-dash-category{
+    margin-bottom: 25px;
+}
+.k-dash-category .k_horizontal_separator{
+    font-size: 18px;
+    line-height: 26px;
+    color: #017e84;
+}
+.k-borderless-table {
+    width: 100%;
+    border-collapse: collapse; /* Removes default spacing between table cells */
+    /* margin: 20px 0; */
+    font-size: 15px;
+    text-align: left;
+}
+
+.k-borderless-table th,
+.k-borderless-table td {
+    /* padding: 10px 15px;  */
+    cursor: pointer;
+}
+
+.k-borderless-table thead th {
+    font-weight: bold;
+    color: #333;
+}
+
+
+.k-borderless-table tbody tr:hover {
+    background-color: #eef; /* Optional: Highlight row on hover */
+}
+/********************
+Dashboards End
+********************/

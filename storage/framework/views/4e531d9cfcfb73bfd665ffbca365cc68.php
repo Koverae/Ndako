@@ -220,15 +220,13 @@
                                             <?php echo e(__('Guests')); ?>
 
                                         </a>
-                                        
-
                                     </div>
                                 </div>
                             </div>
                         </li>
 
-                        <li class="nav-item dropdown" data-turbolinks>
-                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                        <li class="nav-item" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="<?php echo e(Route::subdomainRoute('dashboards.index')); ?>" style="margin-right: 5px;">
                               <span class="nav-link-title">
                                   <?php echo e(__('Dashboard')); ?>
 
@@ -236,81 +234,16 @@
                             </a>
                         </li>
 
-                        <li class="nav-item dropdown" data-turbolinks>
-                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                        <li class="nav-item" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="<?php echo e(Route::subdomainRoute('settings.general', ['view' => 'general'])); ?>" style="margin-right: 5px;">
                               <span class="nav-link-title">
                                   <?php echo e(__('Configuration')); ?>
 
                               </span>
                             </a>
-                            <div class="dropdown-menu">
-                                <div class="dropdown-menu-columns">
-                                    <!-- Left Side -->
-                                    <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('settings.general', ['view' => 'channel-manager'])); ?>">
-                                            <?php echo e(__('Settings')); ?>
-
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('channels.lists')); ?>">
-                                            <?php echo e(__('Manage Channels')); ?>
-
-                                        </a>
-                                        <div class="dropend">
-                                            <a class=" kover-navlink dropdown-item"  href="#sidebar-cards" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                                <?php echo e(__('Rates & Availability')); ?>
-
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('channels.lists')); ?>">
-                                                    <?php echo e(__('Manage Rates')); ?>
-
-                                                </a>
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('channels.lists')); ?>">
-                                                    <?php echo e(__('Sync Rates')); ?>
-
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-menu-column">
-                                        <div class="dropend">
-                                            <a class=" kover-navlink dropdown-item"  href="#sidebar-cards" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                                <?php echo e(__('Properties & Units')); ?>
-
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('properties.types.lists')); ?>">
-                                                    <?php echo e(__('Property Types')); ?>
-
-                                                </a>
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('properties.unit-types.lists')); ?>">
-                                                    <?php echo e(__('Unit Types')); ?>
-
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="dropend">
-                                            <a class=" kover-navlink dropdown-item"  href="#sidebar-cards" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                                                <?php echo e(__('Users & Enterprises')); ?>
-
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('settings.users')); ?>">
-                                                    <?php echo e(__('Users')); ?>
-
-                                                </a>
-                                                <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(Route::subdomainRoute('settings.companies.index')); ?>">
-                                                    <?php echo e(__('Enterprises')); ?>
-
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </li>
+
                     </div>
-                    
                     <!-- Navbar Menu -->
                 </ul>
             </div>

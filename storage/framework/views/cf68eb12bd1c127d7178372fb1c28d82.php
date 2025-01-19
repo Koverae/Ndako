@@ -48,7 +48,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                     id="
-                        people" wire:model="people" value="<?php echo e(old('people')); ?>">
+                        people" wire:model="people">
                 <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['people'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -123,7 +123,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 <span><i class="fas fa-user-md"></i> <?php echo e($this->guest->name); ?></span> <br>
                 <span><i class="bi bi-envelope"></i> <?php echo e($this->guest->email); ?></span> <br>
                 <span><i class="bi bi-phone"></i> <?php echo e($this->guest->phone); ?></span> <br>
-                <span><i class="bi bi-geo"></i> <?php echo e(__('Qwetu Parklands')); ?></span> <br>
+                <span><i class="bi bi-geo"></i> <?php echo e($this->guest->street); ?></span> <br>
             </div>
         </div>
     </div>

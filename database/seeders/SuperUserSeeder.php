@@ -33,7 +33,7 @@ class SuperUserSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
         $user->save();
-        $user->generateAvatar();
+        // $user->generateAvatar();
         
         $team->update([
             'user_id' => $user->id

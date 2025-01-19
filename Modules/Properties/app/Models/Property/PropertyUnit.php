@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Modules\Properties\Database\Factories\Property/PropertyUnitFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\ChannelManager\Models\Booking\Booking;
 
 class PropertyUnit extends Model
 {
@@ -31,5 +32,9 @@ class PropertyUnit extends Model
 
     public function unitType() {
         return $this->belongsTo(PropertyUnitType::class, 'property_unit_type_id', 'id');
+    }
+
+    public function bookings() {
+        return $this->hasMany(Booking::class, 'property_unit_id', 'id');
     }
 }

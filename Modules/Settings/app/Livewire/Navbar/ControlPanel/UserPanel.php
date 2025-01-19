@@ -47,7 +47,7 @@ class UserPanel extends ControlPanel
             // Add more buttons as needed
         ];
     }
-
+    
     public function archiveUser(){
         $this->dispatch('archive-user');
     }

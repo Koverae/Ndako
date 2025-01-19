@@ -12,6 +12,7 @@
         "livewire/livewire": "^3.5",
         "mhmiton/laravel-modules-livewire": "^4.2",
         "nwidart/laravel-modules": "^11.1",
+        "phpoffice/phpspreadsheet": "^3.8",
         "spatie/laravel-permission": "^6.10",
         "wire-elements/modal": "^2.0"
     },

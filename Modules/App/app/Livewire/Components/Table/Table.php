@@ -14,6 +14,7 @@ abstract class Table extends Component
     public $latitude = 51.505;
     public $longitude = -0.09;
 
+    public $searchQuery = '';
     public $view_type = 'lists';
     public $view = 'app::livewire.components.table.table';
     public $components = [
@@ -152,5 +153,11 @@ abstract class Table extends Component
         } else {
             $this->expandedRows[] = $rowId;
         }
+    }
+
+    #[On('update-search')]
+    public function updateSearch($search){
+        $this->searchQuery = $search;
+        $this->query();
     }
 }

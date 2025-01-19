@@ -2,10 +2,12 @@
 
 namespace Modules\ChannelManager\Models\Booking;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\ChannelManager\Models\Guest\Guest;
 
 class BookingInvoice extends Model
 {
@@ -34,6 +36,14 @@ class BookingInvoice extends Model
 
     public function booking() {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function agent() {
+        return $this->belongsTo(User::class, 'agent_id', 'id');
+    }
+
+    public function guest() {
+        return $this->belongsTo(Guest::class);
     }
 
     public function payments() {

@@ -29,10 +29,11 @@
     <script src="<?php echo e(asset('assets/libs/list.js/dist/list.min.js')); ?>" data-navigate-track ></script>
     <script src="<?php echo e(asset('assets/libs/apexcharts/dist/apexcharts.min.js')); ?>" data-navigate-track ></script>
     <!-- Libs JS -->
-
+    <?php echo $__env->yieldContent('styles'); ?>
     <!-- Scripts -->
     <script src="<?php echo e(asset('assets/js/koverae.js?'.time())); ?>" data-navigate-track></script>
-    
+
+    <?php echo $__env->yieldContent('scripts'); ?>
     <!-- Scripts -->
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
 

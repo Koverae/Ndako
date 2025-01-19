@@ -11,7 +11,7 @@
                 </label>
                 <input type="text" class="form-control @error('people') is-invalid @enderror"
                     id="
-                        people" wire:model="people" value="{{ old('people') }}">
+                        people" wire:model="people">
                 @error('people')
                     <div class="mt-1 text-danger">
                         {{ $message }}
@@ -48,7 +48,7 @@
                 <span><i class="fas fa-user-md"></i> {{ $this->guest->name }}</span> <br>
                 <span><i class="bi bi-envelope"></i> {{ $this->guest->email }}</span> <br>
                 <span><i class="bi bi-phone"></i> {{ $this->guest->phone }}</span> <br>
-                <span><i class="bi bi-geo"></i> {{ __('Qwetu Parklands') }}</span> <br>
+                <span><i class="bi bi-geo"></i> {{ $this->guest->street }}</span> <br>
             </div>
         </div>
     </div>

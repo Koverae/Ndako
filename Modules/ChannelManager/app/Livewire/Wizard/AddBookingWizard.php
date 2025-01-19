@@ -112,7 +112,7 @@ class AddBookingWizard extends SimpleWizard
             $nights = $checkIn->diffInDays($checkOut);
             $this->nights = $nights;
 
-            $this->totalAmount = $nights * $this->selectedRoom->unitType->price->price;
+            $this->totalAmount = $nights * $this->selectedRoom->unitType->price;
 
             $this->calculateDownPayment();
         }
@@ -189,22 +189,40 @@ class AddBookingWizard extends SimpleWizard
             'company_id' => current_company()->id,
             'property_unit_id' => $this->selectedRoom->id,
             'guest_id' => $this->guest->id,
+            'agent_id' => auth()->user()->id,
             'guests' => $this->people,
             'check_in' => $this->startDate,
             'check_out' => $this->endDate,
-            'unit_price' => $this->selectedRoom->unitType->price->price,
+            'unit_price' => $this->selectedRoom->unitType->price,
             'paid_amount' => $this->downPayment,
             'due_amount' => $this->dueAmount,
             'total_amount' => $this->totalAmount,
             'status' => $this->status,
             'payment_status' => $this->paymentStatus,
-            'invoice_status' => $this->invoiceStatus
+            'invoice_status' => $this->invoiceStatus,
+            // Add the check-in and check-out status fields
+            'check_in_status' => $this->startDate == now()->toDateString() ? 'checked_in' : 'pending', // Check if check-in is today
+            'check_out_status' => 'pending', // Initial status
         ]);
         $booking->save();
 
-        $this->selectedRoom->update([
-            'status' => 'occupied'
-        ]);
+        // $this->selectedRoom->update([
+        //     'status' => 'occupied'
+        // ]);
+
+        // Check if the booking is for today or a future date
+        if ($this->startDate == now()->toDateString()) {
+            // If check-in is today, mark the room as occupied immediately
+            $this->selectedRoom->update([
+                'status' => 'occupied'
+            ]);
+        } else {
+            // If check-in is in the future, mark the room as reserved
+            $this->selectedRoom->update([
+                'status' => 'reserved'
+            ]);
+        }
+
         $this->createInvoice($booking);
 
         return $this->redirect(Route::subdomainRoute('bookings.show', ['booking' => $booking->id]), navigate: true);
@@ -215,11 +233,9 @@ class AddBookingWizard extends SimpleWizard
         $invoice = BookingInvoice::create([
             'company_id' => $booking->company_id,
             'booking_id' => $booking->id,
-            // 'reference' => 'Booking Invoice',
             'guest_id' => $booking->guest_id,
             'date' => now(),
             'due_date' => $booking->check_out,
-            // 'payment_term' => $booking->payment_term,
             'payment_status' => $booking->payment_status,
             'agent_id' => auth()->user()->id,
             'terms' => $booking->terms,
@@ -252,4 +268,5 @@ class AddBookingWizard extends SimpleWizard
             'invoice_status' => 'invoiced'
         ]);
     }
+
 }

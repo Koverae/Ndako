@@ -6,12 +6,14 @@ use App\Models\User;
 use Modules\App\Livewire\Components\Table\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Route;
+use Livewire\Attributes\On;
 use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
 
 class UserTable extends Table
 {
-    public array $data = [];
+    public array $data = [];  // Search query
+    public $users;  // Users to display
 
     public function mount(){
         $this->data = ['email', 'phone'];
@@ -37,9 +39,18 @@ class UserTable extends Table
     {
         return '';
     }
-    public function query() : Builder
+    public function query($search = null) : Builder
     {
-        return User::query(); // Returns a Builder instance for querying the User model
+        $query = User::query();
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            $query = User::query()
+                ->where('name', 'like', '%' . $this->searchQuery . '%')
+                ->orWhere('email', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        return  $query;// Returns a Builder instance for querying the User model
     }
 
     // List View
@@ -58,4 +69,6 @@ class UserTable extends Table
             Card::make('name', "name", "", $this->data),
         ];
     }
+
+
 }

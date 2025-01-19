@@ -26,7 +26,7 @@ class AddPropertyWizard extends SimpleWizard
     
     // Unit
     public $unitName, $numberUnits = 1, $capacity = 1, $unitType, $unitSize = 0, $unitDesc, $unitPrice = 0;
-    public array $unitFeatures = [];
+    public array $unitFeatures = [], $units = [];
 
     protected $rules = [
         'name' => 'required|string|max:30',
@@ -110,6 +110,7 @@ class AddPropertyWizard extends SimpleWizard
             'capacity' => $this->capacity,
             'unitSize' => $this->unitSize,
             'unitFeatures' => $this->unitFeatures,
+            'units' => $this->units,
         ];
 
         // Optionally, reset the form fields for the next entry
@@ -124,39 +125,62 @@ class AddPropertyWizard extends SimpleWizard
         $this->propertyUnits = array_values($this->propertyUnits); // Reindex the array
     }
 
+    public function updatedNumberUnits($value)
+    {
+        $unitCount = (int)$value;
+
+        // Adjust the number of units in the array
+        if ($unitCount > count($this->units)) {
+            for ($i = count($this->units); $i < $unitCount; $i++) {
+                $this->units[] = ['name' => ''];
+            }
+        } else {
+            $this->units = array_slice($this->units, 0, $unitCount);
+        }
+    }
+
+    public function removeTypeUnit($index)
+    {
+        if (isset($this->units[$index])) {
+            unset($this->units[$index]);
+            $this->units = array_values($this->units);
+            $this->numberUnits = count($this->units); // Update the floors count
+        }
+    }
+    
     // Save Property Units
     public function saveUnits($propertyId){
 
-        foreach ($this->propertyUnits as $unit) {
+        foreach ($this->propertyUnits as $type) {
             // Create Unit Type
             $unitType = PropertyUnitType::create([
                 'company_id' => current_company()->id,
                 'property_id' => $propertyId,
-                'name' => $unit['unitName'],
-                'description' => $unit['unitDesc']?? null,
-                'price' => $unit['price'],
-                'capacity' => $unit['capacity'],
-                'size' => $unit['unitSize']?? null,
+                'name' => $type['unitName'],
+                'description' => $type['unitDesc']?? null,
+                'price' => $type['price'],
+                'capacity' => $type['capacity'],
+                'size' => $type['unitSize']?? null,
                 // 'features' => json_encode($unit['unitFeatures']?? []),
             ]);
 
-            for($i = 0; $i < $unit['numberUnits']; $i++){
+            // for($i = 0; $i < $unit['numberUnits']; $i++){
+            foreach($type['units'] as $index => $unit){
                 $propertyUnit = PropertyUnit::create([
                     'company_id' => current_company()->id,
                     'property_id' => $propertyId,
                     'property_unit_type_id' => $unitType->id,
-                    'name' => __('Room '. $i),
-                    // 'description' => $unit['unitDesc']?? null,
-                    // 'features' => json_encode($unit['unitFeatures']?? []),
+                    'name' => $unit['name'],
+                    'capacity' => $type['capacity'],
                 ]);
                 $propertyUnit->save();
 
                 // Attach amenities to the property
-                if(count($unit['unitFeatures']) >= 1){
-                    foreach($unit['unitFeatures'] as $feature){
+                if(count($type['unitFeatures']) >= 1){
+                    foreach($type['unitFeatures'] as $feature){
                         PropertyFeature::create([
                             'company_id' => current_company()->id,
-                            'property_unit_type_id' => $propertyUnit->id,
+                            'property_unit_type_id' => $unitType->id,
                             'feature_id' => $feature,
                         ]);
                     }

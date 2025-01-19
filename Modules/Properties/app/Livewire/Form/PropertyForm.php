@@ -148,7 +148,7 @@ class PropertyForm extends LightWeightForm
             Column::make('name',"Name", 'units'),
             Column::make('name',"Unit No", 'units'),
             Column::make('property_unit_type_id',"Unit Type", 'units')->component('app::table.column.special.property-unit-type'),
-            Column::make('id',"Price", 'units')->component('app::table.column.special.unit-price'),
+            Column::make('property_unit_type_id',"Price", 'units')->component('app::table.column.special.unit-price'),
             Column::make('floor_id',"Floor/Section", 'units')->component('app::table.column.special.unit-floor'),
             Column::make('status',"Status", 'units'),
         ];

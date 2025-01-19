@@ -39,7 +39,22 @@ class BookingTable extends Table
     }
     public function query() : Builder
     {
-        return Booking::query(); // Returns a Builder instance for querying the User model
+        $query = Booking::query();
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            // Search both the booking's name and the related guest's name
+            $query = Booking::query()
+            ->where('reference', 'like', '%' . $this->searchQuery . '%')
+            ->orWhereHas('guest', function($query) {
+                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            })
+            ->orWhereHas('unit', function($query) {
+                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        return $query; // Returns a Builder instance for querying the User model
     }
 
     // List View

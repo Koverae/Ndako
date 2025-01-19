@@ -62,6 +62,14 @@ class User extends Authenticatable implements MustVerifyEmail
     //     });
     // }
 
+
+    public static function boot() {
+        parent::boot();
+
+        static::created(function ($model) {
+            $model->generateAvatar();
+        });
+    }
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);

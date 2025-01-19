@@ -13,6 +13,7 @@ abstract class ControlPanel extends Component
     #[Url(as: 'view_type', keep: true)]
     public $view_type = 'lists';
 
+    public $search = '';
     public bool $change = false, $showBreadcrumbs = true, $showCreateButton = true, $showPagination = false, $showIndicators= false, $isForm = false;
 
     // Configurable options
@@ -53,6 +54,14 @@ abstract class ControlPanel extends Component
         }
     }
 
+
+    public function updatedSearch($value)
+    {
+        // Update guests based on search term
+        $this->dispatch('update-search', search: $this->search);
+    }
+
+    
     #[On('change')]
     public function changeDetected(){
         $this->change = true;

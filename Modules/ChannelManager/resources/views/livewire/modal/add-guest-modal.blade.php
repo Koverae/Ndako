@@ -53,6 +53,18 @@
                 <!-- Input Label -->
                 <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
                     <label class="k_form_label">
+                      {{ __('Phone') }} :
+                    </label>
+                </div>
+                <!-- Input Form -->
+                <div class="k_cell k_wrap_input flex-grow-1">
+                    <input type="tel" wire:model="phone" class="k-input" id="model_0" placeholder="e.g. +254745908026">
+                </div>
+              </div>
+              <div class="d-flex col-12" style="margin-bottom: 8px;">
+                <!-- Input Label -->
+                <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
+                    <label class="k_form_label">
                       {{ __('Date of Birth') }} :
                     </label>
                 </div>

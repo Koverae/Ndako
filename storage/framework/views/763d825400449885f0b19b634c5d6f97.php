@@ -69,7 +69,7 @@ endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </div>
-            <div class="mb-3 col-md-6">
+            <div class="mb-3 col-md-12">
                 <label for="numberUnits" class="form-label h3">
                     <?php echo e(__('How many rooms of this type do you have?')); ?>
 
@@ -82,7 +82,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                    id="numberUnits" wire:model="numberUnits" style="width: 140px; height: 36px;" value="<?php echo e(old('numberUnits')); ?>">
+                    id="numberUnits" wire:model.live="numberUnits" style="width: 140px; height: 36px;" value="<?php echo e(old('numberUnits')); ?>">
                 <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['numberUnits'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -96,6 +96,41 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
+                <!-- Units -->
+                <div class="row <?php echo e($this->numberUnits >= 1 ? '' : 'd-none'); ?>">
+                    <!--[if BLOCK]><![endif]--><?php for($i = 0; $i < $this->numberUnits; $i++): ?>
+                        <div class="gap-2 mt-2 mb-2 col-md-6 d-flex align-items-center">
+                            <div class="col-4">
+                                <label for="unit-name-<?php echo e($i); ?>"><?php echo e(__('Room Name/Number')); ?></label>
+                                <input type="text" class="form-control <?php $__errorArgs = ['units.' . $i . '.name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                       id="unit-name-<?php echo e($i); ?>"
+                                       wire:model="units.<?php echo e($i); ?>.name"
+                                       placeholder="<?php echo e(__('Room Name/Number')); ?>">
+                                <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['units.' . $i . '.name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <span class="text-danger"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
+                            </div>
+                            <span class="cursor-pointer" wire:click.prevent="removeTypeUnit(<?php echo e($i); ?>)">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                        </div>
+                    <?php endfor; ?><!--[if ENDBLOCK]><![endif]-->
+                </div>
+                <!-- Units End -->
             </div>
             
             <!-- Capacity -->

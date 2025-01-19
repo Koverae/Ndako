@@ -43,7 +43,7 @@ unset($__defined_vars); ?>
                     <ul class="list-unstyled fs-3">
                         <li><strong>Property Name:</strong> <?php echo e($this->name); ?></li>
                         <li><strong>Type:</strong> <?php echo e($this->type->name); ?></li>
-                        <li class="<?php echo e($this->street ? '' : 'd-none'); ?>"><strong>Location:<?php echo e($this->street); ?>, <?php echo e($this->city); ?></strong> </li>
+                        <li class="<?php echo e($this->street ? '' : 'd-none'); ?>"><strong>Location:</strong> <?php echo e($this->street); ?>, <?php echo e($this->city); ?></li>
                         <li><strong>Number of Floors:</strong> <?php echo e($this->floors); ?></li>
                         <li>
                             <strong>Room Types:</strong>
@@ -57,9 +57,9 @@ unset($__defined_vars); ?>
                         <li><strong>Amenities:</strong> </li>
                     </ul>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <span><?php echo e(__('Is everything okay?')); ?></span>
-                    <button type="submit" wire:click='confirm' class="btn btn-primary text-end">Confirm 👌🏾</button>
+                <div class="bottom-0 d-flex justify-content-between">
+                    <span class="fs-3"><?php echo e(__('Is everything okay? 👌🏾')); ?></span>
+                    <button type="submit" wire:click='confirm' class="btn btn-primary text-end">Confirm</button>
                 </div>
                 <!-- Property Summary End -->
             </div>

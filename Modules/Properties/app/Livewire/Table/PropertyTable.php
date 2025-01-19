@@ -85,7 +85,7 @@ class PropertyTable extends Table
             Column::make('name', __('Unit No'))->component('app::table.column.special.show-title-link'),
             Column::make('property_unit_type_id', __('Unit Type'))->component('app::table.column.special.property-unit-type'),
             Column::make('floor_id', __('Floor/Section'))->component('app::table.column.special.unit-floor'),
-            Column::make('id', __('Price'))->component('app::table.column.special.unit-price'),
+            Column::make('property_unit_type_id', __('Price'))->component('app::table.column.special.unit-price'),
             Column::make('status', __('Status')),
         ];
     }

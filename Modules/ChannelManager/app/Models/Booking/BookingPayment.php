@@ -20,7 +20,7 @@ class BookingPayment extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            
+
             $journal = Journal::find($model->journal_id);
             $number = BookingInvoice::isCompany(current_company()->id)->max('id') + 1;
             $year = Carbon::parse($model->date)->year;
@@ -32,5 +32,9 @@ class BookingPayment extends Model
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
+    }
+
+    public function invoice() {
+        return $this->belongsTo(BookingInvoice::class, 'booking_invoice_id', 'id');
     }
 }

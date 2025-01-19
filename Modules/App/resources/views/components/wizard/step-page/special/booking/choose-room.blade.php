@@ -35,16 +35,14 @@
                                 <div class="col-12 col-lg-7">
                                     <span class="text-muted fw-bolder">{{ $room->capacity }} {{ __('People') }} <i class="fas fa-users"></i></span>
                                     <h5 class="mb-0 card-title">{{ $room->name }} ~ {{ $room->unitType->name }}</h5>
-                                    <span class="mb-3 text-muted">{{ format_currency($room->unitType->price->price) }} / {{$room->unitType->price->lease->name ?? '' }}</span>
+                                    <span class="mb-3 text-muted">{{ format_currency($room->unitType->price) }} / {{ __('Night') }}</span>
                                     <p class="mt-2">
-                                        At sunt unde atque quod. Fuga atque iste ea ut nesciunt ut tenetur sed.
-                                        Eligendi dolorem quas adipisci nisi distinctio est suscipit.
-                                        Provident blanditiis laudantium voluptas eveniet.
+                                        {{ $room->unitType->description }}
                                     </p>
                                     <p class="card-text">
                                         <i class="fas fa-bed"></i> {{ $room->beds }} Beds <br>
                                         <i class="fas fa-bath"></i> {{ $room->bathrooms }} Bathrooms <br>
-                                        <i class="fas fa-ruler-combined"></i> {{ $room->area }} sq ft
+                                        <i class="fas fa-ruler-combined"></i> {{ $room->unitType->size }} sq ft
                                     </p>
                                     <button class="mt-3 btn w-100" wire:click="pickRoom('{{ $room->id }}')" {{ $this->startDate == '' && $this->endDate == '' ? 'disabled' : "" }}  @if($this->selectedRoom) {{ $this->selectedRoom->id == $room->id ? 'disabled' : '' }} @endif>{{ __('Choose') }}</button>
                                 </div>
@@ -67,7 +65,7 @@
                 <span><i class="fas fa-user-md"></i> {{ $this->guest->name }}</span> <br>
                 <span><i class="bi bi-envelope"></i> {{ $this->guest->email }}</span> <br>
                 <span><i class="bi bi-phone"></i> {{ $this->guest->phone }}</span> <br>
-                <span><i class="bi bi-geo"></i> {{ __('Qwetu Parklands') }}</span> <br>
+                <span><i class="bi bi-geo"></i> {{ $this->guest->street }}</span> <br>
             </div>
         </div>
     </div>

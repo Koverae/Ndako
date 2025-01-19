@@ -25,17 +25,38 @@
                     @error('unitDesc') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
-            <div class="mb-3 col-md-6">
+            <div class="mb-3 col-md-12">
                 <label for="numberUnits" class="form-label h3">
                     {{ __('How many rooms of this type do you have?') }}
                 </label>
                 <input type="number" class="form-control @error('numberUnits') is-invalid @enderror"
-                    id="numberUnits" wire:model="numberUnits" style="width: 140px; height: 36px;" value="{{ old('numberUnits') }}">
+                    id="numberUnits" wire:model.live="numberUnits" style="width: 140px; height: 36px;" value="{{ old('numberUnits') }}">
                 @error('numberUnits')
                     <div class="mt-1 text-danger">
                         {{ $message }}
                     </div>
                 @enderror
+                <!-- Units -->
+                <div class="row {{ $this->numberUnits >= 1 ? '' : 'd-none' }}">
+                    @for($i = 0; $i < $this->numberUnits; $i++)
+                        <div class="gap-2 mt-2 mb-2 col-md-6 d-flex align-items-center">
+                            <div class="col-4">
+                                <label for="unit-name-{{ $i }}">{{ __('Room Name/Number') }}</label>
+                                <input type="text" class="form-control @error('units.' . $i . '.name') is-invalid @enderror"
+                                       id="unit-name-{{ $i }}"
+                                       wire:model="units.{{ $i }}.name"
+                                       placeholder="{{ __('Room Name/Number') }}">
+                                @error('units.' . $i . '.name')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <span class="cursor-pointer" wire:click.prevent="removeTypeUnit({{ $i }})">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                        </div>
+                    @endfor
+                </div>
+                <!-- Units End -->
             </div>
             
             <!-- Capacity -->

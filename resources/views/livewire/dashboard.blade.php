@@ -132,7 +132,7 @@
             <div class="col-12 col-lg-6">
                 <div class="border shadow-sm card" style="border-radius: 0.5rem">
                     <div class="card-body">
-                        <h2 class="h2">43 Guests this day</h2>
+                        <h2 class="h2">{{ $guestsCurrentlyStaying }} {{ __('Guests this day') }}</h2>
                     </div>
                 </div>
             </div>
@@ -140,7 +140,7 @@
             <div class="col-12 col-lg-6">
                 <div class="border shadow-sm card" style="border-radius: 0.5rem">
                     <div class="card-body">
-                        <h2 class="h2">12 Check-outs this day</h2>
+                        <h2 class="h2">{{ $checkoutsToday }} {{ __('Check-outs this day') }}</h2>
                     </div>
                 </div>
             </div>
@@ -168,52 +168,72 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>Name</th>
-                                    <th>Room</th>
-                                    <th class="text-center">Stay</th>
-                                    <th>Day Left</th>
-                                    <th>Outstanding Due</th>
-                                    <th>From</th>
-                                    <th class="text-center">Status</th>
+                                    <th class="fs-5">{{ __('Name') }}</th>
+                                    <th class="fs-5">{{ __('Room') }}</th>
+                                    <th class="fs-5" class="text-center">{{ __('Stay') }}</th>
+                                    <th class="fs-5">{{ __('Day Left') }}</th>
+                                    <th class="fs-5">{{ __('Outstanding Due') }}</th>
+                                    <th class="fs-5">{{ __('From') }}</th>
+                                    <th class="text-center fs-5">{{ __('Status') }}</th>
+                                    <th class="text-center fs-5">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($bookings as $index => $booking)
                                 <tr class="cursor-pointer">
                                     <td>
-                                        <img src="{{asset('assets/images/avatar/avatar-2.jpg')}}"
-                                            class="rounded-circle img-thumbnail" width="40px" height="40px"
-                                            alt="">
+                                        <img src="{{ $booking->guest->avatar ? Storage::url('avatars/' . $booking->guest->avatar) . '?v=' . time() : asset('assets/images/default/user.png') }}"
+                                        class="rounded-circle img-thumbnail" width="40px" height="40px"
+                                        alt="">
                                     </td>
                                     <td>
-                                        <a href="">Sam Altman</a>
+                                        <a href="#">{{ $booking->guest->name }}</a>
                                     </td>
                                     <td>
-                                        <a href="#">10A</a>
+                                        <a href="#">{{ \Modules\Properties\Models\Property\PropertyUnit::find($booking->property_unit_id)->name }}</a>
                                     </td>
                                     <td>
-                                        18 Nov 2024 ~ 20 Nov 2024
+                                        {{ \Carbon\Carbon::parse($booking->check_in)->format('d M Y') }} ~ {{ \Carbon\Carbon::parse($booking->check_out)->format('d M Y') }}
+                                    </td>
+                                    @php
+                                        $date1 = \Carbon\Carbon::parse($booking->check_in);
+                                        $date2 = \Carbon\Carbon::parse($booking->check_out);
+                                        $daysDifference = $date1->diffInDays($date2);
+                                    @endphp
+                                    <td>
+                                        {{ $daysDifference }} Day(s)
                                     </td>
                                     <td>
-                                        2 Days
+                                        {{ format_currency($booking->due_amount) }}
                                     </td>
                                     <td>
-                                        KSh. 32,500
+                                        {{ $booking->source ?? __('Direct Booking') }}
                                     </td>
                                     <td>
-                                        Airbnb
+                                        @if (\Carbon\Carbon::parse($booking->check_in)->isFuture())
+                                            <span class="text-white badge bg-warning">Upcoming</span>
+                                        @elseif (\Carbon\Carbon::parse($booking->check_out)->isFuture())
+                                            <span class="text-white badge bg-success">In Progress</span>
+                                        @else
+                                            <span class="text-white badge bg-secondary">Completed</span>
+                                        @endif
                                     </td>
                                     <td>
-                                        <span
-                                            class="text-white justify-content-center badge bg-success">
-                                            In Progress
-                                        </span>
+                                        <a class="text-decoration-none" title="{{ __('View Details') }}" wire:navigate href="{{ Route::subdomainRoute('bookings.show', ['booking' => $booking->id]) }}"><i class="fas fa-info-circle fs-2" style="color: #095c5e;"></i></a>
+                                        @if(\Carbon\Carbon::parse($booking->check_out)->isFuture())
+                                        <a class="text-decoration-none" title="{{ __('Check-Out') }}" wire:navigate><i class="fas fa-sign-out-alt fs-2" style="color: #095c5e;"></i></a>
+                                        @elseif(\Carbon\Carbon::parse($booking->check_in)->isFuture())
+                                        <a class="text-decoration-none" title="{{ __('Check-In') }}" wire:navigate><i class="fas fa-calendar-check fs-2" style="color: #095c5e;"></i></a>
+                                        @endif
                                     </td>
                                 </tr>
+                                @empty
                                 <tr>
                                     <td colspan="10" class="text-center">
                                         There's no data in this table
                                     </td>
                                 </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
