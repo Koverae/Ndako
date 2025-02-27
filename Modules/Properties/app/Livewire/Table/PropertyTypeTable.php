@@ -19,24 +19,25 @@ class PropertyTypeTable extends Table
 
     public function createRoute() : string
     {
-        return Route::subdomainRoute('properties.types.create');
+        return route('properties.types.create');
     }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('properties.types.show', ['type' => $id]);
+        return route('properties.types.show', ['type' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'What’s Your Property Type?';
     }
 
-    public function emptyText() : string
+    public function emptyText(): string
     {
-        return '';
+        return 'Define your property types here to better organize and manage your listings for different categories.';
     }
+
     public function query() : Builder
     {
         return PropertyType::query(); // Returns a Builder instance for querying the User model

@@ -15,7 +15,7 @@ class ChannelPanel extends ControlPanel
     public function mount($channel = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        // $this->new = Route::subdomainRoute('properties.create');
+        // $this->new = route('properties.create');
         if($channel){
             $this->showIndicators = true;
             $this->channel = $channel;

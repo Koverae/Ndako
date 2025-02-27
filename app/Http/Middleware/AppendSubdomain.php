@@ -19,7 +19,7 @@ class AppendSubdomain
         // Check if current_company() helper exists and has a domain_name
         if (function_exists('current_company') && $domain = current_company()->domain_name) {
             // Add the subdomain parameter to the route URL generator
-            Route::macro('subdomainRoute', function ($name, $parameters = [], $absolute = true) use ($domain) {
+            Route::macro('route', function ($name, $parameters = [], $absolute = true) use ($domain) {
                 $parameters['subdomain'] = $domain;
                 return route($name, $parameters, $absolute);
             });

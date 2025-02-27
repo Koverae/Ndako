@@ -170,6 +170,7 @@
                     <div class="p-2 border rounded" style="min-height: 122px;">
                         <div class="d-flex justify-content-between">
                             <h3 class="h3">{{ $unit['unitName'] }}</h3>
+                            <span class="text-muted d-block">{{ $unit['capacity'] }} <i class="bi bi-people"></i></span>
                             <span class="text-end" wire:click="removeUnit({{ $index }})"><i class="fas fa-trash"></i></span>
                         </div>
                         <div class="mt-3 mb-3">

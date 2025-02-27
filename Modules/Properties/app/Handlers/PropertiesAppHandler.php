@@ -41,8 +41,8 @@ class PropertiesAppHandler extends AppHandler
         $propertyTypes = [
             [
                 'company_id' => $companyId,
-                'name' => 'Apartments/Flats',
-                'description' => 'Multi-unit buildings with individual units.',
+                'name' => 'Apartment',
+                'description' => 'Multi-unit buildings with individual rental units.',
                 'slug' => Str::slug('Apartment'),
                 'icon' => 'fas fa-building',
                 'is_active' => true,
@@ -60,36 +60,93 @@ class PropertiesAppHandler extends AppHandler
             ],
             [
                 'company_id' => $companyId,
-                'name' => 'Hotels',
-                'description' => 'Accommodations for travellers often offering restaurants, meeting rooms and other guest services.',
-                'slug' => Str::slug('Hotels'),
+                'name' => 'House',
+                'description' => 'Standalone residential home for rental or personal use.',
+                'slug' => Str::slug('House'),
+                'icon' => 'fas fa-home',
+                'is_active' => true,
+                'property_type' => 'single',
+                'property_type_group' => 'residential',
+                'attributes' => json_encode([
+                    'bedrooms' => 'integer',
+                    'bathrooms' => 'integer',
+                    'garage' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Vacant',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Villa',
+                'description' => 'Luxury or vacation home, often with premium amenities.',
+                'slug' => Str::slug('Villa'),
+                'icon' => 'fas fa-umbrella-beach',
+                'is_active' => true,
+                'property_type' => 'single',
+                'property_type_group' => 'residential',
+                'attributes' => json_encode([
+                    'pool' => 'boolean',
+                    'garden' => 'boolean',
+                    'private_parking' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Available',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Shared Housing',
+                'description' => 'Co-living spaces or hostels with shared amenities.',
+                'slug' => Str::slug('Shared Housing'),
+                'icon' => 'fas fa-users',
+                'is_active' => true,
+                'property_type' => 'multi',
+                'property_type_group' => 'residential',
+                'attributes' => json_encode([
+                    'room_count' => 'integer',
+                    'shared_kitchen' => 'boolean',
+                    'shared_bathroom' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Occupied',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Hotel',
+                'description' => 'Full-service accommodation with multiple rooms.',
+                'slug' => Str::slug('Hotel'),
                 'icon' => 'fas fa-hotel',
                 'is_active' => true,
                 'property_type' => 'multi',
                 'property_type_group' => 'hospitality',
                 'attributes' => json_encode([
-                    'rooms' => 'integer',
-                    'stars' => 'integer',
-                    'amenities' => 'json',
+                    'room_count' => 'integer',
+                    'restaurant' => 'boolean',
+                    'conference_hall' => 'boolean',
                 ]),
                 'default_settings' => json_encode([
                     'has_default_unit_status' => true,
                     'default_unit_status' => 'Available',
-                    'breakfast_included' => false,
                 ]),
             ],
             [
                 'company_id' => $companyId,
-                'name' => 'Serviced Apartments',
-                'description' => 'Fully furnished apartments with hotel-like services.',
-                'slug' => Str::slug('Serviced Apartments'),
-                'icon' => 'serviced-apartment',
+                'name' => 'Guesthouse',
+                'description' => 'Smaller hospitality property for short-term stays.',
+                'slug' => Str::slug('Guesthouse'),
+                'icon' => 'fas fa-bed',
                 'is_active' => true,
                 'property_type' => 'multi',
                 'property_type_group' => 'hospitality',
                 'attributes' => json_encode([
-                    'furnishings' => 'json',
-                    'services' => 'json',
+                    'room_count' => 'integer',
+                    'breakfast_included' => 'boolean',
+                    'common_area' => 'boolean',
                 ]),
                 'default_settings' => json_encode([
                     'has_default_unit_status' => true,
@@ -98,16 +155,93 @@ class PropertiesAppHandler extends AppHandler
             ],
             [
                 'company_id' => $companyId,
-                'name' => 'Single-Family Homes',
-                'description' => 'Standalone houses designed for one family.',
-                'slug' => Str::slug('Single-Family Homes'),
-                'icon' => 'home',
+                'name' => 'Resort',
+                'description' => 'Leisure-focused accommodation with recreational facilities.',
+                'slug' => Str::slug('Resort'),
+                'icon' => 'fas fa-spa',
+                'is_active' => true,
+                'property_type' => 'multi',
+                'property_type_group' => 'hospitality',
+                'attributes' => json_encode([
+                    'spa' => 'boolean',
+                    'private_beach' => 'boolean',
+                    'water_sports' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Available',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Bed & Breakfast (B&B)',
+                'description' => 'Small-scale lodging offering breakfast service.',
+                'slug' => Str::slug('Bed & Breakfast'),
+                'icon' => 'fas fa-coffee',
+                'is_active' => true,
+                'property_type' => 'multi',
+                'property_type_group' => 'hospitality',
+                'attributes' => json_encode([
+                    'breakfast_included' => 'boolean',
+                    'max_guests' => 'integer',
+                    'shared_lounge' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Available',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Serviced Apartment',
+                'description' => 'Furnished short-term rental with hotel-like amenities.',
+                'slug' => Str::slug('Serviced Apartment'),
+                'icon' => 'fas fa-concierge-bell',
+                'is_active' => true,
+                'property_type' => 'multi',
+                'property_type_group' => 'commercial',
+                'attributes' => json_encode([
+                    'furnished' => 'boolean',
+                    'housekeeping' => 'boolean',
+                    'gym_access' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Available',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Office Space',
+                'description' => 'Rental space for businesses and professionals.',
+                'slug' => Str::slug('Office Space'),
+                'icon' => 'fas fa-briefcase',
+                'is_active' => true,
+                'property_type' => 'multi',
+                'property_type_group' => 'commercial',
+                'attributes' => json_encode([
+                    'desk_count' => 'integer',
+                    'meeting_rooms' => 'boolean',
+                    'parking' => 'boolean',
+                ]),
+                'default_settings' => json_encode([
+                    'has_default_unit_status' => true,
+                    'default_unit_status' => 'Available',
+                ]),
+            ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Retail Space',
+                'description' => 'Shops or commercial outlets for lease.',
+                'slug' => Str::slug('Retail Space'),
+                'icon' => 'fas fa-store',
                 'is_active' => true,
                 'property_type' => 'single',
+                'property_type_group' => 'commercial',
                 'attributes' => json_encode([
-                    'bedrooms' => 'integer',
-                    'bathrooms' => 'integer',
-                    'garage' => 'boolean',
+                    'floor_space' => 'integer',
+                    'storage_area' => 'boolean',
+                    'customer_parking' => 'boolean',
                 ]),
                 'default_settings' => json_encode([
                     'has_default_unit_status' => true,
@@ -116,6 +250,7 @@ class PropertiesAppHandler extends AppHandler
             ],
         ];
 
+
         // Insert property types into the database
         foreach ($propertyTypes as $type) {
             PropertyType::create($type);
@@ -123,10 +258,12 @@ class PropertiesAppHandler extends AppHandler
 
         // Seed Lease Terms
         $leaseTerms = [
-            ['company_id' => $companyId, 'name' => 'Nightly', 'description' => 'Lease term for one night.', 'duration_in_days' => 1, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Monthly', 'description' => 'Lease term for one month.', 'duration_in_days' => 30, 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Hourly', 'description' => 'Per hour.', 'duration_in_days' => 0, 'duration_in_hours' => 1, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Nightly', 'description' => 'Per night.', 'duration_in_days' => 1, 'duration_in_hours' => 24, 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Weekly', 'description' => 'Per week.', 'duration_in_days' => 7, 'duration_in_hours' => 168, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Monthly', 'description' => 'Per month.', 'duration_in_days' => 30, 'duration_in_hours' => 720, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
             ['company_id' => $companyId, 'name' => 'Quarterly', 'description' => 'Lease term for three months.', 'duration_in_days' => 90, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Annual', 'description' => 'Lease term for one year.', 'duration_in_days' => 365, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Annual', 'description' => 'Per year.', 'duration_in_days' => 365, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
             ['company_id' => $companyId, 'name' => 'Bi-Annual', 'description' => 'Lease term for six months.', 'duration_in_days' => 180, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
         ];
         foreach ($leaseTerms as  $term) {
@@ -369,7 +506,7 @@ class PropertiesAppHandler extends AppHandler
                 'status_id' => 1, // Occupied
                 'name' => 'Unit 101',
                 'description' => 'Facing the garden.',
-                'attributes' => json_encode(['balcony' => true]),
+                // 'attributes' => json_encode(['balcony' => true]),
                 'is_available' => true,
                 'is_cleaned' => true,
                 'last_cleaned_at' => now(),
@@ -382,7 +519,7 @@ class PropertiesAppHandler extends AppHandler
                 'status_id' => 2, // Vacant
                 'name' => 'Room 201',
                 'description' => 'Overlooks the ocean.',
-                'attributes' => json_encode(['mini-bar' => true]),
+                // 'attributes' => json_encode(['mini-bar' => true]),
                 'is_available' => true,
                 'is_cleaned' => true,
                 'last_cleaned_at' => now(),
@@ -395,7 +532,7 @@ class PropertiesAppHandler extends AppHandler
                 'status_id' => 2, // Vacant
                 'name' => 'Room 202',
                 'description' => 'Overlooks the ocean.',
-                'attributes' => json_encode(['mini-bar' => true]),
+                // 'attributes' => json_encode(['mini-bar' => true]),
                 'is_available' => true,
                 'is_cleaned' => true,
                 'last_cleaned_at' => now(),

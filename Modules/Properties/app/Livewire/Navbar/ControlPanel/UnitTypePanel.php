@@ -14,7 +14,7 @@ class UnitTypePanel extends ControlPanel
     public function mount($type = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('properties.unit-types.create');
+        $this->new = route('properties.unit-types.create');
         if($isForm){
             $this->showIndicators = true;
         }
@@ -33,7 +33,7 @@ class UnitTypePanel extends ControlPanel
         return  [
             // make($key, $label)
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
-            SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
+            // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
         ];
     }
 }

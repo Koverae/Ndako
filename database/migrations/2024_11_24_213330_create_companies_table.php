@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('team_id');
             $table->unsignedBigInteger('owner_id');
             $table->unsignedBigInteger('default_currency_id')->nullable();
+            $table->unsignedBigInteger('default_language_id')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
             $table->string('fiscal_country')->default('KE'); // Default is Kenya
-            $table->string('default_currency')->nullable();
+            $table->uuid('uuid')->unique();
             $table->string('name');
             $table->string('avatar')->nullable();
             $table->string('reference')->nullable();
@@ -34,13 +35,11 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('website')->unique()->nullable();
             $table->text('city')->nullable();
-            $table->string('country')->nullable();
             $table->text('industry')->nullable();
             $table->string('size')->nullable();
             $table->string('primary_interest')->nullable();
-            
-            $table->foreign('team_id')->references('id')->on('teams')->cascadeOnDelete();
 
+            
             $table->timestamps();
             $table->softDeletes();
         });

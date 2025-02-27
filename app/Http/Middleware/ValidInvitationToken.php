@@ -26,7 +26,7 @@ class ValidInvitationToken
 
         if (!$invitation) {
             // Redirect to a specific page or show an error if the token is invalid or expired
-            return redirect()->route('login', ['subdomain' => current_company()->domain_name])->with('error', 'Invalid or expired invitation link.');
+            return redirect()->route('login')->with('error', 'Invalid or expired invitation link.');
         }
 
         // Pass the invitation to the next request if valid

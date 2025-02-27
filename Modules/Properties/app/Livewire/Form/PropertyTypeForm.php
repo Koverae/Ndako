@@ -53,7 +53,7 @@ class PropertyTypeForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('properties', __('Property'), __('Properties linked to this property type.'), 'link', 'fa fa-home-user', Route::subdomainRoute('properties.lists', ['type' => $this->type ?? null]), ['parent' => $this->type, 'amount' => $this->type ? $this->type->properties->count() : 0])->component('app::form.capsule.depends'),
+            Capsule::make('properties', __('Property'), __('Properties linked to this property type.'), 'link', 'fa fa-home-user', route('properties.lists', ['type' => $this->type ?? null]), ['parent' => $this->type, 'amount' => $this->type ? $this->type->properties->count() : 0])->component('app::form.capsule.depends'),
         ];
     }
 
@@ -87,7 +87,7 @@ class PropertyTypeForm extends LightWeightForm
         ]);
         $type->save();
 
-        return $this->redirect(Route::subdomainRoute('properties.types.show', ['type' => $type->id]), navigate: true);
+        return $this->redirect(route('properties.types.show', ['type' => $type->id]), navigate: true);
     }
 
     #[On('update-property-type')]
@@ -102,7 +102,7 @@ class PropertyTypeForm extends LightWeightForm
             'property_type' => $this->unit_structure,
         ]);
         $type->save();
-        return $this->redirect(Route::subdomainRoute('properties.types.show', ['type' => $type->id]), navigate: true);
+        return $this->redirect(route('properties.types.show', ['type' => $type->id]), navigate: true);
     }
 
     public function updated(){

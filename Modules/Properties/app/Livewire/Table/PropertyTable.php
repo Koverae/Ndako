@@ -24,27 +24,39 @@ class PropertyTable extends Table
 
     public function createRoute() : string
     {
-        return Route::subdomainRoute('properties.create');
+        return route('properties.create');
     }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('properties.show', ['property' => $id]);
+        return route('properties.show', ['property' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'Your Property Awaits!';
+    }
+    
+    public function emptyText(): string
+    {
+        return 'Add your first property to begin managing and organizing your listings effortlessly.';
     }
 
-    public function emptyText() : string
-    {
-        return '';
-    }
     public function query() : Builder
     {
-        return Property::query(); // Returns a Builder instance for querying the User model
+        $query = Property::query();
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            $query = Property::query()
+            ->where('name', 'like', '%' . $this->searchQuery . '%')
+            ->orWhereHas('type', function($query) {
+                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        return $query; // Returns a Builder instance for querying the User model
     }
 
     public function subQuery($propertyId = null): Builder

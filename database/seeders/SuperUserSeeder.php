@@ -20,61 +20,18 @@ class SuperUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $team = Team::create([
-            'uuid' => Uuid::uuid4(),
-        ]);
-        $team->save();
-
-        $user = User::factory()->create([
-            'team_id' => $team->id,
-            'name' => 'Arden BOUET',
-            'email' => 'laudbouetoumoussa@gmail.com',
-            'password' => Hash::make('koverae'),
-            'email_verified_at' => now(),
-        ]);
-        $user->save();
-        // $user->generateAvatar();
-        
-        $team->update([
-            'user_id' => $user->id
-        ]);
-
-        $company = Company::create([
-            'team_id' => $team->id,
-            'owner_id' => $user->id,
-            'name' => "Lantern",
-            'reference' => 'Lantern',
-            'personal_company' => true,
-            'domain_name' => "lantern",
-            'website_url' => "lantern.".env('APP_DOMAIN'),
-            'enabled' => 1,
-            'email' => 'contact@lantern.co.ke',
-            'phone' => 254745908026,
-            'address' => 'Parklands Rd',
-            'city' => 'Nairobi',
-            'country' => 'Republic of Kenya',
-            'industry' => 'serviced-apartment',
-            'size' => 'small',
-            'primary_interest' => 'manage_my_business',
-            'default_currency' => 'KES',
-        ]);
-        $company->save();
 
         // Install Modules
         $appManager = new AppManagerHandler;
-        $appManager->installModules($company->id, $user->id);
+        $appManager->configure();
 
-        $user->update([
-            'company_id' => $company->id,
-            'current_company_id' => $company->id,
-            'language_id' => $company->languages()->first()->id
-        ]);
-        $user->save();
-        // // Install Properties Module
-        // $propertyManager = new PropertiesAppHandler;
-        // $propertyManager->install($company->id, $user->id);
+        // $user = User::factory()->create([
+        //     'name' => 'Arden BOUET',
+        //     'email' => 'laudbouetoumoussa@gmail.com',
+        //     'phone' => '',
+        //     'password' => Hash::make('koverae'),
+        // ]);
+        // $user->save();
 
-        // $channelManager = new ChannelManagerAppHandler;
-        // $channelManager->install($company->id, $user->id);
     }
 }

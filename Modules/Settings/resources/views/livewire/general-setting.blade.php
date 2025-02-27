@@ -28,9 +28,7 @@
 
         <!-- Right Sidebar -->
         <div class="settings">
-
             <livewire:settings::settings.general :setting="settings()" />
-
         </div>
     </div>
 </section>

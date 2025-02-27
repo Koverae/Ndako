@@ -6,7 +6,7 @@
     <div class="m-3 text-center position-relative">
         <img src="{{ asset('assets/images/illustrations/kwame-bot/kwame-1.svg') }}" alt="" class="img-fluid">
         <h1 class="top-0 m-3 h1 position-absolute end-0 w-50" style="font-size: 30px;">
-            {{ __('Welcome to the Property Setup Wizard. Let’s add your property in just a few simple steps!') }}
+            {{ __('Welcome! Let’s add your property in a few easy steps.') }}
         </h1>
     </div>
 </div>

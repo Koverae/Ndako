@@ -14,7 +14,7 @@
         </div>
         
         
-        <form method="POST" action="{{ Route::subdomainRoute('verify.store') }}">
+        <form method="POST" action="{{ route('verify.store') }}">
             @csrf
             <p class="my-4 text-center">Please confirm your account by entering the authorization code sent to <strong>{{ auth()->user()->email }}</strong>.</p>
             
@@ -69,7 +69,7 @@
               </div>
             </div>
             <div class="mt-3 text-center text-secondary">
-                {{ new Illuminate\Support\HtmlString(__("It may take a minute to receive your code. Haven't received it? If not, click <a class=\"hover:underline\" href=\":url\">here</a>.", ['url' => Route::subdomainRoute('verify.resend')])) }}
+                {{ new Illuminate\Support\HtmlString(__("It may take a minute to receive your code. Haven't received it? If not, click <a class=\"hover:underline\" href=\":url\">here</a>.", ['url' => route('verify.resend')])) }}
             </div>
         </form>
       </div>

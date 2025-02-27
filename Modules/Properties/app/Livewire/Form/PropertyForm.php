@@ -106,7 +106,7 @@ class PropertyForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('units', __('Property Units'), __('Units assigned to the property'), 'link', 'fa fa-home-user', Route::subdomainRoute('properties.units.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => $this->property ? $this->property->units->count() : 0]),
+            Capsule::make('units', __('Property Units'), __('Units assigned to the property'), 'link', 'fa fa-home-user', route('properties.units.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => $this->property ? $this->property->units->count() : 0]),
             Capsule::make('inventory-items', __('Inventory Items'), __('Inventory items assigned to the property'), 'link', 'fa fa-warehouse'),
             Capsule::make('tenants', __('Tenants'), __('Inventory items assigned to the property'), 'link', 'fa fa-users'),
         ];
@@ -232,7 +232,7 @@ class PropertyForm extends LightWeightForm
             'description' => $this->description,
         ]);
         $property->save();
-        return $this->redirect(Route::subdomainRoute('properties.show', ['property' => $property->id]), navigate: true);
+        return $this->redirect(route('properties.show', ['property' => $property->id]), navigate: true);
     }
 
     #[On('update-property')]
@@ -252,7 +252,7 @@ class PropertyForm extends LightWeightForm
             'description' => $this->description,
         ]);
         $property->save();
-        return $this->redirect(Route::subdomainRoute('properties.show', ['property' => $property->id]), navigate: true);
+        return $this->redirect(route('properties.show', ['property' => $property->id]), navigate: true);
     }
 
 }

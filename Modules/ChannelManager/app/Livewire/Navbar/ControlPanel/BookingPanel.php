@@ -2,6 +2,7 @@
 
 namespace Modules\ChannelManager\Livewire\Navbar\ControlPanel;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
@@ -14,7 +15,9 @@ class BookingPanel extends ControlPanel
     public function mount($booking = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('bookings.create');
+        if(Auth::user()->can('create_reservations')){
+            $this->new = route('bookings.create');
+        }
         if($isForm){
             $this->showIndicators = true;
         }

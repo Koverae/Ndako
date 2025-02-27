@@ -26,7 +26,7 @@
             </x-dynamic-component>
             @endforeach
         </div>
-        <div class="mt-3 wizard-navigation position-absolute">
+        <div class="mt-3 wizard-navigation position-absolute {{ $showButtons ? '' : 'd-none' }}">
             <button class="btn cancel" wire:click="goToPreviousStep" {{ $currentStep == 0 ? 'disabled' : '' }}><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
             <button class="btn btn-primary go-next" wire:click="goToNextStep" {{ $currentStep == count($this->steps()) - 1 ? 'disabled' : '' }}>Continue</button>
         </div>

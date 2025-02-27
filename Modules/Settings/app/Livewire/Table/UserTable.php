@@ -21,24 +21,25 @@ class UserTable extends Table
 
     public function createRoute() : string
     {
-        return Route::subdomainRoute('settings.users.create');
+        return route('settings.users.create');
     }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('settings.users.show', ['user' => $id]);
+        return route('settings.users.show', ['user' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'No Users Yet';
+    }
+    
+    public function emptyText(): string
+    {
+        return 'Users will be listed here once added. Start by adding your first user to begin managing access and roles.';
     }
 
-    public function emptyText() : string
-    {
-        return '';
-    }
     public function query($search = null) : Builder
     {
         $query = User::query();

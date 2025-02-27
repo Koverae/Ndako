@@ -231,31 +231,33 @@
 
     </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const chartOptions = {
-            chart: {
-                type: 'pie',
-                height: 350
-            },
-            labels: @json($roomTypeChartData['labels']),
-            series: @json($roomTypeChartData['series']),
-            colors: ['#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0'], // Adjust colors as needed
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 300
-                    },
-                    legend: {
-                        position: 'bottom'
+    @script
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartOptions = {
+                chart: {
+                    type: 'pie',
+                    height: 350
+                },
+                labels: @json($roomTypeChartData['labels']),
+                series: @json($roomTypeChartData['series']),
+                colors: ['#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0'], // Adjust colors as needed
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
                     }
-                }
-            }]
-        };
+                }]
+            };
 
-        const bestRoomTypeChart = new ApexCharts(document.querySelector('#bestRoomTypeChart'), chartOptions);
-        bestRoomTypeChart.render();
-    });
-</script>
+            const bestRoomTypeChart = new ApexCharts(document.querySelector('#bestRoomTypeChart'), chartOptions);
+            bestRoomTypeChart.render();
+        });
+    </script>
+    @endscript
 </div>

@@ -208,6 +208,7 @@ return new class extends Migration
             $table->string('name')->comment('e.g., "Monthly", "Annual"');
             $table->tinyText('description')->nullable();
             $table->integer('duration_in_days')->default(0);
+            $table->integer('duration_in_hours')->default(0);
             $table->boolean('is_default')->default(false);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();

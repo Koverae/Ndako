@@ -116,6 +116,7 @@ class AddPropertyWizard extends SimpleWizard
         // Optionally, reset the form fields for the next entry
         $this->unitFeatures = []; 
         $this->capacity = 1;
+        $this->numberUnits = '';
         $this->reset(['unitName', 'unitDesc', 'numberUnits', 'capacity', 'unitSize', 'unitFeatures', 'unitPrice']);
     }
 
@@ -280,6 +281,6 @@ class AddPropertyWizard extends SimpleWizard
         // Reset form fields
         $this->reset();
 
-        return $this->redirect(Route::subdomainRoute('properties.show', ['property' => $property->id]), navigate: true);
+        return $this->redirect(route('properties.show', ['property' => $property->id]), navigate: true);
     }
 }

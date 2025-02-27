@@ -2,18 +2,33 @@
 
 namespace App\Livewire;
 
-use App\Models\Module\Module;
+use App\Models\User;
 use Carbon\Carbon;
 use Livewire\Component;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\Settings\Models\WorkItem;
+use Modules\Settings\Notifications\MultiChannelNotification;
+use Livewire\Attributes\On;
 
 class Dashboard extends Component
 {
+    public $tasks = [], $situations = [];
     public $guestsCurrentlyStaying, $checkoutsToday, $bookings;
 
     public function mount()
     {
         $this->loadData();
+
+        $this->tasks = WorkItem::isCompany(current_company()->id)->isTasks()
+            ->where('assigned_to', auth()->user()->id)
+            ->orWhere('assigned_to', null)
+            ->get();
+
+        $this->situations = WorkItem::isCompany(current_company()->id)->isSituations()
+            ->where('assigned_to', auth()->user()->id)
+            ->orWhere('assigned_to', null)
+            ->where('reported_by', auth()->user()->id)
+            ->get();
     }
 
     public function render()
@@ -44,11 +59,26 @@ class Dashboard extends Component
             ->get();
     }
 
-    public function openApp($module){
-        // Retrieve the current array from the cache
-        $module = Module::find($module);
-        update_menu($module->navbar_id);
 
-        return $this->redirect(route($module->link, ['subdomain' => current_company()->domain_name, 'menu' => current_menu()]), navigate: true);
+    public function testNotif(){
+        $message = "Your booking #ND-2025-01-0004 has been confirmed!";
+        $title = "Booking Confirmed";
+        User::find(1)->notify(new MultiChannelNotification($message, $title));
+        $this->dispatch('fetch-notifications');
+    }
+
+    #[On('load-work-items')]
+    public function loadWorkItems(){
+
+        $this->tasks = WorkItem::isCompany(current_company()->id)->isTasks()
+            ->where('assigned_to', auth()->user()->id)
+            ->orWhere('assigned_to', null)
+            ->get();
+
+        $this->situations = WorkItem::isCompany(current_company()->id)->isSituations()
+            ->where('reported_by', auth()->user()->id)
+            ->where('assigned_to', auth()->user()->id)
+            ->orWhere('assigned_to', null)
+            ->get();
     }
 }

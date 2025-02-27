@@ -93,8 +93,8 @@ class UnitTypeForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('property-type', __('Property'), __('Property linked to this unit type.'), 'link', 'fa fa-home-user', Route::subdomainRoute('properties.show', ['property' => $this->property ?? 3]), ['parent' => $this->property, 'amount' => ""])->component('app::form.capsule.depends'),
-            Capsule::make('units', __('Units'), __('Units linked to this unit type.'), 'link', 'fa fa-home', Route::subdomainRoute('properties.units.lists', ['type' => $this->type]), ['parent' => $this->type, 'amount' => ""])->component('app::form.capsule.depends'),
+            Capsule::make('property-type', __('Property'), __('Property linked to this unit type.'), 'link', 'fa fa-home-user', route('properties.show', ['property' => $this->property ?? 3]), ['parent' => $this->property, 'amount' => ""])->component('app::form.capsule.depends'),
+            Capsule::make('units', __('Units'), __('Units linked to this unit type.'), 'link', 'fa fa-home', route('properties.units.lists', ['type' => $this->type]), ['parent' => $this->type, 'amount' => ""])->component('app::form.capsule.depends'),
             Capsule::make('prices', __('Pricing'), __('Pricing of this unit type.'), 'modal', 'fa fa-tags'),
         ];
     }
@@ -217,7 +217,7 @@ class UnitTypeForm extends LightWeightForm
         ]);
         $type->save();
 
-        return $this->redirect(Route::subdomainRoute('properties.unit-types.show', ['type' => $type->id]), navigate: true);
+        return $this->redirect(route('properties.unit-types.show', ['type' => $type->id]), navigate: true);
     }
 
     #[On('update-unit-type')]
@@ -234,7 +234,7 @@ class UnitTypeForm extends LightWeightForm
             'property_id' => $this->property,
         ]);
         $type->save();
-        return $this->redirect(Route::subdomainRoute('properties.unit-types.show', ['type' => $type->id]), navigate: true);
+        return $this->redirect(route('properties.unit-types.show', ['type' => $type->id]), navigate: true);
     }
 
     public function updated(){

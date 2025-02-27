@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Modules\App\Database\Seeders\AppDatabaseSeeder;
+use Modules\Settings\Database\Seeders\RolePermissionSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,9 +17,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            AppDatabaseSeeder::class,
+            // RolePermissionSeeder::class,
+            // AppDatabaseSeeder::class,
             SuperUserSeeder::class
         ]);
-        User::factory()->count(50)->create();
+        // User::factory()->count(10)->create();
     }
 }

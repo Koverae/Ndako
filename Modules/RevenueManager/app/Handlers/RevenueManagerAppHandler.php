@@ -226,6 +226,12 @@ class RevenueManagerAppHandler extends AppHandler
                 'type' => 'cash',
                 'short_code' => 'CSH1'
             ],
+            [
+                'company_id' => $companyId,
+                'name' => 'M-Pesa',
+                'type' => 'm-pesa',
+                'short_code' => 'MPESA'
+            ],
         ];
         foreach($journals as $journal){
             Journal::create($journal);

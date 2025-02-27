@@ -19,24 +19,27 @@ class BookingTable extends Table
 
     // public function createRoute() : string
     // {
-    //     return Route::subdomainRoute('properties.units.create');
+    //     return route('properties.units.create');
     // }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('bookings.show', ['booking' => $id]);
+        return route('bookings.show', ['booking' => $id]);
     }
 
-    public function emptyTitle() : string
-    {
-        return '';
-    }
 
-    public function emptyText() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'No Reservations Yet';
     }
+    
+    public function emptyText(): string
+    {
+        return 'Your reservations will appear here once added. Start by creating a new reservation to manage your bookings seamlessly.';
+    }
+    
+
     public function query() : Builder
     {
         $query = Booking::query();

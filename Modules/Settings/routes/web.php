@@ -9,6 +9,8 @@ use Modules\Settings\Livewire\Users\Create as UserCreate;
 use Modules\Settings\Livewire\Companies\Lists as CompanyLists;
 use Modules\Settings\Livewire\Companies\Create as CompanyCreate;
 use Modules\Settings\Livewire\Companies\Show as CompanyShow;
+use Modules\Settings\Livewire\Tasks\Lists as TaskLists;
+use Modules\Settings\Livewire\Roles\Lists as RoleLists;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,4 +35,8 @@ Route::group([], function () {
         Route::get('create', CompanyCreate::class)->name('create');
         Route::get('/{company}', CompanyShow::class)->name('show');
     });
+    // Tasks
+    Route::get('/tasks', TaskLists::class)->name('tasks.lists');
+    // Roles
+    Route::get('/roles', RoleLists::class)->name('roles.lists');
 });

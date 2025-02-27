@@ -22,11 +22,11 @@
                             <br>
                             @forelse($this->propertyUnits as $index => $unit)
                                 <span class="ml-2">{{ $unit['unitName'] }}: {{ $unit['numberUnits'] }} Units ({{ format_currency($unit['price']) }} each)</span>
+                                <br>
                             @empty
                                 <span>{{ __('No room types...') }}</span>
                             @endforelse
                         </li>
-                        <li><strong>Amenities:</strong> </li>
                     </ul>
                 </div>
                 <div class="bottom-0 d-flex justify-content-between">

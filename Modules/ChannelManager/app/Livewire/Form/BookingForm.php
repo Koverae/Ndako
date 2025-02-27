@@ -113,8 +113,8 @@ class BookingForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('invoice', __('Invoice'), __('Reservations made via this channel'), 'link', 'fa fa-file-invoice', Route::subdomainRoute('bookings.invoices.show', ['invoice' => $this->invoice]), ['parent' => $this->invoice, 'amount' => ''])->component('app::form.capsule.depends'),
-            Capsule::make('room', __('Room'), __('Log of connections and actions'), 'link', 'fa fa-home', Route::subdomainRoute('properties.units.lists', ['unit' => $this->unit ?? null]), ['parent' => $this->unit, 'amount' => ''])->component('app::form.capsule.depends'),
+            Capsule::make('invoice', __('Invoice'), __('Reservations made via this channel'), 'link', 'fa fa-file-invoice', route('bookings.invoices.show', ['invoice' => $this->invoice]), ['parent' => $this->invoice, 'amount' => ''])->component('app::form.capsule.depends'),
+            Capsule::make('room', __('Room'), __('Log of connections and actions'), 'link', 'fa fa-home', route('properties.units.lists', ['unit' => $this->unit ?? null]), ['parent' => $this->unit, 'amount' => ''])->component('app::form.capsule.depends'),
         ];
     }
 
@@ -189,7 +189,7 @@ class BookingForm extends LightWeightForm
         $booking->update([
             'invoice_status' => 'invoiced'
         ]);
-        return $this->redirect(Route::subdomainRoute('bookings.invoices.show', ['invoice' => $invoice->id]), navigate: true);
+        return $this->redirect(route('bookings.invoices.show', ['invoice' => $invoice->id]), navigate: true);
     }
 
     public function updated($propertyName)
@@ -265,7 +265,7 @@ class BookingForm extends LightWeightForm
             'total_amount' => $this->totalAmount,
         ]);
         $booking->save();
-        return $this->redirect(Route::subdomainRoute('bookings.show', ['booking' => $booking->id]), navigate: true);
+        return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
     }
 
     #[On('update-booking')]
@@ -281,7 +281,7 @@ class BookingForm extends LightWeightForm
             'total_amount' => $this->totalAmount,
         ]);
         $booking->save();
-        return $this->redirect(Route::subdomainRoute('bookings.show', ['booking' => $booking->id]), navigate: true);
+        return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
     }
 
     public function checkInBooking(Booking $booking) {
@@ -291,7 +291,7 @@ class BookingForm extends LightWeightForm
             $booking->unit->update([
                 'status' => 'occupied'
             ]);
-    
+
             // Update the booking's check-in status to 'checked_in'
             $booking->update([
                 'check_in_status' => 'checked_in',
@@ -299,7 +299,7 @@ class BookingForm extends LightWeightForm
             ]);
         }
     }
-    
+
     public function checkOutBooking(Booking $booking)
     {
         // Ensure that the booking has not already been checked-out
@@ -308,62 +308,62 @@ class BookingForm extends LightWeightForm
             $booking->unit->update([
                 'status' => 'available'
             ]);
-    
+
             // Update the booking's status to 'completed'
             $booking->update([
                 'status' => 'completed', // Mark booking as completed
                 'check_out_status' => 'checked_out', // Mark check-out status as 'checked_out'
                 'actual_check_out' => now(), // Store the actual check-out time
             ]);
-            
+
             // Optionally, handle any final actions (e.g., invoicing, cleaning, etc.)
             $this->handlePostCheckOutActions($booking);
-            
+
             // Optionally, if you have a guest review system, you can prompt the guest for feedback
             // $this->promptForReview($booking);
             $msg = 'Guest has successfully checked out.';
-            return $this->redirect(Route::subdomainRoute('bookings.show', ['booking' => $booking->id]), navigate: true);
+            return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
         }
-        
+
         // If check-out date is in the future (meaning it hasn't happened yet), handle accordingly
         $msg = 'Check-out cannot be processed yet as the check-out date has not passed.';
-        return $this->redirect(Route::subdomainRoute('bookings.show', ['booking' => $booking->id]), navigate: true);
+        return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
     }
     public function handlePostCheckOutActions(Booking $booking)
     {
         // Example: Trigger a cleaning task for the room
         $this->triggerRoomCleaning($booking->unit);
-    
+
         // Optionally, create an invoice or handle any post-check-out tasks here
         // $this->createInvoice($booking);
     }
-    
+
     public function triggerRoomCleaning(PropertyUnit $unit)
     {
         // Logic for triggering cleaning task (e.g., status update, task creation, etc.)
         $unit->update(['cleaning_status' => 'pending']);
     }
-    
+
     public function applyLateCheckOutCharge(Booking $booking)
     {
         if ($booking->late_check_out) {
             // If late check-out is enabled, apply a charge
             $extraCharge = $this->calculateLateCheckOutCharge($booking);
-            
+
             $booking->update([
                 'extra_charge' => $extraCharge,
                 'total_amount' => $booking->total_amount + $extraCharge, // Add the extra charge to the total amount
             ]);
         }
     }
-    
+
     public function calculateLateCheckOutCharge(Booking $booking)
     {
         // Define the logic for calculating the late check-out charge
         // Example: charge an hourly rate for each extra hour
         $extraHours = $booking->extra_hours ?? 0;
         $ratePerHour = 10; // Example rate per hour (this could come from the pricing model)
-        
+
         return $ratePerHour * $extraHours;
     }
 }

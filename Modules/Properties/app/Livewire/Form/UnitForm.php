@@ -150,7 +150,7 @@ class UnitForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('property-type', __('Property Unit Type'), __('Unit type linked to this unit.'), 'link', 'fa fa-home-user', Route::subdomainRoute('properties.unit-types.lists', ['type' => $this->type]) ),
+            Capsule::make('property-type', __('Property Unit Type'), __('Unit type linked to this unit.'), 'link', 'fa fa-home-user', route('properties.unit-types.lists', ['type' => $this->type]) ),
             Capsule::make('tenant', __('Tenant / Guest'), __('Guest or Tenant occuping the unit'), 'modal', 'fa fa-user'),
             Capsule::make('reservations', __('Reservations'), __('Reservations made for this unit'), 'modal', 'fa fa-tasks'),
             Capsule::make('maintenance-request', __('Maintenance Requests'), __('Maintenance requests made for this unit.'), 'modal', 'fa fa-tools'),
@@ -208,7 +208,7 @@ class UnitForm extends LightWeightForm
             'property_id' => $this->property,
         ]);
         $unit->save();
-        return $this->redirect(Route::subdomainRoute('properties.units.show', ['unit' => $unit->id]), navigate: true);
+        return $this->redirect(route('properties.units.show', ['unit' => $unit->id]), navigate: true);
     }
 
     #[On('create-unit')]
@@ -225,6 +225,6 @@ class UnitForm extends LightWeightForm
             'property_id' => $this->property,
         ]);
         $unit->save();
-        return $this->redirect(Route::subdomainRoute('properties.units.show', ['unit' => $unit->id]), navigate: true);
+        return $this->redirect(route('properties.units.show', ['unit' => $unit->id]), navigate: true);
     }
 }

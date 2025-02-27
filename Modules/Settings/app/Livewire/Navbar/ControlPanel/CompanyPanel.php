@@ -15,7 +15,7 @@ class CompanyPanel extends ControlPanel
     public function mount($company = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('settings.companies.create');
+        $this->new = route('settings.companies.create');
         if($company){
             $this->showIndicators = true;
             $this->company = $company;
@@ -32,7 +32,7 @@ class CompanyPanel extends ControlPanel
         return  [
             // make($key, $label)
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
-            SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
+            // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
         ];
     }
 

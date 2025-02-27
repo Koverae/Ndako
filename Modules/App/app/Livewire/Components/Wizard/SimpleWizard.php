@@ -2,22 +2,41 @@
 
 namespace Modules\App\Livewire\Components\Wizard;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class SimpleWizard extends Component
 {
     public int $currentStep = 0;
+    public bool $showButtons = true, $isOnboarding = false;
 
     public function goToNextStep()
     {
         // $this->validateCurrentStep();
         $this->currentStep++;
+        
+        if($this->isOnboarding){
+            $user = User::find(Auth::user()->id);
+            $user->update([
+                'onboarding_step' => $this->currentStep,
+            ]);
+        }
+
     }
 
     public function goToPreviousStep()
     {
         if ($this->currentStep > 0) {
             $this->currentStep--;
+
+            if($this->isOnboarding){
+                $user = User::find(Auth::user()->id);
+                $user->update([
+                    'onboarding_step' => $this->currentStep,
+                    // 'onboarding_completed' => true,
+                ]);
+            }
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Modules\Properties\Livewire\Navbar\ControlPanel;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
@@ -14,14 +15,16 @@ class UnitPanel extends ControlPanel
     public function mount($unit = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('properties.units.create');
+        if(Auth::user()->can('create_units')){
+            $this->new = route('properties.units.create');
+        }
         if($unit){
             $this->showIndicators = true;
             $this->unit = $unit;
             $this->isForm = true;
             $this->currentPage = $unit->name;
         }else{
-            $this->currentPage = "Units";
+            $this->currentPage = "Rooms";
         }
 
     }
@@ -31,7 +34,7 @@ class UnitPanel extends ControlPanel
         return  [
             // make($key, $label)
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
-            SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
+            // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
         ];
     }
 }

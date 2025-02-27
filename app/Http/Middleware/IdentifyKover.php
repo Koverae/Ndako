@@ -6,6 +6,7 @@ use App\Models\Company\Company;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,58 +16,46 @@ class IdentifyKover
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next){
-
-        // Retrieving the core URL from the application configuration
-        $coreUrl = config('app.core_url');
-
-        // Attempt to handle the request and identify the tenant
+    public function handle(Request $request, Closure $next): Response
+    {
         try {
-
-            // Extracting the host from the incoming request
-            $host = $request->getHost();
-
-            // Assuming the first part of the domain is the subdomain
-            $subdomain = explode('.', $host)[0];
-
-            // Validate the subdomain and get the company data
-            $company = $this->validateSubdomain($subdomain);
-
-            // If no company is found for the subdomain, redirect to an error page
-            if (!$company) {
-                return $this->redirectOnError($coreUrl, $host, $subdomain);
+            // Ensure user is authenticated
+            if (!Auth::check()) {
+                return redirect()->route('login');
             }
 
-            // Store the company information in the session for later use
+            // Get the authenticated user
+            $user = Auth::user();
+
+            // Fetch or cache the user's company
+            $company = $this->getCompanyForUser($user->id);
+
+            if (!$company) {
+                Log::warning("User {$user->id} has no associated company.");
+                return redirect()->route('error')->with('message', 'Company not found.');
+            }
+
+            // Store company in session
             session(['current_company' => $company]);
 
-            // Proceed with the request if all checks are passed
             return $next($request);
-
         } catch (Exception $e) {
-            // Log any exceptions that occur during the process
-            Log::error('Error in CheckSubdomain middleware: ' . $e->getMessage());
-            // Redirect to a generic error page on exception
-            return redirect()->to("{$coreUrl}/error?message=" . urlencode('An error occurred'));
+            Log::error('Error in IdentifyKover middleware: ' . $e->getMessage());
+            return redirect()->route('error')->with('message', 'An error occurred.');
         }
     }
 
-    // Helper method to validate subdomains and fetch company details
-    protected function validateSubdomain($subdomain)
+    /**
+     * Fetch the company for the authenticated user.
+     */
+    protected function getCompanyForUser($userId)
     {
-        // Cache the company details to improve performance on repeated requests
-        return Cache::remember("company_details_{$subdomain}", 60, function () use ($subdomain) {
-            return Company::where('domain_name', $subdomain)->first();
+        return Cache::remember("user_company_{$userId}", 60, function () use ($userId) {
+            return Company::whereHas('users', function ($query) use ($userId) {
+                $query->where('id', $userId);
+            })->first();
         });
-    }
-
-    // General method for redirecting on validation errors
-    protected function redirectOnError($coreUrl, $host, $subdomain){
-        // Redirect to the error page with query parameters for diagnostics
-        return redirect($coreUrl . '/kokoma?esika=' . urlencode($host) . '&komboyabybd=' . urlencode($subdomain));
     }
 }

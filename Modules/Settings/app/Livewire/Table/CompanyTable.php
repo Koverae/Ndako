@@ -19,24 +19,25 @@ class CompanyTable extends Table
 
     public function createRoute() : string
     {
-        return Route::subdomainRoute('settings.companies.create');
+        return route('settings.companies.create');
     }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('settings.companies.show', ['company' => $id]);
+        return route('settings.companies.show', ['company' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'No Company Added Yet';
+    }
+    
+    public function emptyText(): string
+    {
+        return 'Add your first company to start organizing your business details and managing company-wide operations.';
     }
 
-    public function emptyText() : string
-    {
-        return '';
-    }
     public function query() : Builder
     {
         return Company::query(); // Returns a Builder instance for querying the User model

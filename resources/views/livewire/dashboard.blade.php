@@ -4,19 +4,18 @@
 
     <!-- My To Dos -->
     <div class=" container-fluid">
-        <div class="mb-2 row g-2 align-items-center">
-            <div class="col">
-                <h2 class="page-title">
+        <div class="mb-2 d-flex justify-content-between g-2 ">
+            <h2 class="page-title">
                 My To Dos
-                </h2>
-            </div>
+            </h2>
+            <span onclick="Livewire.dispatch('openModal', {component: 'settings::modal.add-work-item-modal'})" class="gap-2 text-end btn btn-primary">{{ __('Add') }} <i class="fas fa-plus-circle"></i></span>
         </div>
         <ul class="mb-1 nav nav-bordered">
             <li class="nav-item">
-                <a class="nav-link active" id="my-task-tab" data-bs-toggle="tab" data-bs-target="#my-task" type="button" role="tab" aria-controls="my-task" aria-selected="true" ><b>My Tasks (3)</b></a>
+                <a class="nav-link active" id="my-task-tab" data-bs-toggle="tab" data-bs-target="#my-task" type="button" role="tab" aria-controls="my-task" aria-selected="true" ><b>My Tasks  ({{ $tasks->count() }})</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="my-situation-tab" data-bs-toggle="tab" data-bs-target="#my-situation" type="button" role="tab" aria-controls="my-situation" aria-selected="true"><b>My Situations (2)</b></a>
+                <a class="nav-link" id="my-situation-tab" data-bs-toggle="tab" data-bs-target="#my-situation" type="button" role="tab" aria-controls="my-situation" aria-selected="true"><b>My Situations ({{ $situations->count() }})</b></a>
             </li>
         </ul>
         <!-- App -->
@@ -24,55 +23,30 @@
             <!-- Tasks -->
             <div class="mt-2 app_list tab-pane fade show active" id="my-task" role="tabpanel" aria-labelledby="my-task-tab">
                 <div class="row">
-                    <!-- Tasks -->
-                    <div class="mt-1 rounded cursor-pointer col-md-3 col-6">
-                        <div class="p-2 card">
-                            <div class="card-title">
-                                Check-in Preparation for Booking #4721
-                            </div>
-                            <div class="mb-2 card-subtitle">
-                                <span>Priority:  <b style="color: #095c5e;">Medium</b></span>
-                                <br>
-                                <span class="text-black">Created By: Achieng Onyango</span>
-                            </div>
-                            <span>Task created: 3 hours ago</span>
-                            <span>Details: <i class="bi bi-info-circle-fill k-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ensure room 203 is ready for Mr. Ochieng and provide details on nearby restaurants."></i></span>
-                        </div>
-                    </div>
-                    <!-- Tasks End -->
 
                     <!-- Tasks -->
+                    @forelse ($tasks as $task)
                     <div class="mt-1 rounded cursor-pointer col-md-3 col-6">
                         <div class="p-2 card">
                             <div class="card-title">
-                                Follow-up on Late Check-out Request
+                                {{ $task->title }}
                             </div>
                             <div class="mb-2 card-subtitle">
-                                <span>Priority:  <b style="color: #095c5e;">Low</b></span>
+                                <span>Priority:  <b style="color: #095c5e;">{{ $task->priority }}</b></span>
                                 <br>
-                                <span class="text-black">Created By: Achieng Onyango</span>
+                                <span class="text-black">Created By: {{ $task->createdBy->name ?? 'Kwame Bot' }}</span>
                             </div>
-                            <span>Task created: 1 hours ago</span>
-                            <span>Details: <i class="bi bi-info-circle-fill" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Confirm with the guest in room 510 if they will require an extended stay."></i></span>
+                            <span>Task created: {{ \Carbon\Carbon::parse($task->created_at)->diffForHumans() }}</span>
+                            <span>Details: <i class="bi bi-info-circle-fill k-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ $task->description }}"></i></span>
                         </div>
                     </div>
-                    <!-- Tasks End -->
-
-                    <!-- Tasks -->
-                    <div class="mt-1 rounded cursor-pointer col-md-3 col-6">
-                        <div class="p-2 card">
-                            <div class="card-title">
-                                Prepare Guest Welcome Package for VIP Clients
+                    @empty
+                        <div class="mt-1 rounded cursor-pointer col-md-12 col-12">
+                            <div class="p-2 card">
+                                {{ __("You don't have active tasks 😊") }}
                             </div>
-                            <div class="mb-2 card-subtitle">
-                                <span>Priority:  <b style="color: #095c5e;">High</b></span>
-                                <br>
-                                <span class="text-black">Created By: Njambi Mwangi</span>
-                            </div>
-                            <span>Task created: 37 minutes ago</span>
-                            <span>Details: <i class="bi bi-info-circle-fill" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Include a fruit basket, handwritten welcome note, and event calendar for their stay."></i></span>
                         </div>
-                    </div>
+                    @endforelse
                     <!-- Tasks End -->
 
                 </div>
@@ -81,34 +55,30 @@
             <!-- Situations -->
             <div class="mt-2 app_list tab-pane fade" id="my-situation" role="tabpanel" aria-labelledby="my-situation-tab">
                 <div class="row">
-                    <!-- Situations -->
-                    <div class="mt-1 rounded cursor-pointer col-md-3 col-6">
-                        <div class="p-2 card">
-                            <div class="card-title">
-                                Late Arrival Notification for Room 408
-                            </div>
-                            <span class="text-black">Reported By: Front Desk Agent, Mary Wambui</span>
-                            <span>Details: <i class="bi bi-info-circle-fill k-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mr. Kiprono called to inform he will check in after midnight. Ensure his room key is ready, and provide a note with instructions for after-hours access."></i></span>
-                            <div class="mt-2 mb-2 card-subtitle">
-                                <span>Situation created: 1 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Situations End -->
 
                     <!-- Situations -->
+                    @forelse ($situations as $situation)
                     <div class="mt-1 rounded cursor-pointer col-md-3 col-6">
                         <div class="p-2 card">
                             <div class="card-title">
-                                Overbooking Alert
+                                {{ $situation->title }}
                             </div>
-                            <span class="text-black">Reported By: Front Desk Supervisor, Isaac Kinyua</span>
-                            <span>Details: <i class="bi bi-info-circle-fill k-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Two guests, Mr. Omondi and Ms. Wanjiru, have been booked for the same room. Check availability for alternatives and offer a complimentary upgrade to one guest."></i></span>
-                            <div class="mt-2 mb-2 card-subtitle">
-                                <span>Situation created: 2 hours ago</span>
+                            <div class="mb-2 card-subtitle">
+                                {{-- <span>Priority:  <b style="color: #095c5e;">{{ $situation->priority }}</b></span>
+                                <br> --}}
+                                <span class="text-black">Reported By: {{ $situation->created_by ?? 'Kwame Bot' }}</span>
                             </div>
+                            <span>Details: <i class="bi bi-info-circle-fill k-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ $situation->description }}"></i></span>
+                            <span>Situation created: {{ \Carbon\Carbon::parse($situation->created_at)->diffForHumans() }}</span>
                         </div>
                     </div>
+                    @empty
+                        <div class="mt-1 rounded cursor-pointer col-md-12 col-12">
+                            <div class="p-2 card">
+                                {{ __("You don't have unresolve situations 😊") }}
+                            </div>
+                        </div>
+                    @endforelse
                     <!-- Situations End -->
                 </div>
             </div>
@@ -160,6 +130,9 @@
                                         <i class="bi bi-menu-app"></i>
                                     </a>
                                 </div>
+                                {{-- <div class="text-end">
+                                    <span wire:click='testNotif'>Test notifications</span>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -219,7 +192,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a class="text-decoration-none" title="{{ __('View Details') }}" wire:navigate href="{{ Route::subdomainRoute('bookings.show', ['booking' => $booking->id]) }}"><i class="fas fa-info-circle fs-2" style="color: #095c5e;"></i></a>
+                                        <a class="text-decoration-none" title="{{ __('View Details') }}" wire:navigate href="{{ route('bookings.show', ['booking' => $booking->id]) }}"><i class="fas fa-info-circle fs-2" style="color: #095c5e;"></i></a>
                                         @if(\Carbon\Carbon::parse($booking->check_out)->isFuture())
                                         <a class="text-decoration-none" title="{{ __('Check-Out') }}" wire:navigate><i class="fas fa-sign-out-alt fs-2" style="color: #095c5e;"></i></a>
                                         @elseif(\Carbon\Carbon::parse($booking->check_in)->isFuture())

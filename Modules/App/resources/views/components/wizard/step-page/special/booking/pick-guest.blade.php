@@ -1,9 +1,6 @@
 @props([
     'value',
 ])
-@php
-    $users = \App\Models\User::isCompany(current_company()->id)->get();
-@endphp
 
 <div class="mt-3 container-fluid {{ $this->currentStep == $value->step ? '' : 'd-none' }}">
 

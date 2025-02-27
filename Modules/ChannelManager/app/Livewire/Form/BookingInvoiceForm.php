@@ -98,7 +98,7 @@ class BookingInvoiceForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('booking', __('Booking'), __('Reservations linked to this invoice'), 'link', 'fa fa-bookmark', Route::subdomainRoute('bookings.show', ['booking' => $this->booking])),
+            Capsule::make('booking', __('Booking'), __('Reservations linked to this invoice'), 'link', 'fa fa-bookmark', route('bookings.show', ['booking' => $this->booking])),
         ];
     }
 

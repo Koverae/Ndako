@@ -5,8 +5,10 @@ use App\Models\Module\InstalledModule;
 use App\Models\Module\Module;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Modules\Properties\Models\Property\LeaseTerm;
 use Modules\Settings\Models\System\Setting;
 use Modules\Settings\Models\SystemParameter;
+use Modules\Settings\Models\WorkItem;
 
 if (!function_exists('domains')) {
     function domains() {
@@ -283,7 +285,7 @@ if (!function_exists('toRadioOptions')) {
     }
 }
 
-if (!function_exists('subdomainRoute')) {
+if (!function_exists('route')) {
     /**
      * Generate a route with a subdomain parameter based on the current company.
      *
@@ -292,7 +294,7 @@ if (!function_exists('subdomainRoute')) {
      * @param bool $absolute Whether the URL should be absolute.
      * @return string
      */
-    function subdomainRoute(string $name, array $parameters = [], bool $absolute = true): string
+    function route(string $name, array $parameters = [], bool $absolute = true): string
     {
         if (function_exists('current_company') && $domain = current_company()->domain_name) {
             $parameters['subdomain'] = $domain;
@@ -343,3 +345,57 @@ if (!function_exists('dateDaysDifference')) {
     }
 }
 
+
+//************ ****************//
+// Work Items ******************
+//************ ****************//
+if(!function_exists('createRoomPreparationTask')){
+    function createRoomPreparationTask($reservation)
+    {
+        WorkItem::create([
+            'title' => "Prepare Room #{$reservation->room_number}",
+            'description' => "Ensure the room is ready for guest {$reservation->guest_name}.",
+            'type' => 'task',
+            'status' => 'pending',
+            'priority' => 'medium',
+            'related_id' => $reservation->id,
+            'assigned_to' => 1, // Default to housekeeping team
+            'created_by' => auth()->id() ?? null,
+        ]);
+    }
+}
+
+
+//************ ****************//
+// Unit Pricing ******************
+//************ ****************//
+if(!function_exists('lease_term')){
+    function lease_term($id)
+    {
+        $leaseTerm = LeaseTerm::find($id);
+
+        return $leaseTerm;
+    }
+}
+
+// if(!function_exists('lease_term')){
+//     function lease_term($lease_duration)
+//     {
+//         $lease_terms = [
+//             '1' => '1 month',
+//             '2' => '2 months',
+//             '3' => '3 months',
+//             '4' => '4 months',
+//             '5' => '5 months',
+//             '6' => '6 months',
+//             '7' => '7 months',
+//             '8' => '8 months',
+//             '9' => '9 months',
+//             '10' => '10 months',
+//             '11' => '11 months',
+//             '12' => '12 months',
+//         ];
+
+//         return $lease_terms[$lease_duration];
+//     }
+// }

@@ -191,7 +191,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->string('name');
-            $table->enum('type', ['sale','purchase', 'cash', 'bank','miscellaneous'])->nullable();
+            $table->enum('type', ['sale','purchase', 'cash', 'bank', 'm-pesa','miscellaneous'])->nullable();
             $table->string('short_code');
             $table->unsignedBigInteger('default_account_id')->nullable();
             // Accounting Informations

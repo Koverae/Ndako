@@ -33,6 +33,17 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        Schema::create('identity_verifications', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('document_type', ['id-card', 'passport', 'driver-license']); // ID card, passport, etc.
+            $table->string('document_path'); // Path to the uploaded document
+            $table->string('selfie_path')->nullable(); // Optional selfie
+            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->text('rejection_reason')->nullable(); // Reason if rejected
+            $table->timestamps();
+        });
+
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();
@@ -165,7 +176,7 @@ return new class extends Migration
         // Countries
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->string('common_name');
             $table->string('official_name');
             $table->string('country_code');
@@ -177,7 +188,11 @@ return new class extends Migration
             $table->boolean('zip_required')->default(true);
             $table->boolean('state_required')->default(false);
             $table->string('flag');
-            $table->enum('start_of_week', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
+            $table->enum('start_of_week', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])->default('monday');
+            $table->string('capital')->nullable();
+            $table->string('region')->nullable(); // Continent (e.g., "Africa")
+            $table->string('subregion')->nullable(); // Subregion (e.g., "Eastern Africa")
+            $table->text('languages')->nullable(); // Comma-separated languages (e.g., "English, Swahili")
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
@@ -186,9 +201,12 @@ return new class extends Migration
 
         Schema::create('work_items', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('room_id')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('type', ['task', 'situation']); // 'task' or 'situation'
+            $table->enum('priority', ['low', 'medium', 'high', 'critical']);
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled', 'reported', 'resolved', 'unresolved'])
                   ->default('pending');
             $table->unsignedBigInteger('related_id')->nullable(); // Could link to a related parent (e.g., project, room, etc.)
@@ -205,6 +223,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('system_parameters');
+        Schema::dropIfExists('identity_verifications');
         Schema::dropIfExists('settings');
         Schema::dropIfExists('currencies');
         Schema::dropIfExists('languages');

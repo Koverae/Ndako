@@ -9,6 +9,8 @@ use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Models\System\Setting;
 use Modules\Settings\Models\SystemParameter;
 use Ramsey\Uuid\Uuid;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class SettingsAppHandler extends AppHandler
 {
@@ -21,6 +23,7 @@ class SettingsAppHandler extends AppHandler
     {
         // Example: Create settings-related data and initial configuration
         $this->installCompanySettings($company);
+        $this->installRolesAndPermissions($company);
     }
 
     protected function handleUninstallation()
@@ -37,11 +40,11 @@ class SettingsAppHandler extends AppHandler
     private function installCompanySettings(int $companyId): void
     {
         $company = Company::find($companyId)->first();
-        $defaultCurrency = Currency::isCompany($companyId)->where('code', $company->default_currency)->first();
+        $defaultCurrency = Currency::find($company->default_currency_id);
 
         $database_uuid = Uuid::uuid4();
         $database_secret = generate_unique_database_secret();
-        
+
         SystemParameter::create([
             'company_id' => $companyId,
             'database_create_date' => now(),
@@ -56,5 +59,140 @@ class SettingsAppHandler extends AppHandler
             'default_currency_id' => $defaultCurrency->id,
             'default_currency_position' => $defaultCurrency->symbol_position,
         ]);
+    }
+
+    /**
+     * Install default company roles and permissions.
+     *
+     * @param Company $company
+     */
+    private function installRolesAndPermissions(int $companyId): void
+    {
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Define Permissions
+        $permissions = [
+            // Hotel Manager
+            'access_settings',
+            'modify_settings',
+            'view_users',
+            'manage_roles',
+            'invite_users',
+            'manage_reservations',
+            'view_reports',
+            'view_reservation_reports',
+            'view_property_reports',
+            'manage_rooms',
+            'manage_staff',
+            'manage_properties',
+            'create_units',
+            'manage_billing',
+
+            // Front Desk / Receptionist
+            'create_reservations',
+            'modify_reservations',
+            'view_rooms',
+            'check_in_guests',
+            'check_out_guests',
+            'manage_guest_profiles',
+            'assign_rooms',
+
+            // Maintenance Staff
+            'view_maintenance_tasks',
+            'update_task_status',
+
+            // Accountant
+            'view_financial_reports',
+            'manage_invoices',
+            'process_refunds',
+
+            // Guest
+            'view_own_reservations',
+            'update_profile',
+            'request_housekeeping',
+
+            // App
+            'manage_kover_subscription',
+            'install_pwa',
+            'modify_own_profile',
+
+        ];
+
+        // Create Permissions
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'company_id' => $companyId]);
+        }
+
+        // Create Roles and Assign Permissions
+        $rolesPermissions = [
+            'owner' => [
+                'access_settings',
+                'modify_settings',
+                'view_users',
+                'manage_roles',
+                'invite_users',
+                'manage_reservations',
+                'manage_properties',
+                'view_reports',
+                'view_reservation_reports',
+                'view_financial_reports',
+                'view_property_reports',
+                'manage_rooms',
+                'create_units',
+                'manage_staff',
+                'manage_billing',
+                'view_maintenance_tasks',
+            ],
+            'manager' => [
+                'access_settings',
+                'modify_settings',
+                'view_users',
+                'manage_roles',
+                'invite_users',
+                'manage_reservations',
+                'manage_properties',
+                'view_reports',
+                'view_reservation_reports',
+                'view_financial_reports',
+                'view_property_reports',
+                'manage_rooms',
+                'create_units',
+                'manage_staff',
+                'manage_billing',
+                'view_maintenance_tasks',
+            ],
+            'front-desk' => [
+                'manage_reservations',
+                'manage_rooms',
+                'view_rooms',
+                'create_reservations',
+                'modify_reservations',
+                'check_in_guests',
+                'check_out_guests',
+                'manage_guest_profiles',
+                'assign_rooms',
+            ],
+            'maintenance-staff' => [
+                'view_maintenance_tasks',
+                'update_task_status',
+                'view_rooms',
+            ],
+            'accountant' => [
+                'view_financial_reports',
+                'manage_invoices',
+                'process_refunds',
+            ],
+            'guest' => [
+                'view_own_reservations',
+                'update_profile',
+                'request_housekeeping',
+            ],
+        ];
+
+        foreach ($rolesPermissions as $role => $permissions) {
+            $roleInstance = Role::create(['name' => $role, 'company_id' => $companyId]);
+            $roleInstance->givePermissionTo($permissions);
+        }
     }
 }

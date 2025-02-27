@@ -8,7 +8,7 @@ use Livewire\Component;
 class Overview extends Component
 {
     #[Url(as: 'dash', keep: true)]
-    public $dash = 'reservations';
+    public $dash = 'home';
     public function render()
     {
         return view('livewire.dashboards.overview')

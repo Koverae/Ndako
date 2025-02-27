@@ -11,6 +11,6 @@ class SettingsDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call([]);
+        
     }
 }

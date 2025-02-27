@@ -29,3 +29,166 @@ $unitTypes = UnitType::with(['unitTypePricings' => function ($query) use ($prope
                     ->orWhereNull('end_date');
           });
 }])->get();
+
+
+
+
+<div class="border rounded booking-form">
+    <div id="availabilityResult" style="margin-top: 15px; text-align: center; font-size: 16px;"></div>
+    <form id="checkAvailabilityForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <span class="form-label">Check In</span>
+                    <input class="form-control" type="date" id="checkIn" name="check_in" required>
+                </div>
+                <span class="in-out hidden-xs hidden-sm">&#8652;</span>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <span class="form-label">Check out</span>
+                    <input class="form-control" type="date" id="checkOut" name="check_out" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <span class="form-label">Room Type</span>
+                    <select class="form-control" name="room_type" id="roomType">
+                        <option value=""></option>
+                        @foreach($roomTypes as $type)
+                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                        @endforeach
+                    </select>
+                    {{-- <span class="select-arrow"></span> --}}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <span class="form-label">Adults</span>
+                    <input type="number" id="people" class="form-control" name="people" min="1" required>
+                    <span class="select-arrow"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <span class="form-label">Children</span>
+                    <select class="form-control">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                    <span class="select-arrow"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-btn">
+                    <button type="submit" class="submit-btn">Check availability</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="container text-center">
+        <span class="text-black caveat" style="font-size: 25px;">Powered by <strong><a class="text-black" href="https://ndako.koverae.com">Ndako</a></strong></span>
+    </div>
+</div>
+
+(function () {
+    // Embed script initialization
+    window.LanternEmbed = {
+        init: function (formContainerId, apiKey, apiSecret) {
+            const container = document.getElementById(formContainerId);
+
+            if (!container) {
+                console.error('Form container not found.');
+                return;
+            }
+
+            // Fetch and load the form
+            fetch('http://lantern.koverae.localhost/api/embed/form'
+                    , {
+                    headers: {
+                        'X-API-Key': apiKey,
+                        'X-API-Secret': apiSecret,
+                    },
+                }
+            )
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load form');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+
+                    // Add event listener for form submission
+                    document.getElementById('checkAvailabilityForm').addEventListener('submit', async function (e) {
+                        e.preventDefault();
+
+                        // Collect form data
+                        const checkIn = document.getElementById('checkIn').value;
+                        const checkOut = document.getElementById('checkOut').value;
+                        const roomType = document.getElementById('roomType').value;
+                        const people = document.getElementById('people').value;
+
+                        try {
+                            // Send request to the backend
+                            const response = await fetch('http://lantern.koverae.localhost/api/check-availability', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-API-Key': apiKey,
+                                    'X-API-Secret': apiSecret,
+                                },
+                                body: JSON.stringify({
+                                    check_in: checkIn,
+                                    check_out: checkOut,
+                                    room_type: roomType,
+                                    people: people,
+                                }),
+                            });
+
+                            if (!response.ok) {
+                                if (response.status === 400) {
+                                    const errorData = await response.json();
+                                    document.getElementById('availabilityResult').textContent = errorData.message;
+                                } else {
+                                    throw new Error('Something went wrong. Please try again later.');
+                                }
+                            } else {
+                                const result = await response.json();
+                                const resultDiv = document.getElementById('availabilityResult');
+                                // resultDiv.textContent = result.message;
+                                // resultDiv.style.color = result.available ? 'green' : 'red';
+
+                                // Display available rooms if available
+                                    fetch('http://lantern.koverae.localhost/api/available-rooms-html', {
+                                        headers: {
+                                            'X-API-Key': apiKey,
+                                            'X-API-Secret': apiSecret,
+                                        },
+                                    })
+                                    .then(response => response.text())
+                                    .then(html => {
+                                        document.getElementById('availableRooms').innerHTML = html; 
+                                    })
+                                    .catch(error => {
+                                        console.error('Error loading available rooms:', error);
+                                        document.getElementById('availabilityResult').textContent = 'Failed to load available rooms.';
+                                    });
+                                if (result.available) {
+                                }
+
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            document.getElementById('availabilityResult').textContent = 'An error occurred. Please try again later.';
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading form:', error));
+        },
+    };
+})();

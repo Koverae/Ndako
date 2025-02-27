@@ -14,7 +14,7 @@ class UserPanel extends ControlPanel
     public function mount($user = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('settings.users.create');
+        $this->new = route('settings.users.create');
         if($user){
             $this->showIndicators = true;
             $this->user = $user;
@@ -47,7 +47,7 @@ class UserPanel extends ControlPanel
             // Add more buttons as needed
         ];
     }
-    
+
     public function archiveUser(){
         $this->dispatch('archive-user');
     }

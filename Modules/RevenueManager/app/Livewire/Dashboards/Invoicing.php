@@ -22,7 +22,7 @@ class Invoicing extends Component
         $this->units = PropertyUnit::isCompany(current_company()->id)->get();
         $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->get();
 
-        $this->property = $this->properties->first()->id;
+        $this->property = $this->properties->first()->id ?? null;
         $this->loadData();
     }
 

@@ -11,8 +11,8 @@ class AppDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            ModuleSeeder::class,
-        ]);
+        // $this->call([
+        //     ModuleSeeder::class,
+        // ]);
     }
 }

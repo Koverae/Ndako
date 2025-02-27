@@ -19,24 +19,25 @@ class BookingPaymentTable extends Table
 
     // public function createRoute() : string
     // {
-    //     return Route::subdomainRoute('properties.units.create');
+    //     return route('properties.units.create');
     // }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('channels.show', ['channel' => $id]);
+        return route('channels.show', ['channel' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'No Payments Recorded';
     }
 
-    public function emptyText() : string
+    public function emptyText(): string
     {
-        return '';
+        return 'Payments related to bookings will appear here. Add a new payment to keep track of transactions effortlessly.';
     }
+
     public function query() : Builder
     {
         return BookingPayment::query(); // Returns a Builder instance for querying the User model

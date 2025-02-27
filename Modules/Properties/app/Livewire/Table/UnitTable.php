@@ -19,27 +19,40 @@ class UnitTable extends Table
 
     public function createRoute() : string
     {
-        return Route::subdomainRoute('properties.units.create');
+        return route('properties.units.create');
     }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('properties.units.show', ['unit' => $id]);
+        return route('properties.units.show', ['unit' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'Your Space is Waiting!';
+    }
+    
+    public function emptyText(): string
+    {
+        return 'Add your first unit to start managing your property with ease. Each unit helps you track availability, reservations, and more.';
     }
 
-    public function emptyText() : string
-    {
-        return '';
-    }
     public function query() : Builder
     {
-        return PropertyUnit::query(); // Returns a Builder instance for querying the User model
+        $query = PropertyUnit::query();
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            // Search both the booking's name and the related guest's name
+            $query = PropertyUnit::query()
+            ->where('name', 'like', '%' . $this->searchQuery . '%')
+            ->orWhereHas('unitType', function($query) {
+                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        return $query; // Returns a Builder instance for querying the User model
     }
 
     // List View

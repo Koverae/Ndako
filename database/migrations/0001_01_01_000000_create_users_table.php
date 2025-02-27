@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('team_id')->nullable();
             $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('current_company_id')->default(0);
 
@@ -27,10 +26,14 @@ return new class extends Migration
             // Preferences
             $table->unsignedBigInteger('language_id')->nullable();
             $table->string('timezone')->default('eat');
-            
+
+            $table->integer('onboarding_step')->default(0);
+            $table->boolean('onboarding_completed')->default(false);
+
             // Connection & Security
+            $table->enum('identity', ['unverified', 'pending', 'verified'])->default('unverified');
             $table->string('social_id')->nullable();
-            $table->string('social_type')->nullable(); 
+            $table->string('social_type')->nullable();
             $table->string('password');
             $table->timestamp('password_updated_at')->nullable();
             $table->boolean('two_factor_enabled')->default(true);
@@ -40,7 +43,6 @@ return new class extends Migration
             $table->enum('status', ['confirmed', 'never-connected'])->default('never-connected');
             $table->boolean('is_active')->default(true);
             $table->string('last_login_ip')->nullable();// Add a nullable string field to store the IP address from which the user last logged in
-
             $table->timestamps();
         });
 

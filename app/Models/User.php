@@ -12,11 +12,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use App\Models\Team\Team;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Settings\Models\Identity\IdentityVerification;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -48,19 +50,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
-    
+
     // public function sendEmailVerificationNotification()
     // {
     //     $this->notify(new CustomVerifyEmailNotification());
     // }
 
-    // public static function boot() {
-    //     parent::boot();
-
-    //     static::creating(function ($model) {
-    //         $model->generateAvatar();
-    //     });
-    // }
 
 
     public static function boot() {
@@ -70,6 +65,7 @@ class User extends Authenticatable implements MustVerifyEmail
             $model->generateAvatar();
         });
     }
+
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
@@ -81,6 +77,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Team::class, 'team_id');
     }
 
+    public function identityVerification()
+    {
+        return $this->hasOne(IdentityVerification::class);
+    }
+
     /**
      * Route notifications for the Vonage channel.
      */
@@ -88,7 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->phone;
     }
-    
+
     // Generate OTP code
     public function generateTwoFactorCode(): void {
         $this->timestamps = false;  // Prevent updating the 'updated_at' column

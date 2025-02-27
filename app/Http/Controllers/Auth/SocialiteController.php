@@ -56,7 +56,7 @@ class SocialiteController extends Controller
             }
 
             // Redirect the user to the dashboard
-            return redirect()->route('dashboard', ['subdomain' => current_company()->domain_name]);
+            return redirect()->route('dashboard');
         } catch (Exception $e) {
             return redirect()->route('login')->withErrors(['error' => $e->getMessage()]);
         }

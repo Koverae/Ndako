@@ -27688,3 +27688,55 @@ Dashboards
 /********************
 Dashboards End
 ********************/
+
+
+/* Empty Table */
+.k_nocontent_help {
+    font-size: 17px;
+    line-height: 24px;
+    text-align: center;
+    height: 77vh;
+    width: 100%;
+    /* padding: 3px 315px 3px 315px; */
+    margin-top: -8px;
+    /* padding-top: 10%; */
+}
+.k_nocontent_help .empty-title {
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.started{
+    height: 100%;
+    background-color: #fff;
+}
+.started .started-background{
+    background-attachment: fixed;
+    background-size: cover;
+    background-image: url('/assets/images/illustrations/pms-presentation-1.png');
+    background-repeat: no-repeat;
+    height: 100%;
+    border-radius: 15px;
+}
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 12px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #fff;
+    clip-path: inset(-220%);
+    animation: l28 2s infinite linear;
+  }
+  @keyframes l28 {
+    0%  {box-shadow:0 0 0 0   , 40px 0,-40px 0,0 40px,0 -40px}
+    10% {box-shadow:0 0 0 0   , 12px 0,-40px 0,0 40px,0 -40px}
+    20% {box-shadow:0 0 0 4px , 0px  0,-40px 0,0 40px,0 -40px}
+    30% {box-shadow:0 0 0 4px , 0px  0,-12px 0,0 40px,0 -40px}
+    40% {box-shadow:0 0 0 8px , 0px  0,  0px 0,0 40px,0 -40px}
+    50% {box-shadow:0 0 0 8px , 0px  0,  0px 0,0 12px,0 -40px}
+    60% {box-shadow:0 0 0 12px, 0px  0,  0px 0,0  0px,0 -40px}
+    70% {box-shadow:0 0 0 12px, 0px  0,  0px 0,0  0px,0 -12px}
+    80% {box-shadow:0 0 0 16px, 0px  0,  0px 0,0  0px,0  0px }
+    90%,
+    100%{box-shadow:0 0 0 0   , 40px 0,-40px 0,0 40px,0 -40px}
+  }

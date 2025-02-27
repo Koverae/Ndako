@@ -18,7 +18,7 @@ class Room extends Component
 
     public function mount(){
         $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = $this->properties->first()->id;
+        $this->property = $this->properties->first()->id ?? null;
         $this->loadData();
     }
 

@@ -94,8 +94,8 @@
         </div>
     </div>
     @if($this->data()->count() == 0)
-    <div class="bg-white empty k_nocontent_help">
-        <img src="{{ asset('assets/images/illustrations/errors/missing-element.svg') }}"style="height: 350px" alt="">
+    <div class="bg-white empty k_nocontent_help h-100">
+        <img src="{{ asset('assets/images/illustrations/errors/419.svg') }}"style="height: 350px" alt="">
         <p class="empty-title">{{ $this->emptyTitle() }}</p>
         <p class="empty-subtitle">{{ $this->emptyText() }}</p>
     </div>

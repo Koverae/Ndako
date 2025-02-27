@@ -38,13 +38,13 @@ class TwoFactorMiddleware
                     $user->resetTwoFactorCode(); // Reset the two-factor code
                     auth()->logout(); // Log out the user
                     // Redirect to the login page with a status message
-                    return redirect()->intended(Route::subdomainRoute('login'))
+                    return redirect()->intended(route('login'))
                         ->withStatus('Your verification code expired. Please re-login.');
                 }
                 // Check if the current IP matches the last login IP and if the user is not on a verification route
                 if ($user->last_login_ip !== $request->ip() && !$request->is('verify*')) {
                     // Redirect to the OTP verification page
-                    return redirect()->intended(Route::subdomainRoute('verify.index'));
+                    return redirect()->intended(route('verify.index'));
                 }
             }
         }

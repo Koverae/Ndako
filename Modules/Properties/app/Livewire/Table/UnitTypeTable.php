@@ -19,27 +19,39 @@ class UnitTypeTable extends Table
 
     public function createRoute() : string
     {
-        return Route::subdomainRoute('properties.unit-types.create');
+        return route('properties.unit-types.create');
     }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('properties.unit-types.show', ['type' => $id]);
+        return route('properties.unit-types.show', ['type' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'Define Your Spaces!';
     }
 
-    public function emptyText() : string
+    public function emptyText(): string
     {
-        return '';
+        return 'Add a unit type to categorize your rooms or properties. It’s the first step in creating a tailored experience for your guests.';
     }
+
     public function query() : Builder
     {
-        return PropertyUnitType::query(); // Returns a Builder instance for querying the User model
+        $query = PropertyUnitType::query();
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            $query = PropertyUnitType::query()
+            ->where('name', 'like', '%' . $this->searchQuery . '%')
+            ->orWhereHas('property', function($query) {
+                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        return $query; // Returns a Builder instance for querying the User model
     }
 
     // List View

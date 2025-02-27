@@ -5,6 +5,7 @@
             <div class="flex-1 gap-3 d-none d-lg-flex">
                 <select wire:model.live="period" id="" class="w-auto k-input fs-3">
                     <option value="0">{{ __('Select period') }}</option>
+                    <option value="1">{{ __('Today') }}</option>
                     <option value="7">{{ __('Last 7 days') }}</option>
                     <option value="30">{{ __('Last 30 days') }}</option>
                     <option value="90">{{ __('Last 90 days') }}</option>
@@ -73,8 +74,7 @@
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
-                        7% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                            0% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
                         </span>
                         <span class="text-end">{{ __('Since last period') }}</span>
                     </div>
@@ -93,8 +93,7 @@
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
-                        27% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                        0% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
                         </span>
                         <span class="text-end">{{ __('Since last period') }}</span>
                     </div>
@@ -113,8 +112,7 @@
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
-                        14% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                        0% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
                         </span>
                         <span class="text-end">{{ __('Since last period') }}</span>
                     </div>
@@ -133,8 +131,7 @@
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-red d-inline-flex align-items-center lh-1">
-                        22% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                        0% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
                         </span>
                         <span class="text-end">{{ __('Since last period') }}</span>
                     </div>
@@ -323,82 +320,79 @@
         </div>
 
     </div>
-
-@section('scripts')
-<script>
-    document.addEventListener('livewire:navigated', function () {
-            const monthlyBookingsData = @json($monthlyBookings);
-            const labels = monthlyBookingsData.map(item => item.month); /*Month names for x-axis*/
-            const data = monthlyBookingsData.map(item => item.revenue); /* Revenue data for y-axis*/
-
-            new ApexCharts(document.getElementById('total-booking-chart'), {
-                chart: {
-                    type: "bar",
-                    fontFamily: 'inherit',
-                    height: 340,
-                    parentHeightOffset: 0,
-                    toolbar: {
-                        show: false,
+    <script>
+        document.addEventListener('livewire:navigated', function () {
+                const monthlyBookingsData = @json($monthlyBookings);
+                const labels = monthlyBookingsData.map(item => item.month); /*Month names for x-axis*/
+                const data = monthlyBookingsData.map(item => item.revenue); /* Revenue data for y-axis*/
+    
+                new ApexCharts(document.getElementById('total-booking-chart'), {
+                    chart: {
+                        type: "bar",
+                        fontFamily: 'inherit',
+                        height: 340,
+                        parentHeightOffset: 0,
+                        toolbar: {
+                            show: false,
+                        },
+                        animations: {
+                            enabled: true
+                        },
                     },
-                    animations: {
-                        enabled: true
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '50%',
+                        }
                     },
-                },
-                plotOptions: {
-                    bar: {
-                        columnWidth: '50%',
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                },
-                fill: {
-                    opacity: 1,
-                },
-                series: [{
-                    name: "Revenue",
-                    data: data
-                }],
-                tooltip: {
-                    theme: 'dark'
-                },
-                grid: {
-                    padding: {
-                        top: -20,
-                        right: 0,
-                        left: -4,
-                        bottom: -4
+                    dataLabels: {
+                        enabled: true,
                     },
-                    strokeDashArray: 4,
-                },
-                xaxis: {
-                    labels: {
-                        padding: 0,
+                    fill: {
+                        opacity: 1,
                     },
+                    series: [{
+                        name: "Revenue",
+                        data: data
+                    }],
                     tooltip: {
-                        enabled: false
+                        theme: 'dark'
                     },
-                    axisBorder: {
+                    grid: {
+                        padding: {
+                            top: -20,
+                            right: 0,
+                            left: -4,
+                            bottom: -4
+                        },
+                        strokeDashArray: 4,
+                    },
+                    xaxis: {
+                        labels: {
+                            padding: 0,
+                        },
+                        tooltip: {
+                            enabled: false
+                        },
+                        axisBorder: {
+                            show: false,
+                        },
+                        type: 'category', /*Use 'category' for month labels on the x-axis*/
+                        categories: labels, /*Month names as x-axis labels*/
+                    },
+                    yaxis: {
+                        title: {
+                            text: '{{ __('Revenue') }}', // Add y-axis label "Revenue"
+                        },
+                        labels: {
+                            padding: 25
+                        },
+                    },
+                    colors: ["#017E84"],
+                    legend: {
                         show: false,
                     },
-                    type: 'category', /*Use 'category' for month labels on the x-axis*/
-                    categories: labels, /*Month names as x-axis labels*/
-                },
-                yaxis: {
-                    title: {
-                        text: '{{ __('Revenue') }}', // Add y-axis label "Revenue"
-                    },
-                    labels: {
-                        padding: 25
-                    },
-                },
-                colors: ["#017E84"],
-                legend: {
-                    show: false,
-                },
-            }).render();
-    });
-</script>
-@endsection
+                }).render();
+        });
+    </script>
 </div>
 

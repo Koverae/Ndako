@@ -32,7 +32,7 @@ class Reservation extends Component
 
         $this->monthlyBookings = $this->getMonthlyBookings();
 
-        $this->property = $this->properties->first()->id;
+        $this->property = $this->properties->first()->id ?? null;
         $this->loadData();
 
     }

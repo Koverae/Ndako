@@ -27,7 +27,7 @@ class Property extends Component
         $this->properties = PropertyProperty::isCompany(current_company()->id)->get();
         $this->propertyTypes = PropertyType::isCompany(current_company()->id)->get();
 
-        $this->property = $this->properties->first()->id;
+        $this->property = $this->properties->first()->id ?? null;
 
         $this->loadData();
     }

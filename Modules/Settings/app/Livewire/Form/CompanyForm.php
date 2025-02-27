@@ -119,7 +119,7 @@ class CompanyForm extends SimpleAvatarForm
             'avatar' => $avatar,
         ]);
 
-        return $this->redirect(Route::subdomainRoute('settings.companies.show', ['company' => $company->id]), navigate: true);
+        return $this->redirect(route('settings.companies.show', ['company' => $company->id]), navigate: true);
     }
     
     #[On('update-company')]
@@ -141,7 +141,7 @@ class CompanyForm extends SimpleAvatarForm
             'default_currency' => $this->currency,
         ]);
         $company->save();
-        return $this->redirect(Route::subdomainRoute('settings.companies.show', ['company' => $company->id]), navigate: true);
+        return $this->redirect(route('settings.companies.show', ['company' => $company->id]), navigate: true);
     }
 
     public function updated(){

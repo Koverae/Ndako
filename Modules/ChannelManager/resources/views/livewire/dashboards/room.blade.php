@@ -162,9 +162,8 @@
         </div>
 
     </div>
-    @section('scripts')
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("livewire:navigated", function () {
             const roomNames = @json($bestSellerRooms->pluck('room_name'));
             const revenues = @json($bestSellerRooms->pluck('revenue'));
                 new ApexCharts(document.getElementById("best-seller-rooms-chart"), {
@@ -203,5 +202,4 @@
                 }).render();
         });
     </script>
-    @endsection
 </div>

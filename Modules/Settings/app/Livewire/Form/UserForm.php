@@ -5,15 +5,18 @@ namespace Modules\Settings\Livewire\Form;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\On;
+use Modules\App\Livewire\Components\Form\Button\ActionBarButton;
 use Modules\App\Livewire\Components\Form\Button\StatusBarButton;
 use Modules\App\Livewire\Components\Form\Template\SimpleAvatarForm;
 use Modules\App\Livewire\Components\Form\Input;
 use Modules\App\Livewire\Components\Form\Tabs;
 use Modules\App\Livewire\Components\Form\Group;
+use Modules\App\Traits\Form\Button\ActionBarButton as ActionBarButtonTrait;
 use Modules\Settings\Models\Language\Language;
 
 class UserForm extends SimpleAvatarForm
 {
+    use ActionBarButtonTrait;
     public $user;
     public $name, $email, $phone, $language, $timezone;
     public array $dashboardOptions = [], $adminOptions = [], $propertyOptions = [], $frontOptions = [], $employeeOptions = [], $languageOptions = [], $timezoneOptions = [];
@@ -186,7 +189,7 @@ class UserForm extends SimpleAvatarForm
         return [
             Input::make('name', "Name", 'text', 'name', 'top-title', 'none', 'none', __('e.g. Arden BOUET'))->component('app::form.input.ke-title'),
             Input::make('email', "Email", 'email', 'email', 'top-title', 'none', 'none', __('e.g. email@yourcompany.com'))->component('app::form.input.ke-title-2'),
-            Input::make('phone', "Phone", 'tel', 'phone', 'top-title', 'none', 'none', __('e.g. email@yourcompany.com'))->component('app::form.input.ke-title-2'),
+            Input::make('phone', "Phone", 'tel', 'phone', 'top-title', 'none', 'none', __('e.g. +254745908026'))->component('app::form.input.ke-title-2'),
             Input::make('dashboard', 'Dashboard', 'select', 'email', 'top-title', 'general', 'productivity', "", "", $this->dashboardOptions),
             Input::make('administration', 'Administration', 'select', 'email', 'right', 'general', 'administration', "", "", $this->adminOptions),
             Input::make('employess', 'Employees', 'select', 'email', 'top-title', 'general', 'human-resource', "", "", $this->employeeOptions),
@@ -198,6 +201,24 @@ class UserForm extends SimpleAvatarForm
             
         ];
     }
+    // Action Bar Button
+    public function actionBarButtons() : array
+    {
+        $type = $this->status;
+
+        $buttons =  [
+            // ActionBarButton::make('invoice', 'Créer une facture', 'storeQT()', 'sale_order'),
+            ActionBarButton::make('send-email', __('Send by Email'), "", 'storable', true),
+            // Add more buttons as needed
+        ];
+
+        // Define the custom order of button keys
+        $customOrder = ['send-email', 'confirm', 'send', 'preview']; // Adjust as needed
+
+        // Change dynamicaly the display order depends on status
+        return $this->sortActionButtons($buttons, $customOrder, $type);
+    }
+
 
     public function statusBarButtons() : array
     {
@@ -252,7 +273,7 @@ class UserForm extends SimpleAvatarForm
             'avatar' => $avatar,
         ]);
 
-        return $this->redirect(Route::subdomainRoute('settings.users.show', ['user' => $user->id]), navigate: true);
+        return $this->redirect(route('settings.users.show', ['user' => $user->id]), navigate: true);
     }
     
     #[On('update-user')]
@@ -277,7 +298,7 @@ class UserForm extends SimpleAvatarForm
             'status' => $this->status,
         ]);
         $user->save();
-        return $this->redirect(Route::subdomainRoute('settings.users.show', ['user' => $user->id]), navigate: true);
+        return $this->redirect(route('settings.users.show', ['user' => $user->id]), navigate: true);
     }
 
     public function updated(){

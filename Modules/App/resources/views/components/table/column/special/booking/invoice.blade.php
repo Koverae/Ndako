@@ -6,7 +6,7 @@
 @endphp
 @if($invoice)
 <div>
-    <a style="text-decoration: none" class="primary" wire:navigate href="{{ Route::subdomainRoute('bookings.invoices.show', ['invoice' => $invoice->id]) }}"  tabindex="-1">
+    <a style="text-decoration: none" class="primary" wire:navigate href="{{ route('bookings.invoices.show', ['invoice' => $invoice->id]) }}"  tabindex="-1">
         {{ $invoice->reference }}
     </a>
 </div>

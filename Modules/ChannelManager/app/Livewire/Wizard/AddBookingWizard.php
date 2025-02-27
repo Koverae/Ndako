@@ -19,11 +19,10 @@ use Modules\RevenueManager\Models\Accounting\Journal;
 class AddBookingWizard extends SimpleWizard
 {
     public $search = '', $guest, $selectedRoom, $startDate = '', $endDate = '', $guests, $status = 'pending', $paymentStatus = 'unpaid', $invoiceStatus = 'not_invoiced', $paymentMethod = 'cash';
-    public $filterBy = 'price'; // Default filter
-    public $sortOrder = 'asc'; // Default sort order
-    public $totalAmount = 0, $downPayment = 0, $dueAmount = 0, $nights = 0, $people = 1;
+    public $filterBy = 'price', $sortOrder = 'asc', $totalAmount = 0, $downPayment = 0, $downPaymentDue = 0, $dueAmount = 0, $nights = 0, $people = 1;
     public $availableRooms = [];
     public array $paymentOptions = [];
+    public bool $checkedIn = true;
 
     // Define validation rules
     protected $rules = [
@@ -32,12 +31,16 @@ class AddBookingWizard extends SimpleWizard
         'startDate' => 'required|date|after_or_equal:today',
         'endDate' => 'required|date|after:startDate',
         'people' => 'integer',
+        'downPayment' => 'numeric|required',
         'status' => 'nullable|string',
+        'checkedIn' => 'nullable|boolean',
     ];
 
     public function mount(){
+        $this->startDate = Carbon::now()->format('Y-m-d');
+        $this->endDate = Carbon::now()->addDay()->format('Y-m-d');
         $this->guests = Guest::isCompany(current_company()->id)->get();
-        $this->downPayment = $this->totalAmount * 0.3;
+        $this->downPaymentDue = $this->totalAmount * 0.3;
         // $this->selectedRoom = PropertyUnit::isCompany(current_company()->id)->first();
         // $this->guest = User::isCompany(current_company()->id)->first();
         $this->availableRooms = PropertyUnit::isCompany(current_company()->id)->get();
@@ -120,7 +123,7 @@ class AddBookingWizard extends SimpleWizard
 
     public function calculateDownPayment()
     {
-        $this->downPayment = $this->totalAmount * 0.3;
+        $this->downPaymentDue = $this->totalAmount * 0.3;
     }
 
     #[On('load-guests')]
@@ -178,6 +181,13 @@ class AddBookingWizard extends SimpleWizard
 
     public function createBooking(){
         $this->validate();
+
+        // Ensure dueAmount does not exceed totalAmount
+        if ($this->downPayment > $this->totalAmount) {
+            session()->flash('error', 'The paid amount exceeds the total amount for this booking.');
+            return;
+        }
+
         if($this->downPayment >= 1){
             $this->dueAmount = $this->totalAmount - $this->downPayment;
             $this->status = 'confirmed';
@@ -201,7 +211,7 @@ class AddBookingWizard extends SimpleWizard
             'payment_status' => $this->paymentStatus,
             'invoice_status' => $this->invoiceStatus,
             // Add the check-in and check-out status fields
-            'check_in_status' => $this->startDate == now()->toDateString() ? 'checked_in' : 'pending', // Check if check-in is today
+            'check_in_status' => 'pending', // Check if check-in is today
             'check_out_status' => 'pending', // Initial status
         ]);
         $booking->save();
@@ -209,10 +219,18 @@ class AddBookingWizard extends SimpleWizard
         // $this->selectedRoom->update([
         //     'status' => 'occupied'
         // ]);
+        if($booking->status == 'confirmed'){
+            $this->dispatch('reservation-confirmed', booking: $booking);
+        }
 
         // Check if the booking is for today or a future date
         if ($this->startDate == now()->toDateString()) {
             // If check-in is today, mark the room as occupied immediately
+            if($this->checkedIn == true){
+                $booking->update([
+                    'check_in_status' => 'checked_in'
+                ]);
+            }
             $this->selectedRoom->update([
                 'status' => 'occupied'
             ]);
@@ -225,7 +243,8 @@ class AddBookingWizard extends SimpleWizard
 
         $this->createInvoice($booking);
 
-        return $this->redirect(Route::subdomainRoute('bookings.show', ['booking' => $booking->id]), navigate: true);
+        // return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
+        return $this->redirect(route('dashboard', ['dash' => 'home']), navigate: true);
     }
 
     public function createInvoice($booking){

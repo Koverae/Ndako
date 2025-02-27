@@ -45,7 +45,7 @@ class TwoFactorController extends Controller
         $user->last_login_ip = $request->ip();
         $user->save();
 
-        return redirect()->route('dashboard', ['subdomain' => current_company()->domain_name]);
+        return redirect()->route('dashboard');
     }
 
     public function resend(): RedirectResponse

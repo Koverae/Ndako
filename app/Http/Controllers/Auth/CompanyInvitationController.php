@@ -51,6 +51,6 @@ class CompanyInvitationController extends Controller
         $invitation->delete();
 
         // Redirect to the dashboard or another appropriate page
-        return redirect()->route('dashboard', ['subdomain' => current_company()->domain_name])->with('success', 'You have successfully joined the company.');
+        return redirect()->route('dashboard')->with('success', 'You have successfully joined the company.');
     }
 }

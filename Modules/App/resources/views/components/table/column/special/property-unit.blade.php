@@ -6,7 +6,7 @@
 @endphp
 <div>
     @if($unit)
-    <a style="text-decoration: none" class="primary" wire:navigate href="{{ Route::subdomainRoute('properties.units.show', ['unit' => $unit->id]) }}"  tabindex="-1">
+    <a style="text-decoration: none" class="primary" wire:navigate href="{{ route('properties.units.show', ['unit' => $unit->id]) }}"  tabindex="-1">
         {{ $unit->name ?? '' }}
     </a>
     @endif

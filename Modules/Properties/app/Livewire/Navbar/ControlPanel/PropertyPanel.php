@@ -14,7 +14,7 @@ class PropertyPanel extends ControlPanel
     public function mount($property = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('properties.create');
+        $this->new = route('properties.create');
         if($property){
             $this->showIndicators = true;
             $this->property = $property;
@@ -31,7 +31,7 @@ class PropertyPanel extends ControlPanel
         return  [
             // make($key, $label)
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
-            SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
+            // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
             SwitchButton::make('map',"switchView('map')", icon: "bi-map"),
         ];
     }

@@ -19,13 +19,13 @@ class ChannelTable extends Table
 
     // public function createRoute() : string
     // {
-    //     return Route::subdomainRoute('properties.units.create');
+    //     return route('properties.units.create');
     // }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('channels.show', ['channel' => $id]);
+        return route('channels.show', ['channel' => $id]);
     }
 
     public function emptyTitle() : string

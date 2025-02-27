@@ -8,7 +8,8 @@
 
     <!-- CSS -->
     <link href="{{asset('assets/css/koverae.css?'.time())}}" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/demo.min.css?'.time())}}" rel="stylesheet"/>
+    <link href="{{asset('assets/css/koverae-flags.min.css?'.time())}}" rel="stylesheet"/>
+    {{-- <link href="{{ asset('assets/css/demo.min.css?'.time())}}" rel="stylesheet"/> --}}
     <!-- CSS -->
 
     <!-- Bootstrap Icons -->
@@ -31,12 +32,13 @@
     <!-- Libs JS -->
     @yield('styles')
     <!-- Scripts -->
+
     <script src="{{ asset('assets/js/koverae.js?'.time())}}" data-navigate-track></script>
 
-    @yield('scripts')
     <!-- Scripts -->
     @livewireStyles
     @livewireScripts
+    @yield('scripts')
 </head>
 <body>
     <script src="{{asset('assets/js/demo-theme.min.js')}}" data-navigate-track></script>
@@ -49,11 +51,13 @@
         @yield('content')
         <!-- Page Content End -->
 
+        <livewire:notifications />
+
     </main>
 
     @livewire('wire-elements-modal')
     <!-- Custom JS -->
     <!-- Custom JS -->
-
 </body>
+
 </html>

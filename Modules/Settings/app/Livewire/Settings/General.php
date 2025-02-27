@@ -33,14 +33,12 @@ class General extends AppSetting
     public function mount($setting){
         $this->setting = $setting;
         $this->has_customer_account = $setting->has_customer_account;
-        $this->has_digest_email = $setting->has_digest_email;
         $this->default_currency = $setting->default_currency_id;
         $this->has_default_access_right = $setting->has_default_access_right;
         $this->has_geo_localization = $setting->has_geo_localization;
         $this->geolocation_provider = $setting->geolocation_provider;
         $this->has_recaptcha = $setting->has_recaptcha;
         $this->has_reset_password = $setting->has_reset_password;
-        $this->has_quick_find = $setting->has_quick_find;
         $this->has_import_from_xls = $setting->has_import_from_xls;
 
         $this->has_default_check_times = $setting->has_default_check_times;
@@ -148,7 +146,7 @@ class General extends AppSetting
     public function actions(): array
     {
         return [
-            BoxAction::make('manage-users', 'active_users', __('Manage Users'), 'link', 'bi-arrow-right', Route::subdomainRoute('settings.users')),
+            BoxAction::make('manage-users', 'active_users', __('Manage Users'), 'link', 'bi-arrow-right', route('settings.users')),
             BoxAction::make('email-digest-templates', 'email-digest', __('Configure'), 'link', 'bi-arrow-right'),
             BoxAction::make('add-language', 'languages', __('Add a language'), 'modal', 'bi-plus-circle-fill', "{component: 'settings::modal.add-language-modal'}"),
             // BoxAction::make('manage-languages', 'languages', __('Manage languages'), 'link', 'bi-arrow-right'),

@@ -13,33 +13,45 @@ class GuestTable extends Table
 {
     public array $data = [];
 
+
     public function mount(){
-        $this->data = ['integration_status', 'last_sync_date'];
+        $this->data = ['email', 'phone', 'street'];
     }
 
     // public function createRoute() : string
     // {
-    //     return Route::subdomainRoute('properties.units.create');
+    //     return route('properties.units.create');
     // }
 
 
     public function showRoute($id) : string
     {
-        return Route::subdomainRoute('channels.show', ['channel' => $id]);
+        return route('channels.show', ['channel' => $id]);
     }
 
-    public function emptyTitle() : string
+    public function emptyTitle(): string
     {
-        return '';
+        return 'No Guests Added';
+    }
+    
+    public function emptyText(): string
+    {
+        return 'Guests will be listed here once added. Start by adding a guest to manage their stays and details easily.';
     }
 
-    public function emptyText() : string
-    {
-        return '';
-    }
     public function query() : Builder
     {
-        return Guest::query(); // Returns a Builder instance for querying the User model
+        $query = Guest::query();
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            // Search both the booking's name and the related guest's name
+            $query = Guest::query()
+            ->where('name', 'like', '%' . $this->searchQuery . '%')
+            ->orWhere('email', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        return $query; // Returns a Builder instance for querying the User model
     }
 
     // List View

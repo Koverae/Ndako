@@ -12,7 +12,7 @@ class OverviewPanel extends ControlPanel
     public function mount($company = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
-        $this->new = Route::subdomainRoute('properties.index');
+        $this->new = route('properties.index');
         $this->currentPage = "Overview";
 
     }

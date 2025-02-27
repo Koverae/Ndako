@@ -3,6 +3,7 @@
 ])
 <div>
     <div class="row gap-1 justify-content-md-center {{ $this->currentStep == $value->step ? '' : 'd-none' }}">
+        
         <!-- Booking Details -->
         <div class="border shadow-sm col-12 col-md-8 card">
             <div class="p-4 card-body">
@@ -26,6 +27,9 @@
                         <li><strong>Check-In:</strong> {{ \Carbon\Carbon::parse($this->startDate)->format('d M Y') }}</li>
                         <li><strong>Check-Out:</strong> {{ \Carbon\Carbon::parse($this->endDate)->format('d M Y') }}</li>
                         <li><strong>Total Days:</strong> {{ dateDaysDifference($this->startDate, $this->endDate) }} Days</li>
+                        @if($this->startDate == now()->toDateString())
+                        <li>{{ __('Will the guest check in after booking confirmation?') }} <input type="checkbox" class="k-checkbox form-check-input" id="check-in" wire:model='checkedIn'></li>
+                        @endif
                     </ul>
                 </div>
                 <hr>
@@ -38,7 +42,7 @@
                     <h2 class="h2"><i class="fas fa-money-check-alt"></i> Pricing Summary</h2>
                     <ul class="list-unstyled">
                         <li><strong>Total Price:</strong> {{ format_currency($this->totalAmount) }}</li>
-                        <li><strong>Minimum Down Payment:</strong> {{ format_currency($this->downPayment) }}</li>
+                        <li><strong>Minimum Down Payment:</strong> {{ format_currency($this->downPaymentDue) }}</li>
                     </ul>
                 </div>
                 <hr>
@@ -47,6 +51,16 @@
                 @if($this->selectedRoom)
                 <div class="mt-2">
                     <h2 class="h2"><i class="fas fa-credit-card"></i> Make a Payment</h2>
+
+                    @if (session()->has('error'))
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <div class="alert-body">
+                                <span>{{ session('error') }}</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    @endif
+                    
                     <div class="mb-2">
                         <label for="paymentMethod" class="form-label">Payment Method</label>
                         <select class="form-control @error('paymentMethod') is-invalid @enderror" id="paymentMethod" wire:model="paymentMethod" placeholder="Enter payment amount" value="{{ old('paymentMethod') }}">
@@ -60,13 +74,13 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="downPayment" class="form-label">Down Payment</label>
-                        <input type="number" class="form-control @error('downPayment') is-invalid @enderror" id="downPayment" wire:model="downPayment" placeholder="Enter payment amount" value="{{ old('downPayment') }}">
+                        <label for="downPayment" class="form-label">{{ __('Payment Amount') }} <span>({{ __('Down Payment: '.  format_currency($this->downPaymentDue)) }})</span></label>
+                        <input type="number" class="form-control @error('downPayment') is-invalid @enderror" id="downPayment" wire:model.live="downPayment" placeholder="Enter payment amount" value="{{ old('downPayment') }}">
                         @error('downPayment')
                         <div class="mt-1 text-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <button type="submit" wire:click='createBooking' class="btn btn-primary">Pay Down Payment</button>
+                    <button type="submit" wire:click='createBooking' class="btn btn-primary">Pay</button>
                 </div>
                 @endif
             </div>
