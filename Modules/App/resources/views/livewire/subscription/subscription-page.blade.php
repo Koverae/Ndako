@@ -39,14 +39,14 @@
                     </div>
 
                     <div class="mb-3">
-                      <label class="form-label">Choose a Plan {{ $amount }}</label>
+                      <label class="form-label">Choose a Plan</label>
                       <div class="form-selectgroup">
                         @foreach ($plans as $plan)
                         <label class="form-selectgroup-item">
                            <input type="radio" wire:model.live="selectedPlan" value="{{ $plan->tag }}" class="form-selectgroup-input">
                            <span class="form-selectgroup-label text-start">
                              <span class="text-black">{{ $plan->name }}</span> <br>
-                             <span class="text-small">{{ format_currency(getFinalPrice($plan->price)) }} <s>{{ format_currency($plan->price) }}</s> 
+                             <span class="text-small">{{ format_currency(getFinalPrice($plan->price)) }} <s>{{ format_currency($plan->price) }}</s>
                              {{-- <br>
                              @if($billingCycle == 'year')
                               ({{ format_currency($plan->price/12) }} / month)

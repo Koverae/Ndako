@@ -32,7 +32,7 @@ class PaystackService
         return back()->with('error', 'Payment initiation failed.');
 
     }
-    
+
 
     // Callback after payment
     public function handleCallback(Request $request)
@@ -40,7 +40,7 @@ class PaystackService
         $reference = $request->query('reference');
         $client = new Client();
         $baseUrl = env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co');
-        
+
         $response = $client->get($baseUrl . '/transaction/verify/' . $reference, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
@@ -51,8 +51,8 @@ class PaystackService
 
         if ($result->status) {
             // Handle successful payment (e.g., update database, send email)
-            // return view('paystack.success', ['data' => $result->data]);
-            return redirect()->route('dashboard', ['data' => $result->data])->with('success', 'Payment successful! Your subscription is now active.');
+            return view('paystack.success', ['data' => $result->data]);
+            // return redirect()->route('dashboard', ['data' => $result->data])->with('success', 'Payment successful! Your subscription is now active.');
         }
 
         return view('paystack.error', ['message' => $result->message]);

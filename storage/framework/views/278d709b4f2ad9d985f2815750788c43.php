@@ -58,14 +58,14 @@
                     </div>
 
                     <div class="mb-3">
-                      <label class="form-label">Choose a Plan <?php echo e($amount); ?></label>
+                      <label class="form-label">Choose a Plan</label>
                       <div class="form-selectgroup">
                         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $plans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <label class="form-selectgroup-item">
                            <input type="radio" wire:model.live="selectedPlan" value="<?php echo e($plan->tag); ?>" class="form-selectgroup-input">
                            <span class="form-selectgroup-label text-start">
                              <span class="text-black"><?php echo e($plan->name); ?></span> <br>
-                             <span class="text-small"><?php echo e(format_currency(getFinalPrice($plan->price))); ?> <s><?php echo e(format_currency($plan->price)); ?></s> 
+                             <span class="text-small"><?php echo e(format_currency(getFinalPrice($plan->price))); ?> <s><?php echo e(format_currency($plan->price)); ?></s>
                              
                              </span>
                            </span>

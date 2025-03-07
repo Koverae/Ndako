@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{asset('assets/images/logo/favicon.ico')}}">
-    <title>{{ current_company()->name }} - Your free trial period has expired!</title>
+    <title>{{ current_company()->name }} - @yield('title')</title>
 
     <!-- CSS -->
     <link href="{{asset('assets/css/koverae.css?'.time())}}" rel="stylesheet"/>
@@ -37,19 +37,34 @@
                     <img src="{{ asset('assets/images/logo/logo-black.png') }}" width="130" height="52" alt="Tabler" class="navbar-brand-image">
                 </a>
             </div>
-            <h2 class="mb-3 text-center">Your free trial period has expired!</h2>
+            <h2 class="mb-3 text-center">Payment Successful 🎉</h2>
             <p class="text-secondary mb-4 fs-3">
-                Your journey with <strong>Ndako</strong> doesn’t have to stop here. From seamless reservations to effortless tenant management, Ndako helps you stay on top of your properties without the hassle. Upgrade today and keep things running smoothly.
+                Thank you for your payment! Your subscription has been activated.
             </p>
 
+            <div class="mt-4">
+                <strong>Transaction ID:</strong> {{ $data->reference }} <br>
+                <strong>Amount Paid:</strong> {{ format_currency($data->amount / 100, 2) }} <br>
+                <strong>Status:</strong> <span class="badge bg-success">{{ ucfirst($data->status) }}</span>
+            </div>
+
+            @if(isset($subscription))
+            <div class="mt-4">
+                <h4>📅 Subscription Details</h4>
+                <strong>Plan Name:</strong> {{ $subscription->plan_name }} <br>
+                <strong>Next Payment Date:</strong> {{ \Carbon\Carbon::parse($subscription->next_billing_date)->format('F j, Y') }} <br>
+                <strong>Billing Cycle:</strong> {{ ucfirst($subscription->billing_cycle) }}
+            </div>
+            @endif
+
             <div class="my-4">
-              <a href="{{ route('subscribe') }}" class="btn btn-primary text-uppercase w-100 fs-3">
-                Upgrade now
+              <a href="{{ route('dashboard') }}" class="btn btn-primary text-uppercase w-100 fs-3">
+                Go to Dashboard
               </a>
             </div>
-            <p class="text-secondary">
+            {{-- <p class="text-secondary">
                 Need more time? <a href="https://ndako.koverae.com/contact-us?utm=app" class=" underline" target="__blank">Contact us</a> to request a trial extension.
-            </p>
+            </p> --}}
           </div>
         </div>
       </div>
