@@ -23,7 +23,7 @@ use Modules\Settings\Livewire\Roles\Lists as RoleLists;
 |
 */
 
-Route::group([], function () {
+Route::middleware('identify-kover')->group( function () {
     Route::get('/settings', GeneralSetting::class)->name('settings.general');
     Route::get('/users', UserLists::class)->name('settings.users');
     Route::prefix('/users')->name('settings.users.')->group(function() {

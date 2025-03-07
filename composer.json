@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.9",
+        "koverae/koverae-billing": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
@@ -14,6 +16,7 @@
         "nwidart/laravel-modules": "^11.1",
         "phpoffice/phpspreadsheet": "^3.8",
         "spatie/laravel-permission": "^6.10",
+        "unicodeveloper/laravel-paystack": "^1.2",
         "wire-elements/modal": "^2.0"
     },
     "require-dev": {

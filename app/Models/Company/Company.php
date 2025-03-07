@@ -3,6 +3,7 @@
 namespace App\Models\Company;
 
 use App\Models\Client\ApiClient;
+use App\Models\Team\Team;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -32,6 +33,10 @@ class Company extends Model
     public static function boot() {
         parent::boot();
 
+        static::creating(function ($company): void {
+            $company->uuid = (string) Str::uuid();
+        });
+
         static::created(function ($model) {
             $model->generateApiKeys($model);
         });
@@ -44,6 +49,12 @@ class Company extends Model
 
     public function isActive(Builder $builder) {
         return $builder->where('enabled', 1);
+    }
+
+    // Get Team
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id');
     }
 
     public function generateApiKeys($company)

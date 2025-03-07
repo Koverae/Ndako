@@ -14,6 +14,6 @@ use Modules\Contact\Http\Controllers\ContactController;
 |
 */
 
-Route::group([], function () {
+Route::middleware('identify-kover')->group( function () {
     Route::resource('contact', ContactController::class)->names('contact');
 });

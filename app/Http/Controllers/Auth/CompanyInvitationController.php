@@ -17,7 +17,16 @@ class CompanyInvitationController extends Controller
                                        ->where('expire_at', '>', now())
                                        ->firstOrFail();
 
-        return view('auth.join', compact('invitation'));
+        $roles = [
+            ['id' => 'owner', 'label' => __('Owner / Founder')],
+            ['id' => 'manager', 'label' => __('Hotel Manager')],
+            ['id' => 'front-desk', 'label' => __('Front Desk / Receptionist')],
+            ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
+            ['id' => 'accountant', 'label' => __('Accountant')],
+        ];
+        $roles = toSelectOptions($roles, 'id', 'label');
+
+        return view('auth.join', compact('invitation', 'roles'));
     }
 
     public function acceptInvitation(Request $request, $token)
@@ -28,21 +37,27 @@ class CompanyInvitationController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $invitation->email . ',email',
-            'password' => 'required|string|min:8|confirmed',
+            // 'email' => 'required|email|unique:users,email,' . $invitation->email . ',email',
+            'phone' => 'required|string|min:9|unique:users,phone',
+            'password' => 'required|string|min:8',
         ]);
 
         // Create the user if they don't exist
         $user = User::firstOrCreate(
             ['email' => $invitation->email],
             [
+                'company_id' => $invitation->company->id,
+                'current_company_id' => $invitation->company->id,
                 'name' => $request->name,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
             ]
         );
 
+        $user->assignRole($invitation->role);
+
         // Assign the user to the company and role
-        $user->companies()->attach($invitation->company_id, ['role' => $invitation->role]);
+        // $user->companies()->attach($invitation->company_id, ['role' => $invitation->role]);
 
         // Log the user in
         Auth::login($user);
@@ -51,6 +66,6 @@ class CompanyInvitationController extends Controller
         $invitation->delete();
 
         // Redirect to the dashboard or another appropriate page
-        return redirect()->route('dashboard')->with('success', 'You have successfully joined the company.');
+        return redirect()->route('dashboard')->with('success', 'You have successfully joined the Company.');
     }
 }

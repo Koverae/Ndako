@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Properties\Models\Property\PropertyUnit;
+use Modules\Properties\Models\Property\PropertyUnitTypePricing;
 
 class Booking extends Model
 {
@@ -50,4 +51,48 @@ class Booking extends Model
     public function guest() {
         return $this->belongsTo(Guest::class);
     }
+    
+    /**
+     * Calculate the optimal pricing for a given booking duration.
+     *
+     * @param int $unitTypeId The ID of the property unit type.
+     * @param int $stayDuration The total number of days the guest is booking.
+     * @return float The total price for the booking.
+     */
+    public function getOptimalPricing($unitTypeId, $stayDuration)
+    {
+        // Fetch all applicable pricing sorted by longest duration first
+        $pricing = PropertyUnitTypePricing::where('property_unit_type_id', $unitTypeId)
+                    ->join('lease_terms', 'property_unit_type_pricings.lease_term_id', '=', 'lease_terms.id')
+                    ->orderBy('lease_terms.duration_in_days', 'desc') // Start with longest durations
+                    ->get();
+
+        $totalPrice = 0; // Final price accumulator
+
+        foreach ($pricing as $price) {
+            if ($stayDuration >= $price->duration_in_days) {
+                // Find how many full units of this duration fit
+                $units = intdiv($stayDuration, $price->duration_in_days);
+                // Multiply by price (use discounted price if available)
+                $totalPrice += $units * ($price->discounted_price ?? $price->price);
+                // Reduce the remaining stay duration
+                $stayDuration %= $price->duration_in_days;
+            }
+        }
+
+        // If there's any remaining days, fall back to the default price (nightly rate)
+        if ($stayDuration > 0) {
+            $nightlyPrice = PropertyUnitTypePricing::where('property_unit_type_id', $unitTypeId)
+                            ->join('lease_terms', 'property_unit_type_pricings.lease_term_id', '=', 'lease_terms.id')
+                            ->where('lease_terms.name', 'nightly')
+                            ->first();
+            
+            if ($nightlyPrice) {
+                $totalPrice += $stayDuration * ($nightlyPrice->discounted_price ?? $nightlyPrice->price);
+            }
+        }
+
+        return $totalPrice;
+    }
+
 }

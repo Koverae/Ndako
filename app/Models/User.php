@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Company\Company;
 use App\Notifications\CustomVerifyEmailNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -69,6 +70,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
+    }
+
+    // Get Company
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     // Get Team

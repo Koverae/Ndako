@@ -43,7 +43,7 @@ class IdentifyKover
             return $next($request);
         } catch (Exception $e) {
             Log::error('Error in IdentifyKover middleware: ' . $e->getMessage());
-            return redirect()->route('error')->with('message', 'An error occurred.');
+            return redirect()->route('getting-started')->with('message', 'Get Started.');
         }
     }
 

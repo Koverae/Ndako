@@ -90,12 +90,13 @@ return new class extends Migration
             $table->unsignedBigInteger('property_unit_type_id')->nullable();
             $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('lease_term_id')->nullable();
-            $table->string('name')->unique()->nullable()->comment('e.g., "Premium Room Price", "Twin Room Price"');
+            $table->string('name')->nullable()->comment('e.g.,"Deluxe Room Nightly", "Premium Room Price", "Twin Room Price"');
             $table->decimal('price', 12, 2);
             $table->decimal('discounted_price', 12, 2)->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->boolean('is_per_night')->default(false);
+            $table->boolean('is_default')->default(false);
 
             $table->timestamps();
             $table->softDeletes();
@@ -205,7 +206,7 @@ return new class extends Migration
         Schema::create('lease_terms', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
-            $table->string('name')->comment('e.g., "Monthly", "Annual"');
+            $table->string('name')->comment('e.g., "nightly", "weekly", "monthly", "annually"');
             $table->tinyText('description')->nullable();
             $table->integer('duration_in_days')->default(0);
             $table->integer('duration_in_hours')->default(0);

@@ -10,7 +10,7 @@
                 <div class="container py-4">
                     <div class="mt-0 mb-2 text-center">
                         <a href="#" class="navbar-brand navbar-brand-autodark">
-                            <img src="{{ asset('assets/images/logo/logo-circle-white.png') }}" style="height: 150px;" alt="Tabler" class="image">
+                            <img src="{{ asset('assets/images/logo/logo-circle-white.png') }}" style="height: 120px;" alt="Tabler" class="image">
                         </a>
                     </div>
                     <!-- Session Status -->
@@ -55,7 +55,13 @@
                             <x-input-error :messages="$errors->get('currency')" class="mt-2" />
                         </div>
                         <div class="mb-3 col-lg-6">
-                            <label class="form-label" for="rooms">Number of Rooms/Units</label>
+                            <label class="form-label" for="rooms">Number of Rooms/Units 
+                                <span class="cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="right" title="Enter the total number of rooms or rental units you manage. This helps us recommend the best plan for your needs."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                                  </svg>
+                                </span>
+                            </label>
                             <input type="text" class="form-control" placeholder="eg. 25" id="rooms" wire:model="rooms" value="{{ old('rooms') }}">
                             <x-input-error :messages="$errors->get('rooms')" class="mt-2" />
                         </div>
@@ -90,11 +96,15 @@
                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
                         </div>
 
+                        <span class="text-sm text-gray-600 text-muted">
+                            Enjoy your 14-days free trial! To continue using Ndako after your trial, you'll need to subscribe to a plan that fits your needs. <a href="https://ndako.koverae.com#pricing" target="__blank">See our pricing</a>
+                        </span>
+
                         <div class="mb-0 form-footer">
                             <span wire:click="getStarted" class="uppercase btn btn-primary w-100" wire:loading.class="d-none">
                                 Get Started
                             </span>
-                            <span wire:loading class="uppercase btn btn-primary w-100">
+                            <span wire:loading.attr="disabled" wire:loading class="uppercase btn btn-primary w-100">
                                 ....
                             </span>
                         </div>

@@ -204,12 +204,20 @@
 
     </div>
 
-    @if(!auth()->user()->onboarding_completed || auth()->user()->onboarding_step < 6)
+    @if(!current_company()->is_onboarded && auth()->user()->hasRole(['owner', 'manager']))
     <div class="alert alert-warning {{ Route::currentRouteName() == 'onboarding' ? 'd-none' : '' }} d-flex align-items-center justify-content-between p-3 fs-5 sticky-top shadow-sm alert-dismissible fade show" role="alert">
         <span class="fs-3"><i class="bi bi-exclamation-circle me-2"></i> Get the most out of Ndako! Let's complete your setup</span>
         <div>
             <a href="{{ route('onboarding') }}" class="btn btn-sm rounded btn-primary me-2 fs-3">Start Now</a>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    @endif
+
+    @if(current_company()->team->subscription('main')->isOnTrial())
+    <div class="setting_block">
+        <div class="mt-2 alert alert-warning">
+            <p>⏳ Your trial will expire in {{ current_company()->team->subscription('main')->getTrialPeriodRemainingUsageIn('day') }} days! <a href="#" target="__blank" class=""><strong>Upgrade</strong></a> now to continue managing your properties effortlessly with Ndako’s full suite of tools</p>
         </div>
     </div>
     @endif

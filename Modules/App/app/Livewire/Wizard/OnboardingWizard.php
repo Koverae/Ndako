@@ -5,6 +5,7 @@ namespace Modules\App\Livewire\Wizard;
 use App\Models\Company\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Modules\App\Livewire\Components\Wizard\SimpleWizard;
 use Modules\App\Livewire\Components\Wizard\Step;
@@ -20,6 +21,8 @@ use Modules\Properties\Models\Property\PropertyUnitType;
 use Modules\Properties\Models\Property\PropertyUnitTypePricing;
 use Modules\Settings\Models\Identity\IdentityVerification;
 use Modules\Settings\Models\Localization\Country;
+use App\Models\Company\CompanyInvitation;
+use Modules\Settings\Notifications\CompanyInvitationNotification;
 
 class OnboardingWizard extends SimpleWizard
 {
@@ -27,9 +30,9 @@ class OnboardingWizard extends SimpleWizard
 
     public $company, $document_type, $document, $selfie, $documentPreview, $selfiePreview, $photo, $image_path, $default_img;
 
-    public $type, $invoicing = 'rate', $name, $country, $street, $city, $state, $zip, $description, $floors = 0, $companyStreet, $companyCity, $companyState, $companyZip, $companyCountry;
+    public $type, $invoicing = 'rate', $name, $country, $street, $city, $state, $zip, $description, $floors = 0, $companyEmail, $companyPhone, $companyStreet, $companyCity, $companyState, $companyZip, $companyCountry;
 
-    public $unitName, $numberUnits = 1, $capacity = 1, $unitType, $unitSize = 0, $unitDesc, $unitPrice = 0, $prices = 1, $priceRate, $unitRate = 0;
+    public $unitName, $unitFloor, $numberUnits = 1, $capacity = 1, $unitType, $unitSize = 0, $unitDesc, $unitPrice = 0, $prices = 1, $priceRate, $unitRate = 0;
 
     public $memberName, $memberEmail, $memberRole;
     public string $videoUrl = 'https://www.youtube.com/embed/bX6wcb4vjQ4?si=oQ0tuJs8byLy__6P&mute=1';
@@ -204,6 +207,7 @@ class OnboardingWizard extends SimpleWizard
         // Add the current unit data to the propertyUnits array
         $this->propertyUnits[] = [
             'unitName' => $this->unitName,
+            'unitFloor' => $this->unitFloor,
             'unitDesc' => $this->unitDesc,
             'numberUnits' => $this->numberUnits,
             'price' => $this->unitPrice,
@@ -237,7 +241,7 @@ class OnboardingWizard extends SimpleWizard
         // Adjust the number of units in the array
         if ($unitCount > count($this->units)) {
             for ($i = count($this->units); $i < $unitCount; $i++) {
-                $this->units[] = ['name' => ''];
+                $this->units[] = ['name' => '', 'floor' => ''];
             }
         } else {
             $this->units = array_slice($this->units, 0, $unitCount);
@@ -268,34 +272,59 @@ class OnboardingWizard extends SimpleWizard
                 'size' => $type['unitSize']?? null,
                 // 'features' => json_encode($unit['unitFeatures']?? []),
             ]);
+                
+            if(count($type['unitPrices']) >= 1) {
+                foreach ($type['unitPrices'] as $price) {
+                    PropertyUnitTypePricing::updateOrCreate(
+                        [
+                            'company_id' => current_company()->id,
+                            'property_id' => $propertyId,
+                            'property_unit_type_id' => $unitType->id,
+                            'lease_term_id' => $price['rate_type'],
+                            'name' => $unitType->name . ' ' . lease_term($price['rate_type'])->name,
+                        ],
+                        [
+                            'price' => $price['rate'] ?? 0,
+                            'is_default' => $price['default'] ?? false,
+                        ]
+                    );
+                }
+            
+                // Reset the component state
+                $this->reset(['prices', 'unitPrices']);
+            }
 
             // for($i = 0; $i < $unit['numberUnits']; $i++){
-            foreach($type['units'] as $index => $unit){
-                $propertyUnit = PropertyUnit::create([
-                    'company_id' => current_company()->id,
-                    'property_id' => $propertyId,
-                    'property_unit_type_id' => $unitType->id,
-                    'name' => $unit['name'],
-                    'capacity' => $type['capacity'],
-                ]);
-                $propertyUnit->save();
-
-                // Attach prices to the units
-                if(count($this->unitPrices) >= 1){
-                    $this->savePricing($propertyUnit);
-                }
-
-                // Attach amenities to the property
-                if(count($type['unitFeatures']) >= 1){
-                    foreach($type['unitFeatures'] as $feature){
-                        PropertyFeature::create([
+            foreach($type['units'] as $index => $unit) {
+                    $floor = PropertyFloor::isCompany(current_company()->id)
+                        ->where('name', $unit['floor'])
+                        ->first() ?? null;
+                
+                    PropertyUnit::updateOrCreate(
+                        [
                             'company_id' => current_company()->id,
+                            'property_id' => $propertyId,
+                            'floor_id' => $floor->id ?? null,
                             'property_unit_type_id' => $unitType->id,
-                            'feature_id' => $feature,
-                        ]);
+                            'name' => $unit['name'],
+                        ],
+                        [
+                            'capacity' => $type['capacity'],
+                        ]
+                    );
+                
+                    // Attach amenities to the property (éviter la duplication ici aussi)
+                    if(count($type['unitFeatures']) >= 1) {
+                        foreach($type['unitFeatures'] as $feature) {
+                            PropertyFeature::firstOrCreate([
+                                'company_id' => current_company()->id,
+                                'property_unit_type_id' => $unitType->id,
+                                'feature_id' => $feature,
+                            ]);
+                        }
                     }
-                }
             }
+                
         }
 
         $this->propertyUnits = [];
@@ -352,7 +381,7 @@ class OnboardingWizard extends SimpleWizard
         // Adjust the number of floors in the array
         if ($this->prices > count($this->unitPrices)) {
             for ($i = count($this->unitPrices); $i < $this->prices; $i++) {
-                $this->unitPrices[] = ['rate_type' => '', 'rate' => ''];
+                $this->unitPrices[] = ['rate_type' => '', 'rate' => '', 'default' => false];
             }
         } else {
             $this->unitPrices = array_slice($this->unitPrices, 0, $this->prices);
@@ -369,10 +398,11 @@ class OnboardingWizard extends SimpleWizard
     }
 
     public function savePricing($unit){
-        $this->validate([
-            'unitPrices.*.rate_type' => 'required|integer',
-            'unitPrices.*.rate' => 'required|integer',
-        ]);
+        // $this->validate([
+        //     'unitPrices.*.rate_type' => 'required|integer',
+        //     'unitPrices.*.rate' => 'required|integer',
+        //     'unitPrices.*.default' => 'nullable',
+        // ]);
 
         foreach ($this->unitPrices as $price) {
             PropertyUnitTypePricing::create([
@@ -382,6 +412,7 @@ class OnboardingWizard extends SimpleWizard
                 'lease_term_id' => $price['rate_type'],
                 'name' => $unit->unitType->name.' '. lease_term($price['rate_type']),
                 'price' => $price['rate'] ?? 0,
+                'is_default' => $price['default'] ?? false,
             ]);
         }
 
@@ -396,41 +427,6 @@ class OnboardingWizard extends SimpleWizard
             'name' => 'required|string',
         ]);
         $this->goToNextStep();
-    }
-
-    // Invite Team Members
-    public function addMember()
-    {
-        $this->validate([
-            // 'memberName' => 'required|string',
-            'memberEmail' => 'required|email',
-            'memberRole' => 'required|string',
-        ]);
-
-        $this->teamMembers[] = [
-            'name' => $this->memberName,
-            'email' => $this->memberEmail,
-            'role' => $this->memberRole,
-        ];
-
-        // Reset input fields
-        $this->reset(['memberName', 'memberEmail', 'memberRole']);
-    }
-
-    public function inviteMembers(){
-        $this->validate([
-            'teamMembers.*.email' => 'required|email',
-            'teamMembers.*.role' => 'required|string',
-        ]);
-        // Invite member logic
-
-        $this->goToNextStep();
-    }
-
-    public function removeMember($index)
-    {
-        unset($this->teamMembers[$index]);
-        $this->teamMembers = array_values($this->teamMembers); // Reindex the array
     }
 
     public function submitProperty(){
@@ -472,6 +468,7 @@ class OnboardingWizard extends SimpleWizard
         if(count($this->propertyUnits) >= 1){
             $this->saveUnits($property->id);
         }
+
         $this->selectedAmenity = [];
         $this->reset(['name', 'type', 'description', 'country', 'invoicing', 'state', 'city', 'street', 'selectedAmenity']);
 
@@ -480,6 +477,64 @@ class OnboardingWizard extends SimpleWizard
         $this->goToNextStep();
 
 
+    }
+
+    // Invite Team Members
+    public function addMember()
+    {
+        $this->validate([
+            // 'memberName' => 'required|string',
+            'memberEmail' => 'required|email',
+            'memberRole' => 'required|string',
+        ]);
+
+        $this->teamMembers[] = [
+            'name' => $this->memberName,
+            'email' => $this->memberEmail,
+            'role' => $this->memberRole,
+        ];
+
+        // Reset input fields
+        $this->reset(['memberName', 'memberEmail', 'memberRole']);
+    }
+
+    public function inviteMembers(){
+        $this->validate([
+            'teamMembers.*.email' => 'required|email',
+            'teamMembers.*.role' => 'required|string',
+        ]);
+
+        // Create a new invitation record
+        if(count($this->teamMembers) >= 1){
+            foreach($this->teamMembers as $member){
+                $this->sendInvitations($member);
+            }
+        }
+
+        $this->reset(['teamMembers']);
+        $this->goToNextStep();
+    }
+
+    public function sendInvitations($member){
+        // Generate a unique invitation token
+        $token = Str::random(32);
+
+        $invitation = CompanyInvitation::create([
+            'company_id' => current_company()->id,
+            'email'     => $member['email'],
+            'token' => $token,
+            'role' => $member['role'],
+            'expire_at' => now()->addDays(7),
+        ]);
+        $invitation->save();
+
+        $invitation->notify(new CompanyInvitationNotification());
+    }
+
+    public function removeMember($index)
+    {
+        unset($this->teamMembers[$index]);
+        $this->teamMembers = array_values($this->teamMembers); // Reindex the array
     }
 
     public function updatedPhoto(){
@@ -505,15 +560,45 @@ class OnboardingWizard extends SimpleWizard
             session()->flash('message', 'Logo updated successfully!');
     }
 
+    public function submitCompany(){
+        $company = Company::find(current_company()->id);
+
+        $company->update([
+            'phone' => $this->companyPhone,
+            'email' => $this->companyEmail,
+            'address' => $this->companyStreet,
+            'city' => $this->companyCity,
+            'country_id' => $this->companyCountry,
+        ]);
+        $company->save();
+
+        $this->goToNextStep();
+    }
+
     // Go to Dashboard
     public function goToDashboard()
     {
         $user = User::find(Auth::user()->id);
         $user->update([
+            'onboarding_step' => 6,
             'onboarding_completed' => true,
+            ]);
+
+        $company = Company::find(current_company()->id);
+        $company->update([
+            'is_onboarded' => true,
         ]);
 
         return redirect()->route('dashboard');
     }
 
+    public function increaseCapacity(){
+        $this->capacity++;
+    }
+
+    public function decreaseCapacity(){
+        if($this->capacity >= 1){
+            $this->capacity--;
+        }
+    }
 }

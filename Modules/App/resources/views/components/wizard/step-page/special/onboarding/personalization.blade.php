@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <form wire:submit.prevent="">
+            <form wire:submit.prevent="submitCompany">
                 @csrf
 
                 <!-- Avatar -->

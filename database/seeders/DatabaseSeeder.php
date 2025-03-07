@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // RolePermissionSeeder::class,
             // AppDatabaseSeeder::class,
+            PlanTableSeeder::class,
             SuperUserSeeder::class
         ]);
         // User::factory()->count(10)->create();

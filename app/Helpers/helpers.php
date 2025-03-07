@@ -399,3 +399,15 @@ if(!function_exists('lease_term')){
 //         return $lease_terms[$lease_duration];
 //     }
 // }
+
+if (!function_exists('getFinalPrice')) {
+    function getFinalPrice(float $price, bool $isFirstSubscription = true, float $discountPercentage = 40): float
+    {
+        if ($isFirstSubscription) {
+            $discount = $price * ($discountPercentage / 100);
+            return round($price - $discount, 2);
+        }
+
+        return $price;
+    }
+}

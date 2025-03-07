@@ -25,7 +25,7 @@ use Modules\ChannelManager\Livewire\BookingPayments\Lists as PaymentLists;
 |
 */
 
-Route::middleware(['twofactor'])->group(function () {
+Route::middleware('identify-kover')->group(function () {
     // Route::get('channelmanager', ChannelManagerController::class, 'index')->name('channels.index');
     Route::get('channels/overview', Overview::class)->name('channels.index');
     Route::get('channels', ChannelLists::class)->name('channels.lists');

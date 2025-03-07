@@ -7,11 +7,13 @@ use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Models\Language\Language;
 use Modules\Settings\Models\Localization\Country;
 use App\Models\Company\Company;
+use App\Models\Team\Team;
 use App\Models\User;
 use App\Rules\ReCaptcha;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Uuid;
 use Modules\App\Handlers\AppManagerHandler;
+use Koverae\KoveraeBilling\Models\Plan;
 
 class GettingStarted extends Component
 {
@@ -19,6 +21,7 @@ class GettingStarted extends Component
     public array $typesOptions = [];
     public $name, $type, $language, $currency, $rooms, $city, $country, $website, $role;
     public $test = '';
+    public $plan, $billingCycle;
 
     protected $rules = [
         'name' => 'required|string|max:120',
@@ -33,8 +36,10 @@ class GettingStarted extends Component
     ];
 
     public function mount(){
+        
         $this->currenciesOptions = Currency::all();
         $this->languagesOptions = Language::all();
+
         $types = [
             ['id' => 'hotel', 'label' => __('Hotels')],
             ['id' => 'motel', 'label' => __('Motels')],
@@ -63,14 +68,32 @@ class GettingStarted extends Component
     public function getStarted(){
         
         $this->validate();
-        
         $user = User::find(Auth::user()->id);
+        
+        $team = Team::create([
+            'user_id' => $user->id
+        ]);
+        $team->save();
+        
+        $plan = $this->getPlan();
+        $team->newSubscription(
+            'main', // identifier tag of the subscription. If your application offers a single subscription, you might call this 'main' or 'primary'
+             $plan, // Plan or PlanCombination instance your subscriber is subscribing to
+             'Main subscription', // Human-readable name for your subscription
+             'Customer main subscription', // Description
+             null, // Start date for the subscription, defaults to now()
+             'free' // Payment method service defined in config
+        );
+        
+        // $team->update([
+        //     ''
+        // ]);
 
         $company = Company::create([
-            'uuid' => Uuid::uuid4(),
+            'team_id' => $team->id,
             'owner_id' => $user->id,
             'name' => $this->name,
-            'website_url' => $this->website,
+            'website' => $this->website,
             'city' => $this->city,
             'country_id' => $this->country,
             'industry' => $this->type,
@@ -96,5 +119,30 @@ class GettingStarted extends Component
 
         return redirect()->route('dashboard');
 
+    }
+
+    public function getplan(){
+
+        // Determine the plan based on the number of rooms
+        if ($this->rooms <= 15) {
+            $plan = 'starter';
+        } elseif ($this->rooms <= 65) {
+            $plan = 'spark';
+        } else {
+            $plan = 'enterprise';
+        }
+
+        // Check if the billing cycle is passed in the URL, else let the user choose
+        $billingCycle = request()->query('billing_cycle', 'monthly');
+        
+        
+        // Ensure billing cycle is valid
+        if (!in_array($billingCycle, ['monthly', 'yearly'])) {
+            $billingCycle = null; // Force user to select if not provided
+        }
+        $tag = $plan.'-'.$billingCycle;
+        $plan = Plan::getByTag($tag);
+
+        return $plan;
     }
 }

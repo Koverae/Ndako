@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('team_id')->nullable();
             $table->unsignedBigInteger('owner_id');
             $table->unsignedBigInteger('default_currency_id')->nullable();
             $table->unsignedBigInteger('default_language_id')->nullable();
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->string('website_url')->nullable();
             $table->boolean('is_self_hosted')->default(false); // Si le domaine est hébergé par le kover
             $table->boolean('enabled')->default(true);
+            $table->boolean('is_onboarded')->default(false);
             $table->enum('status', ['active', 'suspended', 'banished'])->default('active');
             // Company Information
             $table->string('email')->unique()->nullable();
@@ -39,14 +41,14 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->string('primary_interest')->nullable();
 
-            
+
             $table->timestamps();
             $table->softDeletes();
         });
-        
+
         Schema::create('company_invitations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('team_id')->nullable();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->string('email');
             $table->string('role')->nullable();

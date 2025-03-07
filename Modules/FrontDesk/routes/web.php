@@ -14,6 +14,6 @@ use Modules\FrontDesk\Http\Controllers\FrontDeskController;
 |
 */
 
-Route::group([], function () {
+Route::middleware('identify-kover')->group( function () {
     Route::resource('frontdesk', FrontDeskController::class)->names('frontdesk');
 });

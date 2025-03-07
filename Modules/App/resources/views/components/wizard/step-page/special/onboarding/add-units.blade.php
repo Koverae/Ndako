@@ -15,7 +15,7 @@
                 @csrf
                 <div class="m-0 mb-2 row justify-content-between position-relative w-100">
                     <div class="ke-title mw-75 pe-2 ps-0">
-                        <label class="h3" for="name-k">{{ __('What’s the name of this room?') }}</label>
+                        <label class="h3" for="name-k">{{ __('What’s the name of this room/unit?') }}</label>
                         <h1 class="flex-row d-flex align-items-center">
                             <select wire:model="unitName" id="" class="form-control" id="name-k">
                                 <option value="">-- Choose --</option>
@@ -51,18 +51,34 @@
                         @for($i = 0; $i < $this->numberUnits; $i++)
                             <div class="gap-2 mt-2 mb-2 col-md-6 d-flex align-items-center">
                                 <div class="col-4">
-                                    <label for="unit-name-{{ $i }}">{{ __('Room Name/Number') }}</label>
+                                    <label for="unit-name-{{ $i }}">{{ __('Room Number') }}</label>
                                     <input type="text" class="form-control @error('units.' . $i . '.name') is-invalid @enderror"
                                            id="unit-name-{{ $i }}"
                                            wire:model="units.{{ $i }}.name"
-                                           placeholder="{{ __('Room Name/Number') }}">
+                                           placeholder="{{ __('Room Number') }}">
                                     @error('units.' . $i . '.name')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                <span class="cursor-pointer" wire:click.prevent="removeTypeUnit({{ $i }})">
-                                    <i class="fas fa-trash"></i>
-                                </span>
+                                <div class="col-4">
+                                    <label for="unit-floor-{{ $i }}">{{ __('Floor') }}</label>
+                                    <select class="form-control @error('units.' . $i . '.floor') is-invalid @enderror" id="unit-floor-{{ $i }}" wire:model="units.{{ $i }}.floor">
+                                        <option value="">{{ __('--- Choose ---') }}</option>
+                                        @foreach ($this->propertyFloors as $floor)
+                                            <option value="{{ $floor['name'] }}">{{ $floor['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('units.' . $i . '.floor')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">&nbsp;</span>
+
+                                    <span class="cursor-pointer text-end" wire:click.prevent="removeTypeUnit({{ $i }})">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                </div>
                             </div>
                         @endfor
                     </div>
@@ -73,12 +89,12 @@
                     <!-- Capacity -->
                     <div class="mb-3 col-md-12 col-lg-6">
                         <label for="capacity" class="form-label h3">
-                            {{ __('How many guests can stay in this room?') }}
+                            {{ __('How many guests can stay in this room/unit?') }}
                         </label>
                         <div class="number-input-wrapper @error('capacity') is-invalid @enderror">
-                            <span class="btn btn-link minus" onclick="changeValue(-1)">−</span>
+                            <span class="btn btn-link minus" wire:click="decreaseCapacity">−</span>
                             <input type="number" id="number-input" min="1" wire:model="capacity" class="number-input" />
-                            <span class="btn btn-link plus" onclick="changeValue(1)">+</span>
+                            <span class="btn btn-link plus" wire:click="increaseCapacity">+</span>
                         </div>
                         @error('capacity')
                         <div class="mt-1 text-danger">
@@ -90,7 +106,7 @@
                     <!-- Size -->
                     <div class="mb-3 col-md-12 col-lg-6">
                         <label for="unitSize" class="form-label h3">
-                            {{ __('How big is this room? (optional)') }}
+                            {{ __('How big is this room/unit? (optional)') }}
                         </label>
                         <div class="gap-2 d-flex">
                             <input type="number" class="form-control @error('unitSize') is-invalid @enderror" id="unitSize" wire:model="unitSize" style="width: 140px; height: 36px;" value="{{ old('unitSize') }}">
@@ -109,13 +125,13 @@
                     <label class="form-label h3">
                         {{ __('How much do you want to charge?') }}
                     </label>
-                    <span class="cursor-pointer fw-bolder" wire:click.prevent="addPricing" wire:target="addPricing">
+                    <span class="cursor-pointer fw-bolder border rounded p-2" wire:click.prevent="addPricing" wire:target="addPricing">
                         <i class="bi bi-plus-circle"></i> {{ __('Add Pricing') }}
                     </span>
                     <div class="row mt-2 {{ $this->prices >= 1 ? '' : 'd-none' }}">
                         @for($i = 0; $i < $this->prices; $i++)
                         <!-- Price -->
-                        <div class="mb-3 col-md-12 col-lg-6">
+                        <div class="mb-3 col-md-12 col-lg-4">
                             <label for="rateType-{{ $i }}" class="form-label">
                                 {{ __('Rate Type') }}
                             </label>
@@ -134,7 +150,7 @@
                         <!-- Price End -->
 
                         <!-- Price -->
-                        <div class="mb-3 col-md-12 col-lg-6">
+                        <div class="mb-3 col-md-12 col-lg-4">
                             <label for="unitRate" class="form-label">
                                 {{ __('Rate') }}
                             </label>
@@ -151,6 +167,23 @@
                             @enderror
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted">{{ __('Including taxes and charges') }}</span>
+                            </div>
+                        </div>
+                        <!-- Price End -->
+
+                        <!-- Price -->
+                        <div class="mb-3 col-md-12 col-lg-4">
+                            <label for="unitDefault" class="form-label mb-2">
+                                {{ __('Is Default') }}
+                            </label>
+                            <input type="checkbox" class="form-control form-check-input @error('unitPrices.{{ $i }}.rate') is-invalid @enderror" id="unitDefault" wire:model="unitPrices.{{ $i }}.default">
+                            @error('unitPrices.{{ $i }}.default')
+                            <div class="mt-1 text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">&nbsp;</span>
 
                                 <span class="cursor-pointer text-end" wire:click.prevent="removePricing({{ $i }})">
                                     <i class="fas fa-trash"></i>
@@ -166,7 +199,7 @@
                 <!-- Features -->
                 <div class="mb-3 col-md-12">
                     <label for="unitFeatures" class="form-label h3">
-                        {{ __('What can guests use in this room?') }}
+                        {{ __('What can guests use in this room/unit?') }}
                     </label>
                     <div class="row">
                         @foreach(current_company()->features as $feature)

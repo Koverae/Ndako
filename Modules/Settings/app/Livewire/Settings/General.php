@@ -81,6 +81,7 @@ class General extends AppSetting
     public function blocks() : array
     {
         return [
+            // Block::make('front-desk', __('Front Desk'))->component('app::blocks.templates.subscription-reminder'),
             Block::make('users', __('Users')),
             Block::make('companies', __('Enterprises')),
             Block::make('permissions', 'Permissions'),
@@ -150,7 +151,7 @@ class General extends AppSetting
             BoxAction::make('email-digest-templates', 'email-digest', __('Configure'), 'link', 'bi-arrow-right'),
             BoxAction::make('add-language', 'languages', __('Add a language'), 'modal', 'bi-plus-circle-fill', "{component: 'settings::modal.add-language-modal'}"),
             // BoxAction::make('manage-languages', 'languages', __('Manage languages'), 'link', 'bi-arrow-right'),
-            BoxAction::make('update-company', 'current-company', __('Update Information'), 'link', 'bi-arrow-right'),
+            BoxAction::make('update-company', 'current-company', __('Update Information'), 'link', 'bi-arrow-right', route('settings.companies.show', current_company()->id)),
             BoxAction::make('configure-layout', 'document-layout', __('Configure'), 'link', 'bi-arrow-right'),
             BoxAction::make('email-template', 'email-template', __('Configure'), 'link', 'bi-arrow-right'),
             BoxAction::make('default-access', 'customer-portal', __('Default access rights'), 'link', 'bi-arrow-right'),
@@ -179,10 +180,10 @@ class General extends AppSetting
             'token' => $token,
             'role' => 'default',
             'expire_at' => now()->addDays(7),
-            ]);
-            $invitation->save();
+        ]);
+        $invitation->save();
 
-            $invitation->notify(new CompanyInvitationNotification());
+        $invitation->notify(new CompanyInvitationNotification());
         // Send the invitation notification
 
         $this->friend_email = '';

@@ -27,7 +27,7 @@ use Modules\Properties\Livewire\PropertyType\Show as PropertyTypeShow;
 |
 */
 
-Route::group([], function () {
+Route::middleware('identify-kover')->group(function () {
     Route::get('properties/overview', Overview::class)->name('properties.index');
     // Properties
     Route::get('properties', PropertyLists::class)->name('properties.lists');
@@ -40,14 +40,14 @@ Route::group([], function () {
         Route::get('/', PropertyTypeLists::class)->name('lists');
         Route::get('/create', PropertyTypeCreate::class)->name('create');
         Route::get('/{type}', PropertyTypeShow::class)->name('show');
-        
+
     });
     // Unit Types
     Route::prefix('/unit-types')->name('properties.unit-types.')->group(function() {
         Route::get('/', UnitTypeLists::class)->name('lists');
         Route::get('/create', UnitTypeCreate::class)->name('create');
         Route::get('/{type}', UnitTypeShow::class)->name('show');
-        
+
     });
     // Units
     Route::prefix('/units')->name('properties.units.')->group(function() {

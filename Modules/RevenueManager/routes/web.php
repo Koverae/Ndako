@@ -14,6 +14,6 @@ use Modules\RevenueManager\Http\Controllers\RevenueManagerController;
 |
 */
 
-Route::group([], function () {
+Route::middleware('identify-kover')->group( function () {
     Route::resource('revenuemanager', RevenueManagerController::class)->names('revenuemanager');
 });

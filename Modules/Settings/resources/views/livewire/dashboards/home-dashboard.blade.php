@@ -11,10 +11,10 @@
                 </div>
             </div>
             @endif
-            
+
             <div class="gap-2 mb-3 row" wire:poll.10s>
 
-                @role('Maintenance Staff')
+                @role('maintenance-taff')
                 <!-- Tasks Today -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
                     <div class="card-body">
@@ -92,7 +92,7 @@
                 <!-- Avg Completion Time End -->
                 @endrole
 
-                @role('Front Desk / Receptionist')
+                @role('front-desk')
                 <!-- Guest Today -->
                 <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
@@ -174,7 +174,7 @@
             </div>
 
             <!-- Maintenance Requests -->
-            @role('Maintenance Staff')
+            @role('maintenance-taff')
             <div class="p-0 col-lg-12">
                 <div class="shadow-sm card">
                     <div class="card-header justify-content-between">
@@ -225,7 +225,7 @@
             <!-- Maintenance Requests End -->
 
             <!-- Guests Table -->
-            @role('Front Desk / Receptionist')
+            @role('front-desk')
             <div class="p-0 col-lg-12">
                 <div class="border shadow-sm card">
                     <div class="card-header justify-content-between">
@@ -294,7 +294,7 @@
                                         <span onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: {{ $booking->id }} }})">
                                             <i class="fas fa-user-cog fs-2" style="color: #095c5e;"></i>
                                         </span>
-                                        
+
                                         {{-- @if(\Carbon\Carbon::parse($booking->check_out)->isFuture())
                                         <a class="text-decoration-none" title="{{ __('Check-Out') }}" wire:navigate><i class="fas fa-sign-out-alt fs-2" style="color: #095c5e;"></i></a>
                                         @elseif(\Carbon\Carbon::parse($booking->check_in)->isFuture())

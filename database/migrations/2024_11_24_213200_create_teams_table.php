@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('uuid')->unique();
             $table->foreignId('user_id')->nullable();
+            $table->integer('rooms')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

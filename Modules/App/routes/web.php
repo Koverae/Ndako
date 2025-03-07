@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\App\Http\Controllers\AppController;
+use Modules\App\Http\Controllers\PaymentGateway\PaystackController;
+use Modules\App\Livewire\Subscription\SubscriptionPage;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,10 @@ use Modules\App\Http\Controllers\AppController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('app', AppController::class)->names('apps');
+Route::middleware('identify-kover')->group(function () {
+    // Route::resource('app', AppController::class)->names('apps');
+    Route::get('/subcribe', SubscriptionPage::class)->name('subscribe');
+
+    Route::post('/paystack/pay', [PaystackController::class, 'initiate'])->name('paystack.pay');
+    Route::get('/paystack/callback', [PaystackController::class, 'callback'])->name('paystack.callback');
 });

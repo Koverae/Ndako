@@ -8,9 +8,9 @@
                 <div class="card card-md">
                 <div class="card-body">
                     <div class="mt-0 mb-2 text-center">
-                    <a href="#" class="navbar-brand navbar-brand-autodark">
-                        <img src="<?php echo e(asset('assets/images/logo/logo-black.png')); ?>" width="130" height="52" alt="Tabler" class="navbar-brand-image">
-                    </a>
+                        <a href="#" class="navbar-brand navbar-brand-autodark">
+                            <img src="<?php echo e(asset('assets/images/logo/logo-black.png')); ?>" width="130" height="52" alt="Tabler" class="navbar-brand-image">
+                        </a>
                     </div>
                     <h2 class="mb-4 text-center h2">Login to your account</h2>
                     <!-- Session Status -->
@@ -181,4 +181,5 @@
     });
 </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.auth', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\My Laravel Startup\ndako\resources\views/auth/login.blade.php ENDPATH**/ ?>

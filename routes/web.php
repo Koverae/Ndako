@@ -17,7 +17,7 @@ Route::middleware(['auth', 'verified'])->prefix('web')->group(function () {
     Route::get('/getting_started', [GetStartedController::class, 'index'])->name('getting-started');
 });
 
-Route::middleware(['auth', 'verified', 'identify-kover'])->prefix('web')->group(function () {
+Route::middleware(['auth', 'verified', 'identify-kover', 'subscribed'])->prefix('web')->group(function () {
 
     Route::get('/onboarding', Onboarding::class)->name('onboarding');
     Route::get('/', Overview::class)->name('dashboard');
