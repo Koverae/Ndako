@@ -51,11 +51,11 @@ class PaystackService
 
         if ($result->status) {
             // Handle successful payment (e.g., update database, send email)
-            return view('paystack.success', ['data' => $result->data]);
+            return view('app::paystack.success', ['data' => $result->data]);
             // return redirect()->route('dashboard', ['data' => $result->data])->with('success', 'Payment successful! Your subscription is now active.');
         }
 
-        return view('paystack.error', ['message' => $result->message]);
+        return view('app::paystack.error', ['message' => $result->message]);
     }
 
     public function verifyPayment($reference)
