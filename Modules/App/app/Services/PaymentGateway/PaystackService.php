@@ -39,7 +39,9 @@ class PaystackService
     {
         $reference = $request->query('reference');
         $client = new Client();
-        $response = $client->get(env('PAYSTACK_PAYMENT_URL') . '/transaction/verify/' . $reference, [
+        $baseUrl = env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co');
+        
+        $response = $client->get($baseUrl . '/transaction/verify/' . $reference, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
             ]
