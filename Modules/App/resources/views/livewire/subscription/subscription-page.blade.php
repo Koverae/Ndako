@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="mb-3">
-                      <label class="form-label">Choose a Plan</label>
+                      <label class="form-label">Choose a Plan {{ $amount }}</label>
                       <div class="form-selectgroup">
                         @foreach ($plans as $plan)
                         <label class="form-selectgroup-item">

@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="mb-3">
-                      <label class="form-label">Choose a Plan</label>
+                      <label class="form-label">Choose a Plan <?php echo e($amount); ?></label>
                       <div class="form-selectgroup">
                         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $plans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <label class="form-selectgroup-item">

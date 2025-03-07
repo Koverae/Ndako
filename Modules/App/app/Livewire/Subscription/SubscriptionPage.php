@@ -38,6 +38,11 @@ class SubscriptionPage extends Component
         $this->selectedPlan = '';
     }
 
+    public function updatedSelectedPlan(){
+        $plan = Plan::getByTag($this->selectedPlan);
+        $this->amount = $plan->price;
+    }
+
     public function render()
     {
         return view('app::livewire.subscription.subscription-page')
