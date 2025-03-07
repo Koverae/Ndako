@@ -40,7 +40,7 @@ class PaystackController extends Controller
 
     public function callback(Request $request)
     {
-        $paymentDetails = $this->paystackService->verifyPayment($request->reference);
+        $this->paystackService->handleCallback($request->reference);
 
         // if (!$paymentDetails) {
         //     return redirect()->route('subscribe')->with('error', 'Payment verification failed.');
@@ -49,8 +49,6 @@ class PaystackController extends Controller
         // Update user subscription
         // current_company()->team->
         // Auth::user()->update(['subscription_status' => 'active']);
-
-        return redirect()->route('dashboard')->with('success', 'Payment successful! Your subscription is now active.');
     }
 
     public function redirectToGateway(Request  $request)
