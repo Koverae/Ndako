@@ -40,7 +40,8 @@ class PaystackController extends Controller
 
     public function callback(Request $request)
     {
-        $this->paystackService->handleCallback($request->reference);
+        $paystackService = new PaystackService();
+        return $paystackService->handleCallback($request);
 
         // if (!$paymentDetails) {
         //     return redirect()->route('subscribe')->with('error', 'Payment verification failed.');
