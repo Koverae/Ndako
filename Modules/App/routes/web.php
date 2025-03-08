@@ -17,7 +17,6 @@ use Modules\App\Livewire\Subscription\SubscriptionPage;
 */
 
 Route::middleware('identify-kover')->group(function () {
-    // Route::resource('app', AppController::class)->names('apps');
     Route::get('/subcribe', SubscriptionPage::class)->name('subscribe');
 
     Route::post('/paystack/pay', [PaystackController::class, 'initiate'])->name('paystack.pay');

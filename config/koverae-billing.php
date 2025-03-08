@@ -15,6 +15,7 @@ return [
         'plan_subscription_features' => 'plan_subscription_features',
         'plan_subscription_schedules' => 'plan_subscription_schedules',
         'plan_subscription_usage' => 'plan_subscription_usage',
+        'transactions' => 'transactions',
     ],
 
     // Models
@@ -26,12 +27,13 @@ return [
         'plan_subscription_feature' => \Koverae\KoveraeBilling\Models\PlanSubscriptionFeature::class,
         'plan_subscription_schedule' => \Koverae\KoveraeBilling\Models\PlanSubscriptionSchedule::class,
         'plan_subscription_usage' => \Koverae\KoveraeBilling\Models\PlanSubscriptionUsage::class,
+        'transaction' => \Koverae\KoveraeBilling\Models\Transaction::class,
     ],
 
     'services' => [
         'payment_methods' => [
             'free' => \Koverae\KoveraeBilling\Services\PaymentMethods\Free::class,
-            'm-pesa' => '',
+            'm-pesa' =>  '',
             'credit_card' => '',
         ]
     ]

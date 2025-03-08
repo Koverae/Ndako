@@ -2,8 +2,11 @@
 
 namespace Modules\App\Services\PaymentGateway;
 
+use App\Models\Team\Team;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Koverae\KoveraeBilling\Models\Transaction;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
 class PaystackService
@@ -49,23 +52,41 @@ class PaystackService
 
         $result = json_decode($response->getBody());
 
-        if ($result->status) {
-            // Handle successful payment (e.g., update database, send email)
-            return view('app::paystack.success', ['data' => $result->data]);
-            // return redirect()->route('dashboard', ['data' => $result->data])->with('success', 'Payment successful! Your subscription is now active.');
+        $team = Team::find(current_company()->team->id);
+        $subscription = $team->subscription('main');
+
+        if (!$result->status || $result->data->status !== 'success') {
+            Transaction::create([
+                'team_id' => $team->id,
+                'subscription_id' => $subscription->id,
+                'reference' => $result->data->reference,
+                'amount' => $result->data->amount / 100,
+                'status' => 'failed',
+                'payment_method' => $result->data->channel,
+                'metadata' => json_encode($result->data),
+            ]);
+
+            return view('app::paystack.error', ['message' => 'Payment failed. Please try again.']);
         }
 
-        return view('app::paystack.error', ['message' => $result->message]);
+        DB::transaction(function () use ($subscription, $result, $team) {
+            $subscription->update([
+                'starts_at' => now(),
+                'ends_at' => calculateEndDate($subscription->invoice_interval ?? 'monthly'),
+            ]);
+
+            Transaction::create([
+                'team_id' => $team->id,
+                'subscription_id' => $subscription->id,
+                'reference' => $result->data->reference,
+                'amount' => $result->data->amount / 100,
+                'status' => 'success',
+                'payment_method' => $result->data->channel,
+                'metadata' => json_encode($result->data),
+            ]);
+        });
+
+        return view('app::paystack.success', ['data' => $result->data]);
     }
 
-    public function verifyPayment($reference)
-    {
-        $paymentDetails = Paystack::getPaymentData();
-
-        if ($paymentDetails['status'] && $paymentDetails['data']['status'] === 'success') {
-            return $paymentDetails['data'];
-        }
-
-        return null;
-    }
 }

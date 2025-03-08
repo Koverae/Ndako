@@ -411,3 +411,25 @@ if (!function_exists('getFinalPrice')) {
         return $price;
     }
 }
+
+if (!function_exists('calculateEndDate')) {
+    function calculateEndDate(string $interval): Carbon
+    {
+        return match ($interval) {
+            'month' => now()->addMonth(),
+            'year'  => now()->addYear(),
+            default   => now()->addDays(30), // Fallback to 30 days if undefined
+        };
+    }
+}
+
+// if (!function_exists('calculateSubscriptionEndDate')) {
+//     function calculateSubscriptionEndDate($subscription): Carbon
+//     {
+//         return match ($subscription->invoice_interval) {
+//             'month' => Carbon::parse($subscription->starts_at) now()->addMonth(),
+//             'year'  => now()->addYear(),
+//             default   => now()->addDays(30), // Fallback to 30 days if undefined
+//         };
+//     }
+// }

@@ -30,7 +30,7 @@ class EnsureTeamHasSubscription
         $hasActiveSubscription = $team->subscription('main')->isActive();
         $msg = "Your trial has expired. Please subscribe.";
 
-        if ($team->subscription('main')->hasEndedTrial()) {
+        if ($team->subscription('main')->hasEndedTrial() && !$team->subscription('main')->isActive()) {
             return response()->view('errors.trial-expired', [], 403);
         }
 

@@ -28,8 +28,7 @@ class PaystackController extends Controller
         try {
             $paymentUrl = $this->paystackService->initializePayment(
                 $request->email,
-                $request->amount,
-                route('paystack.callback')
+                $request->amount
             );
 
             return redirect($paymentUrl);
@@ -42,40 +41,7 @@ class PaystackController extends Controller
     {
         $paystackService = new PaystackService();
         return $paystackService->handleCallback($request);
-
-        // if (!$paymentDetails) {
-        //     return redirect()->route('subscribe')->with('error', 'Payment verification failed.');
-        // }
-
-        // Update user subscription
-        // current_company()->team->
-        // Auth::user()->update(['subscription_status' => 'active']);
     }
 
-    public function redirectToGateway(Request  $request)
-    {
-        try{
-            $request->request->add([
-                "email"    => "laudbouetoumoussa@gmail.com",
-                "orderID"  => "123456", // anything
-                "amount"   => 100,
-                "quantity" => 1,
-                "currency" => "KES", // change as per need
-                "reference"=> Paystack::genTranxRef(),
-                "metadata" => json_encode(['key_name' => 'value']), // this should be related data
-            ]);
-
-            return Paystack::getAuthorizationUrl()->redirectNow();
-        }catch(\Exception $e) {
-            return Redirect::back()->withMessage(['msg'=>'The paystack token has expired. Please refresh the page and try again.', 'type'=>'error']);
-        }
-    }
-
-   public function handleGatewayCallback(Request  $request)
-    {
-        $paymentDetails = Paystack::getPaymentData();
-
-        dd($paymentDetails);
-    }
 
 }

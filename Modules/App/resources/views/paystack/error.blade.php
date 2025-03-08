@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{asset('assets/images/logo/favicon.ico')}}">
-    <title>{{ current_company()->name }} - @yield('title')</title>
+    <title>Payment Failed ❌</title>
 
     <!-- CSS -->
     <link href="{{asset('assets/css/koverae.css?'.time())}}" rel="stylesheet"/>
@@ -37,19 +37,17 @@
                     <img src="{{ asset('assets/images/logo/logo-black.png') }}" width="130" height="52" alt="Tabler" class="navbar-brand-image">
                 </a>
             </div>
-            <h2 class="mb-3 text-center">Your free trial period has expired!</h2>
+            <h2 class="mb-3 text-center">Payment Failed ❌</h2>
             <p class="text-secondary mb-4 fs-3">
-                Your journey with <strong>Ndako</strong> doesn’t have to stop here. From seamless reservations to effortless tenant management, Ndako helps you stay on top of your properties without the hassle. Upgrade today and keep things running smoothly.
+                Oops! Something went wrong with your payment.
             </p>
 
             <div class="my-4">
-              <a href="{{ route('subscribe') }}" class="btn btn-primary text-uppercase w-100 fs-3">
-                Upgrade now
+              <a href="" class="btn btn-primary text-uppercase w-100 fs-3">
+                Try Again
               </a>
+              <a href="https://ndako.koverae.com/contact-us?utm=app" class="btn btn-secondary">Contact Support</a>
             </div>
-            <p class="text-secondary">
-                Need more time? <a href="https://ndako.koverae.com/contact-us?utm=app" class=" underline" target="__blank">Contact us</a> to request a trial extension.
-            </p>
           </div>
         </div>
       </div>

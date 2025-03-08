@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Koverae\KoveraeBilling\Traits\HasSubscriptions;
 
 class Team extends Model
@@ -32,5 +33,9 @@ class Team extends Model
         });
     }
 
+    public function subscribed()
+    {
+        return $this->hasOne(PlanSubscription::class, 'subscriber_id', 'id');
+    }
 
 }

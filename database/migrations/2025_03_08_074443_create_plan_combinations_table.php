@@ -18,15 +18,15 @@ return new class extends Migration {
             $table->string('tag')->unique();
             $table->char('country', 3);
             $table->char('currency', 3);
-            $table->decimal('price', 10, 2)->default('0.00');  // Define precision
-            $table->decimal('signup_fee', 10, 2)->default('0.00');
+            $table->decimal('price')->default('0.00');
+            $table->decimal('signup_fee')->default('0.00');
             $table->unsignedSmallInteger('invoice_period')->default(1);
             $table->string('invoice_interval')->default('month');
+            // $table->dropUnique('unique_plan_combination');
 
             $table->timestamps();
 
-            // ✅ Correctly define the unique constraint
-            $table->unique(['plan_id', 'country', 'currency', 'invoice_period', 'invoice_interval'], 'unique_plan_combination');
+            $table->unique(['plan_id','country', 'currency', 'invoice_period', 'invoice_interval'], 'unique_plan_combination');
 
             $table->foreign('plan_id', 'plan_id_fk')->references('id')->on(config('koverae-billing.tables.plans'))->onDelete('cascade')->onUpdate('cascade');
         });
@@ -39,12 +39,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table(config('koverae-billing.tables.plan_combinations'), function (Blueprint $table) {
-            // ✅ Drop the index in the `down()` method
-            $table->dropUnique('unique_plan_combination');
-        });
-
         Schema::dropIfExists(config('koverae-billing.tables.plan_combinations'));
     }
-
 };
