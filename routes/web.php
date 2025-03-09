@@ -9,12 +9,12 @@ use Modules\ChannelManager\Http\Controllers\Embed\BookingFormController;
 use Modules\App\Livewire\GettingStarted;
 use Modules\App\Livewire\Onboarding;
 
-// Route::get('/', function () {
-//     return redirect('/web');
-// });
+Route::get('/', function () {
+    return redirect('/web');
+});
 
 Route::middleware(['auth', 'verified'])->prefix('web')->group(function () {
-    Route::get('/getting_started', [GetStartedController::class, 'index'])->name('getting-started');
+    Route::get('/getting_started', GettingStarted::class)->name('getting-started');
 });
 
 Route::middleware(['auth', 'verified', 'identify-kover', 'subscribed'])->prefix('web')->group(function () {

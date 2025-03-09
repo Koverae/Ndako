@@ -36,7 +36,8 @@ class GettingStarted extends Component
     ];
 
     public function mount(){
-        
+
+        $this->currentCountry = 'KE';
         $this->currenciesOptions = Currency::all();
         $this->languagesOptions = Language::all();
 
@@ -62,19 +63,20 @@ class GettingStarted extends Component
 
     public function render()
     {
-        return view('app::livewire.getting-started');
+        return view('app::livewire.getting-started')
+        ->extends('layouts.auth')->section('page_content');
     }
 
     public function getStarted(){
-        
+
         $this->validate();
         $user = User::find(Auth::user()->id);
-        
+
         $team = Team::create([
             'user_id' => $user->id
         ]);
         $team->save();
-        
+
         $plan = $this->getPlan();
         $team->newSubscription(
             'main', // identifier tag of the subscription. If your application offers a single subscription, you might call this 'main' or 'primary'
@@ -84,7 +86,7 @@ class GettingStarted extends Component
              null, // Start date for the subscription, defaults to now()
              'free' // Payment method service defined in config
         );
-        
+
         // $team->update([
         //     ''
         // ]);
@@ -134,8 +136,8 @@ class GettingStarted extends Component
 
         // Check if the billing cycle is passed in the URL, else let the user choose
         $billingCycle = request()->query('billing_cycle', 'monthly');
-        
-        
+
+
         // Ensure billing cycle is valid
         if (!in_array($billingCycle, ['monthly', 'yearly'])) {
             $billingCycle = null; // Force user to select if not provided

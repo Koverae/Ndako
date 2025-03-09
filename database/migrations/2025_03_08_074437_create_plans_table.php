@@ -19,6 +19,7 @@ return new class extends Migration
             // Columns
             $table->increments('id');
             $table->string('tag')->unique();
+            $table->string('plan_code')->nullable();
             $table->string('name');
             $table->string('description')->nullable();
             $table->boolean('is_active')->default(true);

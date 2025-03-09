@@ -9,7 +9,7 @@ use Modules\App\Services\PaymentGateway\PaystackService;
 
 class SubscriptionPage extends Component
 {
-    public $plans, $billingCycle, $selectedPlan, $amount = 10, $email;
+    public $plans, $billingCycle, $selectedPlan, $amount = 10, $email, $plan;
 
     protected $rules = [
         'email' => 'required|email',
@@ -40,7 +40,8 @@ class SubscriptionPage extends Component
 
     public function updatedSelectedPlan(){
         $plan = Plan::getByTag($this->selectedPlan);
-        $this->amount = $plan->price;
+        $this->amount = getFinalPrice($plan->price);
+        $this->plan = $plan;
     }
 
     public function render()
@@ -55,6 +56,7 @@ class SubscriptionPage extends Component
         $this->paystackService->initializePayment(
              $this->email,
             $this->amount,
+            $this->plan->plan_code,
         );
 
 

@@ -89,6 +89,7 @@ class General extends AppSetting
             Block::make('booking-settings', 'Booking Settings'),
             Block::make('housekeeping', 'Housekeeping & Maintenance'),
             Block::make('devs', 'Developers'),
+            Block::make('subs', 'Subscription'),
             Block::make('about', 'Ndako'),
             // Add more buttons as needed
         ];
@@ -127,6 +128,8 @@ class General extends AppSetting
             Box::make('maintenance-request', "Maintenance Requests", 'has_maintenance_requests', "Allow tenants to submit repair tickets directly.", 'housekeeping', true, "", null),
             // Developer
             Box::make('developers', __('Developers'), 'developers', null, 'devs', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.developer'),
+            // My Subscription
+            Box::make('subs', __('subs'), 'developers', null, 'subs', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.subs'),
             // About
             Box::make('developers', __('Developers'), 'developers', null, 'about', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.about'),
         ];

@@ -6,47 +6,81 @@ use App\Models\Team\Team;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
+use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Koverae\KoveraeBilling\Models\Transaction;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
 class PaystackService
-{    public function initializePayment($email, $amount)
+{
+    protected $secretKey;
+    protected $baseUrl;
+
+    public function __construct()
     {
-        $amount = $amount * 100; // Paystack uses kobo (cents), so multiply by 100
+        $this->secretKey = env('PAYSTACK_SECRET_KEY'); // Store in .env
+        $this->baseUrl = env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co');
+    }
+
+
+    /**
+    * Initialize a payment with Paystack.
+    *
+    * @param string $email The customer's email address.
+    * @param float $amount The payment amount (in major currency units, e.g., KES).
+    * @param string|null $plan Optional plan code for subscriptions.
+    * @return \Illuminate\Http\RedirectResponse Redirects to Paystack's payment page.
+    */
+    public function initializePayment($email, $amount, $plan = null)
+    {
+        $amount = $amount * 100; // Paystack processes payments in kobo (cents), so multiply by 100.
         $client = new Client();
-        $response = $client->post(env('PAYSTACK_PAYMENT_URL') . '/transaction/initialize', [
+
+        $response = $client->post($this->baseUrl  . '/transaction/initialize', [
             'headers' => [
-                'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+                'Authorization' => 'Bearer ' . $this->secretKey,
                 'Content-Type' => 'application/json',
             ],
             'json' => [
                 'email' => $email,
                 'amount' => $amount,
-                'callback_url' => route('paystack.callback')
+                'plan' => $plan,
+                'callback_url' => route('paystack.callback'),// Redirect after payment
+                'metadata' => [
+                    'team_id' => current_company()->team->id, // Attach team ID for reference
+                    // 'subscription_id' => $subscription->id,
+                ]
             ]
         ]);
 
         $result = json_decode($response->getBody());
 
+        // Redirect to Paystack payment page if the initialization was successful
         if ($result->status) {
             return redirect($result->data->authorization_url);
         }
 
+        // Return with an error message if initialization failed
         return back()->with('error', 'Payment initiation failed.');
 
     }
 
-
-    // Callback after payment
+    /**
+     * Handle Paystack's callback after payment.
+     *
+     * @param \Illuminate\Http\Request $request The request instance containing the payment reference.
+     * @return \Illuminate\View\View Returns a success or error view based on payment status.
+     */
     public function handleCallback(Request $request)
     {
-        $reference = $request->query('reference');
+        $reference = $request->query('reference'); // Get the payment reference from URL
         $client = new Client();
-        $baseUrl = env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co');
 
-        $response = $client->get($baseUrl . '/transaction/verify/' . $reference, [
+        // Verify the transaction with Paystack
+        $response = $client->get($this->baseUrl . '/transaction/verify/' . $reference, [
             'headers' => [
-                'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+                'Authorization' => 'Bearer ' . $this->secretKey,
             ]
         ]);
 
@@ -54,13 +88,18 @@ class PaystackService
 
         $team = Team::find(current_company()->team->id);
         $subscription = $team->subscription('main');
+        
+        // Extract the subscription code (if available)
+        $subscriptionCode = $result->data->plan->subscription_code ?? null;
 
+        // If payment failed, store the transaction as "failed" and return an error page
         if (!$result->status || $result->data->status !== 'success') {
             Transaction::create([
                 'team_id' => $team->id,
                 'subscription_id' => $subscription->id,
                 'reference' => $result->data->reference,
-                'amount' => $result->data->amount / 100,
+                'amount' => $result->data->amount / 100, // Convert back to major currency unit
+                'currency' => 'KES',
                 'status' => 'failed',
                 'payment_method' => $result->data->channel,
                 'metadata' => json_encode($result->data),
@@ -69,24 +108,84 @@ class PaystackService
             return view('app::paystack.error', ['message' => 'Payment failed. Please try again.']);
         }
 
-        DB::transaction(function () use ($subscription, $result, $team) {
+        // Process the payment and update records within a database transaction
+        DB::transaction(function () use ($subscription, $result, $team, $subscriptionCode) {
+            // Update the subscription with the new billing period
             $subscription->update([
+                'subscription_code' => $subscriptionCode,
                 'starts_at' => now(),
                 'ends_at' => calculateEndDate($subscription->invoice_interval ?? 'monthly'),
             ]);
 
+            // Log the successful transaction
             Transaction::create([
                 'team_id' => $team->id,
                 'subscription_id' => $subscription->id,
                 'reference' => $result->data->reference,
                 'amount' => $result->data->amount / 100,
+                'currency' => 'KES',
                 'status' => 'success',
                 'payment_method' => $result->data->channel,
                 'metadata' => json_encode($result->data),
             ]);
         });
 
+        // Return the success view with payment details
         return view('app::paystack.success', ['data' => $result->data]);
     }
+
+    /**
+     * Handle Paystack Webhook Events.
+     *
+     * @param \Illuminate\Http\Request $request The request containing the webhook payload.
+     * @return \Illuminate\Http\JsonResponse Responds with a success or error message.
+     */
+    public function handle(Request $request)
+    {
+        // Verify webhook signature to ensure request authenticity
+        $signature = $request->header('X-Paystack-Signature');
+
+        if (!$signature || $signature !== hash_hmac('sha512', $request->getContent(), $this->secretKey)) {
+            return response()->json(['message' => 'Invalid signature'], 400);
+        }
+
+        // Decode and log the webhook payload
+        $payload = $request->all();
+        Log::info('Paystack Webhook Event:', $payload);
+
+        // Handle different webhook event types
+        if ($payload['event'] === 'charge.success') {
+            $reference = $payload['data']['reference']; // Transaction reference
+            $status = $payload['data']['status']; // Payment status
+            $amount = $payload['data']['amount'] / 100; // Convert from kobo to major currency
+            $teamId = $payload['data']['metadata']['team_id'] ?? null; // Retrieve team ID from metadata
+
+            // Find and update the corresponding transaction record
+            $transaction = Transaction::where('reference', $reference)->first();
+            if ($transaction) {
+                $transaction->update([
+                    'status' => $status,
+                    'processed_at' => now(),
+                ]);
+            }
+
+            // If a valid team ID is present, update the team's subscription
+            if ($teamId) {
+                $subscription = PlanSubscription::find('subscriber_id', $teamId) ?? null;
+                if ($subscription) {
+                    $subscription->update([
+                        'starts_at' => now(),
+                        'ends_at' => calculateEndDate($subscription->invoice_interval),
+                    ]);
+                }
+            }
+
+            return response()->json(['message' => 'Payment processed successfully']);
+        }
+
+        // Return an error response if the event is not handled
+        return response()->json(['message' => 'Event not handled'], 400);
+    }
+
 
 }

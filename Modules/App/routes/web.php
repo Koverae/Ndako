@@ -21,4 +21,5 @@ Route::middleware('identify-kover')->group(function () {
 
     Route::post('/paystack/pay', [PaystackController::class, 'initiate'])->name('paystack.pay');
     Route::get('/paystack/callback', [PaystackController::class, 'callback'])->name('paystack.callback');
+    Route::get('/paystack/webhook', [PaystackController::class, 'handle'])->name('paystack.webhook');
 });
