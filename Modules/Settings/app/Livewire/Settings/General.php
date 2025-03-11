@@ -236,5 +236,13 @@ class General extends AppSetting
         $this->dispatch('change');
     }
 
+    // Cancel Subscription
+    public function cancelSubscription(){
+        // current_company()->team->subscription('main')->cancel();
+        current_company()->team->subscription('main')->update([
+            'cancels_at' => now()
+        ]);
+        $this->mount($this->setting);
+    }
 
 }

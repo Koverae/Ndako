@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->decimal('price')->default('0.00');
+            $table->decimal('discounted_price')->default('0.00');
             $table->decimal('signup_fee')->default('0.00');
             $table->string('currency', 3);
             $table->unsignedSmallInteger('trial_period')->default(0);
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('invoice_period')->default(1);
             $table->string('invoice_interval')->default('month');
             $table->unsignedMediumInteger('tier')->default(0);
+            $table->boolean('is_free')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

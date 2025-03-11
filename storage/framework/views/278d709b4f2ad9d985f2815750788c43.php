@@ -9,7 +9,12 @@
         <div class="col-lg">
             <div class="container py-4">
                 <div class="mt-0 mb-2">
-                    <h1 class="text-3xl font-bold text-gray-800" wire:click="changeNew">Subscribe to Ndako</h1>
+                    <!--[if BLOCK]><![endif]--><?php if($renew): ?>
+                    <h1 class="text-3xl font-bold text-gray-800">Renew your Ndako Subscription</h1>
+                    <?php else: ?>
+                    <h1 class="text-3xl font-bold text-gray-800">Subscribe to Ndako</h1>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
                     <p class="mt-2 text-lg text-gray-600">
                         Keep your property management running smoothly! Choose a plan now to continue accessing all the tools you need, seamlessly and without interruption
                     </p>
@@ -39,6 +44,13 @@
 
                 <form class="row" id="getStarted">
                     <?php echo csrf_field(); ?>
+
+                    <div class="mb-3">
+                        <label class="form-label">Number of Units/Rooms</label>
+                        <input type="number" wire:model.live="roomCount" min="1" class="form-control" placeholder="Enter number of rooms">
+                        <small class="text-muted">Enter the total number of rooms you manage or plan to manage.</small>
+                    </div>
+
                     <div class="mb-3">
                       <label class="form-label">Billing Cycle</label>
                       <div class="form-selectgroup">
@@ -55,9 +67,10 @@
                             Yearly</span>
                         </label>
                       </div>
+
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-2">
                       <label class="form-label">Choose a Plan</label>
                       <div class="form-selectgroup">
                         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $plans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -65,8 +78,8 @@
                            <input type="radio" wire:model.live="selectedPlan" value="<?php echo e($plan->tag); ?>" class="form-selectgroup-input">
                            <span class="form-selectgroup-label text-start">
                              <span class="text-black"><?php echo e($plan->name); ?></span> <br>
-                             <span class="text-small"><?php echo e(format_currency(getFinalPrice($plan->price))); ?> <s><?php echo e(format_currency($plan->price)); ?></s>
-                             
+                             <span class="text-small">
+                                <?php echo e(format_currency($plan->discounted_price * max(1, $roomCount))); ?> <s><?php echo e(format_currency($plan->price * max(1, $roomCount))); ?></s>
                              </span>
                            </span>
                         </label>
@@ -74,15 +87,50 @@
                       </div>
                     </div>
 
+                    <div class="mb-2 col-md-12 col-lg-12">
+                        <label class="form-label">Invoice Period</label>
+                        <div class="number-input-wrapper <?php $__errorArgs = ['invoicePeriod'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                            <span class="btn btn-link minus" wire:click="decreaseInvoicePeriod">−</span>
+                            <input type="number" id="number-input" min="1" wire:model="invoicePeriod" class="number-input" />
+                            <span class="btn btn-link plus" wire:click="increaseInvoicePeriod">+</span>
+                        </div>
+                        <span><?php echo e(ucfirst($billingCycle)); ?>(s)</span>
+                        <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['invoicePeriod'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <div class="mt-1 text-danger">
+                            <?php echo e($message); ?>
+
+                        </div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
+                    </div>
+
+                    <!--[if BLOCK]><![endif]--><?php if($selectedPlan): ?>
+                    <span>You are about to <?php echo e($renew ? "renew" : "subscribe"); ?> to <strong><?php echo e(getPlan($selectedPlan)); ?></strong> for <b><?php echo e(format_currency($amount)); ?></b> to manage your <b><?php echo e($roomCount); ?> rooms/units</b> for <?php echo e($invoicePeriod); ?> <?php echo e($billingCycle.'(s)'); ?>.</span>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
                     <div class="mb-2 form-footer">
                         <span wire:click="initiatePayment" class=" text-uppercase btn btn-primary w-100">
                             Subscribe Now
                         </span>
                     </div>
 
-                    <span class="text-gray-600 text-muted">
-                        Need help? <a href="https://ndako.koverae.com/contact-us" target="_blank" class="hover:underline">Contact us</a>.
+                    <span class="text-sm text-gray-600 text-muted">
+                        Not sure which plan is best for your needs? Want more details about what each plan includes? <a href="https://ndako.koverae.com#pricing" target="__blank">See our pricing</a> to learn more or reach out to us for help!
                     </span>
+
                 </form>
 
 

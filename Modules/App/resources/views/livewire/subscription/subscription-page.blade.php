@@ -9,7 +9,12 @@
         <div class="col-lg">
             <div class="container py-4">
                 <div class="mt-0 mb-2">
-                    <h1 class="text-3xl font-bold text-gray-800" wire:click="changeNew">Subscribe to Ndako</h1>
+                    @if($renew)
+                    <h1 class="text-3xl font-bold text-gray-800">Renew your Ndako Subscription</h1>
+                    @else
+                    <h1 class="text-3xl font-bold text-gray-800">Subscribe to Ndako</h1>
+                    @endif
+
                     <p class="mt-2 text-lg text-gray-600">
                         Keep your property management running smoothly! Choose a plan now to continue accessing all the tools you need, seamlessly and without interruption
                     </p>
@@ -20,6 +25,13 @@
 
                 <form class="row" id="getStarted">
                     @csrf
+
+                    <div class="mb-3">
+                        <label class="form-label">Number of Units/Rooms</label>
+                        <input type="number" wire:model.live="roomCount" min="1" class="form-control" placeholder="Enter number of rooms">
+                        <small class="text-muted">Enter the total number of rooms you manage or plan to manage.</small>
+                    </div>
+
                     <div class="mb-3">
                       <label class="form-label">Billing Cycle</label>
                       <div class="form-selectgroup">
@@ -36,9 +48,10 @@
                             Yearly</span>
                         </label>
                       </div>
+
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-2">
                       <label class="form-label">Choose a Plan</label>
                       <div class="form-selectgroup">
                         @foreach ($plans as $plan)
@@ -46,11 +59,8 @@
                            <input type="radio" wire:model.live="selectedPlan" value="{{ $plan->tag }}" class="form-selectgroup-input">
                            <span class="form-selectgroup-label text-start">
                              <span class="text-black">{{ $plan->name }}</span> <br>
-                             <span class="text-small">{{ format_currency(getFinalPrice($plan->price)) }} <s>{{ format_currency($plan->price) }}</s>
-                             {{-- <br>
-                             @if($billingCycle == 'year')
-                              ({{ format_currency($plan->price/12) }} / month)
-                             @endif --}}
+                             <span class="text-small">
+                                {{ format_currency($plan->discounted_price * max(1, $roomCount)) }} <s>{{ format_currency($plan->price * max(1, $roomCount)) }}</s>
                              </span>
                            </span>
                         </label>
@@ -58,15 +68,35 @@
                       </div>
                     </div>
 
+                    <div class="mb-2 col-md-12 col-lg-12">
+                        <label class="form-label">Invoice Period</label>
+                        <div class="number-input-wrapper @error('invoicePeriod') is-invalid @enderror">
+                            <span class="btn btn-link minus" wire:click="decreaseInvoicePeriod">−</span>
+                            <input type="number" id="number-input" min="1" wire:model="invoicePeriod" class="number-input" />
+                            <span class="btn btn-link plus" wire:click="increaseInvoicePeriod">+</span>
+                        </div>
+                        <span>{{ ucfirst($billingCycle) }}(s)</span>
+                        @error('invoicePeriod')
+                        <div class="mt-1 text-danger">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+
+                    @if($selectedPlan)
+                    <span>You are about to {{ $renew ? "renew" : "subscribe" }} to <strong>{{ getPlan($selectedPlan) }}</strong> for <b>{{ format_currency($amount) }}</b> to manage your <b>{{ $roomCount }} rooms/units</b> for {{ $invoicePeriod }} {{ $billingCycle.'(s)' }}.</span>
+                    @endif
+
                     <div class="mb-2 form-footer">
                         <span wire:click="initiatePayment" class=" text-uppercase btn btn-primary w-100">
                             Subscribe Now
                         </span>
                     </div>
 
-                    <span class="text-gray-600 text-muted">
-                        Need help? <a href="https://ndako.koverae.com/contact-us" target="_blank" class="hover:underline">Contact us</a>.
+                    <span class="text-sm text-gray-600 text-muted">
+                        Not sure which plan is best for your needs? Want more details about what each plan includes? <a href="https://ndako.koverae.com#pricing" target="__blank">See our pricing</a> to learn more or reach out to us for help!
                     </span>
+
                 </form>
 
 

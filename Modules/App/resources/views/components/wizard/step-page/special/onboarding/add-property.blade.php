@@ -152,7 +152,7 @@
                     <span>&nbsp;</span>
                     <div class="mt-3 wizard-navigation text-end">
                         <span class="btn cancel" wire:click="goToPreviousStep" {{ $this->currentStep == 0 ? 'disabled' : '' }}><i class="fa fa-chevron-left" aria-hidden="true"></i></span>
-                        <span class="btn cancel" wire:click="goToNextStep">{{ __('Skip') }}</span>
+
                         <button type="submit" class="btn btn-primary go-next" {{ $this->currentStep == count($this->steps()) - 1 ? 'disabled' : '' }}>
                             <span wire:loading.remove>Continue</span>
                             <span wire:loading>Loading...</span>

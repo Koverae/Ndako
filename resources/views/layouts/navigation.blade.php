@@ -217,7 +217,7 @@
     @if(current_company()->team->subscription('main')->isOnTrial())
     <div class="setting_block">
         <div class="mt-2 alert alert-warning">
-            <p>⏳ Your trial will expire in {{ current_company()->team->subscription('main')->getTrialPeriodRemainingUsageIn('day') }} days! <a href="#" target="__blank" class=""><strong>Upgrade</strong></a> now to continue managing your properties effortlessly with Ndako’s full suite of tools</p>
+            <p>⏳ Your trial will expire in {{ getRemainingTrialDays() }} days! <a href="{{ route('subscribe') }}" class=""><strong>Upgrade</strong></a> now to continue managing your properties effortlessly with Ndako’s full suite of tools</p>
         </div>
     </div>
     @endif

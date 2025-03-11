@@ -5,6 +5,7 @@ use App\Models\Module\InstalledModule;
 use App\Models\Module\Module;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Koverae\KoveraeBilling\Models\Plan;
 use Modules\Properties\Models\Property\LeaseTerm;
 use Modules\Settings\Models\System\Setting;
 use Modules\Settings\Models\SystemParameter;
@@ -400,8 +401,27 @@ if(!function_exists('lease_term')){
 //     }
 // }
 
+if(!function_exists('getRemainingTrialDays')){
+    function getRemainingTrialDays(){
+        $remainingTime = '';
+
+        $subscription = current_company()->team->subscription('main');
+        $daysLeft = $subscription->getTrialPeriodRemainingUsageIn('day');
+        $hoursLeft = $subscription->getTrialPeriodRemainingUsageIn('hour');
+
+        if($daysLeft >= 1){
+            $remainingTime = $daysLeft.' days';
+        }else{
+            $remainingTime = $hoursLeft.' hours';
+        }
+
+        return $remainingTime;
+
+    }
+}
+
 if (!function_exists('getFinalPrice')) {
-    function getFinalPrice(float $price, bool $isFirstSubscription = true, float $discountPercentage = 40): float
+    function getFinalPrice(float $price, bool $isFirstSubscription = true, float $discountPercentage = 35): float
     {
         if ($isFirstSubscription) {
             $discount = $price * ($discountPercentage / 100);
@@ -412,13 +432,26 @@ if (!function_exists('getFinalPrice')) {
     }
 }
 
-if (!function_exists('calculateEndDate')) {
-    function calculateEndDate(string $interval): Carbon
+if (!function_exists('calculatePrice')) {
+    function calculatePrice(int $roomCount, float $roomPrice, $discountedPrice = null): float
     {
+        // Use the discounted price if available; otherwise, use the standard price
+        $finalPrice = $discountedPrice ?? $roomPrice;
+        $roomCount = max(1, $roomCount ?? 1); // Ensure at least 1 room
+
+        return round($roomCount * $finalPrice, 2);
+    }
+}
+
+if (!function_exists('calculateEndDate')) {
+    function calculateEndDate(string $interval = 'month', $period = 1): Carbon
+    {
+        $period = (int) $period; // Ensure it's an integer
+
         return match ($interval) {
-            'month' => now()->addMonth(),
-            'year'  => now()->addYear(),
-            default   => now()->addDays(30), // Fallback to 30 days if undefined
+            'month' => now()->addMonths($period),
+            'year'  => now()->addYears($period),
+            default => now()->addDays(30), // Fallback to 30 days if undefined
         };
     }
 }
@@ -433,3 +466,12 @@ if (!function_exists('calculateEndDate')) {
 //         };
 //     }
 // }
+
+if(!function_exists('getPlan')){
+    function getPlan($tag = null){
+        $plan = Plan::getByTag($tag);
+        $planName = $plan->name.' '. ucfirst($plan->invoice_interval).'ly';
+
+        return $planName;
+    }
+}

@@ -30,7 +30,7 @@ class PlanTableSeeder extends Seeder
             new PlanFeature(['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11]),
             new PlanFeature(['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12]),
             new PlanFeature(['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13]),
-            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => false, 'sort_order' => 14]),
+            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => false, 'sort_order' => 7]),
             new PlanFeature(['tag' => 'gues-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 16]),
         ];
         $starterPlan = Plan::create([
@@ -47,6 +47,7 @@ class PlanTableSeeder extends Seeder
             'grace_interval' => 'day',
             'tier' => 1,
             'currency' => 'KES',
+            'is_free' => true,
         ]);
         $starterPlan->features()->saveMany($starterFeatures);
 
@@ -66,18 +67,19 @@ class PlanTableSeeder extends Seeder
             new PlanFeature(['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11]),
             new PlanFeature(['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12]),
             new PlanFeature(['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13]),
-            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => 'bridge', 'sort_order' => 14]),
+            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => 'bridge', 'sort_order' => 7]),
             new PlanFeature(['tag' => 'gues-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 15]),
         ];
         $sparkMonthly = Plan::create([
             'tag' => 'spark-monthly',
             'name' => 'Ndako Spark',
-            'description' => 'For 11-65 rooms | Mid-sized hotels seamlessly streamlining daily business operations.',
-            'price' => 15000.00, //For first sub, 7499 (-40%)
+            'description' => 'For 11-105 rooms | Mid-sized hotels seamlessly streamlining daily business operations.',
+            'price' => 480.00, //For first sub, 312/room (-35%)
+            'discounted_price' => 312.00, //For first sub, 312/room (-35%)
             'signup_fee' => 0.00,
             'invoice_period' => 1,
             'invoice_interval' => 'month',
-            'trial_period' => 14,
+            'trial_period' => 7,
             'trial_interval' => 'day',
             'grace_period' => 1,
             'grace_interval' => 'day',
@@ -90,11 +92,12 @@ class PlanTableSeeder extends Seeder
             'tag' => 'spark-yearly',
             'name' => 'Ndako Spark',
             'description' => 'For 11-65 rooms | Mid-sized hotels seamlessly streamlining daily business operations.',
-            'price' => 180000.00, //For first sub, KSh 89,999 (-40%)
+            'price' => 4800.00, //KSh 400/room/month, For first sub, KSh 260/room (-35%)
+            'discounted_price' => 3120.00, //KSh 260/room/month, For first sub, KSh 260/room (-35%)
             'signup_fee' => 0.00,
             'invoice_period' => 1,
             'invoice_interval' => 'year',
-            'trial_period' => 14,
+            'trial_period' => 7,
             'trial_interval' => 'day',
             'grace_period' => 1,
             'grace_interval' => 'day',
@@ -119,18 +122,19 @@ class PlanTableSeeder extends Seeder
             new PlanFeature(['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => true, 'sort_order' => 11]),
             new PlanFeature(['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => true, 'sort_order' => 12]),
             new PlanFeature(['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => true, 'sort_order' => 13]),
-            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => true, 'sort_order' => 14]),
+            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => true, 'sort_order' => 7]),
             new PlanFeature(['tag' => 'gues-portal', 'name' => 'Guest Portal', 'value' => true, 'sort_order' => 15]),
         ];
         $enterpriseMonthly = Plan::create([
             'tag' => 'enterprise-monthly',
             'name' => 'Ndako Enterprise',
             'description' => 'For 66-150 rooms | Larger properties and hotel chains requiring advanced features.',
-            'price' => 1250.00, //For first sub, KSh 750 (-40%)
+            'price' => 650.00, //For first sub, KSh 422/room (-35%)
+            'discounted_price' => 422.00, //For first sub, KSh 422/room (-35%)
             'signup_fee' => 0.00,
             'invoice_period' => 1,
             'invoice_interval' => 'month',
-            'trial_period' => 14,
+            'trial_period' => 7,
             'trial_interval' => 'day',
             'grace_period' => 1,
             'grace_interval' => 'day',
@@ -143,11 +147,12 @@ class PlanTableSeeder extends Seeder
             'tag' => 'enterprise-yearly',
             'name' => 'Ndako Enterprise',
             'description' => 'For 66-150 rooms | Larger properties and hotel chains requiring advanced features.',
-            'price' => 15000.00, //For first sub, KSh 8999 (-40%)
+            'price' => 6480.00, //KSh 540/room/month, For first sub, KSh 350/room (-35%)
+            'discounted_price' => 4200.00, //KSh 350/room/month, For first sub, KSh 350/room (-35%)
             'signup_fee' => 0.00,
             'invoice_period' => 1,
             'invoice_interval' => 'year',
-            'trial_period' => 14,
+            'trial_period' => 7,
             'trial_interval' => 'day',
             'grace_period' => 1,
             'grace_interval' => 'day',

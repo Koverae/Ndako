@@ -8,7 +8,7 @@
         <div class="card-header d-block">
             <h2 class="h2">Identity Verification 🔒</h2>
             <p>Please upload a valid government-issued ID and an optional selfie for verification.</p>
-        
+
             @if (session()->has('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
@@ -16,7 +16,7 @@
             @endif
         </div>
         <div class="card-body">
-            
+
             <form wire:submit.prevent="submitIdentity">
                 <div class="mb-3">
                     <label for="document_type" class="form-label">Select Document Type</label>
@@ -54,16 +54,17 @@
                     <span>&nbsp;</span>
                     <div class="mt-3 wizard-navigation text-end">
                         <span class="btn cancel" wire:click="goToPreviousStep" {{ $this->currentStep == 0 ? 'disabled' : '' }}><i class="fa fa-chevron-left" aria-hidden="true"></i></span>
-                        
+                        <span class="btn cancel" wire:click="goToNextStep">{{ __('Skip') }}</span>
+
                         <button type="submit" class="btn btn-primary go-next" {{ $this->currentStep == count($this->steps()) - 1 ? 'disabled' : '' }}>
                             <span wire:loading.remove class="uppercase">Go Next</span>
                             <span wire:loading>Loading...</span>
                         </button>
                     </div>
                 </div>
-                
+
             </form>
-            
+
         </div>
     </div>
 </div>
