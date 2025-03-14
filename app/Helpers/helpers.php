@@ -5,6 +5,7 @@ use App\Models\Module\InstalledModule;
 use App\Models\Module\Module;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\Plan;
 use Modules\Properties\Models\Property\LeaseTerm;
 use Modules\Settings\Models\System\Setting;
@@ -474,4 +475,11 @@ if(!function_exists('getPlan')){
 
         return $planName;
     }
+}
+
+function inverseSlug(string $slug): string
+{
+    return Str::of($slug)
+        ->replace(['-', '_'], ' ') // Replace hyphens and underscores with spaces
+        ->title(); // Capitalize each word
 }

@@ -11,16 +11,17 @@ class CompanyInvitationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $invitationLink;
+    public $invitationLink, $company;
 
     /**
      * Create a new message instance.
      *
      * @param string $invitationLink
      */
-    public function __construct($invitationLink)
+    public function __construct($invitationLink, $company)
     {
         $this->invitationLink = $invitationLink;
+        $this->company = $company;
     }
 
     /**
@@ -32,6 +33,7 @@ class CompanyInvitationMail extends Mailable
                     ->view('settings::emails.company-invitation')
                     ->with([
                         'invitationLink' => $this->invitationLink,
+                        'company' => $this->company,
                     ]);
     }
 }

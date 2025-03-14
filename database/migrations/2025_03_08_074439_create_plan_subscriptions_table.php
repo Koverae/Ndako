@@ -19,6 +19,8 @@ return new class extends Migration
             $table->increments('id');
             $table->string('tag');
             $table->string('subscription_code')->nullable();
+            $table->string('paystack_authorization')->nullable();
+            $table->string('paystack_customer')->nullable();
             $table->morphs('subscriber');
             $table->unsignedInteger('plan_id')->nullable();
             $table->string('name')->nullable();

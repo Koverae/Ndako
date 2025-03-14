@@ -21,7 +21,7 @@ class General extends AppSetting
 {
     public $setting;
 
-    public $friend_email, $pending_invitations, $users;
+    public $friend_email, $friend_role, $pending_invitations, $users;
 
     // Customer Portal
     public array $customer_portal_access = [], $currenciesOptions = [], $cutomerPortalAccessOptions = [], $digest_templates = [], $geolocationProvider = [];
@@ -170,6 +170,7 @@ class General extends AppSetting
         // Validate the form data
         $this->validate([
             'friend_email' => 'required|email|unique:company_invitations,email',
+            'friend_role' => 'required|string',
         ]);
 
         // Generate a unique invitation token
@@ -177,11 +178,11 @@ class General extends AppSetting
 
         // Create a new invitation record
         $invitation = CompanyInvitation::create([
-            'team_id' => Auth::user()->team->id,
+            'team_id' => current_company()->team->id,
             'company_id' => current_company()->id,
             'email'     => $this->friend_email,
+            'role'     => $this->friend_role,
             'token' => $token,
-            'role' => 'default',
             'expire_at' => now()->addDays(7),
         ]);
         $invitation->save();

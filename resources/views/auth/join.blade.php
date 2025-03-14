@@ -52,8 +52,8 @@
                 <label class="form-label" for="phone">Role</label>
                 <select name="role" id="" class="form-control" disabled>
                     <option value="">{{__('--- Choose ---')}}</option>
-                    @foreach($roles as $value => $text)
-                        <option value="{{ $value }}" {{ $invitation->role == $value ? 'selected' : '' }}>{{ $text }}</option>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->id }}" {{ $invitation->role == $role->id ? 'selected' : '' }}>{{ inverseSlug($role->name) }}</option>
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('role')" class="mt-2" />

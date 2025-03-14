@@ -286,7 +286,7 @@
                     </div>
 
                     <span class="text-sm text-gray-600 text-muted">
-                        Enjoy your 14-days free trial! To continue using Ndako after your trial, you'll need to subscribe to a plan that fits your needs. <a href="https://ndako.koverae.com#pricing" target="__blank">See our pricing</a>
+                        Enjoy your 7-days free trial! To continue using Ndako after your trial, you'll need to subscribe to a plan that fits your needs. <a href="https://ndako.koverae.com#pricing" target="__blank">See our pricing</a>
                     </span>
 
                     <div class="mb-0 form-footer">

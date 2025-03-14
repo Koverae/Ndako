@@ -22,8 +22,14 @@
                     </a>
                     @endif
                 </p>
-                <div class="d-flex">
+                <div class="gap-2 d-flex">
                     <input type="email" wire:model="friend_email" class="k-input k_user_emails text-truncate" style="width: auto;" placeholder="Enter e-mail address">
+                    <select class="k-input k_user_emails" wire:model="friend_role">
+                        <option value="">----- Choose ------</option>
+                        @foreach (current_company()->roles as $role)
+                            <option value="{{ $role->id }}">{{ inverseSlug($role->name) }}</option>
+                        @endforeach
+                    </select>
                     <span wire:click="sendInvitation" class="flex-shrink-0 btn btn-primary k_web_settings_invite">
                         <strong wire:loading.remove>Invite</strong>
                         <span wire:loading wire:target="sendInvitation">...</span>
@@ -31,7 +37,7 @@
                     @error('friend_email') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
-            <div class="mt16">
+            <div class="mt-4">
                 <p class="k_form_label">
                     Pending Invites :
                 </p>

@@ -35,10 +35,10 @@ class CompanyInvitationNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $companyName = current_company()->name;
+        $company = current_company();
         $invitationUrl = route('company.invitations.accept', ['token' => $notifiable->token]);
 
-        return (new CompanyInvitationMail($invitationUrl))
+        return (new CompanyInvitationMail($invitationUrl, $company))
             ->to($notifiable->email);
 
         // return (new MailMessage)

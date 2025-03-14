@@ -18,6 +18,7 @@ use Modules\Properties\Models\Property\Feature;
 use Modules\Settings\Models\Language\Language;
 use Modules\Settings\Models\Localization\Country;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class Company extends Model
 {
@@ -113,6 +114,14 @@ class Company extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'company_id', 'id');
+    }
+    
+    /**
+     * Get user for the company.
+     */
+    public function roles()
+    {
+        return $this->hasMany(Role::class, 'company_id', 'id');
     }
     
     /**

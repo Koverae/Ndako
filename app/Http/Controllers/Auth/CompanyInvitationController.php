@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class CompanyInvitationController extends Controller
 {
@@ -24,7 +25,7 @@ class CompanyInvitationController extends Controller
             ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
             ['id' => 'accountant', 'label' => __('Accountant')],
         ];
-        $roles = toSelectOptions($roles, 'id', 'label');
+        $roles = Role::where('company_id', $invitation->company_id)->get();
 
         return view('auth.join', compact('invitation', 'roles'));
     }
@@ -41,7 +42,10 @@ class CompanyInvitationController extends Controller
             'phone' => 'required|string|min:9|unique:users,phone',
             'password' => 'required|string|min:8',
         ]);
-
+        
+        // Role
+        $role = Role::find($invitation->role);
+        
         // Create the user if they don't exist
         $user = User::firstOrCreate(
             ['email' => $invitation->email],
@@ -54,7 +58,7 @@ class CompanyInvitationController extends Controller
             ]
         );
 
-        $user->assignRole($invitation->role);
+        $user->assignRole($role->name);
 
         // Assign the user to the company and role
         // $user->companies()->attach($invitation->company_id, ['role' => $invitation->role]);

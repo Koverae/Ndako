@@ -38,7 +38,7 @@
                 </a>
             </div>
             <h2 class="mb-3 text-center">Your free trial period has expired!</h2>
-            <p class="text-secondary mb-4 fs-3">
+            <p class="mb-4 fs-3">
                 Your journey with <strong>Ndako</strong> doesn’t have to stop here. From seamless reservations to effortless tenant management, Ndako helps you stay on top of your properties without the hassle. Upgrade today and keep things running smoothly.
             </p>
 

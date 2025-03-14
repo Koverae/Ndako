@@ -115,6 +115,8 @@ class PaystackService
         DB::transaction(function () use ($subscription, $result, $team, $subscriptionCode) {
             // Update the subscription with the new billing period
             $subscription->update([
+                'paystack_authorization' => $team->subscription('main')->paystack_authorization ?? $result->data->authorization->authorization_code,
+                'paystack_customer' => $team->subscription('main')->paystack_customer ?? $result->data->customer->customer_code,
                 'subscription_code' => $subscriptionCode,
                 'invoice_period' => $result->data->metadata->invoice_period,
                 'invoice_interval' => $result->data->metadata->invoice_interval,

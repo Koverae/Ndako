@@ -53,8 +53,14 @@ unset($__defined_vars); ?>
                     </a>
                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </p>
-                <div class="d-flex">
+                <div class="gap-2 d-flex">
                     <input type="email" wire:model="friend_email" class="k-input k_user_emails text-truncate" style="width: auto;" placeholder="Enter e-mail address">
+                    <select class="k-input k_user_emails" wire:model="friend_role">
+                        <option value="">----- Choose ------</option>
+                        <!--[if BLOCK]><![endif]--><?php $__currentLoopData = current_company()->roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($role->id); ?>"><?php echo e(inverseSlug($role->name)); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                    </select>
                     <span wire:click="sendInvitation" class="flex-shrink-0 btn btn-primary k_web_settings_invite">
                         <strong wire:loading.remove>Invite</strong>
                         <span wire:loading wire:target="sendInvitation">...</span>
@@ -69,7 +75,7 @@ endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </div>
-            <div class="mt16">
+            <div class="mt-4">
                 <p class="k_form_label">
                     Pending Invites :
                 </p>
