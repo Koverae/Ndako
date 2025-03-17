@@ -39,7 +39,7 @@ class UserForm extends SimpleAvatarForm
             $this->image_path = $user->avatar;
             $this->language = $user->language_id;
             $this->timezone = $user->timezone;
-            $this->status = $user->status;
+            $this->status = $user->last_login_at ? 'confirmed' : 'never-connected';
         }
         $dashboard = [
             ['id' => 'admin', 'label' => 'Admin'],

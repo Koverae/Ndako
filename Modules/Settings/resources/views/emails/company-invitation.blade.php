@@ -484,7 +484,7 @@
                                                         <a href="https://tabler.io/emails?utm_source=demo" style="color: #206bc4; text-decoration: none;"><img src="{{ asset('assets/sample-tabler-gray.png')}}" width="116" height="34" alt="" style="line-height: 100%; outline: none; text-decoration: none; vertical-align: baseline; font-size: 0; border-style: none; border-width: 0;" /></a>
                                                     </td>
                                                     <td class="text-right" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;" align="right">
-                                                        <a href="https://tabler.io/emails?utm_source=demo" class="text-muted-light" style="color: #8491a1; text-decoration: none;">
+                                                        <a href="https://ndako.koverae.com" class="text-muted-light" style="color: #8491a1; text-decoration: none;">
                                                             View online
                                                         </a>
                                                     </td>

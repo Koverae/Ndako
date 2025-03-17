@@ -36,6 +36,11 @@ class Booking extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function scopeIsUnit(Builder $query, $property_unit_id)
+    {
+        return $query->where('property_unit_id', $property_unit_id);
+    }
+
     public function invoice() {
         return $this->hasOne(BookingInvoice::class);
     }

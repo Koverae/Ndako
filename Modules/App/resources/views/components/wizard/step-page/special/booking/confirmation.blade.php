@@ -15,7 +15,7 @@
                         <li><strong>Room:</strong> {{ $this->selectedRoom->name }}</li>
                         <li><strong>Type:</strong> {{ $this->selectedRoom->unitType->name }}</li>
                         <li><strong>Capacity:</strong> {{ $this->selectedRoom->unitType->capacity }} guest(s)</li>
-                        <li><strong>Price/Day:</strong> {{ format_currency($this->selectedRoom->unitType->price) }}</li>
+                        <li><strong>Price/{{$this->rateService->getDefaultRate($this->selectedRoom->unitType->id)->lease->name}}:</strong> {{ format_currency($this->rateService->getDefaultRate($this->selectedRoom->unitType->id)->price) }}</li>
                     </ul>
                 </div>
                 <hr>
@@ -41,7 +41,7 @@
                 <div class="mt-2 mb-4">
                     <h2 class="h2"><i class="fas fa-money-check-alt"></i> Pricing Summary</h2>
                     <ul class="list-unstyled">
-                        <li><strong>Total Price:</strong> {{ format_currency($this->totalAmount) }}</li>
+                        <li><strong>Total Price:</strong> {{ format_currency($this->totalAmount) }} ⚡</li>
                         <li><strong>Minimum Down Payment:</strong> {{ format_currency($this->downPaymentDue) }}</li>
                     </ul>
                 </div>

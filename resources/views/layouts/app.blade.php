@@ -35,10 +35,16 @@
 
     <script src="{{ asset('assets/js/koverae.js?'.time())}}" data-navigate-track></script>
 
+    <!-- FullCalendar CSS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
     <!-- Scripts -->
     @livewireStyles
     @livewireScripts
+
     @yield('scripts')
+
+
 </head>
 <body>
     <script src="{{asset('assets/js/demo-theme.min.js')}}" data-navigate-track></script>
@@ -57,6 +63,7 @@
 
     @livewire('wire-elements-modal')
     <!-- Custom JS -->
+    @stack('scripts') <!-- This is where scripts pushed with @push('scripts') will be loaded -->
     <!-- Custom JS -->
 </body>
 

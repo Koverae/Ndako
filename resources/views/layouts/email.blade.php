@@ -194,11 +194,6 @@
                                                         If you have any questions, feel free to message us at <a href="mailto:support@koverae.com" class="text-muted">support@koverae.com</a>.
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="pt-md">
-                                                        You are receiving this email because you have bought or downloaded one of the <strong>Koverae</strong> products. <a href="https://koverae.com/emails?utm_source=demo" class="text-muted">Unsubscribe</a>
-                                                    </td>
-                                                </tr>
                                             </table>
                                         </td>
                                     </tr>

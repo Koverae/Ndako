@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Notifications\SendTwoFactorCodeNotification;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -18,34 +19,29 @@ class TwoFactorMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = User::find(auth()->user()->id); // Get the authenticated user
+        $user = User::find(Auth::user()->id); // Get the authenticated user
 
-        if (auth()->check()) { // Check if any user is authenticated      
+        if ($user) {
+            // Check if the user's phone is not verified
+            if (!$user->phone_verified_at) {
+                // Generate and send OTP only if it hasn’t been sent already
+                if (!$user->two_factor_code) {
+                    $user->generateTwoFactorCode();
+                    $user->notify(new SendTwoFactorCodeNotification());
+                }
 
-            if($user->last_login_ip !== $request->ip()){
-                $request->user()->generateTwoFactorCode();
-                $request->user()->notify(new SendTwoFactorCodeNotification());
+                // Redirect to verification page if not already there
+                if (!$request->is('verify*')) {
+                    return redirect()->route('verify.index');
+                }
             }
 
-            // Log the login date
-            // $request->user()->last_logged_in_at = now();
-            // $request->user()->save();
+            // Handle OTP expiration
+            if ($user->two_factor_code && $user->two_factor_expires_at < now()) {
+                $user->resetTwoFactorCode(); // Reset OTP
 
-            // Check if two-factor authentication is required
-            if ($user->two_factor_code) {
-                // Check if the OTP has expired
-                if ($user->two_factor_expires_at < now()) {
-                    $user->resetTwoFactorCode(); // Reset the two-factor code
-                    auth()->logout(); // Log out the user
-                    // Redirect to the login page with a status message
-                    return redirect()->intended(route('login'))
-                        ->withStatus('Your verification code expired. Please re-login.');
-                }
-                // Check if the current IP matches the last login IP and if the user is not on a verification route
-                if ($user->last_login_ip !== $request->ip() && !$request->is('verify*')) {
-                    // Redirect to the OTP verification page
-                    return redirect()->intended(route('verify.index'));
-                }
+                return redirect()->route('verify.index')
+                    ->withStatus('Your verification code expired. A new code has been sent.');
             }
         }
         return $next($request);

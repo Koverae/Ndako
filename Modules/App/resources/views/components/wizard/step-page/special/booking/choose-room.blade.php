@@ -13,16 +13,16 @@
             <hr class="mt-3 mb-3">
 
             <div class="gap-1 mb-3 d-flex justify-content-between align-items-center">
-                <select class="w-50 form-control" wire:model="filterBy" id="">
+                <select class="w-50 form-control" wire:model.live="filterBy" id="">
                     <option value="price">{{ __('Price') }}</option>
                     <option value="capacity">{{ __('Capacity') }}</option>
-                    <option value="number">{{ __('Number') }}</option>
+                    <option value="name">{{ __('Number') }}</option>
                 </select>
-                <select class="w-50 form-control" wire:model="sortOrder" id="">
+                <select class="w-50 form-control" wire:model.live="sortOrder" id="">
                     <option value="asc">{{ __('Ascending') }}</option>
                     <option value="desc">{{ __('Descending') }}</option>
                 </select>
-                <span class="gap-2 text-end btn btn-primary">{{ __('Search') }} <i class="fas fa-search-plus"></i></span>
+                {{-- <span class="gap-2 text-end btn btn-primary">{{ __('Search') }} <i class="fas fa-search-plus"></i></span> --}}
             </div>
 
             <!-- Available Rooms -->
@@ -35,7 +35,7 @@
                                 <div class="col-12 col-lg-7">
                                     <span class="text-muted fw-bolder">{{ $room->capacity }} {{ __('People') }} <i class="fas fa-users"></i></span>
                                     <h5 class="mb-0 card-title">{{ $room->name }} ~ {{ $room->unitType->name }}</h5>
-                                    <span class="mb-3 text-muted">{{ format_currency($room->unitType->price) }} / {{ __('Night') }}</span>
+                                    <span class="mb-3 text-muted">{{ format_currency($this->rateService->getDefaultRate($room->unitType->id)->price) }} / {{ $this->rateService->getDefaultRate($room->unitType->id)->lease->name }}</span>
                                     <p class="mt-2">
                                         {{ $room->unitType->description }}
                                     </p>
@@ -47,7 +47,7 @@
                                     <button class="mt-3 btn w-100" wire:click="pickRoom('{{ $room->id }}')" {{ $this->startDate == '' && $this->endDate == '' ? 'disabled' : "" }}  @if($this->selectedRoom) {{ $this->selectedRoom->id == $room->id ? 'disabled' : '' }} @endif>{{ __('Choose') }}</button>
                                 </div>
                                 <div class="col-md-5 d-none d-lg-block">
-                                    <img src="{{ asset('assets/images/test/test-'. $room->id.'.jpg') }}" width="300px" height="auto" alt="{{ $room->name }}" class="image">
+                                    <img src="{{ asset('storage/' . ($room->unitType->firstImage() ?? 'assets/images/default/placeholder.png')) }}" width="300px" height="auto" alt="{{ $room->name }}" class="image">
                                 </div>
                             </div>
                         </div>

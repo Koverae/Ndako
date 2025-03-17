@@ -1,18 +1,4 @@
-/*!
-* Tabler v1.0.0-beta20 (https://tabler.io)
-* @version 1.0.0-beta20
-* @link https://tabler.io
-* Copyright 2018-2023 The Tabler Authors
-* Copyright 2018-2023 codecalm.net Paweł Kuna
-* Licensed under MIT (https://github.com/tabler/tabler/blob/master/LICENSE)
-*/
-@charset "UTF-8";
-/* prettier-ignore */
-/* prettier-ignore */
-:root,
-[data-bs-theme=light] {
-  --tblr-blue: #0054a6;
-  --tblr-indigo: #4263eb;
+ --tblr-indigo: #4263eb;
   --tblr-purple: #ae3ec9;
   --tblr-pink: #d6336c;
   --tblr-red: #d63939;

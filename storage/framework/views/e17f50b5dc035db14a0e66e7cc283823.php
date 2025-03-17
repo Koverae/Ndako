@@ -33,13 +33,15 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars); ?>
 <?php
     $type = \Modules\Properties\Models\Property\PropertyUnitType::find($value);
+    $defaultPrice = \Modules\Properties\Models\Property\PropertyUnitTypePricing::isPropertyUnit($type->id)
+    ->isDefault(true)
+    ->first();
 ?>
 <div>
-    <!--[if BLOCK]><![endif]--><?php if($type->price): ?>
+    <!--[if BLOCK]><![endif]--><?php if($defaultPrice): ?>
     <a style="text-decoration: none" class="primary" tabindex="-1">
-        <?php echo e(format_currency($type->price) ?? ''); ?> / <?php echo e(__('Night')); ?>
+        <?php echo e(format_currency($defaultPrice->price) ?? ''); ?> / <?php echo e($defaultPrice->lease->description); ?>
 
-        
     </a>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>

@@ -57,7 +57,7 @@ class General extends AppSetting
 
         $this->digest_templates = toSelectOptions(User::all(), 'id', 'email');
 
-        $this->currenciesOptions = toSelectOptions(Currency::isCompany(current_company()->id)->get(), 'id', 'currency_name');
+        $this->currenciesOptions = toSelectOptions(Currency::all(), 'id', 'currency_name');
 
         $geoProvider = [
             ['id' => 'open_street_map', 'label' => 'Open Street Map', 'key' => ''],
@@ -115,21 +115,21 @@ class General extends AppSetting
             Box::make('recaptcha', __('reCAPTCHA'), 'has_recaptcha', __('Protect your forms from spam and abuse.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             Box::make('geolocation', __('Geolocation'), 'has_geo_localization', __('Geolocate your partners and customers.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             // Booking Settings
-            Box::make('default-check-time', "Default Check-in/Check-out Times", 'has_default_check_times', "Standardize guest arrival and departure hours.", 'booking-settings', true, "", null),
             Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial. The default can be changed per order or template.", 'booking-settings', true, "https://ndako.koverae", null),
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
-            Box::make('pro-format', "Pro-Format Invoice", 'has_pro_format_invoice', "Allows you to send Pro-Forma Invoice to your guests", 'booking-settings', true, "https://ndako.koverae.com", null),
             Box::make('over-booking', "Overbooking Prevention", 'has_overbooking_prevention', "Automatically block double bookings for the same room/unit.", 'booking-settings', true, "", null),
             Box::make('stay-rules', "Minimum & Maximum Stay Rules", 'has_stay_rule_per_unit', "Limit the duration of bookings for specific rooms/units.", 'booking-settings', true, "", null),
+            // Box::make('default-check-time', "Default Check-in/Check-out Times", 'has_default_check_times', "Standardize guest arrival and departure hours.", 'booking-settings', true, "", null),
+            // Box::make('pro-format', "Pro-Format Invoice", 'has_pro_format_invoice', "Allows you to send Pro-Forma Invoice to your guests", 'booking-settings', true, "https://ndako.koverae.com", null),
             // Housekeeping & Maintenance
-            Box::make('cleaning-frequency', "Cleaning Frequency", 'has_cleaning_frequency', "Set schedules for daily, weekly, or post-checkout cleaning.", 'housekeeping', true, "", null),
-            Box::make('maintenance-alert', "Maintenance Alerts", 'has_maintenance_alerts', "Notify staff of required repairs or inspections.", 'housekeeping', true, "", null),
-            Box::make('housekeeping-staff', "Housekeeping Staff Assignments", 'has_housekeeping_staff', "Allocate cleaning tasks to specific employees.", 'housekeeping', true, "", null),
             Box::make('maintenance-request', "Maintenance Requests", 'has_maintenance_requests', "Allow tenants to submit repair tickets directly.", 'housekeeping', true, "", null),
-            // Developer
-            Box::make('developers', __('Developers'), 'developers', null, 'devs', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.developer'),
+            // Box::make('cleaning-frequency', "Cleaning Frequency", 'has_cleaning_frequency', "Set schedules for daily, weekly, or post-checkout cleaning.", 'housekeeping', true, "", null),
+            // Box::make('maintenance-alert', "Maintenance Alerts", 'has_maintenance_alerts', "Notify staff of required repairs or inspections.", 'housekeeping', true, "", null),
+            // Box::make('housekeeping-staff', "Housekeeping Staff Assignments", 'has_housekeeping_staff', "Allocate cleaning tasks to specific employees.", 'housekeeping', true, "", null),
             // My Subscription
             Box::make('subs', __('subs'), 'developers', null, 'subs', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.subs'),
+            // Developer
+            Box::make('developers', __('Developers'), 'developers', null, 'devs', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.developer'),
             // About
             Box::make('developers', __('Developers'), 'developers', null, 'about', false, "https://www.ndako.koverae.com/docs")->component('app::blocks.boxes.template.about'),
         ];
@@ -207,23 +207,23 @@ class General extends AppSetting
 
         $setting->update([
             'has_customer_account' => $this->has_customer_account,
-            'has_digest_email' => $this->has_digest_email,
             'has_default_access_right' => $this->has_default_access_right,
             'has_geo_localization' => $this->has_geo_localization,
             'has_recaptcha' => $this->has_recaptcha,
             'has_reset_password' => $this->has_reset_password,
             'has_import_from_xls' => $this->has_import_from_xls,
-            'has_quick_find' => $this->has_quick_find,
             'has_default_check_times' => $this->has_default_check_times,
             'has_online_payment' => $this->has_online_payment,
             'has_lock_confirmed_booking' => $this->has_lock_confirmed_booking,
-            // 'has_pro_format_invoice' => $this->has_pro_format_invoice,
             'has_overbooking_prevention' => $this->has_overbooking_prevention,
             'has_stay_rule_per_unit' => $this->has_stay_rule_per_unit,
             'has_cleaning_frequency' => $this->has_cleaning_frequency,
             'has_maintenance_alerts' => $this->has_maintenance_alerts,
             'has_housekeeping_staff' => $this->has_housekeeping_staff,
             'has_maintenance_requests' => $this->has_maintenance_requests,
+            // 'has_digest_email' => $this->has_digest_email,
+            // 'has_pro_format_invoice' => $this->has_pro_format_invoice,
+            // 'has_quick_find' => $this->has_quick_find,
         ]);
         $setting->save();
 

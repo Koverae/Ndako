@@ -6,7 +6,6 @@
 @endsection
 <!-- Page Content -->
 <section class="">
-    {{-- <livewire:properties::form.property-form /> --}}
     <livewire:properties::wizard.add-property-wizard />
 </section>
 <!-- Page Content -->

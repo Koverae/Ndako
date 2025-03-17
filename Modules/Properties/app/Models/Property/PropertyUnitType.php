@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Modules\Properties\Database\Factories\Property/PropertyUnitTypeFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\App\Traits\Files\HasImages;
 
 class PropertyUnitType extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasImages;
 
     protected $guarded = [];
 
@@ -40,7 +41,21 @@ class PropertyUnitType extends Model
         return $this->hasMany(PropertyUtility::class, 'property_unit_type_id', 'id');
     }
 
-    public function price() {
-        return $this->belongsTo(PropertyUnitTypePricing::class, 'pricing_id', 'id');
+    public function prices() {
+        return $this->hasMany(PropertyUnitTypePricing::class, 'property_unit_type_id', 'id');
+    }
+
+    /**
+     * Get the default pricing rate for a given unit type.
+     *
+     * @param int $unitTypeId
+     * @return PropertyUnitTypePricing|null
+     */
+    public function getDefaultRate(int $unitTypeId): ?PropertyUnitTypePricing
+    {
+        return PropertyUnitTypePricing::where('property_unit_type_id', $unitTypeId)
+            ->where('is_default', true)
+            // ->select(['id', 'price', 'discounted_price'])
+            ->first();
     }
 }

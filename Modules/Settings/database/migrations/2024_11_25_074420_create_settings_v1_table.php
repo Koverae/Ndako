@@ -110,7 +110,7 @@ return new class extends Migration
             $table->boolean('has_in_room_services')->comment("Enable ordering of room service or add-ons through a guest portal.")->default(false);
             $table->boolean('has_guest_note')->comment("Record specific guest preferences or past feedback for repeat stays.")->default(false);
             // Invoicing
-            $table->unsignedBigInteger('down_payment')->nullable();
+            $table->integer('down_payment')->default(0);
             $table->boolean('has_automatic_invoice')->default(false);
             // Currencies
             $table->unsignedBigInteger('default_currency_id')->nullable();

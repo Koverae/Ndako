@@ -121,7 +121,7 @@ return [
     */
 
     'two_factor' => [
-        'via' => ['mail'], //mail, vonage
+        'via' => ['vonage'], //mail, vonage, database
     ],
 
 

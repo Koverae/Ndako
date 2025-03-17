@@ -13,6 +13,7 @@ use Modules\App\Livewire\Components\Form\Group;
 use Modules\App\Livewire\Components\Form\Table;
 use Modules\App\Livewire\Components\Form\Template\LightWeightForm;
 use Modules\App\Livewire\Components\Table\Column;
+use Modules\App\Traits\Files\HasFileUploads;
 use Modules\Properties\Models\Property\Amenity;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyAmenity;
@@ -22,8 +23,10 @@ use Modules\Properties\Models\Property\PropertyUnit;
 
 class PropertyForm extends LightWeightForm
 {
+    use HasFileUploads;
+
     public $property;
-    public $property_type, $invoicing = 'rate', $name, $country, $street, $city, $state, $zip, $description, $selectedAmenity;
+    public $property_type, $invoicing = '', $name, $country, $street, $city, $state, $zip, $description, $selectedAmenity;
     public $base_price = 25000, $payment_interval = 'monthly', $stay = 1;
     public array  $includedAmenities = [], $typeOptions = [], $invoiceOptions = [], $paymentIntervalOptions = [], $propertyAmenitiesOptions = [], $amenityOptions, $rateFrequencyOptions = [];
 
@@ -33,10 +36,15 @@ class PropertyForm extends LightWeightForm
     public function mount($property = null){
         // $this->default_img = 'placeholder';
         if($property){
+
+            $this->inputId = 'photo-' . uniqid(); // Prevent conflicts
+            $this->model = $property;
+            $this->path = 'property_images';
+
             $this->property = $property;
             $this->name = $property->name;
             $this->property_type = $property->property_type_id;
-            $this->invoicing = $property->invoicing_type;   
+            // $this->invoicing = $property->invoicing_type; Invoicing Type (rental, rate) 
             $this->country = $property->country_id;
             $this->state = $property->state_id;
             $this->city = $property->city;
@@ -107,8 +115,8 @@ class PropertyForm extends LightWeightForm
     {
         return [
             Capsule::make('units', __('Property Units'), __('Units assigned to the property'), 'link', 'fa fa-home-user', route('properties.units.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => $this->property ? $this->property->units->count() : 0]),
-            Capsule::make('inventory-items', __('Inventory Items'), __('Inventory items assigned to the property'), 'link', 'fa fa-warehouse'),
-            Capsule::make('tenants', __('Tenants'), __('Inventory items assigned to the property'), 'link', 'fa fa-users'),
+            // Capsule::make('inventory-items', __('Inventory Items'), __('Inventory items assigned to the property'), 'link', 'fa fa-warehouse'),
+            Capsule::make('tenants', __('Guest/Tenants'), __('Inventory items assigned to the property'), 'link', 'fa fa-users',  route('guests.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => 0]),
         ];
     }
 
@@ -162,13 +170,13 @@ class PropertyForm extends LightWeightForm
             Input::make('invoicing-type', 'Invoicing Type', 'select', 'invoicing', 'left', 'general', 'general', "", "", $this->invoiceOptions),
             Input::make('description', 'Description', 'textarea', 'description', 'left', 'general', 'image-note', "", ""),
             // Rental Pricing
-            Input::make('base-rent', 'Base Rent', 'price', 'base_price', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rental'])->component('app::form.input.depends'),
-            Input::make('payment-interval', 'Payment Interval', 'select', 'payment_interval', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rental', 'data' => $this->paymentIntervalOptions])->component('app::form.input.depends'),
-            Input::make('deposit-amount', 'Deposit Amount', 'price', 'language', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rental'])->component('app::form.input.depends'),
-            // Rate Pricing
-            Input::make('based-rate', 'Base Rate', 'price', 'base_price', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rate'])->component('app::form.input.depends'),
-            Input::make('rate-frequency', 'Rate Frequency', 'select', 'payment_interval', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rate', 'data' => $this->rateFrequencyOptions])->component('app::form.input.depends'),
-            Input::make('min-days', 'Minimum Stay Duration', 'number', 'stay', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rate'])->component('app::form.input.depends'),
+            // Input::make('base-rent', 'Base Rent', 'price', 'base_price', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rental'])->component('app::form.input.depends'),
+            // Input::make('payment-interval', 'Payment Interval', 'select', 'payment_interval', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rental', 'data' => $this->paymentIntervalOptions])->component('app::form.input.depends'),
+            // Input::make('deposit-amount', 'Deposit Amount', 'price', 'language', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rental'])->component('app::form.input.depends'),
+            // // Rate Pricing
+            // Input::make('based-rate', 'Base Rate', 'price', 'base_price', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rate'])->component('app::form.input.depends'),
+            // Input::make('rate-frequency', 'Rate Frequency', 'select', 'payment_interval', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rate', 'data' => $this->rateFrequencyOptions])->component('app::form.input.depends'),
+            // Input::make('min-days', 'Minimum Stay Duration', 'number', 'stay', 'right', 'general', 'general', "", "", ['parent' => $this->invoicing == 'rate'])->component('app::form.input.depends'),
             // Location
             Input::make('address', null, 'select', 'address', 'left', 'general', 'location', "")->component('app::form.input.select.address'),
             // Amenities

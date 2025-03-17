@@ -29,15 +29,15 @@ class SendTwoFactorCodeNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return config('auth.two_factor.via');
+        return config('auth.two_factor.via'); //mail, vonage, database
     }
     
 
     public function toVonage($notifiable): VonageMessage
     {
         return (new VonageMessage())
-            ->content("Your Koverae verification code is: {$notifiable->two_factor_code}")
-            ->from('Koverae');
+            ->content("Your Ndako verification code is: {$notifiable->two_factor_code}")
+            ->from('Koverae Technologies');
     }
 
     /**

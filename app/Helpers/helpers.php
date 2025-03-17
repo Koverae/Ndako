@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\Plan;
 use Modules\Properties\Models\Property\LeaseTerm;
+use Modules\Properties\Models\Property\Property;
 use Modules\Settings\Models\System\Setting;
 use Modules\Settings\Models\SystemParameter;
 use Modules\Settings\Models\WorkItem;
@@ -43,10 +44,13 @@ if(!function_exists('current_company')){
 
 if (!function_exists('settings')) {
     function settings() {
-        $settings = cache()->remember('settings', 24*60, function () {
-            return Setting::where('company_id', current_company()->id)
-            ->first();
-        });
+        $settings = '';
+        if(current_company()){
+            $settings = cache()->remember('settings', 24*60, function () {
+                return Setting::where('company_id', current_company()->id)
+                ->first();
+            });
+        }
 
         return $settings;
     }
@@ -474,6 +478,14 @@ if(!function_exists('getPlan')){
         $planName = $plan->name.' '. ucfirst($plan->invoice_interval).'ly';
 
         return $planName;
+    }
+}
+
+if(!function_exists('getProperty')){
+    function getProperty($id){
+        $property = Property::find($id);
+
+        return $property;
     }
 }
 

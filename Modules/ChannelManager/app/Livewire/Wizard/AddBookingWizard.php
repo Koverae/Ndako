@@ -3,8 +3,10 @@
 namespace Modules\ChannelManager\Livewire\Wizard;
 
 use Livewire\Attributes\On;
+use Modules\RevenueManager\Services\Pricing\RateService;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Modules\App\Livewire\Components\Wizard\SimpleWizard;
 use Modules\App\Livewire\Components\Wizard\Step;
@@ -19,10 +21,11 @@ use Modules\RevenueManager\Models\Accounting\Journal;
 class AddBookingWizard extends SimpleWizard
 {
     public $search = '', $guest, $selectedRoom, $startDate = '', $endDate = '', $guests, $status = 'pending', $paymentStatus = 'unpaid', $invoiceStatus = 'not_invoiced', $paymentMethod = 'cash';
-    public $filterBy = 'price', $sortOrder = 'asc', $totalAmount = 0, $downPayment = 0, $downPaymentDue = 0, $dueAmount = 0, $nights = 0, $people = 1;
+    public $filterBy = 'capacity', $sortOrder = 'asc', $totalAmount = 0, $downPayment = 0, $downPaymentDue = 0, $dueAmount = 0, $nights = 0, $people = 1;
     public $availableRooms = [];
     public array $paymentOptions = [];
     public bool $checkedIn = true;
+    protected $rateService;
 
     // Define validation rules
     protected $rules = [
@@ -36,9 +39,15 @@ class AddBookingWizard extends SimpleWizard
         'checkedIn' => 'nullable|boolean',
     ];
 
-    public function mount(){
-        $this->startDate = Carbon::now()->format('Y-m-d');
-        $this->endDate = Carbon::now()->addDay()->format('Y-m-d');
+    public function boot(RateService $rateService){
+        $this->rateService = $rateService;
+    }
+
+    public function mount($startDate = null, $endDate = null){
+
+        $this->startDate = $startDate ?? Carbon::now()->format('Y-m-d');
+        $this->endDate = $endDate ?? Carbon::now()->addDay()->format('Y-m-d');
+
         $this->guests = Guest::isCompany(current_company()->id)->get();
         $this->downPaymentDue = $this->totalAmount * 0.3;
         // $this->selectedRoom = PropertyUnit::isCompany(current_company()->id)->first();
@@ -115,7 +124,7 @@ class AddBookingWizard extends SimpleWizard
             $nights = $checkIn->diffInDays($checkOut);
             $this->nights = $nights;
 
-            $this->totalAmount = $nights * $this->selectedRoom->unitType->price;
+            $this->totalAmount = $this->rateService->getOptimalPricing($this->selectedRoom->unitType->id, $nights);
 
             $this->calculateDownPayment();
         }
@@ -123,7 +132,12 @@ class AddBookingWizard extends SimpleWizard
 
     public function calculateDownPayment()
     {
-        $this->downPaymentDue = $this->totalAmount * 0.3;
+        if(settings()->down_payment){
+            $this->downPaymentDue = $this->totalAmount * (settings()->down_payment / 100);
+        }else{
+            $this->downPaymentDue = 0;
+        }
+        // $this->downPaymentDue = $this->totalAmount * 0.3;
     }
 
     #[On('load-guests')]
@@ -147,36 +161,24 @@ class AddBookingWizard extends SimpleWizard
             return;
         }
 
-        // Step 1: Fetch all rooms that fit the number of people
-        $rooms = PropertyUnit::where('capacity', '>=', $this->people)
-            // ->where('status', 'vacant')
-            // ->when($this->filterBy, function ($query) {
-            //     $query->orderBy($this->filterBy, $this->sortOrder);
-            // })
-            ->with(['unitType.price']) // Eager load related price table
-            ->get()
-            ->sortBy(function ($room) {
-                if ($this->filterBy === 'price') {
-                    return $room->propertyType->price->price ?? 0; // Handle missing price
-                } elseif ($this->filterBy === 'capacity') {
-                    return $room->capacity;
-                }
-                return 0;
-            }, SORT_REGULAR, $this->sortOrder === 'desc'); // Handle sorting order
+        $this->availableRooms = PropertyUnit::where('capacity', '>=', $this->people)
+            ->where('status', 'vacant') // Step 1: Get rooms that fit the number of people
+                ->orWhere('status', 'vacant-clean')
+                    ->whereDoesntHave('bookings', function ($query) { // Step 2: Exclude rooms that are already booked in the given date range
+                        $query->where('check_in', '<=', $this->endDate)  // Check if check-in date is before or on the selected end date
+                                ->where('check_out', '>=', $this->startDate);  // Check if check-out date is after or on the selected start date
 
-            // Step 2: Filter rooms that are not booked within the provided date range
-            $this->availableRooms = $rooms->filter(function ($room) {
-                $isAvailable = !Booking::where('property_unit_id', $room->id)
-                    ->where(function ($query) {
-                        $query->where(function ($query) {
-                            $query->where('check_in', '<=', $this->endDate)
-                                  ->where('check_out', '>=', $this->startDate);
-                        });
                     })
-                    ->exists();
-
-                return $isAvailable;
-            })->values();
+                    ->with([
+                        'unitType.prices' => fn($query) => $query->where('is_default', true), // Step 3: Eager load the default pricing for the unit type
+                    ])
+                    ->get() // Step 4: Fetch all results from the database
+                        ->sortBy(fn($room) => match ($this->filterBy) { // Step 5: Sort the results based on user selection
+                            'price'    => $room->unitType?->prices->first()?->price ?? 0, // Sort by price if available, otherwise default to 0
+                            'capacity' => $room->capacity, // Sort by capacity if selected
+                            default    => 0, // Default sorting (if no valid filter is provided)
+                        }, SORT_REGULAR, $this->sortOrder === 'desc') // Step 6: Apply sorting order (ascending or descending)
+                        ->values(); // Step 7: Reset array keys (in case filtering removed some items)
     }
 
     public function createBooking(){
@@ -199,11 +201,11 @@ class AddBookingWizard extends SimpleWizard
             'company_id' => current_company()->id,
             'property_unit_id' => $this->selectedRoom->id,
             'guest_id' => $this->guest->id,
-            'agent_id' => auth()->user()->id,
+            'agent_id' => Auth::user()->id,
             'guests' => $this->people,
             'check_in' => $this->startDate,
             'check_out' => $this->endDate,
-            'unit_price' => $this->selectedRoom->unitType->price,
+            'unit_price' => $this->rateService->getDefaultRate($this->selectedRoom->unitType->id)->price,
             'paid_amount' => $this->downPayment,
             'due_amount' => $this->dueAmount,
             'total_amount' => $this->totalAmount,
@@ -237,14 +239,21 @@ class AddBookingWizard extends SimpleWizard
         } else {
             // If check-in is in the future, mark the room as reserved
             $this->selectedRoom->update([
-                'status' => 'reserved'
+                'status' => 'expected-arrival'
+                // 'status' => 'reserved'
             ]);
         }
 
-        $this->createInvoice($booking);
+        if($booking->paid_amount > 0){
+            $this->createInvoice($booking);
+        }
 
+        session()->flash('success', __('Booking confirmed! Your reservation has been successfully added.'));
+
+        return $this->redirect(route('bookings.lists'), navigate: true);
         // return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
-        return $this->redirect(route('dashboard', ['dash' => 'home']), navigate: true);
+        // return $this->redirect(route('dashboard', ['dash' => 'home']), navigate: true);
+
     }
 
     public function createInvoice($booking){
@@ -256,7 +265,7 @@ class AddBookingWizard extends SimpleWizard
             'date' => now(),
             'due_date' => $booking->check_out,
             'payment_status' => $booking->payment_status,
-            'agent_id' => auth()->user()->id,
+            'agent_id' => Auth::user()->id,
             'terms' => $booking->terms,
             'total_amount' => $booking->total_amount,
             'paid_amount' => $booking->paid_amount,

@@ -35,12 +35,18 @@
 
     <script src="<?php echo e(asset('assets/js/koverae.js?'.time())); ?>" data-navigate-track></script>
 
+    <!-- FullCalendar CSS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
     <!-- Scripts -->
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
 
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
+
     <?php echo $__env->yieldContent('scripts'); ?>
+
+
 </head>
 <body>
     <script src="<?php echo e(asset('assets/js/demo-theme.min.js')); ?>" data-navigate-track></script>
@@ -89,6 +95,7 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
     <!-- Custom JS -->
+    <?php echo $__env->yieldPushContent('scripts'); ?> <!-- This is where scripts pushed with <?php $__env->startPush('scripts'); ?> will be loaded -->
     <!-- Custom JS -->
 </body>
 

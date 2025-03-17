@@ -12,9 +12,11 @@ use Modules\Properties\Models\Property\PropertyUnit;
 class UnitTable extends Table
 {
     public array $data = [];
+    public $propertyID;
 
     public function mount(){
         $this->data = ['floor_name', 'phone'];
+        $this->propertyID = request()->query('property', null);
     }
 
     public function createRoute() : string
@@ -41,6 +43,11 @@ class UnitTable extends Table
     public function query() : Builder
     {
         $query = PropertyUnit::query();
+
+        // Filter by property ID from the URL
+        if ($this->propertyID) {
+            $query->isProperty($this->propertyID);
+        }
 
         // Apply the search query filter if a search query is present
         if ($this->searchQuery) {

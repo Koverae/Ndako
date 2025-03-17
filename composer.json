@@ -11,6 +11,7 @@
         "laravel/framework": "^11.9",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
+        "laravel/vonage-notification-channel": "^3.3",
         "livewire/livewire": "^3.5",
         "mhmiton/laravel-modules-livewire": "^4.2",
         "nwidart/laravel-modules": "^11.1",

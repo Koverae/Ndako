@@ -83,12 +83,13 @@ class BookingForm extends LightWeightForm
 
         $buttons =  [
             // ActionBarButton::make('invoice', 'Créer une facture', 'storeQT()', 'sale_order'),
-            ActionBarButton::make('send-email', __('Send by Email'), "", 'storable', true),
+            ActionBarButton::make('send-email', __('Send by Email'), "", 'confirmed', true),
             ActionBarButton::make('confirm', __('Confirm'), "confirm", 'pending', $this->status == 'confirmed'),
             ActionBarButton::make('invoice', __('Create Invoice'), "createInvoice", 'confirmed', $this->status !== 'confirmed' || $this->invoiceStatus == 'invoiced'),
             ActionBarButton::make('preview', __('Preview'), 'sale()', 'none', $this->status == null),
             ActionBarButton::make('lock', __('Lock'), 'lock()', "none", $this->blocked || $this->status == null),
             ActionBarButton::make('unlock', __('Unlock'), 'unlock()', 'blocked', !$this->blocked || $this->status == null),
+            ActionBarButton::make('canceled', __('Canceled'), 'cancel', 'canceled', !$this->status || $this->status != 'confirmed'),
             // Add more buttons as needed
         ];
 
@@ -104,8 +105,8 @@ class BookingForm extends LightWeightForm
         return [
             StatusBarButton::make('pending', __('Pending'), 'pending'),
             StatusBarButton::make('confirmed', __('Confirmed'), 'confirmed'),
+            StatusBarButton::make('canceled', __('Canceled'), 'canceled'),
             // StatusBarButton::make('sale_order', __('translator::sales.form.sale.status.order'), 'sale_order')->component('button.status-bar.default-selected'),
-            // StatusBarButton::make('canceled', __('translator::sales.form.sale.status.canceled'), 'canceled')->component('button.status-bar.canceled'),
             // Add more buttons as needed
         ];
     }
@@ -114,7 +115,7 @@ class BookingForm extends LightWeightForm
     {
         return [
             Capsule::make('invoice', __('Invoice'), __('Reservations made via this channel'), 'link', 'fa fa-file-invoice', route('bookings.invoices.show', ['invoice' => $this->invoice]), ['parent' => $this->invoice, 'amount' => ''])->component('app::form.capsule.depends'),
-            Capsule::make('room', __('Room'), __('Log of connections and actions'), 'link', 'fa fa-home', route('properties.units.lists', ['unit' => $this->unit ?? null]), ['parent' => $this->unit, 'amount' => ''])->component('app::form.capsule.depends'),
+            Capsule::make('room', __('Room'), __('Unit linked to the reservation'), 'link', 'fa fa-home', route('properties.units.show', ['unit' => $this->unit ?? null]), ['parent' => $this->unit, 'amount' => ''])->component('app::form.capsule.depends'),
         ];
     }
 
@@ -127,7 +128,7 @@ class BookingForm extends LightWeightForm
             Input::make('check-in', 'Check In', 'date', 'startDate', 'right', 'none', 'none', "", "")->component('app::form.input.change-input'),
             Input::make('check-out', 'Check Out', 'date', 'endDate', 'right', 'none', 'none', "", "")->component('app::form.input.change-input'),
             Input::make('guests', 'How Many Person', 'tel', 'guests', 'right', 'none', 'none', "", ""),
-            Input::make('down-payment', 'Minimum Deposit', 'tel', 'downPayment', 'right', 'none', 'none', "", ""),
+            // Input::make('down-payment', 'Minimum Deposit', 'tel', 'downPayment', 'right', 'none', 'none', "", ""),
             Input::make('payment-unit', 'Payment Method', 'select', 'paymentMethod', 'right', 'none', 'none', "", "", $this->paymentOptions),
         ];
     }
@@ -145,6 +146,17 @@ class BookingForm extends LightWeightForm
         if($this->booking){
             $this->status = 'confirmed';
             $this->booking->update(['status' => $this->status]);
+        }
+    }
+
+    public function cancel(){
+        $this->validate();
+        if($this->booking){
+            $this->status = 'canceled';
+            $this->booking->update(['status' => $this->status]);
+            $this->booking->unit->update([
+                'status' => 'vacant'
+            ]);
         }
     }
 

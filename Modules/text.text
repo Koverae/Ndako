@@ -192,3 +192,50 @@ $unitTypes = UnitType::with(['unitTypePricings' => function ($query) use ($prope
         },
     };
 })();
+
+
+
+
+        // Step 1: Fetch all rooms that fit the number of people
+        $rooms = PropertyUnit::where('capacity', '>=', $this->people)
+            ->whereDoesntHave('bookings', function ($query) {
+                $query->where(function ($query) {
+                    $query->where('check_in', '<=', $this->endDate)
+                        ->where('check_out', '>=', $this->startDate);
+                });
+            })
+            ->with([
+                'unitType',
+                'unitType.prices' => fn($query) => $query->where('is_default', true),
+                'bookings',
+                ])
+            ->when($this->filterBy, function ($query) {
+                if ($this->filterBy === 'price') {
+                    return $query->join('property_types', 'property_units.property_type_id', '=', 'property_types.id')
+                                ->join('prices', 'property_types.id', '=', 'prices.property_type_id')
+                                ->orderBy('prices.price', $this->sortOrder);
+                } elseif($this->filterBy === 'capacity'){
+                    return $query->orderBy('capacity', $this->sortOrder);
+                } elseif($this->filterBy === 'name'){
+                    return $query->orderBy('name', $this->sortOrder);
+                }
+
+                return $query->orderBy($this->filterBy, $this->sortOrder);
+            }) // Eager load unit type & bookings
+            ->get();
+
+
+            $this->availableRooms = $rooms;
+            
+            // $this->availableRooms = $rooms->filter(function ($room) {
+            //     $isAvailable = !Booking::where('property_unit_id', $room->id)
+            //         ->where(function ($query) {
+            //             $query->where(function ($query) {
+            //                 $query->where('check_in', '<=', $this->endDate)
+            //                       ->where('check_out', '>=', $this->startDate);
+            //             });
+            //         })
+            //         ->exists();
+
+            //     return $isAvailable;
+            // })->values();

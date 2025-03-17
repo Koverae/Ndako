@@ -23,5 +23,14 @@
         </span>
         @endif
     </a>
+    @elseif($value->type == 'action')
+    <a style="text-decoration: none;" title="{{ $value->help }}" wire:click="{{ $value->action }})">
+        <span class="k_horizontal_span">{{ $value->label }}</span>
+        @if($value->data)
+        <span class="stat_value text-muted d-none d-lg-flex">
+            {{ $value->data['amount'] }} Items
+        </span>
+        @endif
+    </a>
     @endif
 </div>

@@ -43,6 +43,7 @@ return new class extends Migration
             $table->enum('status', ['confirmed', 'never-connected'])->default('never-connected');
             $table->boolean('is_active')->default(true);
             $table->string('last_login_ip')->nullable();// Add a nullable string field to store the IP address from which the user last logged in
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
         });
 

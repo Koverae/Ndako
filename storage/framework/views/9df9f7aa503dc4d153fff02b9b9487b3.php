@@ -54,6 +54,15 @@ unset($__defined_vars); ?>
         </span>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </a>
+    <?php elseif($value->type == 'action'): ?>
+    <a style="text-decoration: none;" title="<?php echo e($value->help); ?>" wire:click="<?php echo e($value->action); ?>)">
+        <span class="k_horizontal_span"><?php echo e($value->label); ?></span>
+        <!--[if BLOCK]><![endif]--><?php if($value->data): ?>
+        <span class="stat_value text-muted d-none d-lg-flex">
+            <?php echo e($value->data['amount']); ?> Items
+        </span>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    </a>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/form/capsule/simple.blade.php ENDPATH**/ ?>

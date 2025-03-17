@@ -217,27 +217,6 @@
                 </div>
                 <!-- Features End -->
 
-                <!-- Image Upload -->
-                <div class="mb-3 col-md-12">
-                    <label for="unitSize" class="form-label h3">
-                        {{ __('Show me some pictures room!') }}
-                    </label>
-                    <div class="mb-3 d-flex">
-                        <div class="gap-2 k-gallery-box">
-                            <span class="inline-flex bg-gray-200 border rounded k-image-box" onclick="document.getElementById('photo').click();">
-                                <img src="{{ asset('assets/images/default/placeholder.png') }}" class="inline-flex rounded image">
-                                <input type="file" wire:model.blur="photo" id="photo" style="display: none;" />
-                            </span>
-                        </div>
-                    </div>
-                    @error('unitSize')
-                    <div class="mt-1 text-danger">
-                        {{ $message }}
-                    </div>
-                    @enderror
-                </div>
-                <!-- Image Upload End -->
-
                 <div class="mb-3 d-flex justify-content-between">
                     <span>&nbsp;</span>
                     <span class="gap-1 btn btn-primary go-next text-end" wire:click="addUnit">{{ __('Add Room') }} <i class="fas fa-plus-circle"></i></span>

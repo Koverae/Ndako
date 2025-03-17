@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Modules\Settings\Models\Identity\IdentityVerification;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -109,6 +109,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->timestamps = false;
         $this->two_factor_code = null;
         $this->two_factor_expires_at = null;
+        $this->phone_verified_at = now();
         $this->save();
     }
     // Use Default Avatar

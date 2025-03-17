@@ -258,13 +258,13 @@ class PropertiesAppHandler extends AppHandler
 
         // Seed Lease Terms
         $leaseTerms = [
-            ['company_id' => $companyId, 'name' => 'Hourly', 'description' => 'Per hour.', 'duration_in_days' => 0, 'duration_in_hours' => 1, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Nightly', 'description' => 'Per night.', 'duration_in_days' => 1, 'duration_in_hours' => 24, 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Weekly', 'description' => 'Per week.', 'duration_in_days' => 7, 'duration_in_hours' => 168, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Monthly', 'description' => 'Per month.', 'duration_in_days' => 30, 'duration_in_hours' => 720, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Quarterly', 'description' => 'Lease term for three months.', 'duration_in_days' => 90, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Annual', 'description' => 'Per year.', 'duration_in_days' => 365, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $companyId, 'name' => 'Bi-Annual', 'description' => 'Lease term for six months.', 'duration_in_days' => 180, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Hourly', 'description' => 'Hour', 'duration_in_days' => 0, 'duration_in_hours' => 1, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Nightly', 'description' => 'Night', 'duration_in_days' => 1, 'duration_in_hours' => 24, 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Weekly', 'description' => 'Week', 'duration_in_days' => 7, 'duration_in_hours' => 168, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Monthly', 'description' => 'Month', 'duration_in_days' => 30, 'duration_in_hours' => 720, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Quarterly', 'description' => 'Quarter', 'duration_in_days' => 90, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Yearly', 'description' => 'Year', 'duration_in_days' => 365, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $companyId, 'name' => 'Bi-Annual', 'description' => '6 Months', 'duration_in_days' => 180, 'is_default' => false, 'created_at' => now(), 'updated_at' => now()],
         ];
         foreach ($leaseTerms as  $term) {
             LeaseTerm::create($term);

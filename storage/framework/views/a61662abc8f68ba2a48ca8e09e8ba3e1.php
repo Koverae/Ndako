@@ -130,5 +130,4 @@
     </div>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
-</div>
-<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/table.blade.php ENDPATH**/ ?>
+</div><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/table.blade.php ENDPATH**/ ?>

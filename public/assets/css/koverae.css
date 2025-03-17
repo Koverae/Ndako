@@ -1,11 +1,4 @@
-/*!
-* Tabler v1.0.0-beta20 (https://tabler.io)
-* @version 1.0.0-beta20
-* @link https://tabler.io
-* Copyright 2018-2023 The Tabler Authors
-* Copyright 2018-2023 codecalm.net Paweł Kuna
-* Licensed under MIT (https://github.com/tabler/tabler/blob/master/LICENSE)
-*/
+ 
 @charset "UTF-8";
 /* prettier-ignore */
 /* prettier-ignore */
@@ -27740,3 +27733,19 @@ Dashboards End
     90%,
     100%{box-shadow:0 0 0 0   , 40px 0,-40px 0,0 40px,0 -40px}
   }
+
+  .calendar-legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.calendar-legend .legend-item {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border-radius: 30px;
+    margin-right: 2px;
+}

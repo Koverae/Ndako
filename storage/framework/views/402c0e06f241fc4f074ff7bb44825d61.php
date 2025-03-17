@@ -36,7 +36,7 @@ unset($__defined_vars); ?>
 ?>
 <div>
     <!--[if BLOCK]><![endif]--><?php if($type): ?>
-    <a style="text-decoration: none" class="primary" wire:navigate href="<?php echo e(route('properties.show', ['property' => $type->id])); ?>"  tabindex="-1">
+    <a style="text-decoration: none" class="primary" wire:navigate href="<?php echo e(route('properties.unit-types.show', $type->id)); ?>"  tabindex="-1">
         <?php echo e($type->name ?? ''); ?>
 
     </a>

@@ -3,12 +3,14 @@
 ])
 @php
     $type = \Modules\Properties\Models\Property\PropertyUnitType::find($value);
+    $defaultPrice = \Modules\Properties\Models\Property\PropertyUnitTypePricing::isPropertyUnit($type->id)
+    ->isDefault(true)
+    ->first();
 @endphp
 <div>
-    @if($type->price)
+    @if($defaultPrice)
     <a style="text-decoration: none" class="primary" tabindex="-1">
-        {{ format_currency($type->price) ?? '' }} / {{ __('Night') }}
-        {{-- {{ format_currency($price->price) ?? '' }} / {{ $price->lease->name ?? '' }} --}}
+        {{ format_currency($defaultPrice->price) ?? '' }} / {{ $defaultPrice->lease->description }}
     </a>
     @endif
 </div>

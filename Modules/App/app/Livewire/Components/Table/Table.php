@@ -30,6 +30,10 @@ abstract class Table extends Component
             'view' => 'app::livewire.components.table.template.map',
             'component' => 'map',
         ],
+        'calendar' => [
+            'view' => 'app::livewire.components.table.template.calendar',
+            'component' => 'calendar',
+        ],
     ];
     public array $expandedRows = [];
 
@@ -131,6 +135,9 @@ abstract class Table extends Component
           if(array_key_exists($view, $this->components)){
             // Set the view from the components array
             $this->view = $this->components[$view]['view'];
+            if($this->view_type == 'calendar'){
+                $this->dispatch('calendarUpdated');
+            }
           }else{
             // Handle the case when the component type doesn't exist
             abort(404, 'Component not found.');

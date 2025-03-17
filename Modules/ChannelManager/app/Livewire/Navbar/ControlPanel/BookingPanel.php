@@ -14,6 +14,7 @@ class BookingPanel extends ControlPanel
 
     public function mount($booking = null, $isForm = false)
     {
+        $this->view_type = 'calendar';
         $this->showBreadcrumbs = true;
         if(Auth::user()->can('create_reservations')){
             $this->new = route('bookings.create');
@@ -36,10 +37,9 @@ class BookingPanel extends ControlPanel
     {
         return  [
             // make($key, $label)
+            SwitchButton::make('calendar',"switchView('calendar')", icon: "bi-calendar"),
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
-            SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
-            SwitchButton::make('map',"switchView('map')", icon: "bi-calendar"),
-            // SwitchButton::make('map',"switchView('map')", icon: "bi-map"),
+            // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
         ];
     }
 }

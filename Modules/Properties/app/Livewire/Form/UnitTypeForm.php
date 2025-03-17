@@ -3,7 +3,9 @@
 namespace Modules\Properties\Livewire\Form;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Modules\App\Livewire\Components\Form\Button\StatusBarButton;
 use Modules\App\Livewire\Components\Form\Capsule;
 use Modules\App\Livewire\Components\Form\Template\SimpleAvatarForm;
@@ -13,6 +15,7 @@ use Modules\App\Livewire\Components\Form\Group;
 use Modules\App\Livewire\Components\Form\Table;
 use Modules\App\Livewire\Components\Form\Template\LightWeightForm;
 use Modules\App\Livewire\Components\Table\Column;
+use Modules\App\Traits\Files\HasFileUploads;
 use Modules\Properties\Models\Property\Feature;
 use Modules\Properties\Models\Property\LeaseTerm;
 use Modules\Properties\Models\Property\Property;
@@ -25,17 +28,20 @@ use Modules\Properties\Models\Property\Utility;
 
 class UnitTypeForm extends LightWeightForm
 {
+    use HasFileUploads;
+
     public $type;
     public $name, $pricing, $property, $unitPrice = null, $description, $capacity, $size;
     public $selectedItem, $selectedFeature, $selectedUtility;
     public array $includedFeatures = [], $includedUtilities = [], $propertyOptions = [], $pricingOptions = [], $utilitiesOptions = [], $featureOptions = [];
+
 
     // Define validation rules
     protected $rules = [
         'name' => 'required|string|max:50',
         'capacity' => 'nullable|integer',
         'size' => 'nullable|integer',
-        'description' => 'nullable|string:200', 
+        'description' => 'nullable|string:200',
         'property' => 'nullable|integer|exists:properties,id',
         'pricing' => 'nullable|integer|exists:property_unit_type_pricings,id',
         // 'selectedUtility' => 'required|exists:utilities,id|unique:property_utilities,id',
@@ -44,17 +50,21 @@ class UnitTypeForm extends LightWeightForm
 
     public function mount($type = null){
         if($type){
+            $this->inputId = 'photo-' . uniqid(); // Prevent conflicts
+            $this->model = $type;
+            $this->path = 'property_images';
+
             $this->type = $type;
             $this->name = $type->name;
             $this->description = $type->description;
             $this->capacity = $type->capacity;
             $this->size = $type->size;
-            $this->pricing = $type->pricing_id;
+            $this->pricing = $type->prices()->isDefault()->first()->id;
             $this->property = $type->property_id;
 
             $this->unitPrice = $type->price;
             $includedFeatures = PropertyFeature::isCompany(current_company()->id)->isUnitType($type->id)->get();
-            
+
             // Map the data into an array of ['id' => id, 'name' => name]
             $included = $includedFeatures->map(fn ($item) => [
                 'id' => $item->id,                    // The property feature id
@@ -67,7 +77,7 @@ class UnitTypeForm extends LightWeightForm
                 'id',                  // The key for the select options
                 'name'                 // The name to display in the options
             );
-            
+
             $includedUtilities = PropertyUtility::isCompany(current_company()->id)->isUnitType($type->id)->get();
 
             // Map the data into an array of ['id' => id, 'name' => name]
@@ -85,9 +95,12 @@ class UnitTypeForm extends LightWeightForm
         }
 
         $this->propertyOptions = toSelectOptions(Property::isCompany(current_company()->id)->get(), 'id', 'name');
-        $this->pricingOptions = toSelectOptions(PropertyUnitTypePricing::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->pricingOptions = toSelectOptions(PropertyUnitTypePricing::isCompany(current_company()->id)->isProperty($this->type->property_id)->isPropertyUnit($this->type->id)->get(), 'id', 'name');
         $this->featureOptions = toSelectOptions(Feature::isCompany(current_company()->id)->get(), 'id', 'name');
         $this->utilitiesOptions = toSelectOptions(Utility::isCompany(current_company()->id)->get(), 'id', 'name');
+
+
+        $this->existingImages = $this->type->images ?? [];
     }
 
     public function capsules() : array
@@ -95,7 +108,7 @@ class UnitTypeForm extends LightWeightForm
         return [
             Capsule::make('property-type', __('Property'), __('Property linked to this unit type.'), 'link', 'fa fa-home-user', route('properties.show', ['property' => $this->property ?? 3]), ['parent' => $this->property, 'amount' => ""])->component('app::form.capsule.depends'),
             Capsule::make('units', __('Units'), __('Units linked to this unit type.'), 'link', 'fa fa-home', route('properties.units.lists', ['type' => $this->type]), ['parent' => $this->type, 'amount' => ""])->component('app::form.capsule.depends'),
-            Capsule::make('prices', __('Pricing'), __('Pricing of this unit type.'), 'modal', 'fa fa-tags'),
+            Capsule::make('prices', __('Pricing'), __('Pricing of this unit type.'), 'modal', 'fa fa-tags', "{component: 'properties::modal.pricing-modal', arguments: { unitType: {$this->type->id} }}"),
         ];
     }
 
@@ -130,16 +143,16 @@ class UnitTypeForm extends LightWeightForm
     {
         // Validate that the selected feature exists and is unique for this unit type.
         $this->validate();
-        
+
         if ($this->type && $this->selectedFeature && !$this->type->features->contains('id', $this->selectedFeature)) {
             $existingFeature = PropertyFeature::isCompany(current_company()->id)->isUnitType($this->type->id)->isFeature($this->selectedFeature)->exists();
-            
+
             if ($existingFeature) {
                 // You can add a message or handle the case where the feature is already selected.
                 session()->flash('error', 'This feature is already selected for the unit type.');
                 return;
             }
-            
+
             PropertyFeature::create([
                 'property_unit_type_id' => $this->type->id,
                 'feature_id' => $this->selectedFeature,
@@ -155,16 +168,16 @@ class UnitTypeForm extends LightWeightForm
     {
         // Validate that the selected feature exists and is unique for this unit type.
         $this->validate();
-        
+
         if ($this->type && $this->selectedUtility && !$this->type->utilities->contains('id', $this->selectedUtility)) {
             $existingFeature = PropertyUtility::isCompany(current_company()->id)->isUnitType($this->type->id)->isUtility($this->selectedUtility)->exists();
-            
+
             if ($existingFeature) {
                 // You can add a message or handle the case where the feature is already selected.
                 session()->flash('error', 'This Utility is already selected for the unit type.');
                 return;
             }
-            
+
             PropertyUtility::create([
                 'property_unit_type_id' => $this->type->id,
                 'utility_id' => $this->selectedUtility,
@@ -182,7 +195,7 @@ class UnitTypeForm extends LightWeightForm
         $feature = PropertyFeature::where('id', $itemId)
             ->isUnitType($this->type->id)
             ->first();
-    
+
         if ($feature) {
             $feature->delete(); // Delete the feature from the database.
             $this->mount($this->type);
@@ -195,7 +208,7 @@ class UnitTypeForm extends LightWeightForm
         $utility = PropertyUtility::where('id', $itemId)
             ->isUnitType($this->type->id)
             ->first();
-    
+
         if ($utility) {
             $utility->delete(); // Delete the feature from the database.
             $this->mount($this->type);
@@ -220,6 +233,12 @@ class UnitTypeForm extends LightWeightForm
         return $this->redirect(route('properties.unit-types.show', ['type' => $type->id]), navigate: true);
     }
 
+    public function updatedPricing(){
+        PropertyUnitTypePricing::isPropertyUnit($this->type->id)->isDefault()->update(['is_default' => false]);
+        $pricing = PropertyUnitTypePricing::find($this->pricing);
+        $pricing->update(['is_default' => true]);
+    }
+
     #[On('update-unit-type')]
     public function updateUnitType()
     {
@@ -240,4 +259,13 @@ class UnitTypeForm extends LightWeightForm
     public function updated(){
         $this->dispatch('change');
     }
+
+    #[On('updated-pricing')]
+    public function updatedThePrices(){
+        $this->pricingOptions = toSelectOptions(PropertyUnitTypePricing::isCompany(current_company()->id)->isProperty($this->type->property_id)->isPropertyUnit($this->type->id)->get(), 'id', 'name');
+    }
+
+    // Images Upload
+
+
 }

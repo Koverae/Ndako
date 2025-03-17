@@ -18,17 +18,16 @@ use Modules\Properties\Models\Property\Utility;
 class PropertySetting extends AppSetting
 {
     public $setting;
-    public $has_default_unit_status, $has_default_numbering, $has_default_utility, $has_floor_mapping, $has_shared_amenities, $has_lease_term, $has_base_rental, $base_rental, $has_utility_rules, $utility_rule, $has_pricelists, $has_discounts, $has_seasonal_discounts, $has_default_check_times, $has_online_payment, $has_lock_confirmed_booking, $has_pro_formatçinvoice, $has_overbooking_prevention, $has_stay_rule_per_unit, $has_cleaning_frequency, $has_maintenance_alerts, $has_housekeeping_staff, $has_maintenance_requests, $has_customer_portal, $has_in_room_services, $has_guest_note;
+    public $has_default_unit_status, $has_default_numbering, $has_default_utility, $has_floor_mapping, $has_shared_amenities, $has_lease_term, $has_base_rental, $has_down_payment = true, $base_rental, $has_utility_rules, $utility_rule, $has_pricelists, $has_discounts, $has_seasonal_discounts, $has_default_check_times, $has_online_payment, $has_lock_confirmed_booking, $has_pro_formatçinvoice, $has_overbooking_prevention, $has_stay_rule_per_unit, $has_cleaning_frequency, $has_maintenance_alerts, $has_housekeeping_staff, $has_maintenance_requests, $has_customer_portal, $has_in_room_services, $has_guest_note;
+    public $downPayment = 0;
     public array $unitStatus = [], $numberingSystems = [], $companyUtilities = [], $utilities = [], $sharedAmenities = [], $companyAmenities = [], $leaseTerms = [], $utilityRules = [];
 
     public function mount($setting)
     {
         $this->setting = $setting;
         $this->has_default_unit_status = $setting->has_default_unit_status;
-        $this->has_default_numbering = $setting->has_default_numbering;
-        $this->has_default_utility = $setting->has_default_utility;
-        $this->has_floor_mapping = $setting->has_floor_mapping;
-        $this->has_shared_amenities = $setting->has_shared_amenities;
+        
+        $this->downPayment = $setting->down_payment;
         $this->has_lease_term = $setting->has_lease_term;
         $this->has_base_rental = $setting->has_base_rental;
         $this->base_rental = $setting->base_rental;
@@ -98,8 +97,8 @@ class PropertySetting extends AppSetting
     public function blocks() : array
     {
         return [
-            Block::make('general-settings', __('General Property Settings')),
-            Block::make('accommodations', _('Accommodations & Features')),
+            // Block::make('general-settings', __('General Property Settings')),
+            // Block::make('accommodations', _('Accommodations & Features')),
             Block::make('pricing', __('Pricing & Discounts')),
             Block::make('booking-settings', 'Booking Settings'),
             Block::make('housekeeping', 'Housekeeping & Maintenance'),
@@ -111,16 +110,8 @@ class PropertySetting extends AppSetting
     public function boxes() :array
     {
         return [
-            Box::make('default-unit-status', "Default Unit Status", 'default_unit_status', "Define initial status for rooms or units (e.g., Available, Maintenance, Rented).", 'general-settings', false, "", null),
-            Box::make('default-unit-numbering', "Default Unit Numbering", 'default_numbering', "Define default numbering or naming (e.g., Apartment A101, Villa 3, 301).", 'general-settings', false, "", null),
-            Box::make('default-utilities', "Default Utilities", 'default_utility', "Specify default utilities available per unit (e.g., water, electricity, internet, gas).", 'general-settings', false, "", null),
-            Box::make('floor-mapping', "Floor/Building Mapping", 'has_floor_mapping', "Map units within floors or multiple buildings for easy navigation.", 'general-settings', true, "", null),
-            // Accommodations & Features
-            Box::make('shared-amenities', "Shared Amenities", 'has_shared_amenities', "Specify shared features like swimming pools, gyms, or parking spots.", 'accommodations', true, "", null),
-            Box::make('lease-terms', "Default Lease Terms", 'has_lease_term', "Set standard lease durations for residential properties (e.g., monthly, yearly).", 'accommodations', true, "", null),
-            Box::make('due-date', "Due Date", 'has_discounts', "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet.", 'accommodations', true, "", null),
             // Pricing
-            Box::make('base-rental', "Base Rental/Room Rates", 'has_base_rental', "Define monthly rent or nightly rates for properties.", 'pricing', true, "", null),
+            Box::make('down-payment', "Down Payment", 'has_down_payment', "Define monthly rent or nightly rates for properties.", 'pricing', false, "", null),
             Box::make('utility-rules', "Utility Billing Rules", 'has_utility_rules', "Allow landlords to set utility billing options (e.g., included or separate).", 'pricing', true, "", null),
             Box::make('pricelists', "Pricelists", 'has_pricelists', "Set multiple prices per unit, automated discounts, etc.", 'pricing', true, "", null),
             Box::make('discounts', "Discounts, Loyalty and Gift Card", 'has_discounts', "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet.", 'pricing', true, "", null),
@@ -128,7 +119,6 @@ class PropertySetting extends AppSetting
             Box::make('default-check-time', "Default Check-in/Check-out Times", 'has_default_check_times', "Standardize guest arrival and departure hours.", 'booking-settings', true, "", null),
             Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial. The default can be changed per order or template.", 'booking-settings', true, "https://ndako.koverae", null),
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
-            Box::make('pro-format', "Pro-Format Invoice", 'has_pro_format_invoice', "Allows you to send Pro-Forma Invoice to your guests / tenants", 'booking-settings', true, "https://ndako.koverae.com", null),
             Box::make('over-booking', "Overbooking Prevention", 'has_overbooking_prevention', "Automatically block double bookings for the same room/unit.", 'booking-settings', true, "", null),
             Box::make('stay-rules', "Minimum & Maximum Stay Rules", 'has_stay_rule_per_unit', "Limit the duration of bookings for specific rooms/units.", 'booking-settings', true, "", null),
             // Housekeeping & Maintenance
@@ -152,7 +142,7 @@ class PropertySetting extends AppSetting
             BoxInput::make('utilities', "", 'tag', 'default_utility', 'default-utilities', '', false, ['options' => $this->utilities, 'data' => $this->companyUtilities]),
             BoxInput::make('amenities', "", 'tag', 'default_utility', 'shared-amenities', '', false, ['options' => $this->sharedAmenities, 'data' => $this->companyAmenities], $this->has_shared_amenities)->component('app::blocks.boxes.input.depends'),
             BoxInput::make('lease-terms', "", 'select', 'default_lease_term', 'lease-terms', '', false, $this->leaseTerms, $this->has_lease_term)->component('app::blocks.boxes.input.depends'),
-            BoxInput::make('base-rental-price', "", 'tel', 'base_rental', 'base-rental', '', false, [], $this->has_base_rental)->component('app::blocks.boxes.input.depends'),
+            BoxInput::make('down-payment-price', "", 'tel', 'downPayment', 'down-payment', '', false, []),
             BoxInput::make('utility-billing', "", 'select', 'utility_rule', 'utility-rules', '', false, $this->utilityRules, $this->has_utility_rules)->component('app::blocks.boxes.input.depends'),
         ];
     }
@@ -171,14 +161,7 @@ class PropertySetting extends AppSetting
 
         $setting = $this->setting;
         $setting->update([
-            'has_default_unit_status' => $this->has_default_unit_status,
-            'has_default_numbering' => $this->has_default_numbering,
-            'has_default_utility' => $this->has_default_utility,
-            'has_floor_mapping' => $this->has_floor_mapping,
-            'has_shared_amenities' => $this->has_shared_amenities,
-            'has_lease_term' => $this->has_lease_term,
-            'has_base_rental' => $this->has_base_rental,
-            'base_rental' => $this->base_rental,
+            'down_payment' => $this->downPayment,
             'has_utility_rules' => $this->has_utility_rules,
             'utility_rule' => $this->utility_rule,
             'has_pricelists' => $this->has_pricelists,
@@ -187,7 +170,6 @@ class PropertySetting extends AppSetting
             'has_default_check_times' => $this->has_default_check_times,
             'has_online_payment' => $this->has_online_payment,
             'has_lock_confirmed_booking' => $this->has_lock_confirmed_booking,
-            'has_pro_formatçinvoice' => $this->has_pro_format_invoice,
             'has_overbooking_prevention' => $this->has_overbooking_prevention,
             'has_stay_rule_per_unit' => $this->has_stay_rule_per_unit,
             'has_cleaning_frequency' => $this->has_cleaning_frequency,

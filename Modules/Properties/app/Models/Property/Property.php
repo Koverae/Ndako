@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\App\Traits\Files\HasImages;
 use Modules\Settings\Models\Localization\Country;
 
 // use Modules\Properties\Database\Factories\PropertyFactory;
 
 class Property extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasImages;
 
     protected $guarded = [];
 

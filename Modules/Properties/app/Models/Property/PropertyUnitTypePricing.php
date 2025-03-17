@@ -31,6 +31,11 @@ class PropertyUnitTypePricing extends Model
         return $query->where('property_id', $property_id);
     }
 
+    public function scopeIsDefault(Builder $query)
+    {
+        return $query->where('is_default', true);
+    }
+
     public function lease() {
         return $this->belongsTo(LeaseTerm::class, 'lease_term_id', 'id');
     }

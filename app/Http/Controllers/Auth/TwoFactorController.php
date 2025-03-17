@@ -43,9 +43,16 @@ class TwoFactorController extends Controller
         // Update the ip address
         // $user->last_login_ip = $request->ipinfo->ip;
         $user->last_login_ip = $request->ip();
+        $user->update([
+            'last_login_at' => now()
+        ]);
+        
         $user->save();
 
-        return redirect()->route('dashboard');
+        // Retrieve intended URL or fallback to dashboard
+        // $redirectUrl = session()->pull('intended_url', route('dashboard'));
+
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     public function resend(): RedirectResponse

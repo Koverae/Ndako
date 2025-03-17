@@ -14,28 +14,44 @@
         <!-- Photo Box -->
         <div class="mb-3 d-flex">
             <div class="gap-2 k-gallery-box">
-                <span class="inline-flex bg-gray-200 border rounded k-image-box" onclick="document.getElementById('photo').click();">
+
+                <span class="inline-flex bg-gray-200 border rounded k-image-box" onclick="document.getElementById('{{ $this->inputId }}').click();">
                     <img src="{{ asset('assets/images/default/placeholder.png') }}" class="inline-flex rounded image">
-                    <input type="file" wire:model.blur="photo" id="photo" style="display: none;" />
+                    {{-- <input type="file" wire:model.blur="photo" id="photo" style="display: none;" /> --}}
+                    <input type="file" wire:model="newImages" id="{{ $this->inputId }}" multiple style="display: none;">
                 </span>
-                {{-- @foreach(current_company()->users as $user)
+
+                @foreach($this->existingImages as $index => $image)
                 <span class="bg-gray-200 border rounded k-image-box">
-                    <img src="{{ Storage::url('avatars/'.$user->avatar.'') }}" class="inline-flex rounded image" alt=""title="Tooltip on top">
+                    <img src="{{ asset('storage/' . $image) }}" class="inline-flex rounded image" alt=""title="Tooltip on top">
+                    {{-- <img src="{{ Storage::url('avatars/'.$user->avatar.'') }}" class="inline-flex rounded image" alt=""title="Tooltip on top"> --}}
                     <div class="bottom-0 select-file d-flex position-absolute justify-content-between w100">
-                        <span class="p-1 m-1 border-0 k_select_file_button btn btn-light rounded-circle" onclick="document.getElementById('photo').click();">
-                            <i class="bi bi-pencil"></i>
-                            <input type="file" wire:model.blur="photo" id="photo" style="display: none;" />
+                        <span class="p-1 m-1 border-0 k_select_file_button btn btn-light rounded-circle">
+                            {{-- <i class="bi bi-pencil"></i> --}}
                         </span>
-                        <span class="p-1 m-1 border-0 k_select_file_button btn btn-light rounded-circle" wire:click="$cancelUpload('photo')" wire:target="$cancelUpload('photo')">
+                        <span class="p-1 m-1 border-0 k_select_file_button btn btn-light rounded-circle" wire:click="removeImage({{ $index }})" wire:target="removeImage({{ $index }})">
                             <i class="bi bi-trash"></i>
                         </span>
                     </div>
                 </span>
-                @endforeach --}}
+                @endforeach
             </div>
+
+            <!-- Loading -->
+            <div wire:loading wire:target="newImages" class="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center rounded-lg">
+                <div class="text-white text-xs">Uploading...</div>
+            </div>
+            <div wire:loading wire:target="removeImage" class="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center rounded-lg">
+                <div class="text-white text-xs">Uploading...</div>
+            </div>
+            <!-- Loading End -->
+
+            @error('newImages.*')
+                <div class="mt-1 text-danger">{{ $message }}</div>
+            @enderror
         </div>
         <!-- Photo Box -->
-        
+
         @foreach($this->inputs() as $input)
             @if($input->group == $value->key)
                 <x-dynamic-component

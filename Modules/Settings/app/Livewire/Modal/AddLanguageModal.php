@@ -11,7 +11,7 @@ class AddLanguageModal extends ModalComponent
     public $language;
     public function render()
     {
-        $languages = Language::isCompany(current_company()->id)->notInstalled()->get();
+        $languages = Language::notInstalled()->get();
         return view('settings::livewire.modal.add-language-modal', compact('languages'));
     }
     

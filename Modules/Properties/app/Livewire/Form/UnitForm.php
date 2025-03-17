@@ -27,8 +27,8 @@ use Modules\Properties\Models\Property\Utility;
 class UnitForm extends LightWeightForm
 {
     public $unit;
-    public $name, $description, $property, $type, $status, $unitPrice = null, $floor, $identifier;
-    public array $includedFeatures = [], $includedUtilities = [], $typeOptions = [], $statusOptions = [], $leaseTermOptions = [], $floorOptions = [], $propertyOptions = [], $utilitiesOptions = [], $featureOptions = [];
+    public $name, $description, $property, $type, $capacity = 1, $size, $status, $unitPrice = null, $floor, $identifier;
+    public array $includedFeatures = [], $includedUtilities = [], $typeOptions = [], $statusOptions = [], $leaseTermOptions = [], $floorOptions = [], $propertyOptions = [], $utilitiesOptions = [], $featureOptions = [], $pricingOptions = [];
     
     // Define validation rules
     protected $rules = [
@@ -49,6 +49,8 @@ class UnitForm extends LightWeightForm
             $this->unit = $unit;
             $this->name = $unit->name;
             $this->description = $unit->description;
+            $this->capacity = $unit->capacity;
+            $this->size = $unit->unitType->size;
             $this->status = $unit->status;
             $this->floor = $unit->floor_id;
             $this->identifier = $unit->identifier;
@@ -86,15 +88,17 @@ class UnitForm extends LightWeightForm
                 'name'                 // The name to display in the options
             );
         }
-        $this->typeOptions = toSelectOptions(PropertyUnitType::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->typeOptions = toSelectOptions(PropertyUnitType::isCompany(current_company()->id)->isProperty($this->unit->property->id)->get(), 'id', 'name');
         $this->leaseTermOptions = toSelectOptions(LeaseTerm::isCompany(current_company()->id)->get(), 'id', 'name');
-        $this->floorOptions = toSelectOptions(PropertyFloor::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->pricingOptions = toSelectOptions(PropertyUnitTypePricing::isCompany(current_company()->id)->isProperty($this->unit->property->id)->isPropertyUnit($this->unit->unitType->id)->get(), 'id', 'name');
+        $this->floorOptions = toSelectOptions(PropertyFloor::isCompany(current_company()->id)->isProperty($this->unit->property->id)->get(), 'id', 'name');
         $this->propertyOptions = toSelectOptions(Property::isCompany(current_company()->id)->get(), 'id', 'name');
         $this->featureOptions = toSelectOptions(Feature::isCompany(current_company()->id)->get(), 'id', 'name');
         $this->utilitiesOptions = toSelectOptions(Utility::isCompany(current_company()->id)->get(), 'id', 'name');
         
         $status = [
             ['id' => 'vacant', 'label' => 'Vacant (V)'],
+            ['id' => 'reserved', 'label' => 'Reserved (R)'],
             ['id' => 'occupied', 'label' => 'Occupied (O)'],
             ['id' => 'occupied-clean', 'label' => 'Occupied Clean (OC)'],
             ['id' => 'occupied-dirty', 'label' => 'Occupied Dirty (OD)'],
@@ -150,10 +154,10 @@ class UnitForm extends LightWeightForm
     public function capsules() : array
     {
         return [
-            Capsule::make('property-type', __('Property Unit Type'), __('Unit type linked to this unit.'), 'link', 'fa fa-home-user', route('properties.unit-types.lists', ['type' => $this->type]) ),
+            Capsule::make('property-type', __('Property Unit Type'), __('Unit type linked to this unit.'), 'link', 'fa fa-home-user', route('properties.unit-types.show', ['type' => $this->type]) ),
             Capsule::make('tenant', __('Tenant / Guest'), __('Guest or Tenant occuping the unit'), 'modal', 'fa fa-user'),
-            Capsule::make('reservations', __('Reservations'), __('Reservations made for this unit'), 'modal', 'fa fa-tasks'),
-            Capsule::make('maintenance-request', __('Maintenance Requests'), __('Maintenance requests made for this unit.'), 'modal', 'fa fa-tools'),
+            Capsule::make('reservations', __('Reservations'), __('Reservations made for this unit'), 'link', 'fa fa-tasks', route('bookings.lists', ['unit' => $this->unit->id])),
+            Capsule::make('maintenance-request', __('Maintenance Requests'), __('Maintenance requests made for this unit.'), 'link', 'fa fa-tools', route('tasks.lists', ['unit' => $this->unit->id])),
         ];
     }
 
@@ -178,7 +182,7 @@ class UnitForm extends LightWeightForm
             Input::make('unit-floor', 'Floor/Section', 'select', 'floor', 'left', 'none', 'general', "", "", $this->floorOptions),
             Input::make('unit-identifier', "Unit Identifier", 'text', 'identifier', 'left', 'none', 'general'),
             // Pricing & Availability
-            Input::make('unit-price', "Base Pricing", 'text', 'type', 'left', 'none', 'pricing-availability', __(''))->component('app::form.input.unit-price'),
+            Input::make('unit-price', "Pricing", 'select', 'type', 'left', 'none', 'pricing-availability', __(''), "", $this->pricingOptions),
             // Input::make('unit-discounted-price', "Discounted Price", 'text', 'type', 'left', 'none', 'pricing-availability', __(''))->component('app::form.input.unit-price'),
             Input::make('unit-status', 'Availability Status', 'select', 'status', 'left', 'none', 'pricing-availability', "", "", $this->statusOptions),
             Input::make('unit-rental-status', 'Rental/Booking Status', 'select', 'status', 'left', 'none', 'pricing-availability', "", "", $this->statusOptions),

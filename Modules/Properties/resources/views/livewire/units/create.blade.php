@@ -6,6 +6,6 @@
 @endsection
 <!-- Page Content -->
 <section class="">
-    <livewire:properties::form.unit-form />
+    <livewire:properties::wizard.add-unit-wizard />
 </section>
 <!-- Page Content -->

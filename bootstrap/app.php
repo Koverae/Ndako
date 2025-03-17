@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\EnsureOnboardingCompleted::class,
             // \Illuminate\Http\Middleware\HandleCors::class
             CorsMiddleware::class,
+            // \App\Http\Middleware\TwoFactorMiddleware::class,
         ]);
 
         $middleware->alias([

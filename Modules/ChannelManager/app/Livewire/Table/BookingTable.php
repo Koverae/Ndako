@@ -7,14 +7,31 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Route;
 use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
+use Modules\App\Traits\Table\HasCalendar;
 use Modules\ChannelManager\Models\Booking\Booking;
 
 class BookingTable extends Table
 {
-    public array $data = [];
+    use HasCalendar;
 
-    public function mount(){
+    public array $data = [];
+    public $unitID;
+
+    public function mount($events = [], $options = []){
+
+        $this->view_type = 'calendar';
+        $this->view = 'app::livewire.components.table.template.calendar';
+        $this->loadBookings();
+
         $this->data = ['integration_status', 'last_sync_date'];
+        $this->unitID = request()->query('unit', null);
+
+        // Calendar View
+        // $this->events = $events;
+        $this->options = array_merge([
+            'initialView' => 'dayGridMonth',
+            'editable' => false,
+        ], $options);
     }
 
     // public function createRoute() : string
@@ -33,16 +50,21 @@ class BookingTable extends Table
     {
         return 'No Reservations Yet';
     }
-    
+
     public function emptyText(): string
     {
         return 'Your reservations will appear here once added. Start by creating a new reservation to manage your bookings seamlessly.';
     }
-    
+
 
     public function query() : Builder
     {
         $query = Booking::query();
+
+        // Filter by property ID from the URL
+        if ($this->unitID) {
+            $query->isUnit($this->unitID);
+        }
 
         // Apply the search query filter if a search query is present
         if ($this->searchQuery) {
@@ -85,4 +107,47 @@ class BookingTable extends Table
             Card::make('name', "name", "", $this->data),
         ];
     }
+
+    // Calendar View
+    public function loadBookings()
+    {
+        $this->events = $this->data()->map(function ($booking) {
+
+            return [
+                'id'    => $booking->id,
+                'title' => $booking->unit->name,
+                'start' => $booking->check_in,
+                'end'   => $booking->check_out,
+                'color' => $this->getStatusColor($booking->status) ,
+                'extendedProps' => [
+                    'guest' => $booking->guest->name,
+                    'room'  => $booking->unit->name,
+                    'unitType'  => $booking->unit->unitType->name,
+                    'status' => ucfirst($booking->status),
+                ]
+            ];
+        })->toArray();
+
+        $this->dispatch('calendarUpdated', ['events' => $this->events]);
+    }
+
+    public function getStatusColor($status) {
+        switch ($status) {
+            case 'pending':
+                return '#fbc02d'; // Yellow
+            case 'confirmed':
+                return '#017E84'; // Green
+            case 'completed':
+                return '#1e88e5'; // Blue
+            case 'canceled':
+                return '#e53935'; // Red
+            default:
+                return '#757575'; // Gray (Fallback)
+        }
+    }
+
+    public function getCheckInStatus($booking){
+        
+    }
+
 }
