@@ -2,18 +2,18 @@
     <div class="p-4 calendar-container">
 
         <!-- Success Message -->
-        @if (session()->has('success'))
+        <!--[if BLOCK]><![endif]--><?php if(session()->has('success')): ?>
             <div class="p-3 shadow-sm alert alert-success d-flex align-items-center justify-content-between fs-5 sticky-top alert-dismissible fade show" role="alert">
-                <span class="fs-3">{{ session('success') }}</span>
+                <span class="fs-3"><?php echo e(session('success')); ?></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
-        @if (session()->has('error'))
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+        <?php if(session()->has('error')): ?>
             <div class="p-3 shadow-sm alert alert-danger d-flex align-items-center justify-content-between fs-5 sticky-top alert-dismissible fade show" role="alert">
-                <span class="fs-3">{{ session('error') }}</span>
+                <span class="fs-3"><?php echo e(session('error')); ?></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         <div class="calendar-legend">
             <span class="legend-item" style="background-color: #fbc02d;"></span> Pending
@@ -50,7 +50,7 @@
             let calendarEl = document.getElementById('calendar');
             if (!calendarEl) return;
 
-            let eventsData = @json($events ?? []);
+            let eventsData = <?php echo json_encode($events ?? [], 15, 512) ?>;
 
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -84,12 +84,22 @@
                     });
                 },
 
-                eventResize: function(info) {
-                    let newEnd = new Date(info.event.end);
-                    let newStart = info.event.start.toISOString();
+                // eventResize: function(info) {
+                //     let newEnd = new Date(info.event.end);
+                //     let newStart = info.event.start.toISOString();
 
-                    newEnd.setDate(newEnd.getDate() + 1); // Fix off-by-one issue
-                    newEnd = newEnd.toISOString();
+                //     newEnd.setDate(newEnd.getDate() + 1); // Fix off-by-one issue
+                //     newEnd = newEnd.toISOString();
+
+                //     Livewire.dispatch('updateBookingDate', {
+                //         bookingId: info.event.id,
+                //         start: newStart,
+                //         end: newEnd
+                //     });
+                // },
+                eventResize: function(info) {
+                    let newStart = info.event.start.toISOString();
+                    let newEnd = info.event.end.toISOString();
 
                     Livewire.dispatch('updateBookingDate', {
                         bookingId: info.event.id,
@@ -179,3 +189,4 @@
             }
         }
 </script>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/calendar.blade.php ENDPATH**/ ?>

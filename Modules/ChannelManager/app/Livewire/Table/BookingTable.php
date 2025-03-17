@@ -2,9 +2,11 @@
 
 namespace Modules\ChannelManager\Livewire\Table;
 
+use Carbon\Carbon;
 use Modules\App\Livewire\Components\Table\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Route;
+use Livewire\Attributes\On;
 use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Traits\Table\HasCalendar;
@@ -117,7 +119,7 @@ class BookingTable extends Table
                 'id'    => $booking->id,
                 'title' => $booking->unit->name,
                 'start' => $booking->check_in,
-                'end'   => $booking->check_out,
+                'end'   => Carbon::parse($booking->check_out)->addDays(1),
                 'color' => $this->getStatusColor($booking->status) ,
                 'extendedProps' => [
                     'reference' => $booking->reference,
@@ -149,7 +151,21 @@ class BookingTable extends Table
     }
 
     public function getCheckInStatus($booking){
-
+        // 
     }
 
+    #[On('updateBookingDate')]
+    public function updateBookingDate($bookingId, $start, $end)
+    {
+        $booking = Booking::find($bookingId);
+
+        if ($booking) {
+            $booking->update([
+                'check_in'  => Carbon::parse($start)->format('Y-m-d'),
+                'check_out' => Carbon::parse($end)->format('Y-m-d'),
+            ]);
+            // dd($start, $end);
+            $this->dispatch('calendarUpdated'); // Refresh calendar after update
+        }
+    }
 }

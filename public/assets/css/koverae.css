@@ -27762,3 +27762,7 @@ Dashboards End
     z-index: 1000;
     transition: opacity 0.2s ease-in-out;
 }
+
+/* .fc-event {
+    cursor: ew-resize !important;
+} */
