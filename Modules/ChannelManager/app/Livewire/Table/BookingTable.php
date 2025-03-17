@@ -165,7 +165,31 @@ class BookingTable extends Table
                 'check_out' => Carbon::parse($end)->format('Y-m-d'),
             ]);
             // dd($start, $end);
-            $this->dispatch('calendarUpdated'); // Refresh calendar after update
+            $this->dispatch('calendarUpdated', events: $this->fetchEvents()); // Refresh calendar after update
+            
         }
     }
+    
+    public function fetchEvents()
+    {
+        return $this->data()->map(function ($booking) {
+
+            return [
+                'id'    => $booking->id,
+                'title' => $booking->unit->name,
+                'start' => $booking->check_in,
+                'end'   => Carbon::parse($booking->check_out)->addDays(1),
+                'color' => $this->getStatusColor($booking->status) ,
+                'extendedProps' => [
+                    'reference' => $booking->reference,
+                    'guest' => $booking->guest->name,
+                    'room'  => $booking->unit->name,
+                    'unitType'  => $booking->unit->unitType->name,
+                    'channel'  => $booking->channel->name ?? 'Direct Booking',
+                    'status' => ucfirst($booking->status),
+                ]
+            ];
+        })->toArray();
+    }
+
 }

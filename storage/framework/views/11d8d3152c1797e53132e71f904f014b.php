@@ -27,30 +27,30 @@
 </div>
 
 <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             initializeCalendar();
         });
 
-        // Reinitialize when Livewire updates the component
         document.addEventListener('livewire:load', function () {
             initializeCalendar();
         });
-        Livewire.on('calendarUpdated', function() {
-            initializeCalendar();
-        });
 
-        $wire.on('calendarUpdated', () => {
-            initializeCalendar();
-        });
-        // Livewire.hook('message.processed', (message, component) => {
-        //     initializeCalendar();
+        // Livewire.on('calendarUpdated', function() {
+        //     setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
         // });
+        Livewire.on('calendarUpdated', ({ $events }) => {
+            setTimeout(() => initializeCalendar($events), 100); // Small delay to allow Livewire to update the DOM
+        });
 
-        function initializeCalendar() {
+        function initializeCalendar(eventsData = null) {
             let calendarEl = document.getElementById('calendar');
             if (!calendarEl) return;
 
-            let eventsData = <?php echo json_encode($events ?? [], 15, 512) ?>;
+            // Use the provided data, or fall back to the initial dataset
+            if (!eventsData) {
+                eventsData = <?php echo json_encode($events ?? [], 15, 512) ?>;
+            }
 
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -84,22 +84,12 @@
                     });
                 },
 
-                // eventResize: function(info) {
-                //     let newEnd = new Date(info.event.end);
-                //     let newStart = info.event.start.toISOString();
-
-                //     newEnd.setDate(newEnd.getDate() + 1); // Fix off-by-one issue
-                //     newEnd = newEnd.toISOString();
-
-                //     Livewire.dispatch('updateBookingDate', {
-                //         bookingId: info.event.id,
-                //         start: newStart,
-                //         end: newEnd
-                //     });
-                // },
                 eventResize: function(info) {
+                    let newEnd = new Date(info.event.end);
                     let newStart = info.event.start.toISOString();
-                    let newEnd = info.event.end.toISOString();
+
+                    newEnd.setDate(newEnd.getDate() + 1); // Fix off-by-one issue
+                    newEnd = newEnd.toISOString();
 
                     Livewire.dispatch('updateBookingDate', {
                         bookingId: info.event.id,

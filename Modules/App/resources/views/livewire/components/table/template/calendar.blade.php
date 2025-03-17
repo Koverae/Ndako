@@ -27,30 +27,30 @@
 </div>
 
 <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             initializeCalendar();
         });
 
-        // Reinitialize when Livewire updates the component
         document.addEventListener('livewire:load', function () {
             initializeCalendar();
         });
-        Livewire.on('calendarUpdated', function() {
-            initializeCalendar();
-        });
 
-        $wire.on('calendarUpdated', () => {
-            initializeCalendar();
+        Livewire.on('calendarUpdated', function() {
+            setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
         });
-        // Livewire.hook('message.processed', (message, component) => {
-        //     initializeCalendar();
+        // Livewire.on('calendarUpdated', ({ $events }) => {
+        //     setTimeout(() => initializeCalendar($events), 100); // Small delay to allow Livewire to update the DOM
         // });
 
-        function initializeCalendar() {
+        function initializeCalendar(eventsData = null) {
             let calendarEl = document.getElementById('calendar');
             if (!calendarEl) return;
 
-            let eventsData = @json($events ?? []);
+            // Use the provided data, or fall back to the initial dataset
+            if (!eventsData) {
+                eventsData = @json($events ?? []);
+            }
 
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
