@@ -37,7 +37,7 @@
                 @can('view_reservation_reports')
                 <header class="pt-3 form-label font-weight-bold text-uppercase"> <b>{{ __('Reservations') }}</b></header>
                 <ul class="mb-4" style="margin-left: 10px;">
-                    
+
                     <a  href="{{ route('dashboard', ['dash' => 'reservations']) }}" wire:navigate>
                         <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="{{ $dash == 'reservations' ? 'background-color: #E6F2F3 ;' : '' }} ">
                         {{ __('Reservations') }}

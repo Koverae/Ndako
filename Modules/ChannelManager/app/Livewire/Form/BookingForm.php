@@ -378,4 +378,5 @@ class BookingForm extends LightWeightForm
 
         return $ratePerHour * $extraHours;
     }
+
 }

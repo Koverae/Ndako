@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\ChannelManager\Models\Channel\Channel;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitTypePricing;
@@ -55,6 +56,10 @@ class Booking extends Model
 
     public function guest() {
         return $this->belongsTo(Guest::class);
+    }
+
+    public function channel() {
+        return $this->belongsTo(Channel::class);
     }
     
     /**

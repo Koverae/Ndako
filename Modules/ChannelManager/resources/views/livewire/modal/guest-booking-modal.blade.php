@@ -13,7 +13,7 @@
                 </div>
             </div>
         @endif
-        
+
         @error('paymentMethod')
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <div class="alert-body">
@@ -22,12 +22,12 @@
             </div>
         </div>
         @enderror
-        
+
         <div class="k_form_nosheet">
             <div class="k-form-statusbar position-relative d-flex justify-content-between mb-md-2 pb-md-0">
                 <!-- Action Bar -->
                 <div id="action-bar" class="flex-wrap gap-1 k-statusbar-buttons d-lg-flex align-items-center align-content-around">
-                    
+
                     <button class="d-none d-lg-inline-flex rounded-0 {{ $booking->status == 'confirmed' ? 'btn btn-primary active' : '' }}" type="button" wire:click="" wire:target=""  id="top-button">
                         <span>
                             {{__('Send Invoice')}} <span wire:loading wire:target="" ></span>
@@ -37,7 +37,7 @@
 
                 <!-- Status Bar -->
                 <div id="status-bar" class="gap-1 k-statusbar-buttons-arrow d-md-flex align-items-center align-content-around ">
-                    
+
                     <span class="btn-secondary-outline cursor-pointer k-arrow-button {{ $booking->status == 'confirmed' ? 'current' : '' }}">
                         {{ __('Confirmed') }}
                     </span>
@@ -46,19 +46,19 @@
                     </span>
                 </div>
             </div>
-            
+
             <div class="k_inner_group row">
                 <div class="m-0 mt-3 mb-3 row justify-content-between position-relative w-100">
                     <div class="ke-title mw-75 pe-2 ps-0">
                         <h2 class="h2"><i class="fas fa-user"></i> {{ __('Guest Details') }}</h2>
-                        <ul class="list-unstyled">
-                            <p><strong>{{ __('Guest Name') }}:</strong> {{ $booking->guest->name }}</p>
-                            <p><strong>{{ __('Guest(s)') }}:</strong> {{ $booking->guests }} @if($booking->guests > 1){{ __('people') }}@else {{ __('person') }} @endif</p>
+                        <ul class="list-unstyled row">
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Guest Name') }}:</strong> {{ $booking->guest->name }}</p>
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Guest(s)') }}:</strong> {{ $booking->guests }} @if($booking->guests > 1){{ __('people') }}@else {{ __('person') }} @endif</p>
                             @if($booking->due_amount >= 1)
-                            <p><strong>{{ __('Amount Paid') }}:</strong> {{ format_currency($booking->paid_amount) }}</p>
-                            <p><strong>{{ __('Due Amount') }}:</strong> {{ format_currency($booking->due_amount) }}</p>
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Amount Paid') }}:</strong> {{ format_currency($booking->paid_amount) }}</p>
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Due Amount') }}:</strong> {{ format_currency($booking->due_amount) }}</p>
                             @endif
-                            <p><strong>{{ __('Total Amount') }}:</strong> {{ format_currency($booking->total_amount) }}</p>
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Total Amount') }}:</strong> {{ format_currency($booking->total_amount) }}</p>
                         </ul>
                     </div>
                     <div class="p-0 m-0 k_employee_avatar">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 @endif
-                
+
                 <div class="mt-3 row">
                     <button wire:click="checkIn" class="gap-2 btn btn-primary rounded-0 col-6" {{ $booking->check_in_status == 'pending' ? '' : 'disabled' }}>
                         <i class="fas fa-sign-in-alt"></i> Check In
@@ -109,7 +109,7 @@
                         <i class="fas fa-sign-out"></i> Check Out
                     </button>
                 </div>
-                    
+
             </div>
         </div>
       </div>

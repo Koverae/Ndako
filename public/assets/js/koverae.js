@@ -7797,3 +7797,17 @@ document.querySelectorAll('[data-number-input]').forEach(wrapper => {
         input.value = currentValue + 1;
     });
 });
+
+// Date Format
+function formatDate(date) {
+    if (!date) return 'N/A';
+
+    // Get Laravel's locale (pass it from backend)
+    let locale = document.documentElement.lang || 'en';
+
+    return new Date(date).toLocaleDateString(locale, {  
+        day: '2-digit',  
+        month: 'short',  
+        year: 'numeric'  
+    });
+}

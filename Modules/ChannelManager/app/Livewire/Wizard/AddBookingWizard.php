@@ -15,6 +15,7 @@ use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
 use Modules\ChannelManager\Models\Guest\Guest;
+use Modules\ChannelManager\Services\Booking\BookingService;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\RevenueManager\Models\Accounting\Journal;
 
@@ -25,7 +26,7 @@ class AddBookingWizard extends SimpleWizard
     public $availableRooms = [];
     public array $paymentOptions = [];
     public bool $checkedIn = true;
-    protected $rateService;
+    protected $rateService, $bookingService;
 
     // Define validation rules
     protected $rules = [
@@ -39,8 +40,9 @@ class AddBookingWizard extends SimpleWizard
         'checkedIn' => 'nullable|boolean',
     ];
 
-    public function boot(RateService $rateService){
+    public function boot(RateService $rateService, BookingService $bookingService){
         $this->rateService = $rateService;
+        $this->bookingService = $bookingService;
     }
 
     public function mount($startDate = null, $endDate = null){
@@ -180,6 +182,7 @@ class AddBookingWizard extends SimpleWizard
                         }, SORT_REGULAR, $this->sortOrder === 'desc') // Step 6: Apply sorting order (ascending or descending)
                         ->values(); // Step 7: Reset array keys (in case filtering removed some items)
     }
+    
 
     public function createBooking(){
         $this->validate();

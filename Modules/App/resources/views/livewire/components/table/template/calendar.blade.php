@@ -3,13 +3,13 @@
 
         <!-- Success Message -->
         @if (session()->has('success'))
-            <div class="alert alert-success d-flex align-items-center justify-content-between p-3 fs-5 sticky-top shadow-sm alert-dismissible fade show" role="alert">
+            <div class="p-3 shadow-sm alert alert-success d-flex align-items-center justify-content-between fs-5 sticky-top alert-dismissible fade show" role="alert">
                 <span class="fs-3">{{ session('success') }}</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
         @if (session()->has('error'))
-            <div class="alert alert-danger  d-flex align-items-center justify-content-between p-3 fs-5 sticky-top shadow-sm alert-dismissible fade show" role="alert">
+            <div class="p-3 shadow-sm alert alert-danger d-flex align-items-center justify-content-between fs-5 sticky-top alert-dismissible fade show" role="alert">
                 <span class="fs-3">{{ session('error') }}</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -50,6 +50,8 @@
             let calendarEl = document.getElementById('calendar');
             if (!calendarEl) return;
 
+            let eventsData = @json($events ?? []);
+
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 editable: false,
@@ -64,33 +66,58 @@
                         }
                     });
                 },
-                events: @json($events ?? []), // Directly assign JSON data
+                events: eventsData, // Directly assign JSON data
+                eventMouseEnter: function(info) {
+                    let event = info.event;
+                    let tooltip = document.createElement('div');
+                    tooltip.className = 'calendar-tooltip';
+                    tooltip.innerHTML = `
+                        <strong>${event.extendedProps.reference}</strong><br>
+                        <span>Unit: ${event.title} - ${event.extendedProps.unitType}</span><br>
+                        <span>Stay: ${formatDate(event.start)} ~ ${formatDate(event.end)}</span><br />
+                        <span>Status: ${event.extendedProps.status}</span>
+                    `;
+                    document.body.appendChild(tooltip);
+
+                    tooltip.style.left = `${info.jsEvent.pageX + 10}px`;
+                    tooltip.style.top = `${info.jsEvent.pageY + 10}px`;
+
+                    info.el.setAttribute('data-tooltip-id', event.id);
+                },
+                eventMouseLeave: function(info) {
+                    let tooltip = document.querySelector(`.calendar-tooltip`);
+                    if (tooltip) tooltip.remove();
+                },
+
                 eventContent: function(info) {
                     let event = info.event;
                     let statusColor = getStatusColor(event.extendedProps.status);
 
                     return {
-                        html: `<div class="cursor-pointer d-flex justify-content-between fc-event-custom" style=" color: white; padding: 5px; border-radius: 5px;">
+                        html: `<div class="d-flex justify-content-between fc-event-custom" style=" color: white; padding: 5px; border-radius: 5px;">
                                 <div class="text-left">
-                                    <span class=""><strong>${event.title} - ${event.extendedProps.unitType}</strong></span>
+                                    <span class="cursor-pointer" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.booking-modal', arguments: {booking: ${event.id}} })"><strong>${event.title} - ${event.extendedProps.unitType}</strong></span>
                                     <br>
                                     <span style="font-size: 12px;">${event.extendedProps.status ?? ''}</span>
                                 </div>
 
-                                <div class="text-right">
-                                    &nbsp;
+                                <div class="text-right cursor-pointer">
+                                    <span class="mb-2" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: ${event.id}} })">
+                                        <i class="fas fa-user-cog fs-2" style="color: #fff;"></i>
+                                    </span>
+                                    <br />
+                                    <span class="bg-white fs-6 text-primary badge rounded-pill">${event.extendedProps.channel}</span>
                                 </div>
                             </div>`
                     };
                 },
-
-                eventClick: function(info) {
-                    Livewire.dispatch('openModal', {
-                        component: 'channelmanager::modal.booking-modal',
-                        arguments: { booking: info.event.id }
-                    });
-                    // alert(`Booking: ${info.event.title}\nStatus: ${info.event.extendedProps?.status ?? 'N/A'}`);
-                },
+                // eventClick: function(info) {
+                //     Livewire.dispatch('openModal', {
+                //         component: 'channelmanager::modal.booking-modal',
+                //         arguments: { booking: info.event.id }
+                //     });
+                //     // alert(`Booking: ${info.event.title}\nStatus: ${info.event.extendedProps?.status ?? 'N/A'}`);
+                // },
 
                 headerToolbar: {
                     left: 'prev,next today',

@@ -325,7 +325,7 @@
                 const monthlyBookingsData = @json($monthlyBookings);
                 const labels = monthlyBookingsData.map(item => item.month); /*Month names for x-axis*/
                 const data = monthlyBookingsData.map(item => item.revenue); /* Revenue data for y-axis*/
-    
+
                 new ApexCharts(document.getElementById('total-booking-chart'), {
                     chart: {
                         type: "bar",

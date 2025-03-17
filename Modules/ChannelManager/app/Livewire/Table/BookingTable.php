@@ -120,9 +120,11 @@ class BookingTable extends Table
                 'end'   => $booking->check_out,
                 'color' => $this->getStatusColor($booking->status) ,
                 'extendedProps' => [
+                    'reference' => $booking->reference,
                     'guest' => $booking->guest->name,
                     'room'  => $booking->unit->name,
                     'unitType'  => $booking->unit->unitType->name,
+                    'channel'  => $booking->channel->name ?? 'Direct Booking',
                     'status' => ucfirst($booking->status),
                 ]
             ];
@@ -147,7 +149,7 @@ class BookingTable extends Table
     }
 
     public function getCheckInStatus($booking){
-        
+
     }
 
 }
