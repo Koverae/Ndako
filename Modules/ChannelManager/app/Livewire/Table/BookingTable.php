@@ -11,6 +11,7 @@ use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Traits\Table\HasCalendar;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\ChannelManager\Services\Booking\BookingService;
 
 class BookingTable extends Table
 {
@@ -18,6 +19,11 @@ class BookingTable extends Table
 
     public array $data = [];
     public $unitID;
+    protected $bookingService;
+
+    public function boot(BookingService $bookingService){
+        $this->bookingService = $bookingService;
+    }
 
     public function mount($events = [], $options = []){
 
@@ -157,17 +163,8 @@ class BookingTable extends Table
     #[On('updateBookingDate')]
     public function updateBookingDate($bookingId, $start, $end)
     {
-        $booking = Booking::find($bookingId);
-
-        if ($booking) {
-            $booking->update([
-                'check_in'  => Carbon::parse($start)->format('Y-m-d'),
-                'check_out' => Carbon::parse($end)->format('Y-m-d'),
-            ]);
-            // dd($start, $end);
-            $this->dispatch('calendarUpdated', events: $this->fetchEvents()); // Refresh calendar after update
-            
-        }
+        $this->bookingService->updateBookingDate($bookingId, $start, $end);
+        $this->redirect(route('bookings.lists'), true);
     }
     
     public function fetchEvents()

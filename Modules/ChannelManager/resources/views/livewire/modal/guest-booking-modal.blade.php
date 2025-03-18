@@ -101,7 +101,6 @@
                 </div>
                 @endif
 
-
                 <div class="mt-3 row {{ $booking->status == 'canceled' ? 'd-none' : '' }}">
                     <button wire:click="checkIn" class="gap-2 btn btn-primary rounded-0 col-6" {{ $booking->check_in_status == 'pending' ? '' : 'disabled' }}>
                         <i class="fas fa-sign-in-alt"></i> Check In 

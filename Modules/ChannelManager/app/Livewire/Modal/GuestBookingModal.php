@@ -53,18 +53,7 @@ class GuestBookingModal extends ModalComponent
 
     public function checkOut()
     {
-        // Check if dueAmount > 0
-        if ($this->dueAmount > 0) {
-            session()->flash('error', 'Outstanding amount is due for this booking.');
-            return;
-        }
-
-        $this->booking->update([
-            'check_out_status' => 'checked_out',
-            'actual_check_out' => now(),
-        ]);
-
-        session()->flash('success', 'Guest checked out successfully!');
+        $this->bookingService->checkOutBooking($this->booking);
         $this->closeModal();
 
     }

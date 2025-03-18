@@ -14,6 +14,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if (session()->has('warning'))
+            <div class="p-3 shadow-sm alert alert-warning d-flex align-items-center justify-content-between fs-5 sticky-top alert-dismissible fade show" role="alert">
+                <span class="fs-3">{{ session('error') }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
         <div class="calendar-legend">
             <span class="legend-item" style="background-color: #fbc02d;"></span> Pending
@@ -32,9 +38,9 @@
             initializeCalendar();
         });
 
-        document.addEventListener('livewire:load', function () {
-            initializeCalendar();
-        });
+        // document.addEventListener('livewire:load', function () {
+        //     initializeCalendar();
+        // });
 
         Livewire.on('calendarUpdated', function() {
             setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM

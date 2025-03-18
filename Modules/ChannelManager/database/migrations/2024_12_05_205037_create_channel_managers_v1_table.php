@@ -104,6 +104,8 @@ return new class extends Migration
             $table->decimal('total_amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('paid_amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);
+            $table->decimal('refund_amount', $precision = 12, $scale = 2)->default(0);
+            $table->enum('payment_type', ['debit', 'credit'])->default('credit');
             $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
             $table->string('payment_method')->default('cash');
             $table->enum('status', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending');

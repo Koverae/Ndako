@@ -18,7 +18,8 @@ use Modules\Properties\Models\Property\Utility;
 class PropertySetting extends AppSetting
 {
     public $setting;
-    public $has_default_unit_status, $has_default_numbering, $has_default_utility, $has_floor_mapping, $has_shared_amenities, $has_lease_term, $has_base_rental, $has_down_payment = true, $base_rental, $has_utility_rules, $utility_rule, $has_pricelists, $has_discounts, $has_seasonal_discounts, $has_default_check_times, $has_online_payment, $has_lock_confirmed_booking, $has_pro_formatçinvoice, $has_overbooking_prevention, $has_stay_rule_per_unit, $has_cleaning_frequency, $has_maintenance_alerts, $has_housekeeping_staff, $has_maintenance_requests, $has_customer_portal, $has_in_room_services, $has_guest_note;
+    public bool $has_default_unit_status = false, $has_default_numbering = false, $has_default_utility = false, $has_floor_mapping = false, $has_shared_amenities = false, $has_refund_policy = true,  $has_lease_term = false, $has_base_rental = false, $has_down_payment = true, $has_utility_rules = false, $has_pricelists = false, $has_discounts = false, $has_seasonal_discounts = false, $has_default_check_times = false, $has_online_payment = false, $has_lock_confirmed_booking = false, $has_pro_format_invoice = false, $has_overbooking_prevention = false, $has_stay_rule_per_unit = false, $has_cleaning_frequency = false, $has_maintenance_alerts = false, $has_housekeeping_staff = false, $has_maintenance_requests = false, $has_customer_portal = false, $has_in_room_services = false, $has_guest_note = false;
+    public $base_rental, $utility_rule, $full_refund_days, $partial_refund_days, $partial_refund_percentage, $last_minute_refund_days;
     public $downPayment = 0;
     public array $unitStatus = [], $numberingSystems = [], $companyUtilities = [], $utilities = [], $sharedAmenities = [], $companyAmenities = [], $leaseTerms = [], $utilityRules = [];
 
@@ -28,9 +29,14 @@ class PropertySetting extends AppSetting
         $this->has_default_unit_status = $setting->has_default_unit_status;
 
         $this->downPayment = $setting->down_payment;
-        $this->has_lease_term = $setting->has_lease_term;
-        $this->has_base_rental = $setting->has_base_rental;
-        $this->base_rental = $setting->base_rental;
+        $this->has_refund_policy = $setting->has_refund_policy;
+        $this->full_refund_days = $setting->full_refund_days;
+        $this->partial_refund_days = $setting->partial_refund_days;
+        $this->partial_refund_percentage = $setting->partial_refund_percentage;
+        $this->last_minute_refund_days = $setting->last_minute_refund_days;
+
+        $this->has_lease_term = $setting->has_lease_term ?? false;
+
         $this->has_utility_rules = $setting->has_utility_rules;
         $this->utility_rule = $setting->utility_rule;
         $this->has_pricelists = $setting->has_pricelists;
@@ -39,7 +45,7 @@ class PropertySetting extends AppSetting
         $this->has_default_check_times = $setting->has_default_check_times;
         $this->has_online_payment = $setting->has_online_payment;
         $this->has_lock_confirmed_booking = $setting->has_lock_confirmed_booking;
-        $this->has_pro_formatçinvoice = $setting->has_pro_formatçinvoice;
+        $this->has_pro_format_invoice = $setting->has_pro_format_invoice;
         $this->has_overbooking_prevention = $setting->has_overbooking_prevention;
         $this->has_stay_rule_per_unit = $setting->has_stay_rule_per_unit;
         $this->has_cleaning_frequency = $setting->has_cleaning_frequency;
@@ -121,7 +127,7 @@ class PropertySetting extends AppSetting
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
             Box::make('over-booking', "Overbooking Prevention", 'has_overbooking_prevention', "Automatically block double bookings for the same room/unit.", 'booking-settings', true, "", null),
             Box::make('stay-rules', "Minimum & Maximum Stay Rules", 'has_stay_rule_per_unit', "Limit the duration of bookings for specific rooms/units.", 'booking-settings', true, "", null),
-            Box::make('refund-policy', "Refund Policy", 'has_refund_policy', "Appear directly in Google search results, syncing your availability and pricing to capture potential guests instantly.", 'integration', true, "", null),
+            Box::make('refund-policy', "Refund Policy", 'has_refund_policy', "Define your cancellation terms and refund conditions with ease.", 'booking-settings', true, "https://ndako.koverae/docs", null),
             // Housekeeping & Maintenance
             Box::make('cleaning-frequency', "Cleaning Frequency", 'has_cleaning_frequency', "Set schedules for daily, weekly, or post-checkout cleaning.", 'housekeeping', true, "", null),
             Box::make('maintenance-alert', "Maintenance Alerts", 'has_maintenance_alerts', "Notify staff of required repairs or inspections.", 'housekeeping', true, "", null),
@@ -145,6 +151,11 @@ class PropertySetting extends AppSetting
             BoxInput::make('lease-terms', "", 'select', 'default_lease_term', 'lease-terms', '', false, $this->leaseTerms, $this->has_lease_term)->component('app::blocks.boxes.input.depends'),
             BoxInput::make('down-payment-price', "", 'tel', 'downPayment', 'down-payment', '', false, []),
             BoxInput::make('utility-billing', "", 'select', 'utility_rule', 'utility-rules', '', false, $this->utilityRules, $this->has_utility_rules)->component('app::blocks.boxes.input.depends'),
+            // Website Integration
+            BoxInput::make('full-refund', "Full Refund Days:", 'text', 'full_refund_days', 'refund-policy', '', false, [], $this->has_refund_policy)->component('app::blocks.boxes.input.depends'),
+            BoxInput::make('partial-refund', "Partial Refund Days:", 'text', 'partial_refund_days', 'refund-policy', '', false, [], $this->has_refund_policy)->component('app::blocks.boxes.input.depends'),
+            BoxInput::make('partial-refund-percentage', "Partial Refund (%):", 'text', 'partial_refund_percentage', 'refund-policy', '', false, [], $this->has_refund_policy)->component('app::blocks.boxes.input.depends'),
+            BoxInput::make('no-refund', "No Refund If Canceled Within:", 'text', 'last_minute_refund_days', 'refund-policy', '', false, [], $this->has_refund_policy)->component('app::blocks.boxes.input.depends'),
         ];
     }
 

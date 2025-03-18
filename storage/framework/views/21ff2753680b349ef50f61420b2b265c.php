@@ -145,7 +145,6 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
-
                 <div class="mt-3 row <?php echo e($booking->status == 'canceled' ? 'd-none' : ''); ?>">
                     <button wire:click="checkIn" class="gap-2 btn btn-primary rounded-0 col-6" <?php echo e($booking->check_in_status == 'pending' ? '' : 'disabled'); ?>>
                         <i class="fas fa-sign-in-alt"></i> Check In 

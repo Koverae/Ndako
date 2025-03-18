@@ -10,7 +10,7 @@
         <div class="k_setting_left_pane">
             <div class="k_field_widget k_field_boolean">
                 <div class="k-checkbox form-check d-inline-block">
-                    <input type="checkbox" wire:model.live="{{ $value->model }}" class="form-check-input" onclick="checkStatus(this)">
+                    <input type="checkbox" wire:model.live="{{ $value->model }}"  class="form-check-input" >
                 </div>
             </div>
         </div>
