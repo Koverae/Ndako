@@ -78,6 +78,12 @@ return new class extends Migration
                 $table->string('google_calendar_client_id')->nullable();
                 $table->string('google_calendar_client_secret')->nullable();
                 $table->boolean('google_calendar_pause_sync')->default(false);
+            // Refund Policy
+            $table->boolean('has_refund_policy')->default(true);
+            $table->integer('full_refund_days')->default(7);
+            $table->integer('partial_refund_days')->default(3);
+            $table->integer('partial_refund_percentage')->default(50);
+            $table->integer('last_minute_refund_days')->default(1);
             // Properties
             $table->boolean('has_default_unit_status')->default(false);
             $table->enum('default_unit_status', ['vacant', 'occupied', 'under-maintenance'])->default('vacant');
@@ -89,7 +95,7 @@ return new class extends Migration
             $table->decimal('base_rate', $precision = 12, $scale = 2)->default(0);
             $table->boolean('has_utility_rules')->default(false);
             $table->enum('utility_rule', ['included', 'separate'])->default('included');
-            $table->boolean('has_pricelists')->default(false);
+            $table->boolean('has_pricelists')->default(true);
             $table->unsignedBigInteger('default_pricelist')->nullable();
             $table->boolean('has_discounts')->default(false);
             $table->boolean('has_seasonal_discounts')->default(false);

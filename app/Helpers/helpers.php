@@ -489,6 +489,19 @@ if(!function_exists('getProperty')){
     }
 }
 
+if (!function_exists('calculateDownPayment')) {
+    /**
+     * Calculate the down payment based on price and percentage.
+     *
+     */
+    function calculateDownPayment($price, $percentage)
+    {
+        $downPayment = ($price * $percentage) / 100;
+        return $downPayment;
+    }
+}
+
+
 function inverseSlug(string $slug): string
 {
     return Str::of($slug)

@@ -36,12 +36,12 @@
             initializeCalendar();
         });
 
-        // Livewire.on('calendarUpdated', function() {
-        //     setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
-        // });
-        Livewire.on('calendarUpdated', ({ $events }) => {
-            setTimeout(() => initializeCalendar($events), 100); // Small delay to allow Livewire to update the DOM
+        Livewire.on('calendarUpdated', function() {
+            setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
         });
+        // Livewire.on('calendarUpdated', ({ $events }) => {
+        //     setTimeout(() => initializeCalendar($events), 100); // Small delay to allow Livewire to update the DOM
+        // });
 
         function initializeCalendar(eventsData = null) {
             let calendarEl = document.getElementById('calendar');
@@ -104,6 +104,7 @@
                     tooltip.className = 'calendar-tooltip';
                     tooltip.innerHTML = `
                         <strong>${event.extendedProps.reference}</strong><br>
+                        <span>Guest: ${event.extendedProps.guest}</span><br>
                         <span>Unit: ${event.title} - ${event.extendedProps.unitType}</span><br>
                         <span>Stay: ${formatDate(event.start)} ~ ${formatDate(event.end)}</span><br />
                         <span>Status: ${event.extendedProps.status}</span>

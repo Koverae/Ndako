@@ -182,7 +182,6 @@ class AddBookingWizard extends SimpleWizard
                         }, SORT_REGULAR, $this->sortOrder === 'desc') // Step 6: Apply sorting order (ascending or descending)
                         ->values(); // Step 7: Reset array keys (in case filtering removed some items)
     }
-    
 
     public function createBooking(){
         $this->validate();

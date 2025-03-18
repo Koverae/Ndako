@@ -104,6 +104,7 @@
                     tooltip.className = 'calendar-tooltip';
                     tooltip.innerHTML = `
                         <strong>${event.extendedProps.reference}</strong><br>
+                        <span>Guest: ${event.extendedProps.guest}</span><br>
                         <span>Unit: ${event.title} - ${event.extendedProps.unitType}</span><br>
                         <span>Stay: ${formatDate(event.start)} ~ ${formatDate(event.end)}</span><br />
                         <span>Status: ${event.extendedProps.status}</span>

@@ -145,14 +145,16 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
-                <div class="mt-3 row">
+
+                <div class="mt-3 row <?php echo e($booking->status == 'canceled' ? 'd-none' : ''); ?>">
                     <button wire:click="checkIn" class="gap-2 btn btn-primary rounded-0 col-6" <?php echo e($booking->check_in_status == 'pending' ? '' : 'disabled'); ?>>
-                        <i class="fas fa-sign-in-alt"></i> Check In
+                        <i class="fas fa-sign-in-alt"></i> Check In 
                     </button>
                     <button wire:click="checkOut" wire:confirm="Do you want to proceed check-out?" class="gap-2 btn btn-warning rounded-0 col-6" <?php echo e($booking->check_in_status == 'checked_in' && $booking->check_out_status == 'pending' ? '' : 'disabled'); ?>>
                         <i class="fas fa-sign-out"></i> Check Out
                     </button>
                 </div>
+
 
             </div>
         </div>

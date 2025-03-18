@@ -26,7 +26,7 @@ class PropertySetting extends AppSetting
     {
         $this->setting = $setting;
         $this->has_default_unit_status = $setting->has_default_unit_status;
-        
+
         $this->downPayment = $setting->down_payment;
         $this->has_lease_term = $setting->has_lease_term;
         $this->has_base_rental = $setting->has_base_rental;
@@ -111,7 +111,7 @@ class PropertySetting extends AppSetting
     {
         return [
             // Pricing
-            Box::make('down-payment', "Down Payment", 'has_down_payment', "Define monthly rent or nightly rates for properties.", 'pricing', false, "", null),
+            Box::make('down-payment', "Down Payment (%)", 'has_down_payment', "Initial payment made to secure a booking.", 'pricing', false, "", null),
             Box::make('utility-rules', "Utility Billing Rules", 'has_utility_rules', "Allow landlords to set utility billing options (e.g., included or separate).", 'pricing', true, "", null),
             Box::make('pricelists', "Pricelists", 'has_pricelists', "Set multiple prices per unit, automated discounts, etc.", 'pricing', true, "", null),
             Box::make('discounts', "Discounts, Loyalty and Gift Card", 'has_discounts', "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet.", 'pricing', true, "", null),
@@ -121,6 +121,7 @@ class PropertySetting extends AppSetting
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
             Box::make('over-booking', "Overbooking Prevention", 'has_overbooking_prevention', "Automatically block double bookings for the same room/unit.", 'booking-settings', true, "", null),
             Box::make('stay-rules', "Minimum & Maximum Stay Rules", 'has_stay_rule_per_unit', "Limit the duration of bookings for specific rooms/units.", 'booking-settings', true, "", null),
+            Box::make('refund-policy', "Refund Policy", 'has_refund_policy', "Appear directly in Google search results, syncing your availability and pricing to capture potential guests instantly.", 'integration', true, "", null),
             // Housekeeping & Maintenance
             Box::make('cleaning-frequency', "Cleaning Frequency", 'has_cleaning_frequency', "Set schedules for daily, weekly, or post-checkout cleaning.", 'housekeeping', true, "", null),
             Box::make('maintenance-alert', "Maintenance Alerts", 'has_maintenance_alerts', "Notify staff of required repairs or inspections.", 'housekeeping', true, "", null),

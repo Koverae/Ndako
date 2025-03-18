@@ -7,6 +7,7 @@ use Modules\ChannelManager\Models\Guest\Guest;
 use Livewire\WithFileUploads;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
+use Modules\ChannelManager\Services\Booking\BookingService;
 use Modules\RevenueManager\Models\Accounting\Journal;
 
 class GuestBookingModal extends ModalComponent
@@ -14,6 +15,12 @@ class GuestBookingModal extends ModalComponent
     use WithFileUploads;
     public Booking $booking;
     public $photo, $image_path, $paymentMethod = 'm-pesa', $paymentAmount = 0, $dueAmount = 0;
+
+    private BookingService $bookingService;
+
+    public function boot(BookingService $bookingService){
+        $this->bookingService = $bookingService;
+    }
 
     public function rules()
     {
@@ -36,18 +43,12 @@ class GuestBookingModal extends ModalComponent
 
     public function checkIn()
     {
-        $this->booking->update([
-            'check_in_status' => 'checked_in',
-            'actual_check_in' => now(),
-        ]);
 
-        $this->booking->unit->update([
-            'status' => 'occupied'
-        ]);
-        
-        session()->flash('success', 'Guest checked in successfully!');
+        $this->bookingService->checkInBooking($this->booking);
         $this->closeModal();
-
+        // Redirect to the booking calendar
+        return $this->redirect(route('bookings.lists', true));
+        
     }
 
     public function checkOut()
@@ -107,9 +108,8 @@ class GuestBookingModal extends ModalComponent
             'due_amount' => ($due_amount),
         ]);
         $this->paymentAmount = 0;
-        // $this->mount($this->booking);
-        $this->closeModal();
+        // $this->closeModal();
         // Send success message
-        session()->flash('message', 'Booking Information Updated successfully!');
+        session()->flash('message', 'Your payment has been successfully processed!');
     }
 }
