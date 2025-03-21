@@ -21,6 +21,7 @@ use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
 use Modules\ChannelManager\Models\Guest\Guest;
+use Modules\ChannelManager\Services\Booking\BookingService;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
 use Modules\RevenueManager\Models\Accounting\Journal;
@@ -33,6 +34,11 @@ class BookingForm extends LightWeightForm
     public $paidAmount = 0, $dueAmount = 0, $downPayment = 0;
     public array $guestOptions = [], $roomOptions = [], $paymentOptions = [];
     // public $startDate, $enDate;
+    protected $bookingService;
+
+    public function boot(BookingService $bookingService){
+        $this->bookingService = $bookingService;
+    }
 
     // Define validation rules
     protected $rules = [
@@ -84,17 +90,17 @@ class BookingForm extends LightWeightForm
         $buttons =  [
             // ActionBarButton::make('invoice', 'Créer une facture', 'storeQT()', 'sale_order'),
             ActionBarButton::make('send-email', __('Send by Email'), "", 'confirmed', true),
-            ActionBarButton::make('confirm', __('Confirm'), "confirm", 'pending', $this->status == 'confirmed'),
+            ActionBarButton::make('confirm', __('Confirm'), "confirm", 'pending', $this->status == 'confirmed' || $this->status == 'completed'),
             ActionBarButton::make('invoice', __('Create Invoice'), "createInvoice", 'confirmed', $this->status !== 'confirmed' || $this->invoiceStatus == 'invoiced'),
             ActionBarButton::make('preview', __('Preview'), 'sale()', 'none', $this->status == null),
             ActionBarButton::make('lock', __('Lock'), 'lock()', "none", $this->blocked || $this->status == null),
             ActionBarButton::make('unlock', __('Unlock'), 'unlock()', 'blocked', !$this->blocked || $this->status == null),
-            ActionBarButton::make('canceled', __('Canceled'), 'cancel', 'canceled', !$this->status || $this->status != 'confirmed'),
+            ActionBarButton::make('canceled', __('Cancel'), 'cancel', 'canceled', !$this->status || $this->status != 'confirmed'),
             // Add more buttons as needed
         ];
 
         // Define the custom order of button keys
-        $customOrder = ['send-email', 'confirm', 'send', 'preview']; // Adjust as needed
+        $customOrder = ['send-email', 'confirm', 'invoice', 'canceled']; // Adjust as needed
 
         // Change dynamicaly the display order depends on status
         return $this->sortActionButtons($buttons, $customOrder, $type);
@@ -105,6 +111,7 @@ class BookingForm extends LightWeightForm
         return [
             StatusBarButton::make('pending', __('Pending'), 'pending'),
             StatusBarButton::make('confirmed', __('Confirmed'), 'confirmed'),
+            StatusBarButton::make('completed', __('Completed'), 'completed'),
             StatusBarButton::make('canceled', __('Canceled'), 'canceled'),
             // StatusBarButton::make('sale_order', __('translator::sales.form.sale.status.order'), 'sale_order')->component('button.status-bar.default-selected'),
             // Add more buttons as needed
@@ -152,11 +159,7 @@ class BookingForm extends LightWeightForm
     public function cancel(){
         $this->validate();
         if($this->booking){
-            $this->status = 'canceled';
-            $this->booking->update(['status' => $this->status]);
-            $this->booking->unit->update([
-                'status' => 'vacant'
-            ]);
+            $this->bookingService->cancelBooking($this->booking);
         }
     }
 

@@ -19,64 +19,149 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 class Reservation extends Component
 {
 
-    public $period = 7, $property, $type, $room, $guest, $source;
-    public $bookings, $bookingGrowth = 0, $revenue = 0, $revenueGrowth = 0, $avgRevenue = 0, $avgRevenueGrowth = 0, $cancellationRate = 0;
+    public $period = 7, $property, $type, $room, $guest, $source = 'direct-booking';
+    public $bookings, $canceledBookings, $bookingGrowth = 0, $revenue = 0, $revenueGrowth = 0, $avgRevenue = 0, $avgRevenueGrowth = 0, $cancellationRate = 0;
+    public $cancellationRateChange = 0, $bookingRateChange = 0, $revenueChange = 0, $averageRevenueChange = 0;
     public $rooms, $guestBooks, $roomTypes, $monthlyBookings;
     public $properties, $units, $unitTypes = [], $guests = [];
 
-    public function mount(){
+    public function mount($updating = false){
+        
         $this->properties = Property::isCompany(current_company()->id)->get();
+        $this->property = $this->properties->first()->id ?? null;
         $this->units = PropertyUnit::isCompany(current_company()->id)->get();
         $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->get();
         $this->guests = Guest::isCompany(current_company()->id)->get();
 
         $this->monthlyBookings = $this->getMonthlyBookings();
 
-        $this->property = $this->properties->first()->id ?? null;
         $this->loadData();
 
     }
     public function getMonthlyBookings()
     {
-        // Fetch the monthly bookings data for the current year
-        $bookings = Booking::whereBetween('check_in', [
-                Carbon::now()->startOfYear(),
-                Carbon::now()->endOfYear(),
-            ])
-            ->selectRaw('MONTH(check_in) as month, YEAR(check_in) as year, SUM(total_amount) as revenue')
+        // Fetch monthly revenue data (confirmed + canceled) for the current year
+        $bookings = Booking::with(['unit' => function ($subQuery) {
+                $subQuery->when($this->property, function ($query) {
+                    $query->where('property_id', $this->property); // Apply filter if $property is set
+                });
+            }])
+            ->whereYear('check_in', Carbon::now()->year)
+            ->selectRaw('
+                MONTH(check_in) as month,
+                YEAR(check_in) as year,
+                SUM(CASE WHEN status IN ("confirmed", "completed") THEN total_amount ELSE 0 END) as revenue,
+                SUM(CASE WHEN status = "canceled" THEN total_amount ELSE 0 END) as canceled_revenue
+            ')
             ->groupBy('month', 'year')
-            ->orderByRaw('YEAR(check_in) ASC, MONTH(check_in) ASC') // Sort by year and month in ascending order
+            ->orderByRaw('YEAR(check_in) ASC, MONTH(check_in) ASC')
             ->get();
 
-        return $bookings->map(function ($booking) {
-            return [
-                'month' => Carbon::create($booking->year, $booking->month, 1)->format('F Y'),
-                'revenue' => $booking->revenue,
-            ];
-        });
+        // Transform results for output
+        return $bookings->map(fn ($booking) => [
+            'month'   => Carbon::create($booking->year, $booking->month, 1)->format('F Y'),
+            'revenue' => round($booking->revenue, 2),
+            'cancel'  => round($booking->canceled_revenue, 2),
+        ]);
     }
 
     public function loadData(){
 
-        $this->bookings = Booking::isCompany(current_company()->id)
-            ->where('status', 'confirmed') // Assuming 'status' column exists
+        $currentStart = Carbon::now()->subDays($this->period);
+        $previousStart = Carbon::now()->subDays($this->period * 2);
+        $now = Carbon::now();
+
+        // Fetch both current and previous period bookings
+        $currentBookings = Booking::isCompany(current_company()->id)
+            // ->where('status', 'confirmed') // Assuming 'status' column exists
+
             ->orderByDesc('total_amount')
-            ->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()])
+            ->whereBetween('created_at', [$currentStart, $now])
             ->get();
-        $this->revenue = $this->bookings->sum('total_amount');
-        $this->avgRevenue = $this->bookings->avg('total_amount');
 
-        // Canceled bookings count
-        $canceledBookings = $this->bookings
-        ->where('status', 'canceled') // Assuming 'status' column exists
-        ->count();
+        $previousBookings = Booking::isCompany(current_company()->id)
+            ->where('source', $this->source)
+            ->with(['unit' => function ($query) {
+                $query->when($this->property, fn ($q, $id) => $q->isProperty($id))
+                    ->with(['unitType' => fn ($subQuery) =>
+                        $subQuery->when($this->type, fn ($q, $type) => $q->isType($type))
+                    ]);
+            }])
+            // ->where('status', 'confirmed') // Assuming 'status' column exists
+            ->orderByDesc('total_amount')
+            ->whereBetween('created_at', [$previousStart, $currentStart])
+            ->get();
 
-        // Calculate the cancellation rate (avoiding division by zero)
-        $this->cancellationRate = $this->bookings->count() > 0
-        ? ($canceledBookings / $this->bookings->count()) * 100
-        : 0;
+        // Get the total
+        $currentTotal = $currentBookings->count();
+        $previousTotal = $previousBookings->count();
+
+        // Get current & previous confirmed bookings
+        $confirmedCurrentBookings = $currentBookings->whereIn('status', ['confirmed', 'completed']);
+        $confirmedPreviousBookings = $previousBookings->whereIn('status', ['confirmed', 'completed']);
+
+        // Assign values
+        $this->bookings = $confirmedCurrentBookings;
+
+
+        // Calculate booking growth rate
+        if ($confirmedPreviousBookings->count() > 0) {
+            // Normal percentage change formula
+            $this->bookingRateChange = round((($confirmedCurrentBookings->count() - $confirmedPreviousBookings->count()) / $confirmedPreviousBookings->count()) * 100, 1);
+        } else {
+            // If there were no bookings in the previous period, take the current number as the growth percentage
+            $this->bookingRateChange = $confirmedCurrentBookings->count() > 0 ? $confirmedCurrentBookings->count() : 0;
+        }
+
+        $this->revenue = $confirmedCurrentBookings->sum('total_amount');
+
+        // Get total revenue for the current period
+        $currentRevenue = $confirmedCurrentBookings->sum('total_amount');
+        // Get total revenue for the previous period
+        $previousRevenue = $confirmedPreviousBookings->sum('total_amount');
+
+        // Calculate revenue change percentage
+        if ($previousRevenue > 0) {
+            $this->revenueChange = round((($currentRevenue - $previousRevenue) / $previousRevenue) * 100, 1);
+        } else {
+            $this->revenueChange = $currentRevenue > 0 ? 100 : 0;
+        }
+
+        $this->avgRevenue = $confirmedCurrentBookings->avg('total_amount');
+
+        // Get total revenue for the current period
+        $currentAvg = $confirmedCurrentBookings->avg('total_amount');
+        // Get total revenue for the previous period
+        $previousAvg = $confirmedPreviousBookings->avg('total_amount');
+
+        // Calculate revenue change percentage
+        if ($previousAvg > 0) {
+            $this->averageRevenueChange = round((($currentAvg - $previousAvg) / $previousAvg) * 100, 1);
+        } else {
+            $this->averageRevenueChange = $currentAvg > 0 ? 100 : 0;
+        }
+
+        // Get current & previous canceled bookings
+        $currentCanceledBookings = $currentBookings->where('status', 'canceled');
+        $previousCanceledBookings = $previousBookings->where('status', 'canceled');
+
+        // Calculate cancellation rates & canceled bookings
+        $this->canceledBookings = $currentCanceledBookings;
+        $this->cancellationRate = $currentTotal > 0 ? round(($currentCanceledBookings->count() / $currentTotal) * 100, 1) : 0;
+        $previousRate = $previousTotal > 0 ? ($previousCanceledBookings->count() / $previousTotal) * 100 : 0;
+
+        if ($previousRate > 0) {
+            // Standard percentage change formula
+            $this->cancellationRateChange = round((($this->cancellationRate - $previousRate) / $previousRate) * 100, 1);
+        } else {
+            // If there were no cancellations in the previous period, but there are now
+            $this->cancellationRateChange = $this->cancellationRate > 0 ? $this->cancellationRate : 0;
+        }
 
         $this->rooms = PropertyUnit::isCompany(current_company()->id)
+            ->when($this->property, function ($query) {
+                $query->where('property_id', $this->property); // Apply filter if $property is set
+            })
             ->withCount(['bookings' => function ($query) {
                 $query->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
             }]) // Adds bookings_count for the last 7 days
@@ -87,6 +172,13 @@ class Reservation extends Component
             ->get();
 
         $this->guestBooks = Guest::isCompany(current_company()->id)
+            ->with(['bookings' => function($query) {
+                $query->with(['unit' => function ($subQuery) {
+                    $subQuery->when($this->property, function ($query) {
+                        $query->where('property_id', $this->property); // Apply filter if $property is set
+                    });
+                }]);
+            }])
             ->withCount(['bookings' => function ($query) {
                 $query->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
             }]) // Adds bookings_count for the last 7 days
@@ -98,6 +190,9 @@ class Reservation extends Component
 
         // Fetch room types with aggregated booking revenue
         $this->roomTypes = PropertyUnitType::isCompany(current_company()->id)
+        ->when($this->property, function ($query) {
+            $query->where('property_id', $this->property); // Apply filter if $property is set
+        })
         ->with(['units' => function ($query) {
             $query->with(['bookings' => function ($subQuery) {
                 $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
@@ -124,7 +219,7 @@ class Reservation extends Component
     }
 
     public function updatedPeriod($property){
-        $this->mount();
+        $this->mount(true);
     }
 
     public function render()

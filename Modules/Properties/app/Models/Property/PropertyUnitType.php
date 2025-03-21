@@ -20,6 +20,11 @@ class PropertyUnitType extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function scopeIsType(Builder $query, $type)
+    {
+        return $query->where('id', $type);
+    }
+
     public function scopeIsProperty(Builder $query, $property_id)
     {
         return $query->where('property_id', $property_id);

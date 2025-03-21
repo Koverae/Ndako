@@ -4,25 +4,25 @@
         <div class="flex-wrap gap-5 k_control_panel_main d-flex justify-content-between align-items-lg-start flex-grow-1">
             <div class="flex-1 gap-3 d-none d-lg-flex">
                 <select wire:model.live="period" id="" class="w-auto k-input fs-3">
-                    <option value="0">{{ __('Select period') }}</option>
-                    <option value="1">{{ __('Today') }}</option>
-                    <option value="2">{{ __('Yesterday') }}</option>
-                    <option value="7">{{ __('Last 7 days') }}</option>
-                    <option value="30">{{ __('Last 30 days') }}</option>
-                    <option value="90">{{ __('Last 90 days') }}</option>
-                    <option value="180">{{ __('Last 180 days') }}</option>
-                    <option value="365">{{ __('Last 365 days') }}</option>
+                    <option value="0"><?php echo e(__('Select period')); ?></option>
+                    <option value="1"><?php echo e(__('Today')); ?></option>
+                    <option value="2"><?php echo e(__('Yesterday')); ?></option>
+                    <option value="7"><?php echo e(__('Last 7 days')); ?></option>
+                    <option value="30"><?php echo e(__('Last 30 days')); ?></option>
+                    <option value="90"><?php echo e(__('Last 90 days')); ?></option>
+                    <option value="180"><?php echo e(__('Last 180 days')); ?></option>
+                    <option value="365"><?php echo e(__('Last 365 days')); ?></option>
                 </select>
                 <select wire:model.live="property" id="" class="w-auto k-input fs-3">
-                    @foreach($properties as $index => $property)
-                    <option value="{{ $property->id }}">{{ $property->name }}</option>
-                    @endforeach
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $properties; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $property): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($property->id); ?>"><?php echo e($property->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </select>
                 <select wire:model.live="" id="" class="w-auto k-input fs-3">
-                    <option value="">{{ __('Agent') }}</option>
-                    @foreach(current_company()->users() as $index => $agent)
-                    <option value="{{ $agent->id }}">{{ $agent->name }}</option>
-                    @endforeach
+                    <option value=""><?php echo e(__('Agent')); ?></option>
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = current_company()->users(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $agent): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($agent->id); ?>"><?php echo e($agent->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </select>
             </div>
 
@@ -30,7 +30,8 @@
             <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
                 <!-- Button view -->
                 <button title=" view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
-                    <i class="bi bi-share"></i> {{__('Share')}}
+                    <i class="bi bi-share"></i> <?php echo e(__('Share')); ?>
+
                 </button>
                 <!-- Button view -->
             </div>
@@ -47,11 +48,11 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Invoiced') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Invoiced')); ?></h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ format_currency($invoicedAmount) }}</h3>
-                        <span class="text-muted">{{ format_currency($unpaidAmount) }} {{ __('unpaid') }}</span>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e(format_currency($invoicedAmount)); ?></h3>
+                        <span class="text-muted"><?php echo e(format_currency($unpaidAmount)); ?> <?php echo e(__('unpaid')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -61,11 +62,11 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <h3 class="h3">{{ __('Average Invoice') }}</h3>
+                            <h3 class="h3"><?php echo e(__('Average Invoice')); ?></h3>
                         </div>
                         <div class="text-center text-truncate">
-                            <h3 class="h3" style="font-size: 40px;">{{ format_currency($averageInvoiceAmount) }}</h3>
-                            <span class="text-muted">{{ $numberOfInvoices }} {{ __('invoices') }}</span>
+                            <h3 class="h3" style="font-size: 40px;"><?php echo e(format_currency($averageInvoiceAmount)); ?></h3>
+                            <span class="text-muted"><?php echo e($numberOfInvoices); ?> <?php echo e(__('invoices')); ?></span>
                         </div>
                     </div>
                 </div>
@@ -75,11 +76,11 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Days Sales Outstanding (DSO)') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Days Sales Outstanding (DSO)')); ?></h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ $dso }} {{ __('days') }}</h3>
-                        <span class="text-muted">{{ __('in current year') }}</span>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($dso); ?> <?php echo e(__('days')); ?></h3>
+                        <span class="text-muted"><?php echo e(__('in current year')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -94,7 +95,8 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Invoiced by Month') }}
+                            <?php echo e(__('Invoiced by Month')); ?>
+
                         </div>
                     </div>
                     <div id="monthly-invoices-chart" wire:ignore></div>
@@ -107,41 +109,45 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Invoices') }}
+                            <?php echo e(__('Top Invoices')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Reference') }}</th>
-                                <th>{{ __('Guest') }}</th>
-                                <th>{{ __('Status') }}</th>
-                                <th>{{ __('Agent') }}</th>
-                                <th>{{ __('Date') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Reference')); ?></th>
+                                <th><?php echo e(__('Guest')); ?></th>
+                                <th><?php echo e(__('Status')); ?></th>
+                                <th><?php echo e(__('Agent')); ?></th>
+                                <th><?php echo e(__('Date')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($invoices as $key => $invoice)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $invoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $invoice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $invoice->reference }}</td>
-                                <td>{{ $invoice->guest->name }}</td>
+                                <td><?php echo e($invoice->reference); ?></td>
+                                <td><?php echo e($invoice->guest->name); ?></td>
                                 <td>
-                                    @if($invoice->payment_status == 'partial')
-                                    {{ __('Partially Paid') }}
-                                    @elseif($invoice == 'pending')
-                                    {{ __('Not Paid') }}
-                                    @elseif($invoice == 'paid')
-                                    {{ __('Paid') }}
-                                    @endif
+                                    <!--[if BLOCK]><![endif]--><?php if($invoice->payment_status == 'partial'): ?>
+                                    <?php echo e(__('Partially Paid')); ?>
+
+                                    <?php elseif($invoice == 'pending'): ?>
+                                    <?php echo e(__('Not Paid')); ?>
+
+                                    <?php elseif($invoice == 'paid'): ?>
+                                    <?php echo e(__('Paid')); ?>
+
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                 </td>
-                                <td>{{ $invoice->agent->name }}</td>
-                                <td>{{ \Carbon\Carbon::parse($invoice->date)->format('m/d/y') }}</td>
-                                <td>{{ __(format_currency($invoice->total_amount)) }}</td>
+                                <td><?php echo e($invoice->agent->name); ?></td>
+                                <td><?php echo e(\Carbon\Carbon::parse($invoice->date)->format('m/d/y')); ?></td>
+                                <td><?php echo e(__(format_currency($invoice->total_amount))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -152,29 +158,30 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Payments') }}
+                            <?php echo e(__('Top Payments')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Reference') }}</th>
-                                <th>{{ __('Invoice') }}</th>
-                                <th>{{ __('Date') }}</th>
-                                <th>{{ __('Amount') }}</th>
+                                <th><?php echo e(__('Reference')); ?></th>
+                                <th><?php echo e(__('Invoice')); ?></th>
+                                <th><?php echo e(__('Date')); ?></th>
+                                <th><?php echo e(__('Amount')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($payments as $key => $payment)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $payments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $payment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $payment->reference }}</td>
-                                <td>{{ $payment->invoice->reference }}</td>
-                                <td>{{ \Carbon\Carbon::parse($payment->date)->format('m/d/y') }}</td>
-                                <td>{{ __(format_currency($payment->amount)) }}</td>
+                                <td><?php echo e($payment->reference); ?></td>
+                                <td><?php echo e($payment->invoice->reference); ?></td>
+                                <td><?php echo e(\Carbon\Carbon::parse($payment->date)->format('m/d/y')); ?></td>
+                                <td><?php echo e(__(format_currency($payment->amount))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -189,9 +196,9 @@
 <script>
 
     document.addEventListener('livewire:navigated', function () {
-            const months = @json($mothlyInvoices->pluck('month'));
-            const revenues = @json($mothlyInvoices->pluck('revenue'));
-            const unpaidAmounts = @json($mothlyInvoices->pluck('unpaid')); /* Revenue data for y-axis*/
+            const months = <?php echo json_encode($mothlyInvoices->pluck('month'), 15, 512) ?>;
+            const revenues = <?php echo json_encode($mothlyInvoices->pluck('revenue'), 15, 512) ?>;
+            const unpaidAmounts = <?php echo json_encode($mothlyInvoices->pluck('unpaid'), 15, 512) ?>; /* Revenue data for y-axis*/
 
             new ApexCharts(document.getElementById('monthly-invoices-chart'), {
                 chart: {
@@ -220,12 +227,12 @@
 
                 series: [
                     {
-                        name: "{{ __('Revenue') }}",
+                        name: "<?php echo e(__('Revenue')); ?>",
                         data: revenues,
                     },
 
                     {
-                        name: "{{ __('Unpaid Amount') }}",
+                        name: "<?php echo e(__('Unpaid Amount')); ?>",
                         data: unpaidAmounts,
                     }
                 ],
@@ -254,12 +261,12 @@
                     type: 'category', /*Use 'category' for month labels on the x-axis*/
                     categories: months, /*Month names as x-axis labels*/
                     // title: {
-                    //     text: "{{ __('Months') }}",
+                    //     text: "<?php echo e(__('Months')); ?>",
                     // },
                 },
                 yaxis: {
                     title: {
-                        text: '{{ __('Revenue') }}', // Add y-axis label "Revenue"
+                        text: '<?php echo e(__('Revenue')); ?>', // Add y-axis label "Revenue"
                     },
                     labels: {
                         padding: 25
@@ -273,3 +280,4 @@
     });
 </script>
 </div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/RevenueManager\resources/views/livewire/dashboards/invoicing.blade.php ENDPATH**/ ?>

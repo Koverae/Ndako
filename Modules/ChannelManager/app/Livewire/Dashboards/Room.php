@@ -12,7 +12,7 @@ use Modules\Properties\Models\Property\PropertyUnitType;
 class Room extends Component
 {
 
-    public $period = 7, $property;
+    public $period = 7  , $property;
     public $bestSellerRoom, $bestSellerType, $rooms, $roomTypes;
     public $properties, $bestSellerRooms;
 
@@ -50,6 +50,9 @@ class Room extends Component
         $this->bestSellerRoom = $this->rooms->first(); // Get the top room
 
         $this->roomTypes = PropertyUnitType::isCompany(current_company()->id)
+        ->when($this->property, function ($query) {
+            $query->where('property_id', $this->property); // Apply filter if $property is set
+        })
         ->with(['units.bookings' => function ($query) {
             $query->select('id', 'property_unit_id', DB::raw('DATEDIFF(check_out, check_in) as nights'), 'total_amount')
             ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
@@ -74,7 +77,12 @@ class Room extends Component
         // Fetch Best Selling Rooms within the period
         $this->bestSellerRooms = PropertyUnit::isCompany(current_company()->id)
             ->with(['bookings' => function($query) {
-                $query->select(
+                $query->with(['unit' => function ($subQuery) {
+                    $subQuery->when($this->property, function ($query) {
+                        $query->where('property_id', $this->property); // Apply filter if $property is set
+                    });
+                }])
+                ->select(
                     'property_unit_id',
                     DB::raw('SUM(total_amount) as revenue')
                 )

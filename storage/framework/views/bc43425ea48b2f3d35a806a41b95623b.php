@@ -4,25 +4,25 @@
         <div class="flex-wrap gap-5 k_control_panel_main d-flex justify-content-between align-items-lg-start flex-grow-1">
             <div class="flex-1 gap-3 d-none d-lg-flex">
                 <select wire:model.live="period" id="" class="w-auto k-input fs-3">
-                    <option value="0">{{ __('Select period') }}</option>
-                    <option value="1">{{ __('Today') }}</option>
-                    <option value="2">{{ __('Yesterday') }}</option>
-                    <option value="7">{{ __('Last 7 days') }}</option>
-                    <option value="30">{{ __('Last 30 days') }}</option>
-                    <option value="90">{{ __('Last 90 days') }}</option>
-                    <option value="180">{{ __('Last 180 days') }}</option>
-                    <option value="365">{{ __('Last 365 days') }}</option>
+                    <option value="0"><?php echo e(__('Select period')); ?></option>
+                    <option value="1"><?php echo e(__('Today')); ?></option>
+                    <option value="2"><?php echo e(__('Yesterday')); ?></option>
+                    <option value="7"><?php echo e(__('Last 7 days')); ?></option>
+                    <option value="30"><?php echo e(__('Last 30 days')); ?></option>
+                    <option value="90"><?php echo e(__('Last 90 days')); ?></option>
+                    <option value="180"><?php echo e(__('Last 180 days')); ?></option>
+                    <option value="365"><?php echo e(__('Last 365 days')); ?></option>
                 </select>
                 <select wire:model.live="property" id="" class="w-auto k-input fs-3">
-                    @foreach($properties as $index => $property)
-                    <option value="{{ $property->id }}">{{ $property->name }}</option>
-                    @endforeach
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $properties; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $property): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($property->id); ?>"><?php echo e($property->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </select>
                 <select wire:model.live="bookingSource" id="" class="w-auto k-input fs-3">
-                    <option value="">{{ __('Source') }}</option>
-                    <option value="direct_booking">{{ __('Direct Booking') }}</option>
-                    <option value="ota">{{ __('Online Travel Agency') }}</option>
-                    <option value="website">{{ __('Website') }}</option>
+                    <option value=""><?php echo e(__('Source')); ?></option>
+                    <option value="direct_booking"><?php echo e(__('Direct Booking')); ?></option>
+                    <option value="ota"><?php echo e(__('Online Travel Agency')); ?></option>
+                    <option value="website"><?php echo e(__('Website')); ?></option>
                 </select>
             </div>
 
@@ -31,7 +31,8 @@
 
                 <!-- Button view -->
                 <button title=" view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
-                    <i class="bi bi-share"></i> {{__('Share')}}
+                    <i class="bi bi-share"></i> <?php echo e(__('Share')); ?>
+
                 </button>
                 <!-- Button view -->
             </div>
@@ -49,16 +50,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Bookings') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Bookings')); ?></h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $bookings->count() }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($bookings->count()); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <span class="{{ $bookingRateChange >= 0 ? 'text-green' : 'text-red' }} d-inline-flex align-items-center lh-1">
-                            {{ $bookingRateChange }}%
+                        <span class="<?php echo e($bookingRateChange >= 0 ? 'text-green' : 'text-red'); ?> d-inline-flex align-items-center lh-1">
+                            <?php echo e($bookingRateChange); ?>%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -68,16 +69,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Revenue') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Revenue')); ?></h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ format_currency($revenue) }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e(format_currency($revenue)); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <span class="{{ $revenueChange >= 0 ? 'text-green' : 'text-red' }} d-inline-flex align-items-center lh-1">
-                        {{ $revenueChange }}%
+                        <span class="<?php echo e($revenueChange >= 0 ? 'text-green' : 'text-red'); ?> d-inline-flex align-items-center lh-1">
+                        <?php echo e($revenueChange); ?>%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -87,16 +88,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Average Bookings') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Average Bookings')); ?></h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ format_currency($avgRevenue) }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e(format_currency($avgRevenue)); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <span class="{{ $averageRevenueChange >= 0 ? 'text-green' : 'text-red' }} d-inline-flex align-items-center lh-1">
-                        {{ $averageRevenueChange }}%
+                        <span class="<?php echo e($averageRevenueChange >= 0 ? 'text-green' : 'text-red'); ?> d-inline-flex align-items-center lh-1">
+                        <?php echo e($averageRevenueChange); ?>%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -106,16 +107,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-2 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Cancelation Rates') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Cancelation Rates')); ?></h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $cancellationRate }}%</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($cancellationRate); ?>%</h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <span class="{{ $cancellationRate >= 0 ? 'text-green' : 'text-red' }} d-inline-flex align-items-center lh-1">
-                        {{ $cancellationRateChange }}% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                        <span class="<?php echo e($cancellationRate >= 0 ? 'text-green' : 'text-red'); ?> d-inline-flex align-items-center lh-1">
+                        <?php echo e($cancellationRateChange); ?>% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -130,7 +131,8 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Monthly Bookings') }}
+                            <?php echo e(__('Monthly Bookings')); ?>
+
                         </div>
                     </div>
                     <div id="total-booking-chart" wire:ignore></div>
@@ -142,31 +144,32 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Bookings') }}
+                            <?php echo e(__('Top Bookings')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Guest') }}</th>
-                                <th>{{ __('Room') }}</th>
-                                <th>{{ __('Agent') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Guest')); ?></th>
+                                <th><?php echo e(__('Room')); ?></th>
+                                <th><?php echo e(__('Agent')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($bookings as $key => $booking)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $bookings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $booking): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $booking->guest->name }}</td>
-                                <td>{{ __('Room') }} {{ $booking->unit->name }}</td>
-                                <td>{{ $booking->agent->name }}</td>
-                                <td>{{ __(format_currency($booking->total_amount)) }}</td>
+                                <td><?php echo e($booking->guest->name); ?></td>
+                                <td><?php echo e(__('Room')); ?> <?php echo e($booking->unit->name); ?></td>
+                                <td><?php echo e($booking->agent->name); ?></td>
+                                <td><?php echo e(__(format_currency($booking->total_amount))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
 
                             </tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -177,31 +180,32 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Canceled Bookings') }}
+                            <?php echo e(__('Top Canceled Bookings')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Guest') }}</th>
-                                <th>{{ __('Room') }}</th>
-                                <th>{{ __('Agent') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Guest')); ?></th>
+                                <th><?php echo e(__('Room')); ?></th>
+                                <th><?php echo e(__('Agent')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($canceledBookings as $key => $booking)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $canceledBookings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $booking): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $booking->guest->name }}</td>
-                                <td>{{ __('Room') }} {{ $booking->unit->name }}</td>
-                                <td>{{ $booking->agent->name }}</td>
-                                <td>{{ __(format_currency($booking->total_amount)) }}</td>
+                                <td><?php echo e($booking->guest->name); ?></td>
+                                <td><?php echo e(__('Room')); ?> <?php echo e($booking->unit->name); ?></td>
+                                <td><?php echo e($booking->agent->name); ?></td>
+                                <td><?php echo e(__(format_currency($booking->total_amount))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
 
                             </tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -212,27 +216,28 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Rooms') }}
+                            <?php echo e(__('Top Rooms')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Room') }}</th>
-                                <th>{{ __('Booking') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Room')); ?></th>
+                                <th><?php echo e(__('Booking')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($rooms as $key => $room)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $rooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $room): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>Room {{ $room->name }}</td>
-                                <td>{{ $room->bookings_count }}</td>
-                                <td>{{ __(format_currency($room->bookings_sum_total_amount)) }}</td>
+                                <td>Room <?php echo e($room->name); ?></td>
+                                <td><?php echo e($room->bookings_count); ?></td>
+                                <td><?php echo e(__(format_currency($room->bookings_sum_total_amount))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -243,27 +248,28 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Guests') }}
+                            <?php echo e(__('Top Guests')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Guest') }}</th>
-                                <th>{{ __('Bookings') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Guest')); ?></th>
+                                <th><?php echo e(__('Bookings')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($guestBooks as $key => $guest)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $guestBooks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $guest): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $guest->name }}</td>
-                                <td>{{ $guest->bookings_count }}</td>
-                                <td>{{ format_currency($guest->bookings_sum_total_amount) }}</td>
+                                <td><?php echo e($guest->name); ?></td>
+                                <td><?php echo e($guest->bookings_count); ?></td>
+                                <td><?php echo e(format_currency($guest->bookings_sum_total_amount)); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -274,62 +280,35 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Room Type') }}
+                            <?php echo e(__('Top Room Type')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Type') }}</th>
-                                <th>{{ __('Bookings') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Type')); ?></th>
+                                <th><?php echo e(__('Bookings')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($roomTypes as $key => $type)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $roomTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $type['name'] }}</td>
-                                <td>{{ $type['total_bookings'] }}</td>
-                                <td>{{ __(format_currency($type['total_revenue'])) }}</td>
+                                <td><?php echo e($type['name']); ?></td>
+                                <td><?php echo e($type['total_bookings']); ?></td>
+                                <td><?php echo e(__(format_currency($type['total_revenue']))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
                 <!-- Top Room Type End -->
 
                 <!-- Top Channels -->
-                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-5">
-                    <!-- separator -->
-                    <div class="g-col-sm-2">
-                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Channels') }}
-                        </div>
-                    </div>
-                    <table class="k-borderless-table">
-                        <thead>
-                            <tr>
-                                <th>{{ __('Channel') }}</th>
-                                <th>{{ __('Bookings') }}</th>
-                                <th>{{ __('Revenue') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Direct Booking</td>
-                                <td>234</td>
-                                <td>{{ __(format_currency(134700)) }}</td>
-                            </tr>
-                            <tr>
-                                <td>Website</td>
-                                <td>74</td>
-                                <td>{{ __(format_currency(34700)) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div> --}}
+                
                 <!-- Top Channels End -->
 
             </div>
@@ -340,7 +319,7 @@
     <script>
         
         document.addEventListener('livewire:navigated', function () {
-                const monthlyBookingsData = @json($monthlyBookings);
+                const monthlyBookingsData = <?php echo json_encode($monthlyBookings, 15, 512) ?>;
                 const labels = monthlyBookingsData.map(item => item.month); /*Month names for x-axis*/
                 // const data = monthlyBookingsData.map(item => item.revenue); /* Revenue data for y-axis*/
                 const bookings = monthlyBookingsData.map(item => item.revenue); /* Revenue data for y-axis*/
@@ -407,7 +386,7 @@
                     },
                     yaxis: {
                         title: {
-                            text: '{{ __('Revenue') }}', // Add y-axis label "Revenue"
+                            text: '<?php echo e(__('Revenue')); ?>', // Add y-axis label "Revenue"
                         },
                         labels: {
                             padding: 25
@@ -422,3 +401,4 @@
     </script>
 </div>
 
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/ChannelManager\resources/views/livewire/dashboards/reservation.blade.php ENDPATH**/ ?>

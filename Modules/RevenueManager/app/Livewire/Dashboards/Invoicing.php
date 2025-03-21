@@ -13,7 +13,7 @@ use Modules\ChannelManager\Models\Booking\BookingPayment;
 
 class Invoicing extends Component
 {
-    public $period = 7, $property;
+    public $period = 1, $property;
     public $invoicedAmount, $unpaidAmount, $averageInvoiceAmount, $numberOfInvoices, $dso, $invoices, $payments;
     public $properties, $units, $unitTypes, $mothlyInvoices;
 
@@ -30,11 +30,13 @@ class Invoicing extends Component
 
         $invoices = BookingInvoice::isCompany(current_company()->id)
         ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
-        ->when($this->property, function ($query) {
-            $query->with('booking', function ($query) {
-                $query->where('property_unit_id', $this->property);
-            });
-        })
+        ->with(['booking' => function ($query) {
+                $query->with(['unit' => function ($subQuery) {
+                    $subQuery->when($this->property, function ($property){
+                        $property->where('property_id');
+                    });
+                }]);
+        }])
         ->select(
             DB::raw('SUM(total_amount) as total_invoiced'),
             DB::raw('SUM(total_amount - paid_amount) as total_unpaid')
@@ -68,11 +70,13 @@ class Invoicing extends Component
 
         $this->invoices = BookingInvoice::isCompany(current_company()->id)
         ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
-        ->when($this->property, function ($query) {
-            $query->with('booking', function ($query) {
-                $query->where('property_unit_id', $this->property);
-            });
-        })
+        ->with(['booking' => function ($query) {
+                $query->with(['unit' => function ($subQuery) {
+                    $subQuery->when($this->property, function ($property){
+                        $property->where('property_id');
+                    });
+                }]);
+        }])
         ->orderByDesc('total_amount')
         ->get();
 
@@ -93,25 +97,29 @@ class Invoicing extends Component
     public function updatedPeriod(){
         $this->loadData();
     }
-    public function getMonthlyInvoices()
+    public function getMonthlyInvoices(): \Illuminate\Support\Collection
     {
-        // Fetch the monthly bookings data for the current year
-        $invoices = BookingInvoice::whereBetween('date', [
-                Carbon::now()->startOfYear(),
-                Carbon::now()->endOfYear(),
-            ])
-            ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(total_amount) as revenue, SUM(total_amount - paid_amount) as unpaid')
-            ->groupBy('month', 'year')
-            ->orderByRaw('YEAR(date) ASC, MONTH(date) ASC') // Sort by year and month in ascending order
+        $startOfYear = now()->startOfYear();
+        $endOfYear = now()->endOfYear();
+
+        $invoices = BookingInvoice::with(['booking' => function ($query) {
+                $query->with(['unit' => function ($subQuery) {
+                    $subQuery->when($this->property, function ($property){
+                        $property->where('property_id');
+                    });
+                }]);
+            }])
+            ->whereBetween('date', [$startOfYear, $endOfYear])
+            ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(total_amount) as total_revenue, SUM(total_amount - paid_amount) as total_unpaid')
+            ->groupBy('year', 'month')
+            ->orderByRaw('year ASC, month ASC')
             ->get();
 
-        return $invoices->map(function ($invoice) {
-            return [
-                'month' => Carbon::create($invoice->year, $invoice->month, 1)->format('F Y'),
-                'revenue' => $invoice->revenue,
-                'unpaid' => $invoice->unpaid,
-            ];
-        });
+        return $invoices->map(fn ($invoice) => [
+            'month'   => Carbon::create($invoice->year, $invoice->month, 1)->format('F Y'),
+            'revenue' => round((float) $invoice->total_revenue, 2),
+            'unpaid'  => round((float) $invoice->total_unpaid, 2),
+        ]);
     }
 
     public function updatedProperty($property){

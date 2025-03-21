@@ -109,6 +109,7 @@ return new class extends Migration
             $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
             $table->string('payment_method')->default('cash');
             $table->enum('status', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending');
+            $table->string('source')->default('direct-booking');
             $table->enum('invoice_status', ['not_invoiced', 'partial', 'invoiced'])->default('not_invoiced');
 
             // Extended Hours
@@ -170,7 +171,7 @@ return new class extends Migration
             $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);
             $table->date('date');
             $table->string('payment_method');
-            $table->enum('type', ['debit', 'credit'])->default('debit');
+            $table->enum('type', ['debit', 'credit'])->default('credit');
             $table->enum('status', ['posted', 'pending'])->default('posted');
             $table->text('note')->nullable();
 

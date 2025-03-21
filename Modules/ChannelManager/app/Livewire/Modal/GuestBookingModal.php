@@ -2,6 +2,7 @@
 
 namespace Modules\ChannelManager\Livewire\Modal;
 
+use Livewire\Attributes\On;
 use LivewireUI\Modal\ModalComponent;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Livewire\WithFileUploads;
@@ -55,7 +56,14 @@ class GuestBookingModal extends ModalComponent
     {
         $this->bookingService->checkOutBooking($this->booking);
         $this->closeModal();
+        $this->redirect(route('bookings.lists'), true);
 
+    }
+
+    public function cancelBooking(){
+        $this->bookingService->cancelBooking($this->booking);
+        $this->closeModal();
+        $this->redirect(route('bookings.lists'), true);
     }
 
     public function addPayment(){
@@ -70,7 +78,7 @@ class GuestBookingModal extends ModalComponent
             'amount' => $this->paymentAmount,
             'date' => now(),
             'note' => 'Payment Received for Invoice #'. $this->booking->invoice->reference,
-            'type' => 'debit',
+            'type' => 'credit',
         ]);
         $payment->save();
 
@@ -101,4 +109,5 @@ class GuestBookingModal extends ModalComponent
         // Send success message
         session()->flash('message', 'Your payment has been successfully processed!');
     }
+
 }

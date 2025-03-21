@@ -61,7 +61,11 @@ class Booking extends Model
     public function channel() {
         return $this->belongsTo(Channel::class);
     }
-    
+
+    public function payments() {
+        return $this->hasMany(BookingPayment::class);
+    }
+
     /**
      * Calculate the optimal pricing for a given booking duration.
      *
@@ -96,7 +100,7 @@ class Booking extends Model
                             ->join('lease_terms', 'property_unit_type_pricings.lease_term_id', '=', 'lease_terms.id')
                             ->where('lease_terms.name', 'nightly')
                             ->first();
-            
+
             if ($nightlyPrice) {
                 $totalPrice += $stayDuration * ($nightlyPrice->discounted_price ?? $nightlyPrice->price);
             }

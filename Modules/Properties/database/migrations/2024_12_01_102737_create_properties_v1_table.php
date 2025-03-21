@@ -222,6 +222,47 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        // Extra Services
+        Schema::create('extra_services', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('property_id')->nullable();
+            $table->unsignedBigInteger('property_unit_type_id')->nullable();
+            $table->unsignedBigInteger('property_unit_id')->nullable();
+            $table->string('name')->comment('e.g., "Room Cleaning", "Breakfast"');
+            $table->tinyText('description')->nullable();
+            $table->string('category')->nullable()->comment('e.g. "Food", "Laundry", "Housekeeping"');
+            $table->decimal('price', 12, 2);
+            $table->boolean('auto_approve')->default(false);
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        Schema::create('guest_services', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('booking_id')->nullable();
+            $table->unsignedBigInteger('guest_id')->nullable();
+            $table->string('reference')->nullable();
+            $table->decimal('total_amount', 12, 2);
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        Schema::create('guest_service_items', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('guest_service_id')->nullable();
+            $table->unsignedBigInteger('extra_service_id')->nullable();
+            $table->integer('quantity')->default(1);
+            $table->decimal('price', 10, 2);
+            $table->timestamps();
+        });
+
+
+
+
     }
 
     /**

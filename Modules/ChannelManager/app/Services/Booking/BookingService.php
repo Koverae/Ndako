@@ -254,6 +254,18 @@ class BookingService
 
         $newCheckIn = Carbon::parse($start)->format('Y-m-d');
         $newCheckOut = Carbon::parse($end)->format('Y-m-d');
+        
+        // ❌ Prevent updates for completed or canceled bookings
+        if (in_array($booking->status, ['completed', 'canceled'])) {
+            session()->flash('error', "Booking #{$booking->reference} cannot be modified because it is {$booking->status}.");
+            return;
+        }
+
+        // 🚫 Prevent modifying check-in date if the guest has already checked in
+        if ($booking->check_in_status == 'checked_in' && Carbon::parse($start)->format('Y-m-d') !== $booking->check_in) {
+            session()->flash('error', "You cannot change the check-in date after the guest has checked in.");
+            return;
+        }
 
         // 1️⃣ Prevent past dates
         if ($newCheckIn < now()->format('Y-m-d')) {
@@ -262,8 +274,8 @@ class BookingService
         }
 
         // 2️⃣ Ensure room is still available for the new dates
-        if ($this->isRoomOccupied($booking->unit_id, $newCheckIn, $newCheckOut, $booking->id)) {
-            session()->flash('error', 'The selected unit is unavailable for the new dates.');
+        if ($this->isRoomOccupied($booking->unit->id, $newCheckIn, $newCheckOut, $booking->id)) {
+            session()->flash('error', "The selected {$booking->unit->name} is unavailable for the new dates.");
             return;
         }
 
@@ -296,7 +308,7 @@ class BookingService
      */
     private function isRoomOccupied($unitId, $checkIn, $checkOut, $excludeBookingId = null)
     {
-        return Booking::where('unit_id', $unitId)
+        return Booking::where('property_unit_id', $unitId)
             ->where('id', '!=', $excludeBookingId) // Exclude current booking
             ->where(function ($query) use ($checkIn, $checkOut) {
                 $query->whereBetween('check_in', [$checkIn, $checkOut])
@@ -304,14 +316,101 @@ class BookingService
             })
             ->exists();
     }
+    
+    public function cancelBooking(Booking $booking)
+    {
+        // 1️⃣ Ensure the booking is not already completed or canceled
+        if (in_array($booking->status, ['canceled', 'completed'])) {
+            session()->flash('error', 'This booking cannot be canceled as it is already ' . $booking->status . '.');
+            return;
+        }
+        
+        // Prevent cancellation after check-in
+        if ($booking->check_in_status === 'checked_in') {
+            session()->flash('error', 'This booking cannot be canceled because the guest has already checked in. Consider an early check-out instead.');
+        }
+
+        // 2️⃣ Apply refund policy if applicable
+            // Calculate total paid amount
+            $totalPaid = $booking->invoice->payments()->where('type', 'credit')->sum('amount');
+        $refundAmount = settings()->has_refund_policy ? $this->applyRefundPolicy($booking) : 0;
+        
+        // Ensure refund does not exceed the total paid amount
+        $refundAmount = min($refundAmount, $totalPaid);
+
+        // 3️⃣ Cancel the booking & update refund amount
+        $booking->update([
+            'status' => 'canceled',
+            'refund_amount' => $refundAmount,
+        ]);
+
+        // 4️⃣ Release the room (if it wasn't already reassigned)
+        if (in_array($booking->unit->status, ['reserved', 'expected-arrival'])) {
+            $booking->unit->update(['status' => 'vacant']);
+        }
+
+        // 5️⃣ Record refund as a "debit" in the booking_payments table
+        if ($refundAmount > 0) {
+            $this->processRefund($booking);
+        }
+        
+        // Feedback messages
+        $message = $refundAmount > 0
+        ? "Booking #{$booking->reference} has been canceled. A refund of " . format_currency($refundAmount) . " will be processed."
+        : "Booking #{$booking->reference} has been canceled. No refund is applicable.";
+
+        session()->flash('success', $message);
+        
+    }
 
     /**
-     * Calculates new price based on stay duration.
+     * 🏨 Apply refund policy based on cancellation timing
      */
-    private function calculateNewPrice($unit, $checkIn, $checkOut)
+    private function applyRefundPolicy(Booking $booking)
     {
-        $days = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
-        return $unit->rate_per_night * $days;
+        $daysBeforeCheckIn = now()->diffInDays($booking->check_in);
+
+        // 1️⃣ Full refund if canceled within the full_refund_days window
+        if ($daysBeforeCheckIn >= settings()->full_refund_days) {
+            return $booking->total_amount;
+        }
+
+        // 2️⃣ Partial refund if canceled within the partial_refund_days window
+        if ($daysBeforeCheckIn < settings()->full_refund_days && $daysBeforeCheckIn >= settings()->partial_refund_days) {
+            return $booking->total_amount * (settings()->partial_refund_percentage / 100);
+        }
+
+        // 3️⃣ Last-minute cancellation (no refund)
+        return 0;
     }
+        
+    private function processRefund(Booking $booking)
+    {
+        // Call payment gateway or mobile money API to process refund
+        // PaymentGateway::refund($booking->payment_reference, $booking->refund_amount);
+        
+        $booking->invoice->payments()->create([
+            'amount'    => -$booking->refund_amount, // Negative value for a refund
+            'type'      => 'debit',
+            'method'    => $booking->payment_method, // Same method used for payment
+            'reference' => 'REFUND/' . $booking->reference,
+        ]);
+    }
+
+    public function cancelAndRebook(Booking $booking, $newCheckIn, $newCheckOut)
+    {
+        // 1️⃣ Apply refund policy
+        $refundAmount = $this->applyRefundPolicy($booking);
+        
+        // 2️⃣ Cancel the booking
+        $booking->update([
+            'status' => 'cancelled',
+            'refund_amount' => $refundAmount,
+        ]);
+    
+        // 3️⃣ Create a new booking (if guest still wants to book)
+        return redirect()->route('bookings.create', ['check_in' => $newCheckIn, 'check_out' => $newCheckOut]);
+    }
+
 
 }

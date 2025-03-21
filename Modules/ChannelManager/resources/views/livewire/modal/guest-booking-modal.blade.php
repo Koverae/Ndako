@@ -33,16 +33,30 @@
                             {{__('Send Invoice')}} <span wire:loading wire:target="" ></span>
                         </span>
                     </button>
+                    @php
+                        $hideClass = in_array($booking->status, ['canceled', 'completed']) ? 'd-none' : '';
+                    @endphp
+                    <button class=" rounded-0 {{ $hideClass }}" type="button" wire:click="cancelBooking" wire:target="cancelBooking"  id="top-button">
+                        <span>
+                            {{__('Cancel')}} <span wire:loading wire:target="cancelBooking"> ...</span>
+                        </span>
+                    </button>
                 </div>
 
                 <!-- Status Bar -->
                 <div id="status-bar" class="gap-1 k-statusbar-buttons-arrow d-md-flex align-items-center align-content-around ">
 
+                    <span class="btn-secondary-outline cursor-pointer k-arrow-button {{ $booking->status == 'pending' ? 'current' : '' }}">
+                        {{ __('Pending') }}
+                    </span>
                     <span class="btn-secondary-outline cursor-pointer k-arrow-button {{ $booking->status == 'confirmed' ? 'current' : '' }}">
                         {{ __('Confirmed') }}
                     </span>
-                    <span class="btn-secondary-outline cursor-pointer k-arrow-button {{ $booking->status == 'pending' ? 'current' : '' }}">
-                        {{ __('Pending') }}
+                    <span class="btn-secondary-outline cursor-pointer k-arrow-button {{ $booking->status == 'completed' ? 'current' : '' }}">
+                        {{ __('Completed') }}
+                    </span>
+                    <span class="btn-secondary-outline {{ $booking->status == 'canceled' ? '' : 'd-none' }} cursor-pointer k-arrow-button {{ $booking->status == 'canceled' ? 'current' : '' }}">
+                        {{ __('Canceled') }}
                     </span>
                 </div>
             </div>
@@ -54,11 +68,15 @@
                         <ul class="list-unstyled row">
                             <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Guest Name') }}:</strong> {{ $booking->guest->name }}</p>
                             <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Guest(s)') }}:</strong> {{ $booking->guests }} @if($booking->guests > 1){{ __('people') }}@else {{ __('person') }} @endif</p>
-                            @if($booking->due_amount >= 1)
+                            @if($booking->due_amount >= 1 && $booking->status != 'canceled')
                             <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Amount Paid') }}:</strong> {{ format_currency($booking->paid_amount) }}</p>
                             <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Due Amount') }}:</strong> {{ format_currency($booking->due_amount) }}</p>
                             @endif
+                            @if($booking->status == 'canceled')
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Refund Amount') }}:</strong> {{ format_currency($booking->refund_amount) }}</p>
+                            @endif
                             <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Total Amount') }}:</strong> {{ format_currency($booking->total_amount) }}</p>
+                            <p class="mb-2 col-12 col-lg-6"><strong>{{ __('Stay') }}:</strong> {{ \Carbon\Carbon::parse($booking->check_in)->format('d M Y') }} ~ {{ \Carbon\Carbon::parse($booking->check_out)->format('d M Y') }}</p>
                         </ul>
                     </div>
                     <div class="p-0 m-0 k_employee_avatar">
@@ -73,7 +91,7 @@
                 </div>
                 @if($booking->due_amount >= 1)
                 <hr>
-                <div class="mt-2">
+                <div class="mt-2 {{ $booking->status == 'canceled' ? 'd-none' : '' }}">
                     <h2 class="h2"><i class="fas fa-credit-card"></i> {{ __('Make a Payment') }}</h2>
                     <div class="mb-2">
                         <label for="paymentMethod" class="form-label">{{ __('Payment Method') }}</label>
@@ -103,7 +121,7 @@
 
                 <div class="mt-3 row {{ $booking->status == 'canceled' ? 'd-none' : '' }}">
                     <button wire:click="checkIn" class="gap-2 btn btn-primary rounded-0 col-6" {{ $booking->check_in_status == 'pending' ? '' : 'disabled' }}>
-                        <i class="fas fa-sign-in-alt"></i> Check In 
+                        <i class="fas fa-sign-in-alt"></i> Check In
                     </button>
                     <button wire:click="checkOut" wire:confirm="Do you want to proceed check-out?" class="gap-2 btn btn-warning rounded-0 col-6" {{ $booking->check_in_status == 'checked_in' && $booking->check_out_status == 'pending' ? '' : 'disabled' }}>
                         <i class="fas fa-sign-out"></i> Check Out

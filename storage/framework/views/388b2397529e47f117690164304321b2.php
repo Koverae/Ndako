@@ -4,19 +4,19 @@
         <div class="flex-wrap gap-5 k_control_panel_main d-flex justify-content-between align-items-lg-start flex-grow-1">
             <div class="flex-1 gap-3 d-none d-lg-flex">
                 <select wire:model.live="period" id="" class="w-auto k-input fs-3">
-                    <option value="0">{{ __('Select period') }}</option>
-                    <option value="1">{{ __('Today') }}</option>
-                    <option value="2">{{ __('Yesterday') }}</option>
-                    <option value="7">{{ __('Last 7 days') }}</option>
-                    <option value="30">{{ __('Last 30 days') }}</option>
-                    <option value="90">{{ __('Last 90 days') }}</option>
-                    <option value="180">{{ __('Last 180 days') }}</option>
-                    <option value="365">{{ __('Last 365 days') }}</option>
+                    <option value="0"><?php echo e(__('Select period')); ?></option>
+                    <option value="1"><?php echo e(__('Today')); ?></option>
+                    <option value="2"><?php echo e(__('Yesterday')); ?></option>
+                    <option value="7"><?php echo e(__('Last 7 days')); ?></option>
+                    <option value="30"><?php echo e(__('Last 30 days')); ?></option>
+                    <option value="90"><?php echo e(__('Last 90 days')); ?></option>
+                    <option value="180"><?php echo e(__('Last 180 days')); ?></option>
+                    <option value="365"><?php echo e(__('Last 365 days')); ?></option>
                 </select>
                 <select wire:model.live="property" id="" class="w-auto k-input fs-3">
-                    @foreach($properties as $index => $property)
-                    <option value="{{ $property->id }}">{{ $property->name }}</option>
-                    @endforeach
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $properties; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $property): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($property->id); ?>"><?php echo e($property->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </select>
             </div>
 
@@ -25,7 +25,8 @@
 
                 <!-- Button view -->
                 <button title=" view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
-                    <i class="bi bi-share"></i> {{__('Share')}}
+                    <i class="bi bi-share"></i> <?php echo e(__('Share')); ?>
+
                 </button>
                 <!-- Button view -->
             </div>
@@ -42,11 +43,11 @@
                 <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <h3 class="h3">{{ __('Best Seller') }}</h3>
+                            <h3 class="h3"><?php echo e(__('Best Seller')); ?></h3>
                         </div>
                         <div class="text-center">
-                            <h3 class="mb-0 h3" style="font-size: 40px;">{{ $bestSellerRoom['room_name'] }}</h3><br>
-                            <span class="text-muted">{{ $bestSellerRoom['total_nights'] }} {{ __('nights booked') }}</span>
+                            <h3 class="mb-0 h3" style="font-size: 40px;"><?php echo e($bestSellerRoom['room_name']); ?></h3><br>
+                            <span class="text-muted"><?php echo e($bestSellerRoom['total_nights']); ?> <?php echo e(__('nights booked')); ?></span>
                         </div>
                     </div>
                 </div>
@@ -56,11 +57,11 @@
                 <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <h3 class="h3">{{ __('Best Type') }}</h3>
+                            <h3 class="h3"><?php echo e(__('Best Type')); ?></h3>
                         </div>
                         <div class="text-center">
-                            <h3 class="mb-0 h3" style="font-size: 40px;">{{ $bestSellerType['type_name'] }}</h3><br>
-                            <span class="text-muted">{{ $bestSellerType['total_nights'] }} {{ __('nights booked') }}</span>
+                            <h3 class="mb-0 h3" style="font-size: 40px;"><?php echo e($bestSellerType['type_name']); ?></h3><br>
+                            <span class="text-muted"><?php echo e($bestSellerType['total_nights']); ?> <?php echo e(__('nights booked')); ?></span>
                         </div>
                     </div>
                 </div>
@@ -75,7 +76,8 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Best Seller By Revenue') }}
+                            <?php echo e(__('Best Seller By Revenue')); ?>
+
                         </div>
                     </div>
                     <div id="best-seller-rooms-chart" wire:ignore></div>
@@ -84,15 +86,7 @@
                 <!-- Best Seller By Revenue End -->
 
                 <!-- Best Seller By Number of Bookings -->
-                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-12">
-                    <!-- separator -->
-                    <div class="g-col-sm-2">
-                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Best Seller By Number of Bookings') }}
-                        </div>
-                    </div>
-
-                </div> --}}
+                
                 <!-- Best Seller By Number of Bookings End -->
 
                 <!-- Best Selling Rooms -->
@@ -100,27 +94,28 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Best Selling Rooms') }}
+                            <?php echo e(__('Best Selling Rooms')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Room') }}</th>
-                                <th>{{ __('Nights Sold') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Room')); ?></th>
+                                <th><?php echo e(__('Nights Sold')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($rooms as $key => $room)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $rooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $room): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>Room {{ $room['room_name'] }}</td>
-                                <td>{{ $room['total_nights'] }}</td>
-                                <td>{{ __(format_currency($room['total_revenue'])) }}</td>
+                                <td>Room <?php echo e($room['room_name']); ?></td>
+                                <td><?php echo e($room['total_nights']); ?></td>
+                                <td><?php echo e(__(format_currency($room['total_revenue']))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -131,27 +126,28 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Best Selling Room Types') }}
+                            <?php echo e(__('Best Selling Room Types')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Room Type') }}</th>
-                                <th>{{ __('Nights') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th><?php echo e(__('Room Type')); ?></th>
+                                <th><?php echo e(__('Nights')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($roomTypes as $key => $type)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $roomTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $type['type_name'] }}</td>
-                                <td>{{ $type['total_nights'] }}</td>
-                                <td>{{ __(format_currency($type['total_revenue'])) }}</td>
+                                <td><?php echo e($type['type_name']); ?></td>
+                                <td><?php echo e($type['total_nights']); ?></td>
+                                <td><?php echo e(__(format_currency($type['total_revenue']))); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -165,8 +161,8 @@
     </div>
     <script>
         document.addEventListener("livewire:navigated", function () {
-            const roomNames = @json($bestSellerRooms->pluck('room_name'));
-            const revenues = @json($bestSellerRooms->pluck('revenue'));
+            const roomNames = <?php echo json_encode($bestSellerRooms->pluck('room_name'), 15, 512) ?>;
+            const revenues = <?php echo json_encode($bestSellerRooms->pluck('revenue'), 15, 512) ?>;
                 new ApexCharts(document.getElementById("best-seller-rooms-chart"), {
                     chart: {
                         type: "bar",
@@ -192,7 +188,7 @@
                         }
                     },
                     title: {
-                        text: "Best Seller Rooms (Last {{ $period }} Days)",
+                        text: "Best Seller Rooms (Last <?php echo e($period); ?> Days)",
                         align: 'center',
                     },
                     colors: ['#017E84'],
@@ -204,3 +200,4 @@
         });
     </script>
 </div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/ChannelManager\resources/views/livewire/dashboards/room.blade.php ENDPATH**/ ?>
