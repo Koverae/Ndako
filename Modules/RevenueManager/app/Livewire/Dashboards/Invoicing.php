@@ -9,6 +9,7 @@ use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
 use Illuminate\Support\Facades\DB;
+use Modules\App\Services\ReportExportService;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
 
 class Invoicing extends Component
@@ -19,21 +20,25 @@ class Invoicing extends Component
 
     public function mount(){
         $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->units = PropertyUnit::isCompany(current_company()->id)->get();
-        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->get();
-
-        $this->property = $this->properties->first()->id ?? null;
+        $this->property = current_property()->id;
         $this->loadData();
     }
 
-    public function loadData(){
+    public function loadData($property = null){
+        if($property){
+            $this->property = $property;
+        }
+
+        $this->property = $property;
+        $this->units = PropertyUnit::isCompany(current_company()->id)->isProperty($this->property)->get();
+        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->isProperty($this->property)->get();
 
         $invoices = BookingInvoice::isCompany(current_company()->id)
         ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
         ->with(['booking' => function ($query) {
                 $query->with(['unit' => function ($subQuery) {
                     $subQuery->when($this->property, function ($property){
-                        $property->where('property_id');
+                        $property->where('property_id', $this->property);
                     });
                 }]);
         }])
@@ -48,6 +53,13 @@ class Invoicing extends Component
 
         $invoiceStats = BookingInvoice::isCompany(current_company()->id)
         ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->with(['booking' => function ($query) {
+                $query->with(['unit' => function ($subQuery) {
+                    $subQuery->when($this->property, function ($property){
+                        $property->where('property_id', $this->property);
+                    });
+                }]);
+        }])
         ->select(
             DB::raw('AVG(total_amount) as average_invoice_amount'),
             DB::raw('COUNT(id) as number_of_invoices')
@@ -71,11 +83,9 @@ class Invoicing extends Component
         $this->invoices = BookingInvoice::isCompany(current_company()->id)
         ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
         ->with(['booking' => function ($query) {
-                $query->with(['unit' => function ($subQuery) {
-                    $subQuery->when($this->property, function ($property){
-                        $property->where('property_id');
-                    });
-                }]);
+                $query->whereHas('unit', function ($query) {
+                    $query->when($this->property, fn($q, $id) => $q->isProperty($id));
+                });
         }])
         ->orderByDesc('total_amount')
         ->get();
@@ -105,7 +115,7 @@ class Invoicing extends Component
         $invoices = BookingInvoice::with(['booking' => function ($query) {
                 $query->with(['unit' => function ($subQuery) {
                     $subQuery->when($this->property, function ($property){
-                        $property->where('property_id');
+                        $property->where('property_id', $this->property);
                     });
                 }]);
             }])
@@ -123,12 +133,68 @@ class Invoicing extends Component
     }
 
     public function updatedProperty($property){
-        $this->property = $property;
-        $this->mount();
+        $this->loadData($this->property);
     }
 
     public function render()
     {
         return view('revenuemanager::livewire.dashboards.invoicing');
+    }
+
+
+    public function export(ReportExportService $exportService)
+    {
+
+        // ✅ Summary Data (Example: Dashboard Stats)
+        $summaryData = [
+            'Invoiced' => ['value' => format_currency($this->invoicedAmount), 'change' => format_currency($this->unpaidAmount)],
+            'Average Invoice' => ['value' => format_currency($this->averageInvoiceAmount), 'change' => $this->numberOfInvoices],
+            'Days Sales Outstanding (DSO)' => ['value' => $this->dso, 'change' => "0%"],
+        ];
+
+        $topInvoices = $this->invoices->map(function ($invoice) {
+            return [
+                'reference' => $invoice->reference,
+                'guest' => $invoice->guest->name,
+                'agent' => $invoice->agent->name,
+                'status' => $this->getPaymentStatus($invoice->status),
+                'date' => Carbon::parse($invoice->date)->format('m/d/y'),
+                'revenue' => format_currency($invoice->total_amount)
+            ];
+        })
+        ->sortByDesc('revenue');
+
+        $topPayments = $this->payments->map(function ($payment) {
+            return [
+                'reference' => $payment->reference,
+                'invoice' => $payment->invoice->reference,
+                'date' => Carbon::parse($payment->date)->format('m/d/y'),
+                // 'status' => $this->getPaymentStatus($payment->status),
+                'amount' => format_currency($payment->amount)
+            ];
+        })
+        ->sortByDesc('amount');
+
+        // Assign to detailed sections
+        $detailedSections = [
+            'Top Invoices' => $topInvoices,
+            'Top Payments' => $topPayments,
+        ];
+
+        // ✅ Export Report
+        return $exportService->export('Invoicing Report', $summaryData, $detailedSections, 'xlsx');
+    }
+
+    public function getPaymentStatus($status)
+    {
+        if ($status == 'partial') {
+            return 'Partially Paid';
+        } elseif ($status == 'pending') {
+            return 'Not Paid';
+        } elseif ($status == 'paid') {
+            return 'Paid';
+        }
+
+        return 'Unknown';
     }
 }
