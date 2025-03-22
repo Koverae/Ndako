@@ -8,6 +8,7 @@ use Livewire\Component;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Illuminate\Support\Facades\DB;
+use Modules\App\Services\ReportExportService;
 use Modules\Properties\Models\Property\PropertyUnitType;
 
 class Room extends Component
@@ -79,7 +80,7 @@ class Room extends Component
         $this->bestSellerType = $this->roomTypes ->first(); // Get the top room type
 
         // Fetch Best Selling Rooms within the period
-        $this->bestSellerRooms = PropertyUnit::isCompany(current_company()->id)
+        $this->bestSellerRooms = PropertyUnit::isCompany(current_company()->id)->isProperty($this->property)
             ->with(['bookings' => function($query) {
                 $query->with(['unit' => function ($subQuery) {
                     $subQuery->when($this->property, function ($query) {
@@ -116,5 +117,26 @@ class Room extends Component
     public function render()
     {
         return view('channelmanager::livewire.dashboards.room');
+    }
+
+
+    public function export(ReportExportService $exportService)
+    {
+
+        // ✅ Summary Data (Example: Dashboard Stats)
+        $summaryData = [
+            'Best Seller' => ['value' => $this->bestSellerRoom['room_name'], 'change' => "{$this->bestSellerRoom['total_nights']}"],
+            'Best Type' => ['value' => $this->bestSellerType['type_name'], 'change' => "{$this->bestSellerType['total_nights']}"],
+        ];
+
+
+        // Assign to detailed sections
+        $detailedSections = [
+            'Best Selling Rooms' => $this->rooms,
+            'Best Selling Room Types' => $this->roomTypes,
+        ];
+
+        // ✅ Export Report
+        return $exportService->export('Rooms Report', $summaryData, $detailedSections, 'xlsx');
     }
 }

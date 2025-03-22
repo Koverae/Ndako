@@ -320,59 +320,7 @@ class Reservation extends Component
         ];
 
         // ✅ Export Report
-        return $exportService->export('Bookings Report', $summaryData, $detailedSections, $this->format);
-    }
-
-    public function exportData()
-    {
-        // Fetch invoices from the database
-        $invoices = BookingInvoice::with(['guest', 'agent'])
-            ->whereBetween('date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
-            ->get();
-
-            // Initialize PhpSpreadsheet object
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-
-            // Add headers
-            $headers = ['Reference', 'Guest', 'Status', 'Agent', 'Date', 'Revenue'];
-            $sheet->fromArray($headers, NULL, 'A1');
-
-            // Style headers
-            $sheet->getStyle('A1:F1')->getFont()->setBold(true);
-            $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('A1:F1')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
-
-            // Add rows
-            $row = 2; // Start from the second row
-            foreach ($invoices as $invoice) {
-                $sheet->setCellValue('A' . $row, $invoice->reference);
-                $sheet->setCellValue('B' . $row, $invoice->guest->name);
-                $sheet->setCellValue('C' . $row, $this->getPaymentStatus($invoice->payment_status));
-                $sheet->setCellValue('D' . $row, $invoice->agent->name);
-                $sheet->setCellValue('E' . $row, Carbon::parse($invoice->date)->format('m/d/y'));
-                $sheet->setCellValue('F' . $row, format_currency($invoice->total_amount));
-                $row++;
-            }
-
-            // Set column widths for better display
-            foreach (range('A', 'F') as $columnID) {
-                $sheet->getColumnDimension($columnID)->setAutoSize(true);
-            }
-
-            // Output to Excel format
-            $writer = new Xlsx($spreadsheet);
-
-            // Stream the file for download
-            $headers = [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="invoices.xlsx"',
-            ];
-
-            return response()->stream(function() use ($writer) {
-                $writer->save('php://output');
-            }, 200, $headers);
-
+        return $exportService->export('Bookings Report', $summaryData, $detailedSections, 'xlsx');
     }
 
     public function getPaymentStatus($status)
