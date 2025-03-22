@@ -23,6 +23,10 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->rememberToken();
+
+            // Property
+            $table->unsignedBigInteger('current_property_id')->nullable();
+
             // Preferences
             $table->unsignedBigInteger('language_id')->nullable();
             $table->string('timezone')->default('eat');

@@ -48,6 +48,23 @@
                     <!-- Input Label -->
                     <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
                         <label class="k_form_label">
+                        {{ __('Room') }} :
+                        </label>
+                    </div>
+                    <!-- Input Form -->
+                    <div class="k_cell k_wrap_input flex-grow-1">
+                        <select wire:model="room" id="" class="k-input">
+                            <option value=""></option>
+                            @foreach($rooms as $key => $room)
+                                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex col-12" style="margin-bottom: 8px;">
+                    <!-- Input Label -->
+                    <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
+                        <label class="k_form_label">
                         {{ __('Priority') }} :
                         </label>
                     </div>

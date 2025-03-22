@@ -38,6 +38,7 @@
 
             <div class="gap-2 mb-3 row">
 
+                
                 <!-- Occupancy Rate -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
                     <div class="card-body">
@@ -118,6 +119,26 @@
                 </div>
                 <!-- Room Nights Sold End -->
 
+                <!-- Occupied Rooms -->
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3">{{ __('Occupied Rooms') }}</h3>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="h3" style="font-size: 40px;">{{ $occupiedRooms }}</h3>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span class="text-green d-inline-flex align-items-center lh-1">
+                        33% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                        </span>
+                        <span class="text-end">{{ __('Since last period') }}</span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Occupied Rooms End -->
+
                 <!-- Available Room -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
@@ -136,7 +157,7 @@
             <div class="gap-7 row">
 
                 <!-- Monthly Occupancy Rates -->
-                <div class="p-0 k-dash-category col-md-12 col-lg-12">
+                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-12">
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
@@ -145,7 +166,7 @@
                     </div>
                     <!-- separator -->
 
-                </div>
+                </div> --}}
                 <!-- Monthly Occupancy Rates End -->
 
                 <!-- Revenue by Room Type -->
@@ -235,8 +256,6 @@
         </div>
 
     </div>
-
-    @script
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const chartOptions = {
@@ -244,9 +263,13 @@
                     type: 'pie',
                     height: 350
                 },
-                labels: @json($roomTypeChartData['labels']),
-                series: @json($roomTypeChartData['series']),
-                colors: ['#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0'], // Adjust colors as needed
+                labels: @json($roomTypeChartData['labels'] ?? []), // Prevent errors if empty
+                series: @json($roomTypeChartData['series'] ?? []), // Prevent errors if empty
+                colors: [
+                    '#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0',
+                    '#00E396', '#008FFB', '#D7263D', '#F86624', '#A633FF',
+                    '#66DA26', '#E91E63', '#2B908F', '#F9A3A4', '#D9A404'
+                ], // Adjust colors as needed
                 responsive: [{
                     breakpoint: 480,
                     options: {
@@ -260,9 +283,11 @@
                 }]
             };
 
-            const bestRoomTypeChart = new ApexCharts(document.querySelector('#bestRoomTypeChart'), chartOptions);
-            bestRoomTypeChart.render();
+            if (chartOptions.series.length > 0) {
+                const bestRoomTypeChart = new ApexCharts(document.querySelector('#bestRoomTypeChart'), chartOptions);
+                bestRoomTypeChart.render();
+            }
         });
     </script>
-    @endscript
+
 </div>

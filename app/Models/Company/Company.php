@@ -18,6 +18,7 @@ use Modules\Properties\Models\Property\Feature;
 use Modules\Settings\Models\Language\Language;
 use Modules\Settings\Models\Localization\Country;
 use Illuminate\Support\Str;
+use Modules\Properties\Models\Property\Property;
 use Spatie\Permission\Models\Role;
 
 class Company extends Model
@@ -30,7 +31,7 @@ class Company extends Model
      * @var array<int, string>
      */
     protected $guarded = [];
-    
+
     public static function boot() {
         parent::boot();
 
@@ -107,7 +108,7 @@ class Company extends Model
     {
         return $this->hasOne(Setting::class, 'company_id', 'id');
     }
-    
+
     /**
      * Get user for the company.
      */
@@ -115,7 +116,7 @@ class Company extends Model
     {
         return $this->hasMany(User::class, 'company_id', 'id');
     }
-    
+
     /**
      * Get user for the company.
      */
@@ -123,7 +124,7 @@ class Company extends Model
     {
         return $this->hasMany(Role::class, 'company_id', 'id');
     }
-    
+
     /**
      * Get languages for the company.
      */
@@ -131,7 +132,7 @@ class Company extends Model
     {
         return $this->hasMany(Language::class, 'company_id', 'id');
     }
-    
+
     /**
      * Get countries for the company.
      */
@@ -139,7 +140,7 @@ class Company extends Model
     {
         return $this->hasMany(Country::class, 'company_id', 'id');
     }
-    
+
     /**
      * Get amenities for the company.
      */
@@ -147,7 +148,15 @@ class Company extends Model
     {
         return $this->hasMany(Amenity::class, 'company_id', 'id');
     }
-    
+
+    /**
+     * Get properties for the company.
+     */
+    public function properties()
+    {
+        return $this->hasMany(Property::class, 'company_id', 'id');
+    }
+
     /**
      * Get features for the company.
      */

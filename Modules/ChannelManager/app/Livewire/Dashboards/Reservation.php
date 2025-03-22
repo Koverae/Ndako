@@ -4,6 +4,7 @@ namespace Modules\ChannelManager\Livewire\Dashboards;
 
 use Carbon\Carbon;
 use Livewire\Component;
+use Modules\App\Services\ReportExportService;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Guest\Guest;
@@ -24,18 +25,16 @@ class Reservation extends Component
     public $cancellationRateChange = 0, $bookingRateChange = 0, $revenueChange = 0, $averageRevenueChange = 0;
     public $rooms, $guestBooks, $roomTypes, $monthlyBookings;
     public $properties, $units, $unitTypes = [], $guests = [];
+    // Report
+    public $reportType = 'bookings', $format = 'xlsx';
+    public $startDate, $endDate;
 
     public function mount($updating = false){
-        
-        $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = $this->properties->first()->id ?? null;
-        $this->units = PropertyUnit::isCompany(current_company()->id)->get();
-        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->get();
-        $this->guests = Guest::isCompany(current_company()->id)->get();
+
+        $this->loadData();
 
         $this->monthlyBookings = $this->getMonthlyBookings();
 
-        $this->loadData();
 
     }
     public function getMonthlyBookings()
@@ -66,6 +65,12 @@ class Reservation extends Component
     }
 
     public function loadData(){
+
+        $this->properties = Property::isCompany(current_company()->id)->get();
+        $this->property = $this->properties->first()->id ?? null;
+        $this->units = PropertyUnit::isCompany(current_company()->id)->get();
+        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->get();
+        $this->guests = Guest::isCompany(current_company()->id)->get();
 
         $currentStart = Carbon::now()->subDays($this->period);
         $previousStart = Carbon::now()->subDays($this->period * 2);
@@ -211,20 +216,91 @@ class Reservation extends Component
 
             return [
                 'name' => $type->name,
-                'total_revenue' => $totalRevenue,
                 'total_bookings' => $totalBookings,
+                'total_revenue' => $totalRevenue,
             ];
         })
         ->sortByDesc('total_revenue'); // Sort by revenue descending
     }
 
     public function updatedPeriod($property){
-        $this->mount(true);
+        $this->loadData();
     }
 
     public function render()
     {
         return view('channelmanager::livewire.dashboards.reservation');
+    }
+
+
+    public function export(ReportExportService $exportService)
+    {
+        $query = Booking::query()->with(['guest', 'unit']);
+
+        // Filter by date range if provided
+        if ($this->startDate && $this->endDate) {
+            $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
+        }
+
+        // ✅ Summary Data (Example: Dashboard Stats)
+        $summaryData = [
+            'Bookings' => ['value' => $this->bookings->count(), 'change' => "{$this->bookingRateChange}%"],
+            'Revenue' => ['value' => format_currency($this->revenue), 'change' => "{$this->revenueChange}%"],
+            'Average Bookings' => ['value' => format_currency($this->avgRevenue), 'change' => "{$this->averageRevenueChange}%"],
+            'Cancelation Rate' => ['value' => "{$this->cancellationRate}%", 'change' => $this->cancellationRate],
+        ];
+
+        // Get Top Bookings (Latest confirmed/completed bookings)
+        $topBookings = Booking::isCompany(current_company()->id)
+        ->orderByDesc('total_amount')->whereIn('status', ['confirmed', 'completed'])
+            ->with('unit', function ($query){
+                $query->when($this->property, function ($subQuery) {
+                    $subQuery->where('property_id', $this->property);
+                });
+            })
+            ->get()
+            ->map(fn($b) => [
+                'id' => $b->id,
+                'room' => $b->unit->name ?? 'N/A',
+                'guest' => $b->guest->name ?? 'Unknown',
+                'agent' => $b->agent->name ?? 'N/A',
+                'revenue' => $b->total_amount ?? 0,
+            ]);
+
+        // Get Top Rooms (Most booked)
+        $topRooms = PropertyUnit::isCompany(current_company()->id)
+                ->when($this->property, function ($query) {
+                    $query->where('property_id', $this->property);
+                })
+                ->with(['bookings' => function ($subQuery) {
+                    $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                }])
+                ->withCount(['bookings' => function ($subQuery) {
+                    $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                }])
+                ->withSum(['bookings' => function ($subQuery) {
+                    $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                }], 'total_amount')
+                ->get()
+                ->map(function ($unit) {
+                    return [
+                        'name' => $unit->name,
+                        'room_type' => $unit->unitType->name,
+                        'total_bookings' => $unit->bookings_count ?? 0,
+                        'total_revenue' => $unit->bookings_sum_total_amount ?? 0,
+                    ];
+                })
+                ->sortByDesc('total_revenue');
+
+        // Assign to detailed sections
+        $detailedSections = [
+            'Top Bookings' => $topBookings,
+            'Top Rooms' => $topRooms,
+            'Top Room Types' => $this->roomTypes,
+        ];
+
+        // ✅ Export Report
+        return $exportService->export('Bookings Report', $summaryData, $detailedSections, $this->format);
     }
 
     public function exportData()

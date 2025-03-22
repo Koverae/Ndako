@@ -26,7 +26,7 @@ class GuestBookingModal extends ModalComponent
     public function rules()
     {
         return [
-            'paymentAmount' => ['required', 'numeric', 'max:' . $this->dueAmount],
+            'paymentAmount' => ['required', 'numeric', 'min:1', 'max:' . $this->dueAmount],
         ];
     }
 
@@ -49,7 +49,7 @@ class GuestBookingModal extends ModalComponent
         $this->closeModal();
         // Redirect to the booking calendar
         return $this->redirect(route('bookings.lists', true));
-        
+
     }
 
     public function checkOut()
@@ -68,6 +68,13 @@ class GuestBookingModal extends ModalComponent
 
     public function addPayment(){
         $this->validate();
+        $dueAmountAfterPayment = $this->booking->due_amount - $this->paymentAmount;
+
+        if ($dueAmountAfterPayment < 0) {
+            session()->flash('message', "Invalid payment! You’re trying to overpay. The maximum payable amount is " . format_currency($this->booking->due_amount) . ".");
+            // session()->flash('error', "Invalid payment! You’re trying to overpay. The maximum payable amount is " . format_currency($this->booking->due_amount) . ".");
+            return redirect()->back();
+        }
 
         $journal = Journal::isCompany(current_company()->id)->isType($this->paymentMethod)->first();
         $payment = BookingPayment::create([

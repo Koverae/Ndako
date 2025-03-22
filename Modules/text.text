@@ -713,3 +713,15 @@ class AddBookingWizard extends SimpleWizard
     }
 
 }
+
+
+
+
+                ->where(function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('check_in', [$startDate, $endDate])
+                        ->orWhereBetween('check_out', [$startDate, $endDate])
+                        ->orWhere(function ($query) use ($startDate, $endDate) {
+                            $query->where('check_in', '<', $startDate)
+                                    ->where('check_out', '>', $endDate);
+                        });
+                })

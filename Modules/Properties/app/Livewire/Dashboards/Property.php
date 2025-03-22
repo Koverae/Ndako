@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 class Property extends Component
 {
     public $period = 1, $property;
-    public $occupancyRate, $occupiedNights = 0, $totalNightsAvailable = 0, $revPar = 0, $adr;
+    public $occupancyRate, $occupiedNights = 0, $occupiedRooms = 0, $totalNightsAvailable = 0, $revPar = 0, $adr;
     public $bestSellingRooms, $bestSellingRoomTypes;
     public $properties, $propertyTypes, $monthlyOccupancyRates, $revenueByType;
 
@@ -30,6 +30,7 @@ class Property extends Component
         $this->property = $this->properties->first()->id ?? null;
 
         $this->loadData();
+        $this->fetchRevenueByType();
     }
 
     public function loadData(){
@@ -39,7 +40,7 @@ class Property extends Component
         // Define the date range (e.g., last 7 days)
         $startDate = Carbon::now()->subDays($this->period ?? 7)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
-        
+
         $currentStart = Carbon::now()->subDays($this->period);
         $previousStart = Carbon::now()->subDays($this->period * 2);
         $now = Carbon::now();
@@ -49,14 +50,17 @@ class Property extends Component
             ->when($propertyId, function ($query) use ($propertyId) {
                 $query->where('property_id', $propertyId);
             })
-            ->count();
-        
+            ->get();
+
         $currentRooms = PropertyUnit::isCompany(current_company()->id)
             ->when($this->property, function ($query) {
                 $query->where('property_id', $this->property); // Apply filter if $property is set
             })
             ->with(['bookings' => function ($query) {
-                $query->select('id', 'property_unit_id', 'total_amount', DB::raw('DATEDIFF(check_out, check_in) as nights'))
+                $query->whereIn('status', ['confirmed', 'completed'])
+                ->select('id', 'property_unit_id', 'total_amount',
+                    DB::raw('DATEDIFF(check_out, check_in) as nights')
+                )
                 ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
                 ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()]);
             }])
@@ -64,7 +68,7 @@ class Property extends Component
             ->map(function ($room) {
                 $totalRevenue = $room->bookings->sum('total_amount');
                 $totalNights = $room->bookings->sum('nights');
-    
+
                 return [
                     'room_name' => $room->name,
                     'total_revenue' => $totalRevenue,
@@ -75,45 +79,39 @@ class Property extends Component
             ->values(); // Re-index the collection
 
         // Total nights available for the given period
-        $this->totalNightsAvailable = round($totalRooms * $startDate->diffInDays($endDate));
+        $this->totalNightsAvailable = $totalRooms->whereIn('status', ['vacant'])->count() * max($this->period, 1);
+        // $this->totalNightsAvailable = round($totalRooms * $startDate->diffInDays($endDate));
 
         // Calculate total occupied nights
         $this->occupiedNights = $currentRooms->sum('total_nights');
-        // $this->occupiedNights = Booking::isCompany(current_company()->id)
-        //     ->with(['unit' => function ($query) {
-        //         $query->when($this->property, function ($property){
-        //             $property->where('property_id');
-        //         });
-        //     }])
-        //     ->where(function ($query) use ($startDate, $endDate) {
-        //         $query->whereBetween('check_in', [$startDate, $endDate])
-        //             ->orWhereBetween('check_out', [$startDate, $endDate])
-        //             ->orWhere(function ($subQuery) use ($startDate, $endDate) {
-        //                 $subQuery->where('check_in', '<=', $startDate)
-        //                          ->where('check_out', '>=', $endDate);
-        //             });
-        //     })
-        //     ->get()
-        //     ->sum(function ($booking) use ($startDate, $endDate) {
-        //         $checkIn = Carbon::parse($booking->check_in);
-        //         $checkOut = Carbon::parse($booking->check_out);
 
-        //         // Ensure we only count nights within the period
-        //         $effectiveStart = max($checkIn, $startDate);
-        //         $effectiveEnd = min($checkOut, $endDate);
-
-        //         return $effectiveEnd->greaterThan($effectiveStart)
-        //             ? round($effectiveStart->diffInDays($effectiveEnd))
-        //             : 0; // Prevent negative days
-        //     });
+        $this->occupiedRooms = Booking::isCompany(current_company()->id)
+        ->whereIn('status', ['confirmed', 'completed'])
+        ->whereHas('unit', function ($query) {
+            $query->whereIn('status', ['occupied', 'expected-arrival', 'reserved']);
+        })
+        ->when($this->property, function ($query) {
+            $query->whereHas('unit', fn($q) => $q->where('property_id', $this->property));
+        })
+        ->where(function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('check_in', [$startDate, $endDate])
+                  ->orWhereBetween('check_out', [$startDate, $endDate])
+                  ->orWhere(function ($subQuery) use ($startDate, $endDate) {
+                      $subQuery->where('check_in', '<=', $startDate)
+                               ->where('check_out', '>=', $endDate);
+                  });
+        })
+        ->selectRaw('SUM(DATEDIFF(LEAST(check_out, ?), GREATEST(check_in, ?))) as occupied_nights', [$endDate, $startDate])
+        ->value('occupied_nights') ?? 0;
 
         // Calculate occupancy rate
         $this->occupancyRate = ($this->totalNightsAvailable > 0)
-            ? round(($this->occupiedNights / $this->totalNightsAvailable) * 100, 2)
+            ? round(($this->occupiedRooms / $this->totalNightsAvailable) * 100, 2)
             : 0;
 
         // Fetch total revenue for the period
         $totalRevenue = Booking::isCompany(current_company()->id)
+            ->whereIn('status', ['confirmed', 'completed'])
             ->whereBetween('check_in', [$startDate, $endDate])
             ->sum('total_amount');
 
@@ -191,7 +189,7 @@ class Property extends Component
                     DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN DATEDIFF(check_out, check_in) ELSE 0 END) as nights_sold"),
                     DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
                 )
-                
+
                 // Apply date range filter (period)
                 ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
                 ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()])
@@ -223,35 +221,76 @@ class Property extends Component
         })
         ->sortByDesc('revenue'); // Sort by revenue descending
 
-        $this->revenueByType = PropertyUnitType::isCompany(current_company()->id)
-        ->with(['units.bookings' => function ($query) {
-            $query->select(
-                    'id',
-                    'property_unit_id',
-                    DB::raw('DATEDIFF(check_out, check_in) as nights_sold'),
-                    DB::raw('SUM(total_amount) as revenue')
-                )
-                ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-                ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()])
-                ->groupBy('id');
-        }])
-        ->get()
-        ->map(function ($roomType) {
-            $totalRevenue = $roomType->units->flatMap(function ($unit) {
-                return $unit->bookings;
-            })->sum('revenue');
+        // $this->revenueByType = PropertyUnitType::isCompany(current_company()->id)
+        // ->with(['units.bookings' => function ($query) {
+        //     $query->select(
+        //             'id',
+        //             'property_unit_id',
+        //             DB::raw("SUM(CASE WHEN status IN ('canceled') THEN DATEDIFF(check_out, check_in) ELSE 0 END) as nights_canceled"),
+        //             DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN DATEDIFF(check_out, check_in) ELSE 0 END) as nights_sold"),
+        //             DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
 
-            return [
-                'label' => $roomType->name, // Room type name
-                'value' => $totalRevenue,   // Revenue
-            ];
-        })
-        ->filter(fn($roomType) => $roomType['value'] > 0) // Exclude room types with no revenue
-        ->values(); // Reset array keys
+        //         )
+        //         ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
+        //         ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()])
+        //         ->groupBy('id');
+        // }])
+        // ->get()
+        // ->map(function ($roomType) {
+        //     $totalRevenue = $roomType->units->flatMap(function ($unit) {
+        //         return $unit->bookings;
+        //     })->sum('revenue');
+
+        //     return [
+        //         'label' => $roomType->name, // Room type name
+        //         'value' => $totalRevenue,   // Revenue
+        //     ];
+        // })
+        // ->filter(fn($roomType) => $roomType['value'] > 0) // Exclude room types with no revenue
+        // ->values(); // Reset array keys
     }
 
     public function updatedPeriod(){
         $this->loadData();
+    }
+
+    public function fetchRevenueByType()
+    {
+        $startDate = Carbon::now()->subDays($this->period);
+        $endDate = Carbon::now();
+
+        $this->revenueByType = PropertyUnitType::isCompany(current_company()->id)
+            ->when($this->property, function ($query) {
+                $query->where('property_id', $this->property); // Apply filter if $property is set
+            })
+            ->with(['units.bookings' => function ($query) use ($startDate, $endDate) {
+                $query->select(
+                'property_unit_id', // Keep only necessary columns in SELECT
+                DB::raw("SUM(CASE WHEN status IN ('canceled') THEN DATEDIFF(LEAST(check_out, '$endDate'), GREATEST(check_in, '$startDate')) ELSE 0 END) as nights_canceled"),
+                DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN DATEDIFF(LEAST(check_out, '$endDate'), GREATEST(check_in, '$startDate')) ELSE 0 END) as nights_sold"),
+                DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
+            )
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('check_in', [$startDate, $endDate])
+                    ->orWhereBetween('check_out', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('check_in', '<', $startDate)
+                                ->where('check_out', '>', $endDate);
+                    });
+            })
+            ->groupBy('property_unit_id'); // Ensure only aggregated columns are used
+            }])
+            ->get()
+            ->map(function ($roomType) {
+                $totalRevenue = $roomType->units->flatMap(fn($unit) => $unit->bookings)->sum('revenue');
+
+                return [
+                    'label' => $roomType->name, // Room type name
+                    'value' => $totalRevenue,   // Revenue
+                ];
+            })
+            ->filter(fn($roomType) => $roomType['value'] > 0) // Exclude room types with no revenue
+            ->values(); // Reset array keys
     }
 
     public function render()

@@ -30,8 +30,8 @@
             <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
 
                 <!-- Button view -->
-                <button title=" view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
-                    <i class="bi bi-share"></i> {{__('Share')}}
+                <button wire:click="export" title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
+                    <i class="fas fa-file-export"></i> {{__('Export')}}
                 </button>
                 <!-- Button view -->
             </div>
@@ -106,7 +106,7 @@
                 <div class="p-2 rounded col-sm-12 col-lg-2 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Cancelation Rates') }}</h3>
+                        <h3 class="h3">{{ __('Cancelation Rate') }}</h3>
                     </div>
                     <div class="text-center">
                         <h3 class="h3" style="font-size: 40px;">{{ $cancellationRate }}%</h3>
@@ -338,7 +338,7 @@
 
     </div>
     <script>
-        
+
         document.addEventListener('livewire:navigated', function () {
                 const monthlyBookingsData = @json($monthlyBookings);
                 const labels = monthlyBookingsData.map(item => item.month); /*Month names for x-axis*/

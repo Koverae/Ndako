@@ -152,18 +152,20 @@ class BookingService
         ]);
         return $charge;
     }
-    
+
     public function checkOutBooking(Booking $booking)
     {
         // ✅ Ensure that the booking has not already been checked out
         if ($booking->status === 'completed') {
             session()->flash('warning', 'This booking has already been checked out.');
+            return redirect()->back();
         }
 
         // ✅ Ensure payment is complete before check-out
-        if ($booking->total_amount > $booking->amount_paid) {
+        if ($booking->total_amount !== $booking->amount_paid) {
             $outstandingBalance = $booking->total_amount - $booking->amount_paid;
             session()->flash('error', "Check-out denied! Outstanding balance of " . format_currency($outstandingBalance) . " must be cleared first.");
+            return redirect()->back();
         }
 
         // ✅ Allow check-out on or before the check-out date
@@ -205,7 +207,7 @@ class BookingService
     {
         $scheduledCheckOut = Carbon::parse($booking->check_out);
         $actualCheckOut = now();
-        
+
         if ($actualCheckOut->gt($scheduledCheckOut)) {
             $extraHours = $actualCheckOut->diffInHours($scheduledCheckOut);
             $extraCharge = $this->calculateLateCheckOutCharge($extraHours);
@@ -226,7 +228,7 @@ class BookingService
         $ratePerHour = 10;
         return $ratePerHour * $extraHours;
     }
-    
+
 
     public function handlePostCheckOutActions(Booking $booking)
     {
@@ -254,7 +256,7 @@ class BookingService
 
         $newCheckIn = Carbon::parse($start)->format('Y-m-d');
         $newCheckOut = Carbon::parse($end)->format('Y-m-d');
-        
+
         // ❌ Prevent updates for completed or canceled bookings
         if (in_array($booking->status, ['completed', 'canceled'])) {
             session()->flash('error', "Booking #{$booking->reference} cannot be modified because it is {$booking->status}.");
@@ -316,7 +318,7 @@ class BookingService
             })
             ->exists();
     }
-    
+
     public function cancelBooking(Booking $booking)
     {
         // 1️⃣ Ensure the booking is not already completed or canceled
@@ -324,7 +326,7 @@ class BookingService
             session()->flash('error', 'This booking cannot be canceled as it is already ' . $booking->status . '.');
             return;
         }
-        
+
         // Prevent cancellation after check-in
         if ($booking->check_in_status === 'checked_in') {
             session()->flash('error', 'This booking cannot be canceled because the guest has already checked in. Consider an early check-out instead.');
@@ -334,7 +336,7 @@ class BookingService
             // Calculate total paid amount
             $totalPaid = $booking->invoice->payments()->where('type', 'credit')->sum('amount');
         $refundAmount = settings()->has_refund_policy ? $this->applyRefundPolicy($booking) : 0;
-        
+
         // Ensure refund does not exceed the total paid amount
         $refundAmount = min($refundAmount, $totalPaid);
 
@@ -353,14 +355,14 @@ class BookingService
         if ($refundAmount > 0) {
             $this->processRefund($booking);
         }
-        
+
         // Feedback messages
         $message = $refundAmount > 0
         ? "Booking #{$booking->reference} has been canceled. A refund of " . format_currency($refundAmount) . " will be processed."
         : "Booking #{$booking->reference} has been canceled. No refund is applicable.";
 
         session()->flash('success', $message);
-        
+
     }
 
     /**
@@ -383,12 +385,12 @@ class BookingService
         // 3️⃣ Last-minute cancellation (no refund)
         return 0;
     }
-        
+
     private function processRefund(Booking $booking)
     {
         // Call payment gateway or mobile money API to process refund
         // PaymentGateway::refund($booking->payment_reference, $booking->refund_amount);
-        
+
         $booking->invoice->payments()->create([
             'amount'    => -$booking->refund_amount, // Negative value for a refund
             'type'      => 'debit',
@@ -401,13 +403,13 @@ class BookingService
     {
         // 1️⃣ Apply refund policy
         $refundAmount = $this->applyRefundPolicy($booking);
-        
+
         // 2️⃣ Cancel the booking
         $booking->update([
             'status' => 'cancelled',
             'refund_amount' => $refundAmount,
         ]);
-    
+
         // 3️⃣ Create a new booking (if guest still wants to book)
         return redirect()->route('bookings.create', ['check_in' => $newCheckIn, 'check_out' => $newCheckOut]);
     }

@@ -4,6 +4,7 @@ namespace Modules\Settings\Livewire\Modal;
 
 use LivewireUI\Modal\ModalComponent;
 use Livewire\WithFileUploads;
+use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Settings\Models\WorkItem;
 
 class AddWorkItemModal extends ModalComponent
@@ -11,6 +12,7 @@ class AddWorkItemModal extends ModalComponent
     use WithFileUploads;
     public WorkItem $task;
     public $title, $room, $description, $type, $priority, $assignedTo, $reportedBy;
+    public $rooms;
 
     public function mount($task = null){
         if($task){
@@ -23,6 +25,7 @@ class AddWorkItemModal extends ModalComponent
             $this->assignedTo = $task->assigned_to;
             $this->reportedBy = $task->created_by;
         }
+        $this->rooms = PropertyUnit::isCompany(current_company()->id)->get();
     }
 
     public function render()
@@ -34,6 +37,7 @@ class AddWorkItemModal extends ModalComponent
 
         $work = WorkItem::create([
             'company_id' => current_company()->id,
+            'room_id' => $this->room,
             'title' => $this->title,
             'description' => $this->description,
             'type' => $this->type,

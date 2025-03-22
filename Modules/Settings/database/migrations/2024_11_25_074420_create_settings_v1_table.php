@@ -211,6 +211,7 @@ return new class extends Migration
             $table->unsignedBigInteger('room_id')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->string('category')->nullable();
             $table->enum('type', ['task', 'situation']); // 'task' or 'situation'
             $table->enum('priority', ['low', 'medium', 'high', 'critical']);
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled', 'reported', 'resolved', 'unresolved'])

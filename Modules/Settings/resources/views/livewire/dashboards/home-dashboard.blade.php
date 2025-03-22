@@ -12,17 +12,19 @@
             </div>
             @endif
 
+
             <div class="gap-2 mb-3 row" wire:poll.10s>
 
-                @role('maintenance-taff')
-                <!-- Tasks Today -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
+                @role('maintenance-staff')
+
+                <!-- Total Open Tickets -->
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Tasks Today') }}</h3>
+                        <h3 class="h3">{{ __('Total Open Tickets') }}</h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $tasksThisDay }}</h3>
+                        <h3 class="h3" style="font-size: 40px;">{{ $ticketsThisDay }}</h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
@@ -32,16 +34,16 @@
                     </div>
                     </div>
                 </div>
-                <!-- Tasks Today End -->
+                <!-- Total Open Tickets End -->
 
-                <!-- Tasks Assigned -->
+                <!-- Tickets Assigned -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Tasks Assigned') }}</h3>
+                        <h3 class="h3">{{ __('Tickets Assigned') }}</h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $tasksAssigned }}</h3>
+                        <h3 class="h3" style="font-size: 40px;">{{ $ticketsAssigned }}</h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
@@ -51,16 +53,16 @@
                     </div>
                     </div>
                 </div>
-                <!-- Tasks Assigned End -->
+                <!-- Tickets Assigned End -->
 
-                <!-- Tasks Completed -->
+                <!-- Ongoing Tickets -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Tasks Completed') }}</h3>
+                        <h3 class="h3">{{ __('Ongoing Tickets') }}</h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $tasksCompleted }}</h3>
+                        <h3 class="h3" style="font-size: 40px;">{{ $ongoingTickets }}</h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
@@ -70,16 +72,16 @@
                     </div>
                     </div>
                 </div>
-                <!-- Tasks Completed End -->
+                <!-- Ongoing Tickets End -->
 
-                <!-- Avg Completion Time -->
+                <!-- Closed Tickets -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Avg Completion Time') }}</h3>
+                        <h3 class="h3">{{ __('Closed Tickets') }}</h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $avgCompletionTime  }}</h3>
+                        <h3 class="h3" style="font-size: 40px;">{{ $ticketsClosed }}</h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
@@ -89,31 +91,85 @@
                     </div>
                     </div>
                 </div>
-                <!-- Avg Completion Time End -->
+                <!-- Closed Tickets End -->
                 @endrole
 
                 @role('front-desk')
-                <!-- Guest Today -->
-                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
+                <!-- Occupancy Rate -->
+                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Guests Today') }}</h3>
+                        <h3 class="h3">{{ __('Occupancy Rate') }}</h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $guestsCurrentlyStaying }}</h3>
+                        <h3 class="h3" style="font-size: 40px;">{{ $occupancyRate }}%</h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
-                        0%
+                        7% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
                         </span>
                         <span class="text-end">{{ __('Since last period') }}</span>
                     </div>
                     </div>
                 </div>
-                <!-- Guest Today End -->
+                <!-- Occupancy Rate End -->
+
+                <!-- Room Nights Sold -->
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3">{{ __('Room Nights Sold') }}</h3>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="h3" style="font-size: 40px;">{{ $occupiedNights }}</h3>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span class="text-green d-inline-flex align-items-center lh-1">
+                        33% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                        </span>
+                        <span class="text-end">{{ __('Since last period') }}</span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Room Nights Sold End -->
+
+                <!-- Occupied Rooms -->
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3">{{ __('Occupied Rooms') }}</h3>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="h3" style="font-size: 40px;">{{ $occupiedRooms }}</h3>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span class="text-green d-inline-flex align-items-center lh-1">
+                        33% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
+                        </span>
+                        <span class="text-end">{{ __('Since last period') }}</span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Occupied Rooms End -->
+
+                <!-- Available Room -->
+                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3">{{ __('Room Nights Available') }}</h3>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="h3" style="font-size: 40px;">{{ $totalNightsAvailable }}</h3>
+                    </div>
+                    </div>
+                </div>
+                <!-- Available Room End -->
 
                 <!-- Check-ins Today -->
-                <div class="p-2 rounded col-sm-12 col-lg-6 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <h3 class="h3">{{ __('Check-ins Today') }}</h3>
@@ -132,7 +188,7 @@
                 <!-- Check-ins Today End -->
 
                 <!-- Check-ins Today -->
-                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <h3 class="h3" title="Check-ins Today">{{ __('Check-outs Today') }}</h3>
@@ -150,8 +206,27 @@
                 </div>
                 <!-- Check-ins Today End -->
 
+                <!-- Guest Today -->
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card pink">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3">{{ __('Guests Today') }}</h3>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="h3" style="font-size: 40px;">{{ $guestsCurrentlyStaying }}</h3>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span class="text-green d-inline-flex align-items-center lh-1">
+                        0%
+                        </span>
+                        <span class="text-end">{{ __('Since last period') }}</span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Guest Today End -->
+
                 <!-- Available Rooms -->
-                <div class="p-2 rounded col-sm-12 col-lg-6 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <h3 class="h3" title="Available Rooms">{{ __('Available Rooms') }}</h3>
@@ -174,12 +249,12 @@
             </div>
 
             <!-- Maintenance Requests -->
-            @role('maintenance-taff')
+            @role('maintenance-staff')
             <div class="p-0 col-lg-12">
                 <div class="shadow-sm card">
                     <div class="card-header justify-content-between">
                         <div class="gap-3 d-flex">
-                            <h3 class="h2">{{ __('Active Maintenance Requests') }} ({{ $tasks->count() }})</h3>
+                            <h3 class="h2">{{ __('Active Requests') }} ({{ $currentTickets->whereIn('status', ['pending', 'in_progress'])->count() }})</h3>
                         </div>
                         <span onclick="Livewire.dispatch('openModal', {component: 'settings::modal.add-work-item-modal'})" class="gap-2 text-end btn btn-primary">{{ __('Add') }} <i class="fas fa-plus-circle"></i></span>
                     </div>
@@ -196,9 +271,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($tasks as $request)
+                                @forelse ($currentTickets->whereIn('status', ['pending', 'in_progress']) as $request)
                                     <tr>
-                                        <td>{{ $request->description }}</td>
+                                        <td>{{ $request->title }}</td>
                                         <td>{{ ucfirst($request->priority) }}</td>
                                         <td>{{ $request->category }}</td>
                                         <td>
@@ -209,6 +284,15 @@
                                             <span onclick="Livewire.dispatch('openModal', {component: 'settings::modal.add-work-item-modal', arguments: {task: {{ $request->id }} }})">
                                                 <i class="fas fa-info-circle fs-2" style="color: #095c5e;"></i>
                                             </span>
+                                            @if($request->status == 'in_progress')
+                                            <span title="{{__('Close the ticket')}}" wire:click="closeTicket('{{ $request->id }}')" wire:confirm="Are you sure you want to close this ticket?">
+                                                <i class="fas fa-times-circle fs-2" style="color: #FF0033;"></i>
+                                            </span>
+                                            @elseif($request->status == 'pending')
+                                            <span title="{{__('Open the ticket')}}" wire:click="openTicket('{{ $request->id }}')" wire:confirm="Are you sure you want to open this ticket?">
+                                                <i class="fas fa-envelope-open fs-2" style="color: #095c5e;"></i>
+                                            </span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -230,7 +314,7 @@
                 <div class="border shadow-sm card">
                     <div class="card-header justify-content-between">
                         <div class="gap-3 d-flex">
-                            <h3 class="h2">Current Guests ({{ $bookings->count() }})</h3>
+                            <h3 class="h2">Guests ({{ $bookings->count() }})</h3>
                         </div>
                         <a  wire:navigate href="{{ route('bookings.create') }}" class="gap-2 text-end btn btn-primary">{{ __('Add') }} <i class="fas fa-plus-circle"></i></a>
                     </div>
