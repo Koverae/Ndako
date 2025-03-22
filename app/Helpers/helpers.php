@@ -4,6 +4,7 @@ use App\Models\Company\Company;
 use App\Models\Module\InstalledModule;
 use App\Models\Module\Module;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\Plan;
@@ -507,4 +508,14 @@ function inverseSlug(string $slug): string
     return Str::of($slug)
         ->replace(['-', '_'], ' ') // Replace hyphens and underscores with spaces
         ->title(); // Capitalize each word
+}
+
+if(!function_exists('current_property')){
+    function current_property(){
+        $property = cache()->remember('current_property', 24*60, function () {
+            return Auth::user()->current_property_id ? Property::find(Auth::user()->current_property_id) : Property::isCompany(current_company()->id)->get()->first();
+        });
+        
+        return $property;
+    }
 }

@@ -43,6 +43,10 @@ class Property extends Model
         return $this->hasMany(PropertyUnit::class);
     }
 
+    public function unitTypes() {
+        return $this->hasMany(PropertyUnitType::class);
+    }
+
     public function floors() {
         return $this->hasMany(PropertyFloor::class);
     }

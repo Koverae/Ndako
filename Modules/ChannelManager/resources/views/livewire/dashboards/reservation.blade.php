@@ -18,6 +18,11 @@
                     <option value="{{ $property->id }}">{{ $property->name }}</option>
                     @endforeach
                 </select>
+                <select wire:model.live="type" id="" class="w-auto k-input fs-3">
+                    @foreach($unitTypes as $index => $type)
+                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                    @endforeach
+                </select>
                 <select wire:model.live="bookingSource" id="" class="w-auto k-input fs-3">
                     <option value="">{{ __('Source') }}</option>
                     <option value="direct_booking">{{ __('Direct Booking') }}</option>

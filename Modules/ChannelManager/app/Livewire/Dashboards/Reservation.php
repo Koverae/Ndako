@@ -31,19 +31,26 @@ class Reservation extends Component
 
     public function mount($updating = false){
 
+        $this->properties = Property::isCompany(current_company()->id)->get();
+        $this->property = current_property()->id;
+
         $this->loadData();
 
         $this->monthlyBookings = $this->getMonthlyBookings();
-
-
     }
+
     public function getMonthlyBookings()
     {
         // Fetch monthly revenue data (confirmed + canceled) for the current year
-        $bookings = Booking::with(['unit' => function ($subQuery) {
-                $subQuery->when($this->property, function ($query) {
-                    $query->where('property_id', $this->property); // Apply filter if $property is set
-                });
+        $bookings = Booking::isCompany(current_company()->id)
+
+            ->whereHas('unit', function ($query) {
+                $query->when($this->property, fn($q, $id) => $q->isProperty($id));
+            })
+            ->with(['unit' => function ($query) {
+                $query->with(['unitType' => fn($subQuery) =>
+                    $subQuery->when($this->type, fn($q, $type) => $q->isType($type))
+                ]);
             }])
             ->whereYear('check_in', Carbon::now()->year)
             ->selectRaw('
@@ -64,12 +71,13 @@ class Reservation extends Component
         ]);
     }
 
-    public function loadData(){
+    public function loadData($property = null){
+        if($property){
+            $this->property = $property;
+        }
 
-        $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = $this->properties->first()->id ?? null;
-        $this->units = PropertyUnit::isCompany(current_company()->id)->get();
-        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->get();
+        $this->units = PropertyUnit::isCompany(current_company()->id)->isProperty($this->property)->get();
+        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->isProperty($this->property)->get();
         $this->guests = Guest::isCompany(current_company()->id)->get();
 
         $currentStart = Carbon::now()->subDays($this->period);
@@ -78,6 +86,14 @@ class Reservation extends Component
 
         // Fetch both current and previous period bookings
         $currentBookings = Booking::isCompany(current_company()->id)
+            ->whereHas('unit', function ($query) {
+                $query->when($this->property, fn($q, $id) => $q->isProperty($id));
+            })
+            ->with(['unit' => function ($query) {
+                $query->with(['unitType' => fn($subQuery) =>
+                    $subQuery->when($this->type, fn($q, $type) => $q->isType($type))
+                ]);
+            }])
             // ->where('status', 'confirmed') // Assuming 'status' column exists
 
             ->orderByDesc('total_amount')
@@ -225,6 +241,10 @@ class Reservation extends Component
 
     public function updatedPeriod($property){
         $this->loadData();
+    }
+
+    public function updatedProperty($property){
+        $this->loadData($this->property);
     }
 
     public function render()

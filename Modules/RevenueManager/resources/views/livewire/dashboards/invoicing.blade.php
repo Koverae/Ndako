@@ -28,9 +28,10 @@
 
             <!-- Display panel buttons -->
             <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
+
                 <!-- Button view -->
-                <button title=" view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
-                    <i class="bi bi-share"></i> {{__('Share')}}
+                <button wire:click="export" title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
+                    <i class="fas fa-file-export"></i> {{__('Export')}}
                 </button>
                 <!-- Button view -->
             </div>

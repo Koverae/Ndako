@@ -3,6 +3,7 @@
 namespace Modules\ChannelManager\Livewire\Dashboards;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
@@ -18,11 +19,14 @@ class Room extends Component
 
     public function mount(){
         $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = $this->properties->first()->id ?? null;
+        $this->property = current_property()->id;
         $this->loadData();
     }
 
-    public function loadData(){
+    public function loadData($property = null){
+        if($property){
+            $this->property = $property;
+        }
 
         $this->rooms = PropertyUnit::isCompany(current_company()->id)
         ->when($this->property, function ($query) {
@@ -102,11 +106,11 @@ class Room extends Component
     }
 
     public function updatedPeriod(){
-        $this->mount();
+        $this->loadData($this->property);
     }
 
     public function updatedProperty($property){
-        $this->property = $property;
+        $this->loadData($this->property);
     }
 
     public function render()
