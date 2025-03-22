@@ -5,6 +5,7 @@ namespace Modules\Properties\Livewire\Dashboards;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Modules\App\Services\ReportExportService;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\Properties\Models\Property\Property as PropertyProperty;
 use Modules\Properties\Models\Property\PropertyType;
@@ -27,15 +28,18 @@ class Property extends Component
         $this->properties = PropertyProperty::isCompany(current_company()->id)->get();
         $this->propertyTypes = PropertyType::isCompany(current_company()->id)->get();
 
-        $this->property = $this->properties->first()->id ?? null;
-
+        $this->property = current_property()->id;
         $this->loadData();
+
         $this->fetchRevenueByType();
     }
 
-    public function loadData(){
+    public function loadData($property = null){
+        if($property){
+            $this->property = $property;
+        }
 
-        $propertyId = $this->property ?? null; // Property filter (nullable)
+        $propertyId = $this->property; // Property filter (nullable)
 
         // Define the date range (e.g., last 7 days)
         $startDate = Carbon::now()->subDays($this->period ?? 7)->startOfDay();
@@ -220,38 +224,15 @@ class Property extends Component
             ];
         })
         ->sortByDesc('revenue'); // Sort by revenue descending
-
-        // $this->revenueByType = PropertyUnitType::isCompany(current_company()->id)
-        // ->with(['units.bookings' => function ($query) {
-        //     $query->select(
-        //             'id',
-        //             'property_unit_id',
-        //             DB::raw("SUM(CASE WHEN status IN ('canceled') THEN DATEDIFF(check_out, check_in) ELSE 0 END) as nights_canceled"),
-        //             DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN DATEDIFF(check_out, check_in) ELSE 0 END) as nights_sold"),
-        //             DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
-
-        //         )
-        //         ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-        //         ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()])
-        //         ->groupBy('id');
-        // }])
-        // ->get()
-        // ->map(function ($roomType) {
-        //     $totalRevenue = $roomType->units->flatMap(function ($unit) {
-        //         return $unit->bookings;
-        //     })->sum('revenue');
-
-        //     return [
-        //         'label' => $roomType->name, // Room type name
-        //         'value' => $totalRevenue,   // Revenue
-        //     ];
-        // })
-        // ->filter(fn($roomType) => $roomType['value'] > 0) // Exclude room types with no revenue
-        // ->values(); // Reset array keys
     }
 
     public function updatedPeriod(){
         $this->loadData();
+    }
+
+    public function updatedProperty(){
+        $this->loadData($this->property);
+        $this->fetchRevenueByType();
     }
 
     public function fetchRevenueByType()
@@ -303,57 +284,29 @@ class Property extends Component
         ]);
     }
 
-    public function exportData()
+
+    public function export(ReportExportService $exportService)
     {
-        // Fetch invoices from the database
-        // $invoices = BookingInvoice::with(['guest', 'agent'])
-        //     ->whereBetween('date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
-        //     ->get();
+        $property = PropertyProperty::find($this->property);
 
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+        // ✅ Summary Data (Example: Dashboard Stats)
+        $summaryData = [
+            'Occupancy Rate' => ['value' => "{$this->occupancyRate}%", 'change' => 0],
+            'Average Daily Rate (ADR)' => ['value' => format_currency($this->adr), 'change' => 0],
+            'Revenue Per Available Room (RevPAR)' => ['value' => format_currency($this->revPar), 'change' => "0%"],
+            'Room Nights Sold' => ['value' => $this->occupiedNights, 'change' => "0%"],
+            'Occupied Rooms' => ['value' => $this->occupiedRooms, 'change' => "0%"],
+            'Room Nights Available' => ['value' => $this->totalNightsAvailable, 'change' => "0%"],
+        ];
 
-            // Set data headers
-            $sheet->setCellValue('A1', 'Occupancy Rate');
-            $sheet->setCellValue('B1', 'ADR');
-            $sheet->setCellValue('C1', 'RevPAR');
-            $sheet->setCellValue('D1', 'Room Nights Sold');
-            $sheet->setCellValue('E1', 'Room Nights Available');
 
-            // Set the data
-            $sheet->setCellValue('A2', $this->occupancyRate . '%');
-            $sheet->setCellValue('B2', format_currency($this->adr));
-            $sheet->setCellValue('C2', format_currency($this->revPar));
-            $sheet->setCellValue('D2', $this->occupiedNights);
-            $sheet->setCellValue('E2', $this->totalNightsAvailable);
+        // Assign to detailed sections
+        $detailedSections = [
+            'Best Selling Rooms' => $this->bestSellingRooms,
+            'Best Selling Room Types' => $this->bestSellingRoomTypes,
+        ];
 
-            // Apply some styling (optional)
-            $sheet->getStyle('A1:E1')->getFont()->setBold(true);
-            $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('A1:E1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-            // Set column widths
-            $sheet->getColumnDimension('A')->setWidth(20);
-            $sheet->getColumnDimension('B')->setWidth(20);
-            $sheet->getColumnDimension('C')->setWidth(20);
-            $sheet->getColumnDimension('D')->setWidth(20);
-            $sheet->getColumnDimension('E')->setWidth(20);
-
-            // Create a writer and output the file
-            $writer = new Xlsx($spreadsheet);
-            $fileName = 'dashboard.xlsx';
-
-            // Output to browser
-            return response()->stream(
-                function () use ($writer) {
-                    $writer->save('php://output');
-                },
-                200,
-                [
-                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    'Content-Disposition' => 'attachment; filename="dashboard.xlsx"',
-                ]
-            );
-
+        // ✅ Export Report
+        return $exportService->export("{$property->name} Report", $summaryData, $detailedSections, 'xlsx');
     }
 }

@@ -4,25 +4,21 @@
         <div class="flex-wrap gap-5 k_control_panel_main d-flex justify-content-between align-items-lg-start flex-grow-1">
             <div class="flex-1 gap-3 d-flex">
                 <select wire:model.live="period" id="" class="w-auto k-input fs-3">
-                    <option value="1">{{ __('Select period') }}</option>
-                    <option value="1">{{ __('Today') }}</option>
-                    <option value="2">{{ __('Yesterday') }}</option>
-                    <option value="7">{{ __('Last 7 days') }}</option>
-                    <option value="30">{{ __('Last 30 days') }}</option>
-                    <option value="90">{{ __('Last 90 days') }}</option>
-                    <option value="180">{{ __('Last 180 days') }}</option>
-                    <option value="365">{{ __('Last 365 days') }}</option>
+                    <option value="1"><?php echo e(__('Select period')); ?></option>
+                    <option value="1"><?php echo e(__('Today')); ?></option>
+                    <option value="2"><?php echo e(__('Yesterday')); ?></option>
+                    <option value="7"><?php echo e(__('Last 7 days')); ?></option>
+                    <option value="30"><?php echo e(__('Last 30 days')); ?></option>
+                    <option value="90"><?php echo e(__('Last 90 days')); ?></option>
+                    <option value="180"><?php echo e(__('Last 180 days')); ?></option>
+                    <option value="365"><?php echo e(__('Last 365 days')); ?></option>
                 </select>
-                {{-- <select wire:model.live="property" id="" class="w-auto k-input fs-3">
-                    @foreach($properties as $index => $property)
-                    <option value="{{ $property->id }}">{{ $property->name }}</option>
-                    @endforeach
-                </select> --}}
+                
                 <select wire:model.live="agent" id="" class="w-auto k-input fs-3">
-                    <option value="">{{ __('Agent') }}</option>
-                    @foreach(current_company()->users() as $index => $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
+                    <option value=""><?php echo e(__('Agent')); ?></option>
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = current_company()->users(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($user->id); ?>"><?php echo e($user->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </select>
             </div>
 
@@ -32,7 +28,8 @@
 
                 <!-- Button view -->
                 <button title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
-                    <i class="fas fa-file-export"></i> {{__('Export')}}
+                    <i class="fas fa-file-export"></i> <?php echo e(__('Export')); ?>
+
                 </button>
                 <!-- Button view -->
             </div>
@@ -49,16 +46,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Total Open Tickets') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Total Open Tickets')); ?></h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $ticketsThisDay }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($ticketsThisDay); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
                         0%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -68,16 +65,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Tickets Assigned') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Tickets Assigned')); ?></h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $ticketsAssigned }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($ticketsAssigned); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
                         0%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -87,16 +84,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Ongoing Tickets') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Ongoing Tickets')); ?></h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $ongoingTickets }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($ongoingTickets); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
                         0%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -106,16 +103,16 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Closed Tickets') }}</h3>
+                        <h3 class="h3"><?php echo e(__('Closed Tickets')); ?></h3>
                     </div>
                     <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $ticketsClosed }}</h3>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($ticketsClosed); ?></h3>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
                         <span class="text-green d-inline-flex align-items-center lh-1">
                         0%
                         </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
+                        <span class="text-end"><?php echo e(__('Since last period')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -132,29 +129,30 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Tickets Categories') }}
+                            <?php echo e(__('Top Tickets Categories')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Category') }}</th>
-                                <th>{{ __('Total Tickets') }}</th>
-                                <th>{{ __('Closed Tickets') }}</th>
+                                <th><?php echo e(__('Category')); ?></th>
+                                <th><?php echo e(__('Total Tickets')); ?></th>
+                                <th><?php echo e(__('Closed Tickets')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($ticketsByCategory as $category => $data)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $ticketsByCategory; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category => $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $category }}</td>
-                                <td>{{ $data['total'] }}</td>
-                                <td>{{ $data['closed'] }}</td>
+                                <td><?php echo e($category); ?></td>
+                                <td><?php echo e($data['total']); ?></td>
+                                <td><?php echo e($data['closed']); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>
-                                    <span>{{ __('No data available') }}</span>
+                                    <span><?php echo e(__('No data available')); ?></span>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -165,29 +163,30 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Tickets') }}
+                            <?php echo e(__('Top Tickets')); ?>
+
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
-                                <th>{{ __('Room') }}</th>
-                                <th>{{ __('Ticket Category') }}</th>
-                                <th>{{ __('Status') }}</th>
+                                <th><?php echo e(__('Room')); ?></th>
+                                <th><?php echo e(__('Ticket Category')); ?></th>
+                                <th><?php echo e(__('Status')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($ticketsByRoom as $ticket)
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $ticketsByRoom; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticket): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $ticket['room_name'] }}</td>
-                                <td>{{ $ticket['category'] }}</td>
-                                <td>{{ ucfirst($ticket['status']) }}</td>
+                                <td><?php echo e($ticket['room_name']); ?></td>
+                                <td><?php echo e($ticket['category']); ?></td>
+                                <td><?php echo e(ucfirst($ticket['status'])); ?></td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>
-                                    <span>{{ __('No data available') }}</span>
+                                    <span><?php echo e(__('No data available')); ?></span>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
@@ -198,3 +197,4 @@
     </div>
 </div>
 
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/Properties\resources/views/livewire/dashboards/ticket.blade.php ENDPATH**/ ?>

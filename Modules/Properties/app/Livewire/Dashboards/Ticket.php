@@ -10,6 +10,7 @@ use Modules\Settings\Models\WorkItem;
 
 class Ticket extends Component
 {
+    public $agent;
     public $period = 1, $ticketsThisDay = 0, $ticketsAssigned = 0, $ongoingTickets = 0, $ticketsClosed = 0, $overdueIssues = 0, $avgCompletionTime = 0;
     public $currentTickets, $ticketsByCategory, $ticketsByRoom;
 
