@@ -50,6 +50,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('team_id')->nullable();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('property_id')->nullable();
             $table->string('email');
             $table->string('role')->nullable();
             $table->string('token')->unique();

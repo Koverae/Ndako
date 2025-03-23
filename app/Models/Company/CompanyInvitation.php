@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Properties\Models\Property\Property;
 
 class CompanyInvitation extends Model
 {
@@ -39,5 +40,15 @@ class CompanyInvitation extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the property that the invitation belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
     }
 }

@@ -19,8 +19,8 @@ class PaystackService
 
     public function __construct()
     {
-        $this->secretKey = env('PAYSTACK_SECRET_KEY'); // Store in .env
-        $this->baseUrl = env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co');
+        $this->secretKey = settings()->paystack_secret_key; // Store in .env
+        $this->baseUrl = settings()->paystack_base_url;
     }
 
 

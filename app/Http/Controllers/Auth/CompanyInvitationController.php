@@ -48,20 +48,24 @@ class CompanyInvitationController extends Controller
         
         // Create the user if they don't exist
         $user = User::firstOrCreate(
-            ['email' => $invitation->email],
+            [
+                'email' => $invitation->email, 
+                'current_company_id' => $invitation->company->id,
+                'current_property_id' => $invitation->property->id,
+            
+            ],
             [
                 'company_id' => $invitation->company->id,
                 'current_company_id' => $invitation->company->id,
+                'current_property_id' => $invitation->property->id,
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
             ]
         );
 
-        $user->assignRole($role->name);
-
         // Assign the user to the company and role
-        // $user->companies()->attach($invitation->company_id, ['role' => $invitation->role]);
+        $user->assignRole($role->name);
 
         // Log the user in
         Auth::login($user);

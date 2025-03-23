@@ -21,7 +21,7 @@ class General extends AppSetting
 {
     public $setting;
 
-    public $friend_email, $friend_role, $pending_invitations, $users;
+    public $friend_email, $friend_role, $friend_property, $pending_invitations, $users;
 
     // Customer Portal
     public array $customer_portal_access = [], $currenciesOptions = [], $cutomerPortalAccessOptions = [], $digest_templates = [], $geolocationProvider = [];
@@ -30,14 +30,19 @@ class General extends AppSetting
     public $paystackPublicKey, $paystackSecretKey, $paystackBaseUrl, $paystackMerchandEmail;
 
     public $default_currency, $koverae_digest, $has_customer_account = 'on_invitation', $geolocation_provider = 'open_street_map';
-    public $has_default_check_times, $has_online_payment, $has_lock_confirmed_booking, $has_pro_format_invoice, $has_overbooking_prevention, $has_stay_rule_per_unit, $has_cleaning_frequency, $has_maintenance_alerts, $has_housekeeping_staff, $has_maintenance_requests;
-    public bool $has_paystack = false, $has_digest_email = true, $has_default_access_right = true, $has_geo_localization = false, $has_recaptcha = false, $has_reset_password = true, $has_quick_find = true, $has_import_from_xls = true;
+    public bool $has_default_check_times = false, $has_online_payment = false, $has_lock_confirmed_booking = false, $has_pro_format_invoice = false, $has_overbooking_prevention = false, $has_stay_rule_per_unit = false, $has_cleaning_frequency = false, $has_maintenance_alerts = false, $has_housekeeping_staff = false, $has_maintenance_requests = false, 
+    $has_paystack = false, $has_digest_email = true, $has_default_access_right = true, $has_geo_localization = false, $has_recaptcha = false, $has_reset_password = true, $has_quick_find = true, $has_import_from_xls = true;
 
     public function mount($setting){
         $this->setting = $setting;
         $this->has_customer_account = $setting->has_customer_account;
         $this->default_currency = $setting->default_currency_id;
-        $this->has_paystack = $setting->paystack ?? false;
+        $this->has_paystack = $setting->has_paystack;
+        $this->paystackPublicKey = $setting->paystack_public_key;
+        $this->paystackSecretKey = $setting->paystack_secret_key;
+        $this->paystackBaseUrl = $setting->paystack_base_url;
+        $this->paystackMerchandEmail = $setting->paystack_merchand_email;
+
         $this->has_default_access_right = $setting->has_default_access_right;
         $this->has_geo_localization = $setting->has_geo_localization;
         $this->geolocation_provider = $setting->geolocation_provider;
@@ -48,7 +53,7 @@ class General extends AppSetting
         $this->has_default_check_times = $setting->has_default_check_times;
         $this->has_online_payment = $setting->has_online_payment;
         $this->has_lock_confirmed_booking = $setting->has_lock_confirmed_booking;
-        $this->has_pro_format_invoice = $setting->has_pro_formatçinvoice;
+        $this->has_pro_format_invoice = $setting->has_pro_format_invoice;
         $this->has_overbooking_prevention = $setting->has_overbooking_prevention;
         $this->has_stay_rule_per_unit = $setting->has_stay_rule_per_unit;
         $this->has_cleaning_frequency = $setting->has_cleaning_frequency;
@@ -181,6 +186,7 @@ class General extends AppSetting
         $this->validate([
             'friend_email' => 'required|email|unique:company_invitations,email',
             'friend_role' => 'required|string',
+            'friend_property' => 'required|integer|exists:properties,id',
         ]);
 
         // Generate a unique invitation token
@@ -191,6 +197,7 @@ class General extends AppSetting
             'team_id' => current_company()->team->id,
             'company_id' => current_company()->id,
             'email'     => $this->friend_email,
+            'property'     => $this->friend_property,
             'role'     => $this->friend_role,
             'token' => $token,
             'expire_at' => now()->addDays(7),
@@ -219,7 +226,10 @@ class General extends AppSetting
             'has_customer_account' => $this->has_customer_account,
             'has_default_access_right' => $this->has_default_access_right,
             'has_paystack' => $this->has_paystack,
-
+            'paystack_public_key' => $this->paystackPublicKey,
+            'paystack_secret_key' => $this->paystackSecretKey,
+            'paystack_base_url' => $this->paystackBaseUrl,
+            'paystack_merchand_email' => $this->paystackMerchandEmail,
             'has_geo_localization' => $this->has_geo_localization,
             'has_recaptcha' => $this->has_recaptcha,
             'has_reset_password' => $this->has_reset_password,

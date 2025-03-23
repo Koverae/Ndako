@@ -64,6 +64,11 @@ return new class extends Migration
             $table->string('paystack_base_url')->nullable();
             $table->string('paystack_merchand_email')->nullable();
 
+            $table->boolean('has_koverae')->default(false);
+            $table->string('koverae_public_key')->nullable();
+            $table->string('koverae_secret_key')->nullable();
+            $table->string('koverae_base_url')->nullable();
+
             $table->boolean('has_oauth_authentication')->default(false);
             $table->boolean('has_geo_localization')->default(false);
             $table->enum('geolocation_provider', ['open_street_map', 'google_place_map'])->default('open_street_map');
