@@ -95,6 +95,7 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
     <!-- Custom JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <?php echo $__env->yieldPushContent('scripts'); ?> <!-- This is where scripts pushed with <?php $__env->startPush('scripts'); ?> will be loaded -->
     <!-- Custom JS -->
 </body>

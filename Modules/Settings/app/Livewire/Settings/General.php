@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Company\CompanyInvitation;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Attributes\On;
 use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Notifications\CompanyInvitationNotification;
@@ -253,6 +254,14 @@ class General extends AppSetting
 
         // notify()->success('Updates saved!');
         $this->dispatch('undo-change');
+
+        LivewireAlert::title('Updates saved!')
+        ->text('Your updates have been saved.')
+        ->success()
+        ->position('top-end')
+        ->timer(3000)
+        ->toast()
+        ->show();
 
     }
     public function updated(){
