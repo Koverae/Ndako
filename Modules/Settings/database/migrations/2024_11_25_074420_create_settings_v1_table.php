@@ -58,6 +58,12 @@ return new class extends Migration
             $table->boolean('has_default_access_right')->default(true);
             $table->boolean('has_import_from_xls')->default(true);
             // Integrations
+            $table->boolean('has_paystack')->default(false);
+            $table->string('paystack_public_key')->nullable();
+            $table->string('paystack_secret_key')->nullable();
+            $table->string('paystack_base_url')->nullable();
+            $table->string('paystack_merchand_email')->nullable();
+
             $table->boolean('has_oauth_authentication')->default(false);
             $table->boolean('has_geo_localization')->default(false);
             $table->enum('geolocation_provider', ['open_street_map', 'google_place_map'])->default('open_street_map');
@@ -65,7 +71,8 @@ return new class extends Migration
             $table->string('google_authentification_client_id')->nullable();
             $table->string('open_street_map_client_id')->nullable();
             $table->boolean('has_linkedin_authentification')->default(false);
-            $table->boolean('has_recaptcha')->default(false);
+
+            $table->boolean('has_recaptcha')->default(true);
             $table->boolean('has_cloudfare_turnstile')->default(false);
             // Calendar Settings
             $table->boolean('has_outlook_calendar')->default(false);

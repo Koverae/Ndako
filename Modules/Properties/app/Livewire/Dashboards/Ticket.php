@@ -73,6 +73,10 @@ class Ticket extends Component
 
     }
 
+    public function updatedPeriod(){
+        $this->loadData();
+    }
+    
     public function render()
     {
         return view('properties::livewire.dashboards.ticket');

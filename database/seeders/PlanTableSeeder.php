@@ -140,6 +140,7 @@ class PlanTableSeeder extends Seeder
             'grace_interval' => 'day',
             'tier' => 1,
             'currency' => 'KES',
+            'is_active' => false
         ]);
         $enterpriseMonthly->features()->saveMany($enterpriseFeatures);
 
@@ -158,6 +159,7 @@ class PlanTableSeeder extends Seeder
             'grace_interval' => 'day',
             'tier' => 1,
             'currency' => 'KES',
+            'is_active' => false
         ]);
         $enterpriseYearly->features()->saveMany($enterpriseFeatures);
 

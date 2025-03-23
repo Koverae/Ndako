@@ -26,14 +26,18 @@ class General extends AppSetting
     // Customer Portal
     public array $customer_portal_access = [], $currenciesOptions = [], $cutomerPortalAccessOptions = [], $digest_templates = [], $geolocationProvider = [];
 
+    // Paystack Integration
+    public $paystackPublicKey, $paystackSecretKey, $paystackBaseUrl, $paystackMerchandEmail;
+
     public $default_currency, $koverae_digest, $has_customer_account = 'on_invitation', $geolocation_provider = 'open_street_map';
     public $has_default_check_times, $has_online_payment, $has_lock_confirmed_booking, $has_pro_format_invoice, $has_overbooking_prevention, $has_stay_rule_per_unit, $has_cleaning_frequency, $has_maintenance_alerts, $has_housekeeping_staff, $has_maintenance_requests;
-    public bool $has_digest_email = true, $has_default_access_right = true, $has_geo_localization = false, $has_recaptcha = false, $has_reset_password = true, $has_quick_find = true, $has_import_from_xls = true;
+    public bool $has_paystack = false, $has_digest_email = true, $has_default_access_right = true, $has_geo_localization = false, $has_recaptcha = false, $has_reset_password = true, $has_quick_find = true, $has_import_from_xls = true;
 
     public function mount($setting){
         $this->setting = $setting;
         $this->has_customer_account = $setting->has_customer_account;
         $this->default_currency = $setting->default_currency_id;
+        $this->has_paystack = $setting->paystack ?? false;
         $this->has_default_access_right = $setting->has_default_access_right;
         $this->has_geo_localization = $setting->has_geo_localization;
         $this->geolocation_provider = $setting->geolocation_provider;
@@ -114,6 +118,7 @@ class General extends AppSetting
             // Integrations
             Box::make('recaptcha', __('reCAPTCHA'), 'has_recaptcha', __('Protect your forms from spam and abuse.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             Box::make('geolocation', __('Geolocation'), 'has_geo_localization', __('Geolocate your partners and customers.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
+            Box::make('paystack', __('Paystack'), 'has_paystack', __('Seamlessly accept and manage payments with Paystack integration, ensuring secure and hassle-free transactions for your business.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             // Booking Settings
             Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial. The default can be changed per order or template.", 'booking-settings', true, "https://ndako.koverae", null),
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
@@ -143,6 +148,11 @@ class General extends AppSetting
             BoxInput::make('customer-portal-access', null, 'radio', 'has_customer_account', 'customer-portal', '', false, $this->cutomerPortalAccessOptions)->component('app::blocks.boxes.input.radio'),
             BoxInput::make('geolocation-provider', null, 'select', 'geolocation_provider', 'geolocation', '', false, $this->geolocationProvider, $this->geolocation_provider),
             BoxInput::make('main-currency', null, 'select', 'default_currency', 'main-currency', '', false, $this->currenciesOptions),
+            // PAYSTACK
+            BoxInput::make('paystack-public', __('Public Key'), 'text', 'paystackPublicKey', 'paystack', '', false, [], $this->has_paystack),
+            BoxInput::make('paystack-secret', __('Secret Key'), 'text', 'paystackSecretKey', 'paystack', '', false, [], $this->has_paystack),
+            BoxInput::make('paystack-base-url', __('Base Url'), 'text', 'paystackBaseUrl', 'paystack', '', false, [], $this->has_paystack),
+            BoxInput::make('paystack-merchand', __('Merchand Email'), 'text', 'paystackMerchandEmail', 'paystack', '', false, [], $this->has_paystack),
         ];
     }
 
@@ -208,6 +218,8 @@ class General extends AppSetting
         $setting->update([
             'has_customer_account' => $this->has_customer_account,
             'has_default_access_right' => $this->has_default_access_right,
+            'has_paystack' => $this->has_paystack,
+
             'has_geo_localization' => $this->has_geo_localization,
             'has_recaptcha' => $this->has_recaptcha,
             'has_reset_password' => $this->has_reset_password,

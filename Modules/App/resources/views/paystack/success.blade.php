@@ -29,7 +29,7 @@
 <body>
     <script src="{{asset('assets/js/demo-theme.min.js')}}" data-navigate-track></script>
     <div class="page page-center">
-      <div class="container container-tight py-4">
+      <div class="container py-4 container-tight">
         <div class="card card-md">
           <div class="card-body">
             <div class="mt-0 mb-2 text-center">
@@ -38,7 +38,7 @@
                 </a>
             </div>
             <h2 class="mb-3 text-center">Payment Successful 🎉</h2>
-            <p class="text-secondary mb-4 fs-3">
+            <p class="mb-4 text-secondary fs-3">
                 Thank you for your payment! Your subscription has been activated.
             </p>
 
@@ -49,7 +49,7 @@
             </div>
 
             @if(isset($subscription))
-            <div class="mt-4">
+            <div class="mt-4 mb-2">
                 <h4>📅 Subscription Details</h4>
                 <strong>Plan Name:</strong> {{ $subscription->plan_name }} <br>
                 <strong>Next Payment Date:</strong> {{ \Carbon\Carbon::parse($subscription->next_billing_date)->format('F j, Y') }} <br>
@@ -58,12 +58,12 @@
             @endif
 
             <div class="my-4">
-              <a href="{{ route('dashboard') }}" class="btn btn-primary text-uppercase w-100 fs-3">
+              <a href="{{ route('dashboard') }}" class="text-white btn btn-primary text-uppercase w-100 fs-3">
                 Go to Dashboard
               </a>
             </div>
             {{-- <p class="text-secondary">
-                Need more time? <a href="https://ndako.koverae.com/contact-us?utm=app" class=" underline" target="__blank">Contact us</a> to request a trial extension.
+                Need more time? <a href="https://ndako.koverae.com/contact-us?utm=app" class="underline " target="__blank">Contact us</a> to request a trial extension.
             </p> --}}
           </div>
         </div>

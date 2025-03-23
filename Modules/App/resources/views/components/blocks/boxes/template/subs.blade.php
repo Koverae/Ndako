@@ -10,7 +10,7 @@
         <div class="mt-1" style="width: 100%;">
 
             @if(current_company()->team->subscription('main'))
-                <div class="d-flex align-items-center mb-3">
+                <div class="mb-3 d-flex align-items-center">
                     <div class="me-3">
                         <img src="{{ asset('assets/images/logo/logo-circle-white.png') }}" style="height: 18px; width: 18px;" alt="">
                     </div>
@@ -24,7 +24,7 @@
                     @if (current_company()->team->subscription('main')->ends_at && current_company()->team->subscription('main')->starts_at && !current_company()->team->subscription('main')->cancels_at)
                         <span>Your team is subscribed since <b>{{ current_company()->team->subscription('main')->starts_at->diffForHumans() }}</b></span>
                         @if (now()->lessThan(current_company()->team->subscription('main')->ends_at))
-                          <span>Next billing in <b>{{ (int) now()->diffInDays(current_company()->team->subscription('main')->ends_at) }} days</b>, on <b>{{ \Carbon\Carbon::parse(current_company()->team->subscription('main')->ends_at)->format('d M Y') }}</b></span>
+                          <span>Next billing in <b>{{ getRemainingSubDays() }}</b>, on <b>{{ \Carbon\Carbon::parse(current_company()->team->subscription('main')->ends_at)->format('d M Y') }}</b></span>
                         @elseif(current_company()->team->subscription('main')->ends_at && now()->greaterThan(current_company()->team->subscription('main')->ends_at))
                         <span>
                             <strong>Your subscription has expired!</strong> Renew to continue using our Ndako.
@@ -45,8 +45,8 @@
                 </ul>
 
                 <div class="mt-2">
-                    <a href="{{ route('subscribe') }}" class="btn btn-primary gap-2 text-uppercase text-white {{ !current_company()->team->subscription('main')->isOnTrial() ? 'disabled' : '' }} " >
-                        <i class="bi bi-arrow-up-right-circle"></i> Upgrade Now
+                    <a href="{{ route('subscribe') }}" class="gap-2 text-white btn btn-primary text-uppercase" >
+                        <i class="bi bi-arrow-up-right-circle"></i> {{ current_company()->team->subscription('main')->isOnTrial() ? "Upgrade Now" : "Renew" }}
                     </a>
                     <span wire:click="cancelSubscription" wire:confirm='Do you really want to cancel your subscription?' class="btn btn-danger gap-2 text-uppercase {{ current_company()->team->subscription('main')->cancels_at ? 'd-none' : '' }}  {{ current_company()->team->subscription('main')->isActive() ? '' : 'd-none' }}">
                         <i class="bi bi-x-circle"></i> Cancel Subscription

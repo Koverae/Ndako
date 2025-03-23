@@ -4,6 +4,7 @@ namespace Modules\App\Livewire\Subscription;
 
 use Illuminate\Support\Facades\Auth;
 use Koverae\KoveraeBilling\Models\Plan;
+use Koverae\KoveraeBilling\Services\PaymentMethods\Paystack;
 use Livewire\Component;
 use Modules\App\Services\PaymentGateway\PaystackService;
 
@@ -30,7 +31,7 @@ class SubscriptionPage extends Component
         $this->selectedPlan = current_company()->team->subscription('main')->plan->tag;
         $this->billingCycle = 'month';
         $this->roomCount = current_company()->size;
-        $this->plans = Plan::where('invoice_interval', $this->billingCycle)
+        $this->plans = Plan::where('is_active', true)->where('invoice_interval', $this->billingCycle)
           ->where('price', '>', 1)
             ->get();
         $this->email = Auth::user()->email;
@@ -38,7 +39,7 @@ class SubscriptionPage extends Component
     }
 
     public function updatedBillingCycle(){
-        $this->plans = Plan::where('invoice_interval', $this->billingCycle)
+        $this->plans = Plan::where('is_active', true)->where('invoice_interval', $this->billingCycle)
           ->where('price', '>', 1)
             ->get();
         $this->selectedPlan = '';
@@ -60,12 +61,12 @@ class SubscriptionPage extends Component
         ->extends('layouts.auth')->section('page_content');
     }
 
-    public function initiatePayment()
+    public function initiatePayment(Paystack $paystack)
     {
         // $this->validate();
-        $this->paystackService->initializePayment(
+        $paystack->initializePayment(
             current_company()->name,
-             $this->email,
+            $this->email,
             $this->amount,
             $this->plan->plan_code,
             $this->invoicePeriod,

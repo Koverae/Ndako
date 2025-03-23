@@ -426,6 +426,25 @@ if(!function_exists('getRemainingTrialDays')){
     }
 }
 
+if(!function_exists('getRemainingSubDays')){
+    function getRemainingSubDays(){
+        $remainingTime = '';
+
+        $subscription = current_company()->team->subscription('main');
+        $daysLeft = $subscription->getSubscriptionPeriodRemainingUsageIn('day');
+        $hoursLeft = $subscription->getSubscriptionPeriodRemainingUsageIn('hour');
+
+        if($daysLeft >= 1){
+            $remainingTime = $daysLeft.' days';
+        }else{
+            $remainingTime = $hoursLeft.' hours';
+        }
+
+        return $remainingTime;
+
+    }
+}
+
 if (!function_exists('getFinalPrice')) {
     function getFinalPrice(float $price, bool $isFirstSubscription = true, float $discountPercentage = 35): float
     {
@@ -515,7 +534,7 @@ if(!function_exists('current_property')){
         $property = cache()->remember('current_property', 24*60, function () {
             return Auth::user()->current_property_id ? Property::find(Auth::user()->current_property_id) : Property::isCompany(current_company()->id)->get()->first();
         });
-        
+
         return $property;
     }
 }
