@@ -32,7 +32,7 @@ class PaystackService
     * @param string|null $plan Optional plan code for subscriptions.
     * @return \Illuminate\Http\RedirectResponse Redirects to Paystack's payment page.
     */
-    public function initializePayment($name = null, $email, $amount, $plan = null, $period = 1, $interval = 'month')
+    public function initializePayment($name = null, $email, $amount)
     {
         $amount = $amount * 100; // Paystack processes payments in kobo (cents), so multiply by 100.
         $client = new Client();
@@ -46,12 +46,9 @@ class PaystackService
                 'name' => $name,
                 'email' => $email,
                 'amount' => $amount,
-                'plan' => $plan,
                 'callback_url' => route('paystack.callback'),// Redirect after payment
                 'metadata' => [
                     'team_id' => current_company()->team->id, // Attach team ID for reference
-                    'invoice_period' => $period,
-                    'invoice_interval' => $interval,
                     // 'subscription_id' => $subscription->id,
                 ]
             ]

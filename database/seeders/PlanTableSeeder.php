@@ -16,7 +16,7 @@ class PlanTableSeeder extends Seeder
     {
         // Ndako Starter
         $starterFeatures = [
-            new PlanFeature(['tag' => 'unit', 'name' => 'Rooms/Units', 'value' => 15, 'sort_order' => 1]),
+            new PlanFeature(['tag' => 'unit', 'name' => 'Rooms/Units', 'value' => 20, 'sort_order' => 1]),
             new PlanFeature(['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'basic', 'sort_order' => 2]),
             new PlanFeature(['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'basic', 'sort_order' => 3]),
             new PlanFeature(['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'basic', 'sort_order' => 4]),

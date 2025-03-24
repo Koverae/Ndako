@@ -259,7 +259,7 @@ class General extends AppSetting
         ->text('Your updates have been saved.')
         ->success()
         ->position('top-end')
-        ->timer(3000)
+        ->timer(4000)
         ->toast()
         ->show();
 
