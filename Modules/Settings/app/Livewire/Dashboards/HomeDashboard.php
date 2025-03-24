@@ -23,7 +23,7 @@ class HomeDashboard extends Component
 
     public function mount()
     {
-        $this->property = Auth::user()->current_property_id ?? current_company()->properties()->first()->id;
+        $this->property = current_property()->id ?? null;
 
         $this->loadBookings();
 

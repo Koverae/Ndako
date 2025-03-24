@@ -32,7 +32,7 @@ class Reservation extends Component
     public function mount($updating = false){
 
         $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = current_property()->id;
+        $this->property = current_property()->id ?? null;
 
         $this->loadData();
 

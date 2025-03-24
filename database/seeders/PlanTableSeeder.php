@@ -16,22 +16,23 @@ class PlanTableSeeder extends Seeder
     {
         // Ndako Starter
         $starterFeatures = [
-            new PlanFeature(['tag' => 'unit', 'name' => 'Rooms/Units', 'value' => 20, 'sort_order' => 1]),
-            new PlanFeature(['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'basic', 'sort_order' => 2]),
-            new PlanFeature(['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'basic', 'sort_order' => 3]),
-            new PlanFeature(['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'basic', 'sort_order' => 4]),
-            new PlanFeature(['tag' => 'basic-reporting', 'name' => 'Basic Reporting', 'value' => 'basic', 'sort_order' => 5]),
-            new PlanFeature(['tag' => 'mobile-access', 'name' => 'Mobile Access', 'value' => true, 'sort_order' => 6]),
-            new PlanFeature(['tag' => 'support', 'name' => 'Support', 'value' => 'basic', 'sort_order' => 7]),
+            ['tag' => 'properties', 'name' => 'Properties', 'value' => 1, 'sort_order' => 0],
+            ['tag' => 'units', 'name' => 'Rooms/Units', 'value' => 20, 'sort_order' => 1],
+            ['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'basic', 'sort_order' => 2],
+            ['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'basic', 'sort_order' => 3],
+            ['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'basic', 'sort_order' => 4],
+            ['tag' => 'basic-reporting', 'name' => 'Basic Reporting', 'value' => 'basic', 'sort_order' => 5],
+            ['tag' => 'mobile-access', 'name' => 'Mobile Access', 'value' => true, 'sort_order' => 6],
+            ['tag' => 'support', 'name' => 'Support', 'value' => 'basic', 'sort_order' => 7],
 
-            new PlanFeature(['tag' => 'revenue-management', 'name' => 'Revenue Management', 'value' => false, 'sort_order' => 8]),
-            new PlanFeature(['tag' => 'integrations', 'name' => 'Integrations', 'value' => false, 'sort_order' => 9]),
-            new PlanFeature(['tag' => 'custom-branding', 'name' => 'Custom Branding', 'value' => false, 'sort_order' => 10]),
-            new PlanFeature(['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11]),
-            new PlanFeature(['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12]),
-            new PlanFeature(['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13]),
-            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => false, 'sort_order' => 7]),
-            new PlanFeature(['tag' => 'gues-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 16]),
+            ['tag' => 'revenue-management', 'name' => 'Revenue Management', 'value' => false, 'sort_order' => 8],
+            ['tag' => 'integrations', 'name' => 'Integrations', 'value' => false, 'sort_order' => 9],
+            ['tag' => 'custom-branding', 'name' => 'Custom Branding', 'value' => false, 'sort_order' => 10],
+            ['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11],
+            ['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12],
+            ['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13],
+            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => false, 'sort_order' => 7],
+            ['tag' => 'guest-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 16],
         ];
         $starterPlan = Plan::create([
             'tag' => 'starter',
@@ -49,26 +50,30 @@ class PlanTableSeeder extends Seeder
             'currency' => 'KES',
             'is_free' => true,
         ]);
-        $starterPlan->features()->saveMany($starterFeatures);
+        // $starterPlan->features()->saveMany($starterFeatures);
+        foreach ($starterFeatures as $feature) {
+            PlanFeature::create(array_merge(['plan_id' => $starterPlan->id], $feature));
+        }
 
         // Ndako Spark
         $sparkFeatures = [
-            new PlanFeature(['tag' => 'unit', 'name' => 'Rooms/Units', 'value' => 65, 'sort_order' => 1]),
-            new PlanFeature(['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'advanced', 'sort_order' => 2]),
-            new PlanFeature(['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'advanced', 'sort_order' => 3]),
-            new PlanFeature(['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'customizable', 'sort_order' => 4]),
-            new PlanFeature(['tag' => 'reporting', 'name' => 'Basic Reporting', 'value' => 'advanced', 'sort_order' => 5]),
-            new PlanFeature(['tag' => 'mobile-access', 'name' => 'Mobile Access', 'value' => true, 'sort_order' => 6]),
-            new PlanFeature(['tag' => 'support', 'name' => 'Support', 'value' => 'priority', 'sort_order' => 7]),
+            ['tag' => 'properties', 'name' => 'Properties', 'value' => 20, 'sort_order' => 0],
+            ['tag' => 'units', 'name' => 'Rooms/Units', 'value' => 165, 'sort_order' => 1],
+            ['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'advanced', 'sort_order' => 2],
+            ['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'advanced', 'sort_order' => 3],
+            ['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'customizable', 'sort_order' => 4],
+            ['tag' => 'reporting', 'name' => 'Basic Reporting', 'value' => 'advanced', 'sort_order' => 5],
+            ['tag' => 'mobile-access', 'name' => 'Mobile Access', 'value' => true, 'sort_order' => 6],
+            ['tag' => 'support', 'name' => 'Support', 'value' => 'priority', 'sort_order' => 7],
 
-            new PlanFeature(['tag' => 'revenue-management', 'name' => 'Revenue Management', 'value' => 'basic', 'sort_order' => 8]),
-            new PlanFeature(['tag' => 'integrations', 'name' => 'Integrations', 'value' => 'some', 'sort_order' => 9]),
-            new PlanFeature(['tag' => 'custom-branding', 'name' => 'Custom Branding', 'value' => 'limited', 'sort_order' => 10]),
-            new PlanFeature(['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11]),
-            new PlanFeature(['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12]),
-            new PlanFeature(['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13]),
-            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => 'bridge', 'sort_order' => 7]),
-            new PlanFeature(['tag' => 'gues-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 15]),
+            ['tag' => 'revenue-management', 'name' => 'Revenue Management', 'value' => 'basic', 'sort_order' => 8],
+            ['tag' => 'integrations', 'name' => 'Integrations', 'value' => 'some', 'sort_order' => 9],
+            ['tag' => 'custom-branding', 'name' => 'Custom Branding', 'value' => 'limited', 'sort_order' => 10],
+            ['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11],
+            ['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12],
+            ['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13],
+            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => 'bridge', 'sort_order' => 7],
+            ['tag' => 'guest-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 15],
         ];
         $sparkMonthly = Plan::create([
             'tag' => 'spark-monthly',
@@ -86,7 +91,10 @@ class PlanTableSeeder extends Seeder
             'tier' => 1,
             'currency' => 'KES',
         ]);
-        $sparkMonthly->features()->saveMany($sparkFeatures);
+        // $sparkMonthly->features()->saveMany($sparkFeatures);
+        foreach ($sparkFeatures as $feature) {
+            PlanFeature::create(array_merge(['plan_id' => $sparkMonthly->id], $feature));
+        }
 
         $sparkYearly = Plan::create([
             'tag' => 'spark-yearly',
@@ -104,26 +112,29 @@ class PlanTableSeeder extends Seeder
             'tier' => 1,
             'currency' => 'KES',
         ]);
-        $sparkYearly->features()->saveMany($sparkFeatures);
+        // $sparkYearly->features()->saveMany($sparkFeatures);
+        foreach ($sparkFeatures as $feature) {
+            PlanFeature::create(array_merge(['plan_id' => $sparkYearly->id], $feature));
+        }
 
         // Ndako Enterprise
         $enterpriseFeatures = [
-            new PlanFeature(['tag' => 'unit', 'name' => 'Rooms/Units', 'value' => 150, 'sort_order' => 1]),
-            new PlanFeature(['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'advanced', 'sort_order' => 2]),
-            new PlanFeature(['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'advanced', 'sort_order' => 3]),
-            new PlanFeature(['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'customizable', 'sort_order' => 4]),
-            new PlanFeature(['tag' => 'reporting', 'name' => 'Basic Reporting', 'value' => 'advanced', 'sort_order' => 5]),
-            new PlanFeature(['tag' => 'mobile-access', 'name' => 'Mobile Access', 'value' => true, 'sort_order' => 6]),
-            new PlanFeature(['tag' => 'support', 'name' => 'Support', 'value' => 'full-priority', 'sort_order' => 7]),
+            ['tag' => 'units', 'name' => 'Rooms/Units', 'value' => 150, 'sort_order' => 1],
+            ['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'advanced', 'sort_order' => 2],
+            ['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'advanced', 'sort_order' => 3],
+            ['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'customizable', 'sort_order' => 4],
+            ['tag' => 'reporting', 'name' => 'Basic Reporting', 'value' => 'advanced', 'sort_order' => 5],
+            ['tag' => 'mobile-access', 'name' => 'Mobile Access', 'value' => true, 'sort_order' => 6],
+            ['tag' => 'support', 'name' => 'Support', 'value' => 'full-priority', 'sort_order' => 7],
 
-            new PlanFeature(['tag' => 'revenue-management', 'name' => 'Revenue Management', 'value' => 'advanced', 'sort_order' => 8]),
-            new PlanFeature(['tag' => 'integrations', 'name' => 'Integrations', 'value' => 'full-access', 'sort_order' => 9]),
-            new PlanFeature(['tag' => 'custom-branding', 'name' => 'Custom Branding', 'value' => 'full-access', 'sort_order' => 10]),
-            new PlanFeature(['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => true, 'sort_order' => 11]),
-            new PlanFeature(['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => true, 'sort_order' => 12]),
-            new PlanFeature(['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => true, 'sort_order' => 13]),
-            new PlanFeature(['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => true, 'sort_order' => 7]),
-            new PlanFeature(['tag' => 'gues-portal', 'name' => 'Guest Portal', 'value' => true, 'sort_order' => 15]),
+            ['tag' => 'revenue-management', 'name' => 'Revenue Management', 'value' => 'advanced', 'sort_order' => 8],
+            ['tag' => 'integrations', 'name' => 'Integrations', 'value' => 'full-access', 'sort_order' => 9],
+            ['tag' => 'custom-branding', 'name' => 'Custom Branding', 'value' => 'full-access', 'sort_order' => 10],
+            ['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => true, 'sort_order' => 11],
+            ['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => true, 'sort_order' => 12],
+            ['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => true, 'sort_order' => 13],
+            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => true, 'sort_order' => 7],
+            ['tag' => 'guest-portal', 'name' => 'Guest Portal', 'value' => true, 'sort_order' => 15],
         ];
         $enterpriseMonthly = Plan::create([
             'tag' => 'enterprise-monthly',
@@ -142,7 +153,10 @@ class PlanTableSeeder extends Seeder
             'currency' => 'KES',
             'is_active' => false
         ]);
-        $enterpriseMonthly->features()->saveMany($enterpriseFeatures);
+        // $enterpriseMonthly->features()->saveMany($enterpriseFeatures);
+        foreach ($enterpriseFeatures as $feature) {
+            PlanFeature::create(array_merge(['plan_id' => $enterpriseMonthly->id], $feature));
+        }
 
         $enterpriseYearly = Plan::create([
             'tag' => 'enterprise-yearly',
@@ -161,7 +175,10 @@ class PlanTableSeeder extends Seeder
             'currency' => 'KES',
             'is_active' => false
         ]);
-        $enterpriseYearly->features()->saveMany($enterpriseFeatures);
+        // $enterpriseYearly->features()->saveMany($enterpriseFeatures);
+        foreach ($enterpriseFeatures as $feature) {
+            PlanFeature::create(array_merge(['plan_id' => $enterpriseYearly->id], $feature));
+        }
 
     }
 }

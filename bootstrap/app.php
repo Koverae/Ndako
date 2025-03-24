@@ -44,6 +44,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'check-allowed-domains' => \App\Http\Middleware\CheckAllowedDomains::class,
             'identify-kover' => \App\Http\Middleware\IdentifyKover::class,
             'subscribed' => \App\Http\Middleware\EnsureTeamHasSubscription::class,
+            'feature' => \App\Http\Middleware\CheckFeatureAccess::class,
+            'limit' => \App\Http\Middleware\CheckFeatureLimit::class,
         ]);
 
         // $middleware->redirectGuestsTo('/login');

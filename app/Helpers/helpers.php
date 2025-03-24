@@ -3,6 +3,8 @@
 use App\Models\Company\Company;
 use App\Models\Module\InstalledModule;
 use App\Models\Module\Module;
+use App\Models\Team\Team;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -406,6 +408,21 @@ if(!function_exists('lease_term')){
 //         return $lease_terms[$lease_duration];
 //     }
 // }
+
+if(!function_exists('hasFeature')){
+    function hasFeature(Team $team, string $feature): bool
+    {
+        $plan = $team->subscription('main');
+        if (!$plan) {
+            return false; // No plan assigned
+        }
+
+        $features = $plan->features()->pluck('value', 'tag')->toArray();
+
+        // Ensure the feature exists and is explicitly true
+        return array_key_exists($feature, $features) && $features[$feature] == true;
+    }
+}
 
 if(!function_exists('getRemainingTrialDays')){
     function getRemainingTrialDays(){

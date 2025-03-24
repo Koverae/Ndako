@@ -12,15 +12,15 @@
             <img src="{{ asset('assets/images/logo/logo-black.png') }}" width="130" height="52" alt="Tabler" class="navbar-brand-image">
           </a>
         </div>
-        
-        
+
+
         <form method="POST" action="{{ route('verify.store') }}">
             @csrf
-            <p class="my-4 text-center">Please confirm your account by entering the authorization code sent to <strong>{{ auth()->user()->email }}</strong>.</p>
-            
+            <p class="my-4 text-center">Please confirm your account by entering the authorization code sent to <strong>{{ auth()->user()->phone }}</strong>.</p>
+
             <!-- Session Status -->
             <x-auth-session-status class="mb-4 text-green-50" :status="session('status')" />
-            
+
             <x-input-error :messages="$errors->get('two_factor_code')" class="mt-2" />
             <div class="my-5">
               <div class="row g-4">

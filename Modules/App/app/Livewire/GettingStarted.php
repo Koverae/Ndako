@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Uuid;
 use Modules\App\Handlers\AppManagerHandler;
 use Koverae\KoveraeBilling\Models\Plan;
+use Koverae\KoveraeBilling\Models\PlanSubscriptionFeature;
 
 class GettingStarted extends Component
 {
@@ -78,7 +79,7 @@ class GettingStarted extends Component
         $team->save();
 
         $plan = $this->getPlan();
-        $team->newSubscription(
+        $subscription = $team->newSubscription(
             'main', // identifier tag of the subscription. If your application offers a single subscription, you might call this 'main' or 'primary'
              $plan, // Plan or PlanCombination instance your subscriber is subscribing to
              'Main subscription', // Human-readable name for your subscription
@@ -86,6 +87,9 @@ class GettingStarted extends Component
              null, // Start date for the subscription, defaults to now()
              'free' // Payment method service defined in config
         );
+
+        // Attach features from the plan
+        // $subscription->syncPlanFeatures($plan);
 
         // $team->update([
         //     ''
@@ -126,9 +130,9 @@ class GettingStarted extends Component
     public function getplan(){
 
         // Determine the plan based on the number of rooms
-        if ($this->rooms <= 15) {
+        if ($this->rooms <= 20) {
             $plan = 'starter';
-        } elseif ($this->rooms <= 65) {
+        } elseif ($this->rooms > 20) {
             $plan = 'spark';
         } else {
             $plan = 'enterprise';
