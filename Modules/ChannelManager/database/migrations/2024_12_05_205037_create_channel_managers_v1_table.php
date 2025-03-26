@@ -167,12 +167,13 @@ return new class extends Migration
             $table->unsignedBigInteger('booking_invoice_id');
             $table->unsignedBigInteger('journal_id')->nullable();
             $table->string('reference');
+            $table->string('transaction_id')->nullable();
             $table->decimal('amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);
             $table->date('date');
             $table->string('payment_method');
             $table->enum('type', ['debit', 'credit'])->default('credit');
-            $table->enum('status', ['posted', 'pending'])->default('posted');
+            $table->enum('status', ['posted', 'pending'])->default('pending');
             $table->text('note')->nullable();
 
             $table->timestamps();

@@ -41,6 +41,7 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'bunk-room', 'label' => 'Bunk Room 🛏️🛏️'],
 
             // Premium & Luxury Rooms
+            ['id' => 'standard-room', 'label' => 'Standard Room 🌟'],
             ['id' => 'deluxe-room', 'label' => 'Deluxe Room 🌟'],
             ['id' => 'superior-room', 'label' => 'Superior Room ✨'],
             ['id' => 'executive-room', 'label' => 'Executive Room 💼'],

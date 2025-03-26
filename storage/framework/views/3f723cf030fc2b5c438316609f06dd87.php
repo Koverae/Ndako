@@ -28,10 +28,10 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-<?php if (isset($component)) { $__componentOriginalb59cf96414ae012e69511edceaff1e0f = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginalb59cf96414ae012e69511edceaff1e0f = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'app::components.wizard.step-page.special.property.add-units','data' => ['value' => $value]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('app::wizard.step-page.special.property.add-units'); ?>
+<?php if (isset($component)) { $__componentOriginal3097010682377382e429095b8d19dc60 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal3097010682377382e429095b8d19dc60 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'app::components.form.input.change-input','data' => ['value' => $value]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app::form.input.change-input'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
@@ -43,11 +43,11 @@ unset($__defined_vars); ?>
 
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginalb59cf96414ae012e69511edceaff1e0f)): ?>
-<?php $attributes = $__attributesOriginalb59cf96414ae012e69511edceaff1e0f; ?>
-<?php unset($__attributesOriginalb59cf96414ae012e69511edceaff1e0f); ?>
+<?php if (isset($__attributesOriginal3097010682377382e429095b8d19dc60)): ?>
+<?php $attributes = $__attributesOriginal3097010682377382e429095b8d19dc60; ?>
+<?php unset($__attributesOriginal3097010682377382e429095b8d19dc60); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginalb59cf96414ae012e69511edceaff1e0f)): ?>
-<?php $component = $__componentOriginalb59cf96414ae012e69511edceaff1e0f; ?>
-<?php unset($__componentOriginalb59cf96414ae012e69511edceaff1e0f); ?>
-<?php endif; ?><?php /**PATH D:\My Laravel Startup\ndako\storage\framework\views/6301002e7692985cd1e96f04bac68ee4.blade.php ENDPATH**/ ?>
+<?php if (isset($__componentOriginal3097010682377382e429095b8d19dc60)): ?>
+<?php $component = $__componentOriginal3097010682377382e429095b8d19dc60; ?>
+<?php unset($__componentOriginal3097010682377382e429095b8d19dc60); ?>
+<?php endif; ?><?php /**PATH D:\My Laravel Startup\ndako\storage\framework\views/b3dead1e07cbed426b04dfeb130dfccd.blade.php ENDPATH**/ ?>

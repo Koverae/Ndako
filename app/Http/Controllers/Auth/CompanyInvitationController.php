@@ -42,17 +42,17 @@ class CompanyInvitationController extends Controller
             'phone' => 'required|string|min:9|unique:users,phone',
             'password' => 'required|string|min:8',
         ]);
-        
+
         // Role
-        $role = Role::find($invitation->role);
-        
+        $role = Role::findByName($invitation->role);
+
         // Create the user if they don't exist
         $user = User::firstOrCreate(
             [
-                'email' => $invitation->email, 
+                'email' => $invitation->email,
                 'current_company_id' => $invitation->company->id,
                 'current_property_id' => $invitation->property->id,
-            
+
             ],
             [
                 'company_id' => $invitation->company->id,

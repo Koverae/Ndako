@@ -28,7 +28,7 @@ class Property extends Component
         $this->properties = PropertyProperty::isCompany(current_company()->id)->get();
         $this->propertyTypes = PropertyType::isCompany(current_company()->id)->get();
 
-        $this->property = current_property()->id;
+        $this->property = current_property()->id ?? null;
         $this->loadData();
 
         $this->fetchRevenueByType();

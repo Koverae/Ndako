@@ -36,7 +36,7 @@ return new class extends Migration
             $table->unsignedBigInteger('property_type_id')->nullable();
             $table->enum('invoicing_type', ['rental', 'rate'])->nullable();
             $table->string('name');
-            $table->string('description')->nullable();
+            $table->tinyText('description')->nullable();
             $table->string('images')->nullable(); // Images
             $table->unsignedBigInteger('country_id')->nullable();
             $table->unsignedBigInteger('state_id')->nullable();
@@ -47,6 +47,9 @@ return new class extends Migration
             $table->string('address')->nullable();
             // $table->json('amenities')->nullable();
             $table->enum('status', ['active', 'inactive', 'under-maintenance'])->nullable();
+
+            // Required Documents
+            $table->json('required_documents')->nullable();
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
@@ -207,20 +210,6 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
         });
-        // LeaseTerm
-        Schema::create('lease_terms', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('company_id');
-            $table->string('name')->comment('e.g., "nightly", "weekly", "monthly", "annually"');
-            $table->tinyText('description')->nullable();
-            $table->integer('duration_in_days')->default(0);
-            $table->integer('duration_in_hours')->default(0);
-            $table->boolean('is_default')->default(false);
-
-            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
-            $table->timestamps();
-            $table->softDeletes();
-        });
 
         // Extra Services
         Schema::create('extra_services', function (Blueprint $table) {
@@ -260,6 +249,163 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Tenants
+        Schema::create('tenants', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('name')->nullable();
+            $table->string('company_name')->nullable();
+            $table->unsignedBigInteger('language_id')->nullable();
+
+            // Address
+            $table->string('street')->nullable();
+            $table->string('street2')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->string('zip')->nullable();
+
+            // Contact Info
+            $table->enum('identity_proof', ['id_card', 'passport', 'driving_license'])->default('id_card');
+            $table->string('identity')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('mobile')->nullable();
+            $table->string('email')->nullable();
+            $table->string('website')->nullable();
+            $table->string('tags')->nullable();
+
+            // Individual
+            $table->string('job')->nullable();
+            $table->boolean('has_receipt_reminder')->default(false);
+            $table->integer('days_before')->default(0);
+
+            // Lease Details
+            $table->boolean('is_active')->default(true); // Indicates if they have an active lease
+            $table->unsignedBigInteger('lease_id')->nullable(); // Link to the lease
+
+            // Misc
+            $table->string('companyID')->nullable();
+            $table->string('reference')->nullable();
+            $table->mediumText('note')->nullable();
+            $table->enum('type', ['individual', 'company'])->default('individual');
+            $table->enum('status', ['draft', 'process', 'approved'])->default('approved');
+
+            $table->json('documents')->nullable(); // Stores uploaded documents
+            $table->enum('verification_status', ['pending', 'approved', 'rejected'])->default('pending');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // LeaseTerm
+        Schema::create('lease_terms', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->string('name')->comment('e.g., "nightly", "weekly", "monthly", "annually"');
+            $table->tinyText('description')->nullable();
+            $table->integer('duration_in_days')->default(0);
+            $table->integer('duration_in_hours')->default(0);
+            $table->boolean('is_default')->default(false);
+
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        // Lease
+        Schema::create('leases', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id'); // The company managing the property
+            $table->unsignedBigInteger('property_unit_id'); // The rental unit
+            $table->unsignedBigInteger('tenant_id'); // The tenant occupying the unit
+            $table->unsignedBigInteger('agent_id')->nullable(); // Agent managing the lease (if applicable)
+
+            // Lease Term Relationship
+            $table->unsignedBigInteger('lease_term_id'); // Link to lease_terms table
+
+            // Lease Details
+            $table->string('reference')->nullable(); // Unique lease reference number
+            $table->date('start_date'); // Lease start date
+            $table->date('end_date'); // Lease end date
+
+            // Financials
+            $table->decimal('rent_amount', 12, 2)->default(0); // Monthly/periodic rent amount
+            $table->decimal('deposit_amount', 12, 2)->default(0); // Security deposit
+            $table->decimal('paid_amount', 12, 2)->default(0); // Amount already paid
+            $table->decimal('due_amount', 12, 2)->default(0); // Remaining unpaid rent
+            $table->decimal('penalty_amount', 12, 2)->default(0); // Late payment penalties
+            $table->decimal('refund_amount', 12, 2)->default(0); // Refundable amount (if any)
+
+            // Payment Details
+            $table->enum('payment_type', ['debit', 'credit'])->default('credit');
+            $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
+            $table->string('payment_method')->default('cash');
+            $table->enum('invoice_status', ['not_invoiced', 'partial', 'invoiced'])->default('not_invoiced');
+
+            // Lease Status
+            $table->enum('status', ['active', 'expired', 'terminated'])->default('active');
+
+            // Lease Agreement Attachments
+            $table->string('agreement_file')->nullable(); // Path to lease agreement document
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        // Lease Invoice
+        Schema::create('lease_invoices', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('lease_id')->nullable(); // Linked to a lease
+            $table->date('date')->nullable(); // Invoice date
+            $table->string('reference'); // Unique invoice reference
+            $table->unsignedBigInteger('tenant_id')->nullable(); // Linked to tenant
+
+            $table->string('payment_reference')->nullable(); // Payment tracking reference
+            $table->date('due_date')->nullable(); // Invoice due date
+
+            // Invoice Breakdown
+            $table->decimal('tax_percentage', 12, 2)->default(0);
+            $table->decimal('tax_amount', 12, 2)->default(0);
+            $table->decimal('discount_percentage', 12, 2)->default(0);
+            $table->decimal('discount_amount', 12, 2)->default(0);
+            $table->decimal('total_amount', 12, 2);
+            $table->decimal('paid_amount', 12, 2);
+            $table->decimal('due_amount', 12, 2);
+
+            $table->enum('status', ['draft', 'posted', 'canceled'])->default('draft');
+            $table->enum('payment_status', ['pending', 'partial', 'paid'])->default('pending');
+
+            $table->string('tenant_reference')->nullable();
+            $table->unsignedBigInteger('agent_id')->nullable();
+
+            // Accounting
+            $table->string('auto_post')->nullable();
+            $table->boolean('to_checked')->default(false);
+
+            $table->string('terms')->nullable(); // Payment terms
+            $table->timestamps();
+            $table->softDeletes();
+        });
+        // Lease Payments
+        Schema::create('lease_payments', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('lease_invoice_id'); // Linked to an invoice
+            $table->unsignedBigInteger('journal_id')->nullable();
+            $table->string('reference'); // Unique payment reference
+            $table->string('transaction_id')->nullable(); // Transaction tracking ID
+            $table->decimal('amount', 12, 2)->default(0); // Payment amount
+            $table->decimal('due_amount', 12, 2)->default(0); // Remaining due amount
+            $table->date('date'); // Payment date
+            $table->string('payment_method'); // E.g., M-Pesa, bank transfer, cash
+            $table->enum('type', ['debit', 'credit'])->default('credit'); // Credit = Rent received
+            $table->enum('status', ['posted', 'pending'])->default('pending'); // Payment status
+            $table->text('note')->nullable();
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
 
 
 
@@ -309,10 +455,19 @@ return new class extends Migration
         Schema::table('property_features', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
-        Schema::table('lease_terms', function (Blueprint $table) {
+        Schema::table('unit_pricelists', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
-        Schema::table('unit_pricelists', function (Blueprint $table) {
+        Schema::table('leases', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('lease_invoices', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('lease_payments', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('lease_terms', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }

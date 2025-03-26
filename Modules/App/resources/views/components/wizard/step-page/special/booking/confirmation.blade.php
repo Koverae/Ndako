@@ -3,7 +3,7 @@
 ])
 <div>
     <div class="row gap-1 justify-content-md-center {{ $this->currentStep == $value->step ? '' : 'd-none' }}">
-        
+
         <!-- Booking Details -->
         <div class="border shadow-sm col-12 col-md-8 card">
             <div class="p-4 card-body">
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     @endif
-                    
+
                     <div class="mb-2">
                         <label for="paymentMethod" class="form-label">Payment Method</label>
                         <select class="form-control @error('paymentMethod') is-invalid @enderror" id="paymentMethod" wire:model="paymentMethod" placeholder="Enter payment amount" value="{{ old('paymentMethod') }}">

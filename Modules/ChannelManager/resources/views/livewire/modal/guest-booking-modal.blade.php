@@ -5,10 +5,19 @@
         <span class="btn-close" wire:click="$dispatch('closeModal')"></span>
       </div>
       <div class="modal-body">
+        
         @if (session()->has('message'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <div class="alert-body">
                     <span>{{ session('message') }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+        @if (session()->has('success'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <div class="alert-body">
+                    <span>{{ session('success') }}</span>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
@@ -100,6 +109,9 @@
                             <option value="cash">{{ __('Cash') }}</option>
                             <option value="bank">{{ __('Bank') }}</option>
                             <option value="m-pesa">{{ __('M-Pesa') }}</option>
+                            @if (settings()->has_paystack)
+                            <option value="paystack">{{ __('Paystack(Bank, Mobile Money)') }}</option>
+                            @endif
                         </select>
                         @error('paymentMethod')
                         <div class="mt-1 text-danger">{{ $message }}</div>
@@ -136,4 +148,24 @@
         <button class="btn btn-secondary" wire:click="$dispatch('closeModal')">{{ __('Close') }}</button>
       </div>
     </div>
+
+    @script
+    <script>
+        $wire.on('openPaystackPopup', url => {
+            let width = 600, height = 700;
+            let left = (screen.width - width) / 2;
+            let top = (screen.height - height) / 2;
+
+            let paystackWindow = window.open(url, 'Paystack Payment', `width=${width},height=${height},top=${top},left=${left}`);
+
+            // let interval = setInterval(() => {
+            //     if (paystackWindow && paystackWindow.closed) {
+            //         clearInterval(interval);
+            //         $wire.dispatch('paymentCompleted', {reference: localStorage.getItem('paystack_payment_reference')});
+            //     }
+            // }, 1000);
+        });
+    </script>    
+    @endscript
+
 </div>

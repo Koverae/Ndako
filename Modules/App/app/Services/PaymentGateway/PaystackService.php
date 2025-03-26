@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Koverae\KoveraeBilling\Models\Transaction;
+use Modules\ChannelManager\Models\Booking\BookingInvoice;
+use Modules\ChannelManager\Models\Booking\BookingPayment;
+use Modules\RevenueManager\Models\Accounting\Journal;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
 class PaystackService
@@ -23,16 +26,50 @@ class PaystackService
         $this->baseUrl = settings()->paystack_base_url;
     }
 
+    /**
+     * Handle payment processing and recording.
+     *
+     * @param string $method Payment method (cash, bank, mobile_money, paystack)
+     * @param float $amount Payment amount
+     * @param int $bookingId Associated booking ID
+     * @param array $extraData Additional data (e.g., transaction reference)
+     * @return Payment|null
+     */
+    public function handlePayment(string $method, float $amount, int $bookingId, array $extraData = []): ?Payment
+    {
+        $transactionId = Str::uuid(); // Generate unique transaction ID
+
+        // If Paystack, process the payment
+        if ($method === 'paystack') {
+            $paystackResponse = $this->initializePayment($amount, $extraData);
+
+            if (!$paystackResponse || !isset($paystackResponse['data']['id'])) {
+                Log::error('Paystack payment failed', ['response' => $paystackResponse]);
+                return null;
+            }
+
+            $transactionId = $paystackResponse['data']['id'];
+        }
+
+        // Store payment record
+        return BookingPayment::create([
+            'booking_id' => $bookingId,
+            'method' => $method,
+            'amount' => $amount,
+            'transaction_id' => $transactionId,
+            'status' => 'completed',
+        ]);
+    }
+
 
     /**
     * Initialize a payment with Paystack.
     *
     * @param string $email The customer's email address.
     * @param float $amount The payment amount (in major currency units, e.g., KES).
-    * @param string|null $plan Optional plan code for subscriptions.
     * @return \Illuminate\Http\RedirectResponse Redirects to Paystack's payment page.
     */
-    public function initializePayment($name = null, $email, $amount)
+    public function initializePayment($name = null, $email, $amount, $extraData)
     {
         $amount = $amount * 100; // Paystack processes payments in kobo (cents), so multiply by 100.
         $client = new Client();
@@ -47,10 +84,7 @@ class PaystackService
                 'email' => $email,
                 'amount' => $amount,
                 'callback_url' => route('paystack.callback'),// Redirect after payment
-                'metadata' => [
-                    'team_id' => current_company()->team->id, // Attach team ID for reference
-                    // 'subscription_id' => $subscription->id,
-                ]
+                'metadata' => $extraData
             ]
         ]);
 
@@ -58,7 +92,8 @@ class PaystackService
 
         // Redirect to Paystack payment page if the initialization was successful
         if ($result->status) {
-            return redirect($result->data->authorization_url);
+            // return redirect($result->data->authorization_url);
+            return $result;
         }
 
         // Return with an error message if initialization failed
@@ -70,7 +105,6 @@ class PaystackService
      * Handle Paystack's callback after payment.
      *
      * @param \Illuminate\Http\Request $request The request instance containing the payment reference.
-     * @return \Illuminate\View\View Returns a success or error view based on payment status.
      */
     public function handleCallback(Request $request)
     {
@@ -86,57 +120,66 @@ class PaystackService
 
         $result = json_decode($response->getBody());
 
-        $team = Team::find(current_company()->team->id);
-        $subscription = $team->subscription('main');
-
-        // Extract the subscription code (if available)
-        $subscriptionCode = $result->data->plan->subscription_code ?? null;
-
         // If payment failed, store the transaction as "failed" and return an error page
         if (!$result->status || $result->data->status !== 'success') {
-            Transaction::create([
-                'team_id' => $team->id,
-                'subscription_id' => $subscription->id,
-                'reference' => $result->data->reference,
-                'amount' => $result->data->amount / 100, // Convert back to major currency unit
-                'currency' => 'KES',
-                'status' => 'failed',
-                'payment_method' => $result->data->channel,
-                'metadata' => json_encode($result->data),
-            ]);
-
-            return view('app::paystack.error', ['message' => 'Payment failed. Please try again.']);
+            session()->flash('error', "Oops! Something went wrong. Please try again later. Your reference: {$reference}");
+            return view('app::paystack.callback', ['data' => $result->data]);
         }
 
+        $invoice = BookingInvoice::find($result->data->metadata->invoiceId);
         // Process the payment and update records within a database transaction
-        DB::transaction(function () use ($subscription, $result, $team, $subscriptionCode) {
-            // Update the subscription with the new billing period
-            $subscription->update([
-                'paystack_authorization' => $team->subscription('main')->paystack_authorization ?? $result->data->authorization->authorization_code,
-                'paystack_customer' => $team->subscription('main')->paystack_customer ?? $result->data->customer->customer_code,
-                'subscription_code' => $subscriptionCode,
-                'invoice_period' => $result->data->metadata->invoice_period,
-                'invoice_interval' => $result->data->metadata->invoice_interval,
-                'starts_at' => now(),
-                'ends_at' => calculateEndDate($result->data->metadata->invoice_interval, $result->data->metadata->invoice_period),
-                'trial_ends_at' => null,
+        DB::transaction(function () use ($invoice, $result) {
+            
+            // Store payment record
+            $journal = Journal::isCompany(current_company()->id)->isType($result->data->metadata->method)->first();
+            $payment = BookingPayment::create([
+                'company_id' => current_company()->id,
+                'booking_invoice_id' => $invoice->id,
+                'transaction_id' => $result->data->reference,
+                'journal_id' => $journal->id,
+                'payment_method' => $result->data->channel,
+                // 'payment_method' => $result->data->metadata->method,
+                'amount' => $result->data->amount / 100,
+                'date' => now(),
+                'note' => 'Payment Received for Invoice #'. $invoice->reference,
+                'type' => 'credit',
+            ]);
+            $payment->save();
+
+            // Process the after payment
+
+            $due_amount = $invoice->due_amount - $payment->amount;
+
+            if ($due_amount == $invoice->total_amount) {
+                $payment_status = 'unpaid';
+            } elseif ($due_amount > 0) {
+                $payment_status = 'partial';
+            } else {
+                $payment_status = 'paid';
+            }
+            $paidAmount = $invoice->paid_amount + $payment->amount;
+
+            $invoice->update([
+                'payment_status' => $payment_status,
+                'paid_amount' => ($paidAmount),
+                'due_amount' => ($due_amount),
             ]);
 
-            // Log the successful transaction
-            Transaction::create([
-                'team_id' => $team->id,
-                'subscription_id' => $subscription->id,
-                'reference' => $result->data->reference,
-                'amount' => $result->data->amount / 100,
-                'currency' => 'KES',
-                'status' => 'success',
-                'payment_method' => $result->data->channel,
-                'metadata' => json_encode($result->data),
+            $invoice->booking->update([
+                'payment_status' => $payment_status,
+                'paid_amount' => ($paidAmount),
+                'due_amount' => ($due_amount),
             ]);
+            // Update Payment due amount
+            $payment->update([
+                'due_amount' => ($due_amount)
+            ]);
+
         });
 
         // Return the success view with payment details
-        return view('app::paystack.success', ['data' => $result->data]);
+        session()->flash('success', "Your payment was received successfully! Your reference is: {$reference}");
+        return view('app::paystack.callback', ['data' => $result->data]);
     }
 
     /**

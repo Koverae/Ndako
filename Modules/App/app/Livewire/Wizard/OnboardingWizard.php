@@ -63,6 +63,7 @@ class OnboardingWizard extends SimpleWizard
             ['id' => 'bunk-room', 'label' => 'Bunk Room 🛏️🛏️'],
 
             // Premium & Luxury Rooms
+            ['id' => 'standard-room', 'label' => 'Standard Room 🌟'],
             ['id' => 'deluxe-room', 'label' => 'Deluxe Room 🌟'],
             ['id' => 'superior-room', 'label' => 'Superior Room ✨'],
             ['id' => 'executive-room', 'label' => 'Executive Room 💼'],
@@ -272,7 +273,7 @@ class OnboardingWizard extends SimpleWizard
                 'size' => $type['unitSize']?? null,
                 // 'features' => json_encode($unit['unitFeatures']?? []),
             ]);
-                
+
             if(count($type['unitPrices']) >= 1) {
                 foreach ($type['unitPrices'] as $price) {
                     PropertyUnitTypePricing::updateOrCreate(
@@ -289,7 +290,7 @@ class OnboardingWizard extends SimpleWizard
                         ]
                     );
                 }
-            
+
                 // Reset the component state
                 $this->reset(['prices', 'unitPrices']);
             }
@@ -299,7 +300,7 @@ class OnboardingWizard extends SimpleWizard
                     $floor = PropertyFloor::isCompany(current_company()->id)
                         ->where('name', $unit['floor'])
                         ->first() ?? null;
-                
+
                     PropertyUnit::updateOrCreate(
                         [
                             'company_id' => current_company()->id,
@@ -312,7 +313,7 @@ class OnboardingWizard extends SimpleWizard
                             'capacity' => $type['capacity'],
                         ]
                     );
-                
+
                     // Attach amenities to the property (éviter la duplication ici aussi)
                     if(count($type['unitFeatures']) >= 1) {
                         foreach($type['unitFeatures'] as $feature) {
@@ -324,7 +325,7 @@ class OnboardingWizard extends SimpleWizard
                         }
                     }
             }
-                
+
         }
 
         $this->propertyUnits = [];
@@ -521,6 +522,7 @@ class OnboardingWizard extends SimpleWizard
 
         $invitation = CompanyInvitation::create([
             'company_id' => current_company()->id,
+            'property_id' => current_company()->properties()->first()->id ?? null,
             'email'     => $member['email'],
             'token' => $token,
             'role' => $member['role'],

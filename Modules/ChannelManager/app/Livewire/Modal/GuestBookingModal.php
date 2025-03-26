@@ -2,10 +2,12 @@
 
 namespace Modules\ChannelManager\Livewire\Modal;
 
+use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
 use LivewireUI\Modal\ModalComponent;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Livewire\WithFileUploads;
+use Modules\App\Services\PaymentGateway\PaystackService;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
 use Modules\ChannelManager\Services\Booking\BookingService;
@@ -16,11 +18,14 @@ class GuestBookingModal extends ModalComponent
     use WithFileUploads;
     public Booking $booking;
     public $photo, $image_path, $paymentMethod = 'm-pesa', $paymentAmount = 0, $dueAmount = 0;
+    public $paymentVerified = false;
 
     private BookingService $bookingService;
+    private PaystackService $paystackService;
 
-    public function boot(BookingService $bookingService){
+    public function boot(BookingService $bookingService, PaystackService $paystackService){
         $this->bookingService = $bookingService;
+        $this->paystackService = $paystackService;
     }
 
     public function rules()
@@ -76,6 +81,18 @@ class GuestBookingModal extends ModalComponent
             return redirect()->back();
         }
 
+        $extraData = [
+            'invoiceId' => $this->booking->invoice->id,
+            'method' => $this->paymentMethod,
+            'bookingId' => $this->booking->id
+        ];
+        
+        if($this->paymentMethod == 'paystack'){
+            $responseData = $this->paystackService->initializePayment($this->booking->guest->name, $this->booking->guest->email, $this->paymentAmount, $extraData);
+            return $this->dispatch('openPaystackPopup', $responseData->data->authorization_url);
+            // return $this->dispatch('openPaystackTab', $responseData->data->authorization_url);
+        }
+
         $journal = Journal::isCompany(current_company()->id)->isType($this->paymentMethod)->first();
         $payment = BookingPayment::create([
             'company_id' => current_company()->id,
@@ -115,6 +132,49 @@ class GuestBookingModal extends ModalComponent
         // $this->closeModal();
         // Send success message
         session()->flash('message', 'Your payment has been successfully processed!');
+    }
+
+    #[On('paymentCompleted')]
+    public function paymentCompleted()
+    {
+        $reference = session('paystack_payment_reference');
+        session()->forget('paystack_payment_reference'); // Destroy session after retrieving
+        // Verify payment from Paystack
+        $paystackKey = settings()->paystack_secret_key;
+    
+        $response = Http::withToken($paystackKey)->get("https://api.paystack.co/transaction/verify/{$reference}");
+    
+        $responseData = $response->json();
+    
+        if (isset($responseData['data']) && $responseData['data']['status'] === 'success') {
+            session()->flash('success', 'Payment successful!');
+        } else {
+            session()->flash('error', 'Payment failed!');
+        }
+    }
+    
+    #[On('checkPaymentStatus')]
+    public function checkPaymentStatus()
+    {
+        $reference = session('paystack_reference') ?? request()->query('reference');
+
+        if (!$reference) {
+            session()->flash('error', 'Payment was not completed.');
+            return;
+        }
+
+        $paystackKey = config('services.paystack.secret');
+
+        $response = Http::withToken($paystackKey)->get("https://api.paystack.co/transaction/verify/{$reference}");
+
+        $responseData = $response->json();
+
+        if (isset($responseData['data']) && $responseData['data']['status'] === 'success') {
+            session()->flash('success', 'Payment successful!');
+            $this->paymentVerified = true;
+        } else {
+            session()->flash('error', 'Payment failed!');
+        }
     }
 
 }

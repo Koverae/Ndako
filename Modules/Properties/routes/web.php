@@ -32,7 +32,7 @@ Route::middleware('identify-kover')->group(function () {
     // Properties
     Route::get('properties', PropertyLists::class)->name('properties.lists');
     Route::prefix('/properties')->name('properties.')->group(function() {
-        Route::get('/create', PropertyCreate::class)->name('create')->middleware('feature:custom-roles');
+        Route::get('/create', PropertyCreate::class)->name('create');
         Route::get('/{property}', PropertyShow::class)->name('show');
         // Route::get('/create', PropertyCreate::class)->name('create')->middleware('feature:ota-connector');
         // Route::get('/create', PropertyCreate::class)->name('create')->middleware('limit:properties');

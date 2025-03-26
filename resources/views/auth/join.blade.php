@@ -53,7 +53,7 @@
                 <select name="role" id="" class="form-control" disabled>
                     <option value="">{{__('--- Choose ---')}}</option>
                     @foreach($roles as $role)
-                        <option value="{{ $role->id }}" {{ $invitation->role == $role->id ? 'selected' : '' }}>{{ inverseSlug($role->name) }}</option>
+                        <option value="{{ $role->id }}" {{ $invitation->role == $role->name ? 'selected' : '' }}>{{ inverseSlug($role->name) }}</option>
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('role')" class="mt-2" />

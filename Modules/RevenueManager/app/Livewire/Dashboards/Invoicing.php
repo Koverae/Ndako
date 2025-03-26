@@ -20,7 +20,7 @@ class Invoicing extends Component
 
     public function mount(){
         $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = current_property()->id;
+        $this->property = current_property()->id ?? null;
         $this->loadData();
     }
 

@@ -43,9 +43,9 @@
             </p>
 
             <div class="mt-4">
-                <strong>Transaction ID:</strong> {{ $data->reference }} <br>
-                <strong>Amount Paid:</strong> {{ format_currency($data->amount / 100, 2) }} <br>
-                <strong>Status:</strong> <span class="badge bg-success">{{ ucfirst($data->status) }}</span>
+                <strong>Transaction ID:</strong> {{ $data['reference'] }} <br>
+                <strong>Amount Paid:</strong> {{ format_currency($data['amount'] / 100, 2) }} <br>
+                <strong>Status:</strong> <span class="badge bg-success">{{ ucfirst($data['status']) }}</span>
             </div>
 
             @if(isset($subscription))

@@ -26,7 +26,7 @@ class AddPropertyWizard extends SimpleWizard
     public $type, $invoicing = 'rate', $name, $country, $street, $city, $state, $zip, $description, $floors = 0, $companyEmail, $companyPhone, $companyStreet, $companyCity, $companyState, $companyZip, $companyCountry;
 
     public $unitName, $unitFloor, $numberUnits = 1, $capacity = 1, $unitType, $unitSize = 0, $unitDesc, $unitPrice = 0, $prices = 1, $priceRate, $unitRate = 0;
-    
+
     public array $propertyTypes = [], $countries = [], $selectedAmenity = [], $propertyFloors = [], $propertyUnits = [], $leaseTerms = [], $unitFeatures = [], $units = [], $unitTypes = [], $unitPrices = [];
 
 
@@ -46,6 +46,7 @@ class AddPropertyWizard extends SimpleWizard
             ['id' => 'bunk-room', 'label' => 'Bunk Room 🛏️🛏️'],
 
             // Premium & Luxury Rooms
+            ['id' => 'standard-room', 'label' => 'Standard Room 🌟'],
             ['id' => 'deluxe-room', 'label' => 'Deluxe Room 🌟'],
             ['id' => 'superior-room', 'label' => 'Superior Room ✨'],
             ['id' => 'executive-room', 'label' => 'Executive Room 💼'],
@@ -114,7 +115,7 @@ class AddPropertyWizard extends SimpleWizard
             StepPage::make('Define Your Units 🏢', '', 1)->component('app::wizard.step-page.special.property.add-units'),
         ];
     }
-    
+
 
 
     // Add the unit to the propertyUnits array
@@ -197,7 +198,7 @@ class AddPropertyWizard extends SimpleWizard
                 'size' => $type['unitSize']?? null,
                 // 'features' => json_encode($unit['unitFeatures']?? []),
             ]);
-                
+
             if(count($type['unitPrices']) >= 1) {
                 foreach ($type['unitPrices'] as $price) {
                     PropertyUnitTypePricing::updateOrCreate(
@@ -214,7 +215,7 @@ class AddPropertyWizard extends SimpleWizard
                         ]
                     );
                 }
-            
+
                 // Reset the component state
                 $this->reset(['prices', 'unitPrices']);
             }
@@ -224,7 +225,7 @@ class AddPropertyWizard extends SimpleWizard
                     $floor = PropertyFloor::isCompany(current_company()->id)
                         ->where('name', $unit['floor'])
                         ->first() ?? null;
-                
+
                     PropertyUnit::updateOrCreate(
                         [
                             'company_id' => current_company()->id,
@@ -237,7 +238,7 @@ class AddPropertyWizard extends SimpleWizard
                             'capacity' => $type['capacity'],
                         ]
                     );
-                
+
                     // Attach amenities to the property (éviter la duplication ici aussi)
                     if(count($type['unitFeatures']) >= 1) {
                         foreach($type['unitFeatures'] as $feature) {
@@ -249,7 +250,7 @@ class AddPropertyWizard extends SimpleWizard
                         }
                     }
             }
-                
+
         }
 
         $this->propertyUnits = [];
@@ -429,5 +430,5 @@ class AddPropertyWizard extends SimpleWizard
 
     //     return $this->redirect(route('properties.show', ['property' => $property->id]), navigate: true);
     // }
-    
+
 }

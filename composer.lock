@@ -1183,16 +1183,16 @@
         },
         {
             "name": "koverae/koverae-billing",
-            "version": "v1.2.2",
+            "version": "v1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Koverae/koverae-billing.git",
-                "reference": "ac27e7a214f4f22267476b097818250c7b4c810c"
+                "reference": "b744f2b9d4854444a287a9c95e3321ea52513870"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Koverae/koverae-billing/zipball/ac27e7a214f4f22267476b097818250c7b4c810c",
-                "reference": "ac27e7a214f4f22267476b097818250c7b4c810c",
+                "url": "https://api.github.com/repos/Koverae/koverae-billing/zipball/b744f2b9d4854444a287a9c95e3321ea52513870",
+                "reference": "b744f2b9d4854444a287a9c95e3321ea52513870",
                 "shasum": ""
             },
             "require": {
@@ -1238,9 +1238,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Koverae/koverae-billing/issues",
-                "source": "https://github.com/Koverae/koverae-billing/tree/v1.2.2"
+                "source": "https://github.com/Koverae/koverae-billing/tree/v1.2.5"
             },
-            "time": "2025-03-23T08:37:29+00:00"
+            "time": "2025-03-25T10:42:52+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",

@@ -23,17 +23,11 @@ class PaystackController extends Controller
 
     public function initiate(Request $request)
     {
-
-        try {
-            $paymentUrl = $this->paystackService->initializePayment(
-                $request->email,
-                $request->amount
-            );
-
-            return redirect($paymentUrl);
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
+        $this->paystackService->initializePayment(
+            $request->name,
+            $request->email,
+            $request->amount
+        );
     }
 
     public function callback(Request $request)

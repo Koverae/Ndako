@@ -2,20 +2,28 @@
 
 namespace Modules\ChannelManager\Services\Booking;
 
+use Illuminate\Support\Str;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\RevenueManager\Services\Pricing\RateService;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Modules\App\Services\PaymentGateway\PaystackService;
+use Modules\ChannelManager\Models\Booking\BookingInvoice;
+use Modules\ChannelManager\Models\Booking\BookingPayment;
+use Modules\RevenueManager\Models\Accounting\Journal;
 
 class BookingService
 {
     protected RateService $rateService;
+    protected PaystackService $paystackService;
 
-    public function __construct(RateService $rateService)
+    public function __construct(RateService $rateService, PaystackService $paystackService)
     {
         $this->rateService = $rateService;
+        $this->paystackService = $paystackService;
     }
 
     /**
@@ -412,6 +420,75 @@ class BookingService
 
         // 3️⃣ Create a new booking (if guest still wants to book)
         return redirect()->route('bookings.create', ['check_in' => $newCheckIn, 'check_out' => $newCheckOut]);
+    }
+
+    /**
+     * Handle payment processing and recording.
+     *
+     * @param string $invoice Invoice to which the payment is linked
+     * @param string $method Payment method (cash, bank, mobile_money, paystack)
+     * @param float $amount Payment amount
+     * @param int $bookingId Associated booking ID
+     * @param array $extraData Additional data (e.g., transaction reference)
+     */
+    public function handlePayment(int $invoiceID, string $method, float $amount, int $bookingId)
+    {
+        $invoice = BookingInvoice::find($invoiceID);
+        $booking = Booking::find($bookingId);
+
+        $transactionId = Str::uuid(); // Generate unique transaction ID
+        $extraData = [
+            'invoiceId' => $invoice->id,
+            'method' => $method,
+            'bookingId' => $bookingId
+        ];
+        // If Paystack, process the payment
+        if ($method === 'paystack') {
+            return $this->paystackService->initializePayment($invoice->guest->name, $invoice->guest->email, $amount, $extraData);
+            // $transactionId = $paystackResponse['data']['id'];
+        }
+
+        // Store payment record
+        $journal = Journal::isCompany(current_company()->id)->isType($method)->first();
+        $payment = BookingPayment::create([
+            'company_id' => current_company()->id,
+            'booking_invoice_id' => $invoice->id,
+            'journal_id' => $journal->id,
+            'payment_method' => $method,
+            'amount' => $amount,
+            'date' => now(),
+            'note' => 'Payment Received for Invoice #'. $invoice->reference,
+            'type' => 'credit',
+        ]);
+        $payment->save();
+
+        // Process the after payment
+
+        $due_amount = $invoice->due_amount - $payment->amount;
+
+        if ($due_amount == $invoice->total_amount) {
+            $payment_status = 'unpaid';
+        } elseif ($due_amount > 0) {
+            $payment_status = 'partial';
+        } else {
+            $payment_status = 'paid';
+        }
+        $paidAmount = $invoice->paid_amount + $payment->amount;
+
+        $invoice->update([
+            'payment_status' => $payment_status,
+            'paid_amount' => ($paidAmount),
+            'due_amount' => ($due_amount),
+        ]);
+
+        $invoice->booking->update([
+            'payment_status' => $payment_status,
+            'paid_amount' => ($paidAmount),
+            'due_amount' => ($due_amount),
+        ]);
+
+        return $payment;
+
     }
 
 

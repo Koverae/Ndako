@@ -47,7 +47,7 @@ return new class extends Migration
             $table->enum('due_format', ['percent', 'fixed'])->default('percent');
             $table->integer('after')->nullable(); //Days after which the amount is to be paid
             $table->enum('after_date', ['after_invoice_date', 'after_end_of_the_month', 'after_end_of_the_next_month', 'end_of_the_month_of'])->default('after_invoice_date'); //Days after which the amount is to be paid
-            $table->integer('month')->default(0); 
+            $table->integer('month')->default(0);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->softDeletes();
@@ -100,7 +100,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-        
+
         // Customer Invoice
         Schema::create('customer_invoices', function (Blueprint $table) {
             $table->id();
@@ -191,7 +191,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->string('name');
-            $table->enum('type', ['sale','purchase', 'cash', 'bank', 'm-pesa','miscellaneous'])->nullable();
+            $table->enum('type', ['sale','purchase', 'cash', 'bank', 'm-pesa', 'paystack', 'miscellaneous'])->nullable();
             $table->string('short_code');
             $table->unsignedBigInteger('default_account_id')->nullable();
             // Accounting Informations

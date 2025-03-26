@@ -172,7 +172,7 @@ $unitTypes = UnitType::with(['unitTypePricings' => function ($query) use ($prope
                                     })
                                     .then(response => response.text())
                                     .then(html => {
-                                        document.getElementById('availableRooms').innerHTML = html; 
+                                        document.getElementById('availableRooms').innerHTML = html;
                                     })
                                     .catch(error => {
                                         console.error('Error loading available rooms:', error);
@@ -226,7 +226,7 @@ $unitTypes = UnitType::with(['unitTypePricings' => function ($query) use ($prope
 
 
             $this->availableRooms = $rooms;
-            
+
             // $this->availableRooms = $rooms->filter(function ($room) {
             //     $isAvailable = !Booking::where('property_unit_id', $room->id)
             //         ->where(function ($query) {
@@ -594,7 +594,7 @@ class AddBookingWizard extends SimpleWizard
                         }, SORT_REGULAR, $this->sortOrder === 'desc') // Step 6: Apply sorting order (ascending or descending)
                         ->values(); // Step 7: Reset array keys (in case filtering removed some items)
     }
-    
+
 
     public function createBooking(){
         $this->validate();
@@ -725,3 +725,10 @@ class AddBookingWizard extends SimpleWizard
                                     ->where('check_out', '>', $endDate);
                         });
                 })
+
+
+        // {
+        //     "regular": ["id_card", "passport", "driving_license"],
+        //     "student_housing": ["id_card", "passport", "admission_letter"],
+        //     "corporate": ["id_card", "passport", "company_registration"]
+        // }

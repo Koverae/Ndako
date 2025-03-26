@@ -125,10 +125,10 @@ class RevenueManagerAppHandler extends AppHandler
                 'in_advance_day' => $term['in_advance_day'] ?? 7,
                 'note' => 'Payment terms: '. $term['name'],
                 'reduced_tax' => $term['reduced_tax'] ?? 'on_early_payment',
-                
+
             ]);
             $paymentTerm->save();
-    
+
             // Insert into payment_due_terms table for terms that have due_amounts defined
             if (isset($term['due_amounts'])) {
                 foreach ($term['due_amounts'] as $dueTerm) {
@@ -154,9 +154,9 @@ class RevenueManagerAppHandler extends AppHandler
                 ]);
             }
         }
-    
+
     }
-    
+
     /**
      * Install Follow-up Levels.
      *
@@ -175,7 +175,7 @@ class RevenueManagerAppHandler extends AppHandler
             FollowUpLevel::create(array_merge(['company_id' => $companyId], $level));
         }
     }
-    
+
     /**
      * Install specific dashboards for invoicing.
      *
@@ -232,12 +232,18 @@ class RevenueManagerAppHandler extends AppHandler
                 'type' => 'm-pesa',
                 'short_code' => 'MPESA'
             ],
+            [
+                'company_id' => $companyId,
+                'name' => 'Paystack',
+                'type' => 'paystack',
+                'short_code' => 'PSTACK'
+            ],
         ];
         foreach($journals as $journal){
             Journal::create($journal);
         }
     }
 
-    
+
 
 }
