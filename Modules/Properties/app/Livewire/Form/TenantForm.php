@@ -63,7 +63,7 @@ class TenantForm extends LightWeightForm
     public function mount($tenant = null){
         $this->hasPhoto = true;
 
-        $this->property = Property::isCompany(current_company()->id)->get()->first()->id;
+        $this->property = Property::isCompany(current_company()->id)->get()->first()->id ?? null;
 
         $this->leaseTermsOptions = toSelectOptions(LeaseTerm::isCompany(current_company()->id)->where('duration_in_days', '>=', 7)->get(), 'id', 'name');
 
@@ -324,6 +324,29 @@ class TenantForm extends LightWeightForm
         }
     }
 
+    public function updatedPhoto(){
+        // Validate the uploaded file
+        $this->validate();
+        if($this->tenant){
+            $tenant = Tenant::find($this->tenant->id);
+
+            if(!$this->image_path){
+                $this->image_path = $tenant->id . '_tenant.png';
+
+                // $this->photo->storeAs('avatars', $this->image_path, 'public');
+                $tenant->update([
+                    'avatar' => $this->image_path,
+                ]);
+            }
+
+            $this->photo->storeAs('avatars', $this->image_path, 'public');
+
+
+            // Send success message
+            session()->flash('message', 'Avatar updated successfully!');
+        }
+    }
+
     #[On('create-tenant')]
     public function saveTenant(){
         $this->validate();
@@ -354,6 +377,14 @@ class TenantForm extends LightWeightForm
             'kin_address' => $this->kinAddress,
         ]);
         $tenant->save();
+
+        $avatar = $tenant->id.'_tenant.png';
+        if($this->photo){
+            $this->photo->storeAs('avatars', $avatar, 'public');
+        }
+        $tenant->update([
+            'avatar' => $avatar,
+        ]);
 
         // Create Tenant's lease
         $unit = PropertyUnit::find($this->unit);

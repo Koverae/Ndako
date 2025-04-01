@@ -300,7 +300,6 @@ return new class extends Migration
             $table->string('companyID')->nullable();
             $table->string('reference')->nullable();
             $table->mediumText('note')->nullable();
-            $table->enum('type', ['individual', 'company'])->default('individual');
             $table->enum('status', ['draft', 'process', 'approved'])->default('approved');
 
             $table->json('documents')->nullable(); // Stores uploaded documents
