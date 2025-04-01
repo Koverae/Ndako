@@ -32,7 +32,7 @@
             <div class="col-12" style="margin-bottom: 10px;">
                 <select wire:model="country" class="k-input w-100" {{ $this->blocked ? 'disabled' : '' }} id="country_id_0">
                     <option value="">{{ __('Country') }}</option>
-                    @foreach(current_company()->countries as $key => $country)
+                    @foreach(current_company()->countries() as $key => $country)
                     <option value="{{ $country->id }}">{{ $country->common_name }}</option>
                     @endforeach
                 </select>

@@ -49,7 +49,7 @@ class OnboardingWizard extends SimpleWizard
         $this->companyCity = current_company()->city;
         $this->companyCountry = current_company()->country_id;
 
-        $this->propertyTypes = toSelectOptions(PropertyType::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->propertyTypes = toSelectOptions(PropertyType::isCompany(current_company()->id)->where('property_type_group', '!=', 'commercial')->get(), 'id', 'name');
         $this->countries = toSelectOptions(Country::all(), 'id', 'common_name');
 
         $unitTypes = [

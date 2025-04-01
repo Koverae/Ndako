@@ -104,7 +104,7 @@
                         @endforeach
                     </div>
                     <!-- Avatar -->
-                    @if($this->photo)
+                    @if($this->hasPhoto)
                     <div class="p-0 m-0 k_employee_avatar">
                         <!-- Image Uploader -->
                         @if($this->photo != null)

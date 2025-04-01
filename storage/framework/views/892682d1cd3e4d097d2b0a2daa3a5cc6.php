@@ -191,7 +191,7 @@
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
                     <!-- Avatar -->
-                    <!--[if BLOCK]><![endif]--><?php if($this->photo): ?>
+                    <!--[if BLOCK]><![endif]--><?php if($this->hasPhoto): ?>
                     <div class="p-0 m-0 k_employee_avatar">
                         <!-- Image Uploader -->
                         <!--[if BLOCK]><![endif]--><?php if($this->photo != null): ?>

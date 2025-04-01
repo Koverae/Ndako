@@ -32,7 +32,7 @@ class AddPropertyWizard extends SimpleWizard
 
     public function mount(){
         $this->showButtons = false;
-        $this->propertyTypes = toSelectOptions(PropertyType::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->propertyTypes = toSelectOptions(PropertyType::isCompany(current_company()->id)->where('property_type_group', '!=', 'commercial')->get(), 'id', 'name');
         $this->countries = toSelectOptions(Country::all(), 'id', 'common_name');
 
         $unitTypes = [

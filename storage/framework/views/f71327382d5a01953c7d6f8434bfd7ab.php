@@ -199,7 +199,7 @@
                                             <?php echo e(__('Lease Renewals')); ?>
 
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('tenants.lists')); ?>">
                                             <?php echo e(__('Tenants')); ?>
 
                                         </a>

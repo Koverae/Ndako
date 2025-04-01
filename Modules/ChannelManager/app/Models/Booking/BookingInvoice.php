@@ -25,7 +25,7 @@ class BookingInvoice extends Model
             $number = BookingInvoice::isCompany(current_company()->id)->max('id') + 1;
             $year = Carbon::parse($model->date)->year;
             $month = Carbon::parse($model->date)->month;
-            $model->reference = make_reference_with_month_id('ND/INV', $number, $year, $month);
+            $model->reference = make_reference_with_month_id('ND/BK/INV', $number, $year, $month);
         });
     }
 

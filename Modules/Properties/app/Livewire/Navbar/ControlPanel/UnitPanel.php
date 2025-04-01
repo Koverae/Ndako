@@ -24,7 +24,7 @@ class UnitPanel extends ControlPanel
             $this->isForm = true;
             $this->currentPage = $unit->name;
         }else{
-            $this->currentPage = "Rooms";
+            $this->currentPage = "Units";
         }
 
     }

@@ -136,9 +136,13 @@ class Company extends Model
     /**
      * Get countries for the company.
      */
-    public function countries()
-    {
-        return $this->hasMany(Country::class, 'company_id', 'id');
+    // public function countries()
+    // {
+    //     return $this->hasMany(Country::class, 'company_id', 'id');
+    // }
+
+    public function countries(){
+        return Country::all()->sortBy('common_name');
     }
 
     /**

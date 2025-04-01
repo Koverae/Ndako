@@ -23,4 +23,11 @@
             <iframe class="p-0 col-12 col-md-12 col-lg-10" height="700" src="https://www.openstreetmap.org/export/embed.html?bbox=30.673828125000004%2C-4.7078283752183046%2C42.93457031250001%2C2.141834969768584&amp;layer=mapnik&amp;marker=-1.2852925793638545%2C36.80419921875" style="border: 1px solid black"></iframe><br/>
         </div>
     </div>
+    @if($this->data()->count() == 0)
+    <div class="bg-white empty k_nocontent_help h-100">
+        <img src="{{ asset('assets/images/illustrations/errors/419.svg') }}"style="height: 350px" alt="">
+        <p class="empty-title">{{ $this->emptyTitle() }}</p>
+        <p class="empty-subtitle">{{ $this->emptyText() }}</p>
+    </div>
+    @endif
 </div>

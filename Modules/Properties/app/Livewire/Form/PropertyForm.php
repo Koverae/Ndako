@@ -44,7 +44,7 @@ class PropertyForm extends LightWeightForm
             $this->property = $property;
             $this->name = $property->name;
             $this->property_type = $property->property_type_id;
-            // $this->invoicing = $property->invoicing_type; Invoicing Type (rental, rate) 
+            // $this->invoicing = $property->invoicing_type; Invoicing Type (rental, rate)
             $this->country = $property->country_id;
             $this->state = $property->state_id;
             $this->city = $property->city;
@@ -54,7 +54,7 @@ class PropertyForm extends LightWeightForm
 
             // $this->propertyAmenitiesOptions = toSelectOptions(PropertyAmenity::isProperty($property->id)->get(), 'id', 'id');
             $includedAmenities = PropertyAmenity::isCompany(current_company()->id)->isProperty($property->id)->get();
-            
+
             // Map the data into an array of ['id' => id, 'name' => name]
             $included = $includedAmenities->map(fn ($item) => [
                 'id' => $item->id,                    // The property feature id
@@ -68,8 +68,8 @@ class PropertyForm extends LightWeightForm
                 'name'                 // The name to display in the options
             );
         }
-        
-        $this->typeOptions = toSelectOptions(PropertyType::isCompany(current_company()->id)->get(), 'id', 'name');
+
+        $this->typeOptions = toSelectOptions(PropertyType::isCompany(current_company()->id)->where('property_type_group', '!=', 'commercial')->get(), 'id', 'name');
         $this->amenityOptions = toSelectOptions(Amenity::isCompany(current_company()->id)->get(), 'id', 'name');
 
         $invoiceTypes = [
@@ -116,7 +116,7 @@ class PropertyForm extends LightWeightForm
         return [
             Capsule::make('units', __('Property Units'), __('Units assigned to the property'), 'link', 'fa fa-home-user', route('properties.units.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => $this->property ? $this->property->units->count() : 0]),
             // Capsule::make('inventory-items', __('Inventory Items'), __('Inventory items assigned to the property'), 'link', 'fa fa-warehouse'),
-            Capsule::make('tenants', __('Guest/Tenants'), __('Inventory items assigned to the property'), 'link', 'fa fa-users',  route('guests.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => 0]),
+            Capsule::make('tenants', __('Guest/Tenants'), __('Inventory items assigned to the property'), 'link', 'fa fa-users',   route($this->property->isHospitality() ? 'guests.lists' : 'tenants.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => 0]),
         ];
     }
 
@@ -189,16 +189,16 @@ class PropertyForm extends LightWeightForm
     {
         // Validate that the selected feature exists and is unique for this unit type.
         $this->validate();
-        
+
         if ($this->property && $this->selectedAmenity && !$this->property->amenities->contains('id', $this->selectedAmenity)) {
         $existingAmenity = PropertyAmenity::isCompany(current_company()->id)->isProperty($this->property->id)->isAmenity($this->selectedAmenity)->exists();
-            
+
         if ($existingAmenity) {
                 // You can add a message or handle the case where the feature is already selected.
                 session()->flash('error', 'This amenity is already selected for the property.');
                 return;
             }
-            
+
             PropertyAmenity::create([
                 'property_id' => $this->property->id,
                 'amenity_id' => $this->selectedAmenity,
@@ -216,7 +216,7 @@ class PropertyForm extends LightWeightForm
         $amenity = PropertyAmenity::where('id', $itemId)
             ->isProperty($this->property->id)
             ->first();
-    
+
         if ($amenity) {
             $amenity->delete(); // Delete the amenity from the database.
             $this->selectedAmenity = null; // Reset the dropdown.
@@ -231,7 +231,7 @@ class PropertyForm extends LightWeightForm
         $property = Property::create([
             'name' => $this->name,
             'property_type_id' => $this->property_type,
-            'invoicing_type' => $this->invoicing,   
+            'invoicing_type' => $this->invoicing,
             'country_id' => $this->country,
             'state_id' => $this->state,
             'city' => $this->city,
@@ -251,7 +251,7 @@ class PropertyForm extends LightWeightForm
         $property->update([
             'name' => $this->name,
             'property_type_id' => $this->property_type,
-            'invoicing_type' => $this->invoicing,   
+            'invoicing_type' => $this->invoicing,
             'country_id' => $this->country,
             'state_id' => $this->state,
             'city' => $this->city,

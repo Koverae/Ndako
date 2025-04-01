@@ -183,7 +183,7 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
                                             {{ __('Lease Renewals') }}
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('tenants.lists') }}">
                                             {{ __('Tenants') }}
                                         </a>
                                     </div>

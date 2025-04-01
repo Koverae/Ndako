@@ -199,7 +199,7 @@ class PropertiesAppHandler extends AppHandler
                 'icon' => 'fas fa-concierge-bell',
                 'is_active' => true,
                 'property_type' => 'multi',
-                'property_type_group' => 'commercial',
+                'property_type_group' => 'hospitality',
                 'attributes' => json_encode([
                     'furnished' => 'boolean',
                     'housekeeping' => 'boolean',

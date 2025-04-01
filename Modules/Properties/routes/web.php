@@ -15,6 +15,8 @@ use Modules\Properties\Livewire\UnitTypes\Show as UnitTypeShow;
 use Modules\Properties\Livewire\PropertyType\Lists as PropertyTypeLists;
 use Modules\Properties\Livewire\PropertyType\Create as PropertyTypeCreate;
 use Modules\Properties\Livewire\PropertyType\Show as PropertyTypeShow;
+use Modules\Properties\Livewire\Tenants\Lists as TenantLists;
+use Modules\Properties\Livewire\Tenants\Create as TenantCreate;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,5 +59,11 @@ Route::middleware('identify-kover')->group(function () {
         Route::get('/create', UnitCreate::class)->name('create');
         Route::get('/{unit}', UnitShow::class)->name('show');
 
+    });
+
+    // Tenants
+    Route::prefix('/tenants')->name('tenants.')->group(function() {
+        Route::get('/', TenantLists::class)->name('lists');
+        Route::get('/create', TenantCreate::class)->name('create');
     });
 });

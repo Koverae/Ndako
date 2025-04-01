@@ -27,6 +27,16 @@ class Property extends Model
         return $query->where('property_type_id', $property_type_id);
     }
 
+    public function scopeIsHospitality(Builder $query)
+    {
+        return $query->where('property_type_group', 'hospitality');
+    }
+
+    public function scopeIsRental(Builder $query)
+    {
+        return $query->where('property_type_group', 'hospitality');
+    }
+
     public function type() {
         return $this->belongsTo(PropertyType::class, 'property_type_id');
     }

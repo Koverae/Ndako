@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\Plan;
 use Modules\Properties\Models\Property\LeaseTerm;
 use Modules\Properties\Models\Property\Property;
+use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Settings\Models\System\Setting;
 use Modules\Settings\Models\SystemParameter;
 use Modules\Settings\Models\WorkItem;
@@ -355,6 +356,63 @@ if (!function_exists('dateDaysDifference')) {
 }
 
 
+if (!function_exists('listMonthsInRange')) {
+    function listMonthsInRange($startDate, $endDate)
+    {
+        // Create Carbon instances for the start and end date
+        $start = Carbon::createFromFormat('d/m/y', $startDate); // Format: 01/04/25
+        $end = Carbon::createFromFormat('d/m/y', $endDate); // Format: 01/04/26
+
+        // Array to hold the result
+        $months = [];
+
+        // Loop through the months
+        while ($start->lte($end)) {
+            // Add the month and code to the array
+            $months[] = [
+                'month' => $start->format('F Y'),       // 'April 2025'
+                'code'  => $start->format('Y_m')        // '2025_04'
+            ];
+
+            // Move to the next month
+            $start->addMonth();
+        }
+
+        return $months;
+    }
+}
+
+if (!function_exists('getYearAndMonthFromCode')) {
+    function getYearAndMonthFromCode($code)
+    {
+        // Split the code into year and month
+        list($year, $month) = explode('_', $code);
+
+        // Parse the month and year to create a Carbon instance
+        $date = Carbon::createFromDate($year, $month, 1); // Set the day as 1st for the given month and year
+
+        // Extract year and month
+        return [
+            'year'  => $date->year,
+            'month' => $date->month,
+        ];
+    }
+}
+
+if (!function_exists('getRentDueDate')) {
+    function getRentDueDate(string $monthYear): string
+    {
+        // Convert the month string into a Carbon date
+        $date = Carbon::createFromFormat('F Y', $monthYear);
+
+        // Get the 1st day of the next month
+        $dueDate = $date->addMonth()->startOfMonth();
+
+        // Format and return the due date as yyyy/mm/dd
+        return $dueDate->format('Y/m/d');
+    }
+}
+
 //************ ****************//
 // Work Items ******************
 //************ ****************//
@@ -521,6 +579,14 @@ if(!function_exists('getPlan')){
 if(!function_exists('getProperty')){
     function getProperty($id){
         $property = Property::find($id);
+
+        return $property;
+    }
+}
+
+if(!function_exists('getPropertyUnit')){
+    function getPropertyUnit($id){
+        $property = PropertyUnit::find($id);
 
         return $property;
     }

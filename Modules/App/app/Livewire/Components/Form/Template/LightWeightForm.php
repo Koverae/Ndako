@@ -11,7 +11,7 @@ abstract class LightWeightForm extends Component
     use WithFileUploads;
 
     public $photo, $image_path, $default_img = 'user', $status = null;
-    public bool $checkboxes = false, $blocked = false, $has_avatar = false, $isInvoice = false;
+    public bool $checkboxes = false, $blocked = false, $has_avatar = false, $isInvoice = false, $hasPhoto = false;
 
     public $roomPrice = 0; // Price per night in KSh
     public $nights = 0;

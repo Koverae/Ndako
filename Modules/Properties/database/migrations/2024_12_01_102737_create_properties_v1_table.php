@@ -36,7 +36,7 @@ return new class extends Migration
             $table->unsignedBigInteger('property_type_id')->nullable();
             $table->enum('invoicing_type', ['rental', 'rate'])->nullable();
             $table->string('name');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('images')->nullable(); // Images
             $table->unsignedBigInteger('country_id')->nullable();
             $table->unsignedBigInteger('state_id')->nullable();
@@ -61,7 +61,7 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('property_id');
             $table->string('name')->comment('e.g., "Ground Floor", "First Floor"');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->boolean('is_available')->default(true);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
@@ -75,7 +75,7 @@ return new class extends Migration
             $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('pricing_id')->nullable();
             $table->string('name')->comment("e.g., 'Premium Room', 'Cluster Room', 'Twin Room'");
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->decimal('price', 12, 2)->default(0);
             $table->string('images')->nullable(); // Images
             $table->integer('capacity')->default(1);
@@ -115,7 +115,7 @@ return new class extends Migration
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->unsignedBigInteger('status_id')->nullable();
             $table->string('name');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('images')->nullable(); // Images
             $table->integer('capacity')->default(1);
             $table->json('default_setttings')->nullable();
@@ -133,7 +133,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->string('name')->comment('e.g., "Occupied", "Vacant", "Under Maintenance"');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->boolean('is_housekeeping')->default(false);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
@@ -145,7 +145,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->string('name');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->boolean('is_included')->default(true)->comment("e.g., cost per kWh, cubic meter, or flat rate");
             $table->enum('billing_cycle', ['weekly', 'monthly', 'quarterly ', 'yearly'])->default('monthly');
             $table->decimal('price_per_unit', $precision = 12, $scale = 2)->default(0);
@@ -159,7 +159,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->string('name');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('images')->nullable(); // Images
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
@@ -219,7 +219,7 @@ return new class extends Migration
             $table->unsignedBigInteger('property_unit_type_id')->nullable();
             $table->unsignedBigInteger('property_unit_id')->nullable();
             $table->string('name')->comment('e.g., "Room Cleaning", "Breakfast"');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('category')->nullable()->comment('e.g. "Food", "Laundry", "Housekeeping"');
             $table->decimal('price', 12, 2);
             $table->boolean('auto_approve')->default(false);
@@ -256,7 +256,13 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('avatar')->nullable();
             $table->string('name')->nullable();
+            $table->string('gender')->nullable();
+            $table->enum('type', ['individual', 'enterprise'])->default('individual');
+            $table->date('birthday')->nullable();
+
             $table->string('company_name')->nullable();
+            $table->string('company_address')->nullable();
+            $table->string('monthly_income')->default(0);
             $table->unsignedBigInteger('language_id')->nullable();
 
             // Address
@@ -264,17 +270,22 @@ return new class extends Migration
             $table->string('street2')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
-            $table->unsignedBigInteger('country_id')->nullable();
             $table->string('zip')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->unsignedBigInteger('nationality_id')->nullable();
 
             // Contact Info
-            $table->enum('identity_proof', ['id_card', 'passport', 'driving_license'])->default('id_card');
-            $table->string('identity')->nullable();
+            $table->enum('identification_type', ['id-card', 'passport', 'driving-license', 'resident-permit'])->default('id-card');
+            $table->string('identification')->nullable();
             $table->string('phone')->nullable();
             $table->string('mobile')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->string('tags')->nullable();
+            $table->string('kin_name')->nullable();
+            $table->string('kin_email')->nullable();
+            $table->string('kin_address')->nullable();
+            $table->string('kin_phone')->nullable();
 
             // Individual
             $table->string('job')->nullable();
@@ -304,7 +315,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->string('name')->comment('e.g., "nightly", "weekly", "monthly", "annually"');
-            $table->tinyText('description')->nullable();
+            $table->text('description')->nullable();
             $table->integer('duration_in_days')->default(0);
             $table->integer('duration_in_hours')->default(0);
             $table->boolean('is_default')->default(false);
@@ -317,10 +328,11 @@ return new class extends Migration
         Schema::create('leases', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id'); // The company managing the property
+            $table->unsignedBigInteger('property_id'); // The rental unit
             $table->unsignedBigInteger('property_unit_id'); // The rental unit
             $table->unsignedBigInteger('tenant_id'); // The tenant occupying the unit
             $table->unsignedBigInteger('agent_id')->nullable(); // Agent managing the lease (if applicable)
-
+            $table->string('code')->nullable();
             // Lease Term Relationship
             $table->unsignedBigInteger('lease_term_id'); // Link to lease_terms table
 
@@ -332,19 +344,16 @@ return new class extends Migration
             // Financials
             $table->decimal('rent_amount', 12, 2)->default(0); // Monthly/periodic rent amount
             $table->decimal('deposit_amount', 12, 2)->default(0); // Security deposit
-            $table->decimal('paid_amount', 12, 2)->default(0); // Amount already paid
-            $table->decimal('due_amount', 12, 2)->default(0); // Remaining unpaid rent
+            // $table->decimal('paid_amount', 12, 2)->default(0); // Amount already paid
+            // $table->decimal('due_amount', 12, 2)->default(0); // Remaining unpaid rent
             $table->decimal('penalty_amount', 12, 2)->default(0); // Late payment penalties
             $table->decimal('refund_amount', 12, 2)->default(0); // Refundable amount (if any)
 
             // Payment Details
-            $table->enum('payment_type', ['debit', 'credit'])->default('credit');
-            $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
-            $table->string('payment_method')->default('cash');
             $table->enum('invoice_status', ['not_invoiced', 'partial', 'invoiced'])->default('not_invoiced');
 
             // Lease Status
-            $table->enum('status', ['active', 'expired', 'terminated'])->default('active');
+            $table->enum('status', ['pending', 'active', 'expired', 'terminated'])->default('pending');
 
             // Lease Agreement Attachments
             $table->string('agreement_file')->nullable(); // Path to lease agreement document
@@ -358,6 +367,7 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('lease_id')->nullable(); // Linked to a lease
             $table->date('date')->nullable(); // Invoice date
+            $table->string('code')->nullable(); //2025_04 or April 2025
             $table->string('reference'); // Unique invoice reference
             $table->unsignedBigInteger('tenant_id')->nullable(); // Linked to tenant
 
@@ -369,12 +379,12 @@ return new class extends Migration
             $table->decimal('tax_amount', 12, 2)->default(0);
             $table->decimal('discount_percentage', 12, 2)->default(0);
             $table->decimal('discount_amount', 12, 2)->default(0);
-            $table->decimal('total_amount', 12, 2);
-            $table->decimal('paid_amount', 12, 2);
-            $table->decimal('due_amount', 12, 2);
+            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->decimal('paid_amount', 12, 2)->default(0);
+            $table->decimal('due_amount', 12, 2)->default(0);
 
             $table->enum('status', ['draft', 'posted', 'canceled'])->default('draft');
-            $table->enum('payment_status', ['pending', 'partial', 'paid'])->default('pending');
+            $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
 
             $table->string('tenant_reference')->nullable();
             $table->unsignedBigInteger('agent_id')->nullable();
@@ -400,7 +410,7 @@ return new class extends Migration
             $table->date('date'); // Payment date
             $table->string('payment_method'); // E.g., M-Pesa, bank transfer, cash
             $table->enum('type', ['debit', 'credit'])->default('credit'); // Credit = Rent received
-            $table->enum('status', ['posted', 'pending'])->default('pending'); // Payment status
+            $table->enum('status', ['posted', 'pending', 'failed'])->default('pending'); // Payment status
             $table->text('note')->nullable();
 
             $table->timestamps();
