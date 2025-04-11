@@ -37,6 +37,18 @@ class Booking extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function scopeIsActive(Builder $query)
+    {
+        return $query->where('status', 'confirmed');
+    }
+
+    public function scopeIsPending(Builder $query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+
+
     public function scopeIsUnit(Builder $query, $property_unit_id)
     {
         return $query->where('property_unit_id', $property_unit_id);

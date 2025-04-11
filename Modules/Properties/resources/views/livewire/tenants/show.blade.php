@@ -6,6 +6,6 @@
 @endsection
 <!-- Page Content -->
 <section class="w-100">
-    <livewire:properties::form.tenant-form :tenant="$tenant" />
+    <livewire:properties::form.tenant-form :tenant="$this->tenant" />
 </section>
 <!-- Page Content -->

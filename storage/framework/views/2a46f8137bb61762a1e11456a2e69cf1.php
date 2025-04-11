@@ -45,13 +45,16 @@ unset($__defined_vars); ?>
                 <div class="d-flex">
                     <img src="<?php echo e($guest->avatar ? Storage::url('avatars/' . $guest->avatar) . '?v=' . time() : asset('assets/images/default/user.png')); ?>" alt="<?php echo e($guest->name); ?>" class="img img-fluid" height="120px" width="120px">
                     <div class="p-2 card-body text-truncate">
-                        <h5 class="mb-2 card-title"><?php echo e($guest->name); ?></h5>
+                        <h5 class="mb-2 card-title"><?php echo e($guest->name); ?> <i class="bi bi-pencil-square" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.add-guest-modal', arguments: $guest->id })"></i></h5>
                         <span class="mb-1 cursor-pointer text-truncate w-100"><i class="bi bi-envelope"></i> <?php echo e($guest->email); ?></span> <br>
                         <span class="mb-1 cursor-pointer text-truncate w-100"><i class="bi bi-phone"></i> <?php echo e($guest->phone); ?></span> <br>
                         <span class="mb-1 cursor-pointer text-truncate w-100"><i class="bi bi-geo"></i> <?php echo e($guest->email); ?></span> <br>
                         
                     </div>
                 </div>
+                <!--[if BLOCK]><![endif]--><?php if($guest->bookings()->isActive()->count() >= 1): ?>
+                <span class="bottom-0 right-0 fw-bold text-white text-center" style="background-color: #017E84;">Active</span>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
             </a>
         </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

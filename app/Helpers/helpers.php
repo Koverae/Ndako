@@ -359,10 +359,10 @@ if (!function_exists('dateDaysDifference')) {
 if (!function_exists('listMonthsInRange')) {
     function listMonthsInRange($startDate, $endDate)
     {
+        // dd($startDate, $endDate);
         // Create Carbon instances for the start and end date
-        $start = Carbon::createFromFormat('d/m/y', $startDate); // Format: 01/04/25
-        $end = Carbon::createFromFormat('d/m/y', $endDate); // Format: 01/04/26
-
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
         // Array to hold the result
         $months = [];
 
@@ -410,6 +410,13 @@ if (!function_exists('getRentDueDate')) {
 
         // Format and return the due date as yyyy/mm/dd
         return $dueDate->format('Y/m/d');
+    }
+}
+
+if (!function_exists('formatDateToCode')) {
+    function formatDateToCode($date)
+    {
+        return Carbon::parse($date)->format('Y_m'); // Example: '2025_04'
     }
 }
 

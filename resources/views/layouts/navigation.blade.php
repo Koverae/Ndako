@@ -163,7 +163,7 @@
                         </li>
                         @endcan
 
-                        @can('manage_reservations')
+                        {{-- @can('manage_reservations')
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -190,7 +190,7 @@
                                 </div>
                             </div>
                         </li>
-                        @endcan
+                        @endcan --}}
 
                         @can('access_settings')
                         <li class="nav-item dropdown" data-turbolinks>

@@ -68,11 +68,25 @@
                             <option value="cash">{{ __('Cash') }}</option>
                             <option value="bank">{{ __('Bank') }}</option>
                             <option value="m-pesa">{{ __('M-Pesa') }}</option>
+                            @if (settings()->has_paystack)
+                            <option value="paystack">{{ __('Paystack(Bank, Mobile Money,..)') }}</option>
+                            @endif
                         </select>
                         @error('paymentMethod')
                         <div class="mt-1 text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <!-- Transaction ID -->
+                    <div class="mb-3">
+                        <label for="transactionId" class="form-label">{{ __('Transaction ID') }} ({{ __('Leave blank if using Cash or Paystack') }})</label>
+                        <input type="text" class="form-control @error('transactionId') is-invalid @enderror" id="transactionId" wire:model="transactionId" placeholder="Enter transaction ID" value="{{ old('transactionId') }}">
+                        @error('transactionId')
+                        <div class="mt-1 text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <!-- Transaction ID -->
+
                     <div class="mb-3">
                         <label for="downPayment" class="form-label">{{ __('Payment Amount') }} <span>({{ __('Down Payment: '.  format_currency($this->downPaymentDue)) }})</span></label>
                         <input type="number" class="form-control @error('downPayment') is-invalid @enderror" id="downPayment" wire:model.live="downPayment" placeholder="Enter payment amount" value="{{ old('downPayment') }}">
@@ -99,4 +113,23 @@
         </div>
         @endif
     </div>
+    
+    @script
+    <script>
+        $wire.on('openPaystackPopup', url => {
+            let width = 600, height = 700;
+            let left = (screen.width - width) / 2;
+            let top = (screen.height - height) / 2;
+
+            let paystackWindow = window.open(url, 'Paystack Payment', `width=${width},height=${height},top=${top},left=${left}`);
+
+            // let interval = setInterval(() => {
+            //     if (paystackWindow && paystackWindow.closed) {
+            //         clearInterval(interval);
+            //         $wire.dispatch('paymentCompleted', {reference: localStorage.getItem('paystack_payment_reference')});
+            //     }
+            // }, 1000);
+        });
+    </script>    
+    @endscript
 </div>

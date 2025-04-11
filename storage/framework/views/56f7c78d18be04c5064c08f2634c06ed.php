@@ -105,6 +105,9 @@ unset($__errorArgs, $__bag); ?>" id="paymentMethod" wire:model="paymentMethod" p
                             <option value="cash"><?php echo e(__('Cash')); ?></option>
                             <option value="bank"><?php echo e(__('Bank')); ?></option>
                             <option value="m-pesa"><?php echo e(__('M-Pesa')); ?></option>
+                            <!--[if BLOCK]><![endif]--><?php if(settings()->has_paystack): ?>
+                            <option value="paystack"><?php echo e(__('Paystack(Bank, Mobile Money,..)')); ?></option>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </select>
                         <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['paymentMethod'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -117,6 +120,31 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
+
+                    <!-- Transaction ID -->
+                    <div class="mb-3">
+                        <label for="transactionId" class="form-label"><?php echo e(__('Transaction ID')); ?> (<?php echo e(__('Leave blank if using Cash or Paystack')); ?>)</label>
+                        <input type="text" class="form-control <?php $__errorArgs = ['transactionId'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="transactionId" wire:model="transactionId" placeholder="Enter transaction ID" value="<?php echo e(old('transactionId')); ?>">
+                        <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['transactionId'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <div class="mt-1 text-danger"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
+                    </div>
+                    <!-- Transaction ID -->
+
                     <div class="mb-3">
                         <label for="downPayment" class="form-label"><?php echo e(__('Payment Amount')); ?> <span>(<?php echo e(__('Down Payment: '.  format_currency($this->downPaymentDue))); ?>)</span></label>
                         <input type="number" class="form-control <?php $__errorArgs = ['downPayment'];
@@ -157,5 +185,31 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
         </div>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </div>
+    
+        <?php
+        $__scriptKey = '4234737171-0';
+        ob_start();
+    ?>
+    <script>
+        $wire.on('openPaystackPopup', url => {
+            let width = 600, height = 700;
+            let left = (screen.width - width) / 2;
+            let top = (screen.height - height) / 2;
+
+            let paystackWindow = window.open(url, 'Paystack Payment', `width=${width},height=${height},top=${top},left=${left}`);
+
+            // let interval = setInterval(() => {
+            //     if (paystackWindow && paystackWindow.closed) {
+            //         clearInterval(interval);
+            //         $wire.dispatch('paymentCompleted', {reference: localStorage.getItem('paystack_payment_reference')});
+            //     }
+            // }, 1000);
+        });
+    </script>    
+        <?php
+        $__output = ob_get_clean();
+
+        \Livewire\store($this)->push('scripts', $__output, $__scriptKey)
+    ?>
 </div>
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/wizard/step-page/special/booking/confirmation.blade.php ENDPATH**/ ?>

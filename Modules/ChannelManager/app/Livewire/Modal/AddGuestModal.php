@@ -10,6 +10,8 @@ class AddGuestModal extends ModalComponent
 {
     use WithFileUploads;
 
+    public Guest $guest;
+
     public $name, $email, $phone, $gender, $birthday, $address, $job, $photo, $image_path;
     
     // Define validation rules
@@ -23,6 +25,18 @@ class AddGuestModal extends ModalComponent
         'birthday' => 'nullable|date|', 
         'gender' => 'required|string', 
     ];
+
+    public function mount($guest = null){
+        if($guest){
+            $this->name = $guest->name;
+            $this->email = $guest->email;
+            $this->phone = $guest->phone;
+            $this->gender = $guest->gender;
+            $this->birthday = $guest->birthday;
+            $this->address = $guest->address;
+            $this->job = $guest->job;
+        }
+    }
 
     public function render()
     {

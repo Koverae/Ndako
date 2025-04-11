@@ -113,8 +113,8 @@ return new class extends Migration
             $table->boolean('has_seasonal_discounts')->default(false);
             $table->unsignedBigInteger('seasonal_discount')->nullable();
             $table->boolean('has_default_check_times')->default(false);
-            $table->date('default_check_in_time')->nullable();
-            $table->date('default_check_out_time')->nullable();
+            $table->time('default_check_in_time')->nullable();
+            $table->time('default_check_out_time')->nullable();
             $table->boolean('has_online_payment')->default(false);
             $table->string('minimum_payment_requested')->default(100);
             $table->boolean('has_lock_confirmed_booking')->default(true);
@@ -128,7 +128,7 @@ return new class extends Migration
             $table->boolean('has_in_room_services')->comment("Enable ordering of room service or add-ons through a guest portal.")->default(false);
             $table->boolean('has_guest_note')->comment("Record specific guest preferences or past feedback for repeat stays.")->default(false);
             // Invoicing
-            $table->integer('down_payment')->default(0);
+            $table->integer('down_payment')->default(50);
             $table->boolean('has_automatic_invoice')->default(false);
             // Currencies
             $table->unsignedBigInteger('default_currency_id')->nullable();
@@ -149,6 +149,13 @@ return new class extends Migration
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
+            // Integrations
+            $table->boolean('has_website_integration')->default(false);
+            $table->boolean('has_google_hotel_integration')->default(false);
+            $table->string('google_hotel_client_id')->nullable();
+            $table->string('google_hotel_api_key')->nullable();
+            $table->string('google_hotel_bid')->nullable();
+
         });
 
         // Currencies

@@ -27,14 +27,20 @@
                             <div class="k_kanban_details">
                                 <div class="cursor-pointer k_kanban_record_title">
                                     <div class="gap-3 d-flex">
-                                        <h2 class="h2">Urban Nest <i class="bi bi-pencil-square"></i></h2><span class="p-1">UN9RUP161702161707052024</span>
+                                        <h2 class="h2">{{ $this->tenant->lease->unit->property->name }} <i class="bi bi-pencil-square"></i></h2><span class="p-1">{{ $this->tenant->lease->code }}</span>
                                     </div>
-                                    <span>103 ~ One-Bedroom Apartment 🏠</span>
-                                    <span class="mb-1 text-muted d-block">Monthly Rent:  <strong>KSh 12,500</strong> </span>
+                                    <span>{{ $this->tenant->lease->unit->name }} ~ {{ $this->tenant->lease->unit->unitType->name }}</span>
+                                    <span class="mb-1 text-muted d-block">Monthly Rent:  <strong>{{ format_currency($this->tenant->lease->rent_amount) }}</strong> </span>
                                 </div>
+                                @php
+                                    $start = \Carbon\Carbon::parse($this->tenant->lease->start_date);
+                                    $end = \Carbon\Carbon::parse($this->tenant->lease->end_date);
+                                    $duration = $start->diffInMonths($end);
+                                @endphp
                                 <div class="text-muted">
-                                    <span class="mb-1 text-muted">Move-in Date: <strong>Jan 5, 2025</strong></span><br>
-                                    <span class="mb-1 text-muted">Lease Duration: <strong>12 Months</strong></span>
+                                    <span class="mb-1 text-muted">Move-in Date: <strong>{{ \Carbon\Carbon::parse($this->tenant->lease->start_date)->format('M j, Y') }}</strong></span><br>
+                                    <span class="mb-1 text-muted">Lease Duration: <strong>{{ $duration }} {{ Str::plural('Month', $this->duration) }}</strong></span><br>
+                                    <span class="mb-1 text-muted">Amount Due: <strong>{{ format_currency($this->tenant->lease->invoices()->isCurrentInvoice()->first()->due_amount) }}</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -44,12 +50,15 @@
                     <div class="mb-1 k_kanban_card">
                         <div class="p-1 k_kanban_card_content">
                             <h6 class="mb-2 h3">Current Lease Information</h6>
+                            @php
+                                $overdueRent = $this->tenant->lease->invoices()->isOverdue()->isPosted()->get();
+                            @endphp
                             <ul class="mb-0 list-unstyled">
-                                <li><strong>Next Rent Due:</strong> April 5, 2025</li>
-                                <li><strong>Rent Amount:</strong> {{ format_currency(12500) }} / Month</li>
-                                <li><strong>Unpaid Rent:</strong> {{ format_currency(0) }} (No overdue balance) ✅</li>
-                                <li><strong>Security Deposit:</strong> {{ format_currency(25000) }} (Refundable)</li>
-                                <li><strong>Status:</strong> Active ✅</li>
+                                <li><strong>Next Rent Due:</strong> {{ \Carbon\Carbon::parse($this->tenant->lease->invoices()->where('code', formatDateToCode(now()))->first()->due_date)->format('M j, Y') }}</li>
+                                <li><strong>Rent Amount:</strong> {{ format_currency($this->tenant->lease->rent_amount) }} / Month</li>
+                                <li><strong>Unpaid Rent:</strong> {{ format_currency($this->tenant->lease->invoices()->isOverdue()->isPosted()->sum('due_amount')) }}</li>
+                                <li><strong>Security Deposit:</strong> {{ format_currency($this->tenant->lease->deposit_amount) }} (Refundable)</li>
+                                <li><strong>Lease Status:</strong> {{ ucfirst($this->tenant->lease->status) }}</li>
                                 {{-- <li><strong>Preferred Payment:</strong> M-Pesa (Paybill: 123456, Acc: 103)</li> --}}
                             </ul>
                         </div>

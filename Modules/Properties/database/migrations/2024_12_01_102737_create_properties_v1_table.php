@@ -332,8 +332,9 @@ return new class extends Migration
             $table->unsignedBigInteger('tenant_id'); // The tenant occupying the unit
             $table->unsignedBigInteger('agent_id')->nullable(); // Agent managing the lease (if applicable)
             $table->string('code')->nullable();
+            $table->string('name')->nullable();
             // Lease Term Relationship
-            $table->unsignedBigInteger('lease_term_id'); // Link to lease_terms table
+            $table->unsignedBigInteger('lease_term_id')->nullable(); // Link to lease_terms table
 
             // Lease Details
             $table->string('reference')->nullable(); // Unique lease reference number

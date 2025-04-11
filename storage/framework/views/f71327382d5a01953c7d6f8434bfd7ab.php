@@ -175,39 +175,7 @@
                         </li>
                         <?php endif; ?>
 
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_reservations')): ?>
-                        <li class="nav-item dropdown" data-turbolinks>
-                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
-                              <span class="nav-link-title">
-                                  <?php echo e(__('Leases')); ?>
-
-                              </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <div class="dropdown-menu-columns">
-                                    <!-- Left Side -->
-                                    <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.lists')); ?>">
-                                            <?php echo e(__('Leases')); ?>
-
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.payments.lists')); ?>">
-                                            <?php echo e(__('Rent Payments')); ?>
-
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
-                                            <?php echo e(__('Lease Renewals')); ?>
-
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('tenants.lists')); ?>">
-                                            <?php echo e(__('Tenants')); ?>
-
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <?php endif; ?>
+                        
 
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('access_settings')): ?>
                         <li class="nav-item dropdown" data-turbolinks>

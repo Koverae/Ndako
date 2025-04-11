@@ -31,7 +31,7 @@ class TenantForm extends LightWeightForm
     public $tenant;
     public $name, $email, $phone, $inputId, $avatar, $company_name, $street, $street2, $zip, $city, $country, $nationality, $identificationType = 'id-card', $identification, $birthday, $gender, $job, $workAddress, $monthlyIncome, $type = "individual", $lease, $language, $timezone = 'eat';
     public $nextOfKin, $kinEmail, $kinPhone, $kinAddress;
-    public $property, $unit, $monthlyRent = 0, $depositAmount = 0, $leaseTerm, $defaultLeaseTerm = "Monthly", $duration = 0, $depositPercentage = 100;
+    public $property, $unit, $monthlyRent = 0, $depositAmount = 0, $leaseTerm, $defaultLeaseTerm = "Monthly", $duration = 0, $depositPercentage = 100, $leaseStatus = 'pending';
     public bool $isLinked = false;
     public array $languageOptions = [], $timezoneOptions = [], $countriesOptions = [], $genderOptions = [], $identificationOptions = [], $propertiesOptions = [], $unitsOptions = [], $leaseTermsOptions = [];
 
@@ -58,6 +58,12 @@ class TenantForm extends LightWeightForm
         'kinEmail' => 'nullable|email|max:255',
         'kinPhone' => 'nullable|string|max:20|regex:/^\+?[0-9\s\-]+$/',
         'kinAddress' => 'nullable|string|max:500',
+        'property' => 'required|integer|exists:properties,id',
+        'unit' => 'required|integer|exists:property_units,id',
+        'startDate' => 'required|date|after_or_equal:today',
+        'endDate' => 'required|date|after:startDate',
+        'monthlyRent' => 'required|numeric|min:1',
+        'depositAmount' => 'required|numeric|min:1'
     ];
 
     public function mount($tenant = null){
@@ -178,16 +184,18 @@ class TenantForm extends LightWeightForm
         $this->unitsOptions = toSelectOptions(PropertyUnit::isCompany(current_company()->id)->where('property_id', $this->property)->get(), 'id', 'name');
 
         $this->startDate = Carbon::now()->format('Y-m-d');
-        $this->endDate = Carbon::now()->addMonths(1)->format('Y-m-d');
+        $this->endDate = Carbon::now()->addYears(1)->format('Y-m-d');
 
         if($tenant){
             $this->tenant = $tenant;
             $this->lease = $tenant->lease_id;
+            $this->status = 'pending';
             // $this->depositAmount = $tenant->lease->deposit_amount;
+            // $this->photo = $tenant->avatar;
+            $this->image_path = $tenant->avatar;
             $this->name = $tenant->name;
             $this->email = $tenant->email;
             $this->phone = $tenant->phone;
-            $this->photo = $tenant->avatar;
             $this->job = $tenant->job;
             $this->company_name = $tenant->company_name;
             $this->workAddress = $tenant->company_address;
@@ -207,6 +215,25 @@ class TenantForm extends LightWeightForm
             $this->kinPhone = $tenant->kin_phone;
             $this->kinAddress = $tenant->kin_address;
         }
+    }
+
+    // Action Bar Button
+    public function actionBarButtons() : array
+    {
+        $type = $this->status;
+
+        $buttons =  [
+            // ActionBarButton::make('invoice', 'Créer une facture', 'storeQT()', 'sale_order'),
+            ActionBarButton::make('send-email', __('Send by Email'), "", 'pending', $this->leaseStatus != 'pending'),
+            ActionBarButton::make('confirm', __('Confirm'), "confirm", 'pending', $this->status == 'confirmed' || $this->status == 'completed'),
+            // Add more buttons as needed
+        ];
+
+        // Define the custom order of button keys
+        $customOrder = ['send-email', 'confirm', 'invoice', 'canceled']; // Adjust as needed
+
+        // Change dynamicaly the display order depends on status
+        return $this->sortActionButtons($buttons, $customOrder, $type);
     }
 
     public function capsules() : array
@@ -324,6 +351,10 @@ class TenantForm extends LightWeightForm
         }
     }
 
+    public function calculatePrice(){
+        //
+    }
+
     public function updatedPhoto(){
         // Validate the uploaded file
         $this->validate();
@@ -349,7 +380,7 @@ class TenantForm extends LightWeightForm
 
     #[On('create-tenant')]
     public function saveTenant(){
-        $this->validate();
+        // $this->validate();
 
         $tenant = Tenant::create([
             'company_id' => current_company()->id,

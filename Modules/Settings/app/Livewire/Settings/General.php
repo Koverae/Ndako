@@ -112,21 +112,23 @@ class General extends AppSetting
             Box::make('active_users', $this->users->count() .' Active Users', 'invitation', null, 'users', false, "https://www.ndako.koverae.com/docs", " bi-people-fill"),
             // Enterprise
             Box::make('current-company', current_company()->name, 'companny', current_company()->country, 'companies', false, null, " bi-building"),
-            Box::make('document-layout', __('Document layout'), 'companny', __("Choose the layout of your documents"), 'companies', false, null, " bi-files"),
-            Box::make('email-template', __('E-mail templates'), 'companny', __("Customize the look and feel of automated emails"), 'companies', false, null, " bi-envelope"),
+            // Box::make('document-layout', __('Document layout'), 'companny', __("Choose the layout of your documents"), 'companies', false, null, " bi-files"),
+            // Box::make('email-template', __('E-mail templates'), 'companny', __("Customize the look and feel of automated emails"), 'companies', false, null, " bi-envelope"),
             Box::make('main-currency', "Main Currency", 'default_currency', "Main currency of your company", 'companies', false, "", null),
             Box::make('languages', __('1 Language(s)'), 'invitation', null, 'companies', false, "https://www.ndako.koverae.com/docs", " bi-translate"),
             // Permissions
-            Box::make('customer-portal', __('Guests Portal'), 'has_customer_account', __('Let your guests log in to access their booking details and invoices.'), 'permissions', false),
-            Box::make('default-access', __('Default Access Rights'), 'has_default_access_right', __('Define custom access rights for new team members.'), 'permissions', true),
+            // Box::make('customer-portal', __('Guests Portal'), 'has_customer_account', __('Let your guests log in to access their booking details and invoices.'), 'permissions', false),
+            // Box::make('default-access', __('Default Access Rights'), 'has_default_access_right', __('Define custom access rights for new team members.'), 'permissions', true),
             Box::make('password-reset', __('Password Reset'), 'has_reset_password', __('Enable password reset from Login page'), 'permissions', true),
             Box::make('import-export', __('Import / Export'), 'has_import_from_xls', __('Allow users to import data from CSV/XLS/XLSX files'), 'permissions', true, "https://www.ndako.koverae.com/docs"),
             // Integrations
             Box::make('recaptcha', __('reCAPTCHA'), 'has_recaptcha', __('Protect your forms from spam and abuse.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             Box::make('geolocation', __('Geolocation'), 'has_geo_localization', __('Geolocate your partners and customers.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             Box::make('paystack', __('Paystack'), 'has_paystack', __('Seamlessly accept and manage payments with Paystack integration, ensuring secure and hassle-free transactions for your business.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
+                Box::make('send-sms', __('SmS Sending'), 'company', __('Send SmS texts and WhatsApp messages to your guests or tenants.'), 'integrations', false, "https://www.koverae.com/docs"),
+                Box::make('koverae-iap', __('Koverae IAP'), 'company', __('View your IAP Services and recharge your Kredit balance.'), 'integrations', false, "https://www.koverae.com/docs"),
             // Booking Settings
-            Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial. The default can be changed per order or template.", 'booking-settings', true, "https://ndako.koverae", null),
+            Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial.", 'booking-settings', true, "https://ndako.koverae", null),
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
             Box::make('over-booking', "Overbooking Prevention", 'has_overbooking_prevention', "Automatically block double bookings for the same room/unit.", 'booking-settings', true, "", null),
             Box::make('stay-rules', "Minimum & Maximum Stay Rules", 'has_stay_rule_per_unit', "Limit the duration of bookings for specific rooms/units.", 'booking-settings', true, "", null),
@@ -177,7 +179,8 @@ class General extends AppSetting
             BoxAction::make('default-access', 'default-access', __('Default access rights'), 'link', 'bi-arrow-right'),
             BoxAction::make('buy-credit-quick', 'quick-find', __('Buy Kredit'), 'link', 'bi-arrow-right'),
             BoxAction::make('buy-credit-sms', 'send-sms', __('Buy Kredit'), 'link', 'bi-arrow-right'),
-            BoxAction::make('koverae-iap-view', 'koverae-iap', __('View My Kover Services'), 'link', 'bi-arrow-right'),
+            BoxAction::make('kredit-balance', 'koverae-iap', __('My balance'), 'link', 'bi-arrow-right')->component('app::blocks.boxes.action.special.kredit-balance'),
+            BoxAction::make('koverae-iap-view', 'koverae-iap', __('Buy Kredit'), 'link', 'bi-arrow-right'),
         ];
     }
 

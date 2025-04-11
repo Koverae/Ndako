@@ -110,6 +110,14 @@ class Company extends Model
     }
 
     /**
+     * Get client for the company.
+     */
+    public function client()
+    {
+        return $this->hasOne(ApiClient::class, 'company_id', 'id');
+    }
+
+    /**
      * Get user for the company.
      */
     public function users()

@@ -26,7 +26,7 @@ class TenantTable extends Table
 
     public function showRoute($id) : string
     {
-        return route('channels.show', ['channel' => $id]);
+        return route('tenants.show', ['tenant' => $id]);
     }
 
     public function emptyTitle(): string
@@ -58,7 +58,7 @@ class TenantTable extends Table
     public function columns() : array
     {
         return [
-            Column::make('name', __('Name')),
+            Column::make('name', __('Name'))->component('app::table.column.special.show-title-link'),
             Column::make('email', __('Email')),
             Column::make('street', __('Address')),
         ];

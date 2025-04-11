@@ -22,7 +22,7 @@ use Modules\RevenueManager\Models\Accounting\Journal;
 class AddBookingWizard extends SimpleWizard
 {
     public $search = '', $guest, $selectedRoom, $startDate = '', $endDate = '', $guests, $status = 'pending', $paymentStatus = 'unpaid', $invoiceStatus = 'not_invoiced', $paymentMethod = 'cash';
-    public $filterBy = 'capacity', $sortOrder = 'asc', $totalAmount = 0, $downPayment = 0, $downPaymentDue = 0, $dueAmount = 0, $nights = 0, $people = 1;
+    public $filterBy = 'capacity', $sortOrder = 'asc', $perPage = 5, $totalAmount = 0, $downPayment = 0, $downPaymentDue = 0, $dueAmount = 0, $nights = 0, $people = 1, $transactionId;
     public $availableRooms = [];
     public array $paymentOptions = [];
     public bool $checkedIn = true;
@@ -47,6 +47,7 @@ class AddBookingWizard extends SimpleWizard
 
     public function mount($startDate = null, $endDate = null){
 
+        $this->availableRooms = collect(); // Start with empty collection
         $this->startDate = $startDate ?? Carbon::now()->format('Y-m-d');
         $this->endDate = $endDate ?? Carbon::now()->addDay()->format('Y-m-d');
 
@@ -89,6 +90,13 @@ class AddBookingWizard extends SimpleWizard
             ->where('name', 'like', '%' . $this->search . '%')
             ->orWhere('email', 'like', '%' . $this->search . '%')
             ->get();
+    }
+
+    
+    public function loadMore()
+    {
+        $this->perPage += 5;
+        $this->filterAvailableRooms();
     }
 
     public function updated($propertyName)
@@ -180,7 +188,8 @@ class AddBookingWizard extends SimpleWizard
                             'capacity' => $room->capacity, // Sort by capacity if selected
                             default    => 0, // Default sorting (if no valid filter is provided)
                         }, SORT_REGULAR, $this->sortOrder === 'desc') // Step 6: Apply sorting order (ascending or descending)
-                        ->values(); // Step 7: Reset array keys (in case filtering removed some items)
+                        ->values() // Step 7: Reset array keys (in case filtering removed some items)
+                        ->take($this->perPage);
     }
 
     public function createBooking(){
@@ -283,6 +292,7 @@ class AddBookingWizard extends SimpleWizard
                 'company_id' => $invoice->company_id,
                 'booking_invoice_id' => $invoice->id,
                 'journal_id' => $journal->id ?? null,
+                'transaction_id' => $this->transactionId,
                 'amount' => $invoice->paid_amount,
                 'due_amount' => $invoice->due_amount,
                 'date' => now(),

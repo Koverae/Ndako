@@ -24,4 +24,5 @@ class Guest extends Model
     public function bookings() {
         return $this->hasMany(Booking::class, 'guest_id', 'id');
     }
+
 }

@@ -21,8 +21,9 @@ class BoxInput
     public $help;
     public array $data = [];
     public $parent;
+    public bool $hasCopy = false;
 
-    public function __construct($key, $label, $type, $model, $box, $placeholder = null, $help = null, $data = [], $parent = null)
+    public function __construct($key, $label, $type, $model, $box, $placeholder = null, $help = null, $data = [], $parent = null, $hasCopy = false)
     {
         $this->key = $key;
         $this->label = $label;
@@ -33,11 +34,12 @@ class BoxInput
         $this->help = $help;
         $this->data = $data;
         $this->parent = $parent;
+        $this->hasCopy = $hasCopy;
     }
 
-    public static function make($key, $label, $type, $model, $box, $placeholder = null, $help = null, $data = [], $parent = null)
+    public static function make($key, $label, $type, $model, $box, $placeholder = null, $help = null, $data = [], $parent = null, $hasCopy = false)
     {
-        return new static($key, $label, $type, $model, $box, $placeholder, $help, $data, $parent);
+        return new static($key, $label, $type, $model, $box, $placeholder, $help, $data, $parent, $hasCopy);
     }
 
 

@@ -43,6 +43,50 @@ class LeaseInvoice extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function scopeIsPosted(Builder $query)
+    {
+        return $query->where('status', 'posted');
+    }
+
+    public function scopeIsOverdue(Builder $query)
+    {
+        return $query->where('due_date', '<',  now());
+    }
+
+    public function scopeIsCurrentInvoice(Builder $query)
+    {
+        return $query->whereYear('due_date', now()->addMonth()->year)
+                     ->whereMonth('due_date', now()->addMonth()->month)
+                     ->whereDay('due_date', 1);
+    }
+
+    public function scopeUpcomingRent(Builder $query): Builder
+    {
+        return $query->whereBetween('due_date', [now(), now()->addDays(7)]);
+    }
+
+    public function scopeIsFullyPaid(Builder $query): Builder
+    {
+        return $query->where('due_amount', '=', 0);
+    }
+
+    public function scopeIsPartiallyPaid(Builder $query): Builder
+    {
+        return $query->whereColumn('due_amount', '<', 'total_amount')
+                     ->where('due_amount', '>', 0);
+    }
+
+    public function scopeIsUnpaid(Builder $query): Builder
+    {
+        return $query->whereColumn('due_amount', '=', 'total_amount');
+    }
+
+    public function scopeNoOverdueBalance(Builder $query): Builder
+    {
+        return $query->where('due_date', '>=', now())
+                     ->orWhere('due_amount', '=', 0);
+    }
+
     public function lease() {
         return $this->belongsTo(Lease::class);
     }

@@ -53,6 +53,13 @@
                         </div>
                     </div>
                 @endforeach
+                
+                @if ($this->availableRooms->count() >= $this->perPage)
+                <button wire:click="loadMore"
+                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Load More
+                </button>
+                @endif
             </div>
             <!-- Available Rooms ENd -->
         </div>

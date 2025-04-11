@@ -19,7 +19,7 @@ class PropertySetting extends AppSetting
 {
     public $setting;
     public bool $has_default_unit_status = false, $has_default_numbering = false, $has_default_utility = false, $has_floor_mapping = false, $has_shared_amenities = false, $has_refund_policy = true,  $has_lease_term = false, $has_base_rental = false, $has_down_payment = true, $has_utility_rules = false, $has_pricelists = false, $has_discounts = false, $has_seasonal_discounts = false, $has_default_check_times = false, $has_online_payment = false, $has_lock_confirmed_booking = false, $has_pro_format_invoice = false, $has_overbooking_prevention = false, $has_stay_rule_per_unit = false, $has_cleaning_frequency = false, $has_maintenance_alerts = false, $has_housekeeping_staff = false, $has_maintenance_requests = false, $has_customer_portal = false, $has_in_room_services = false, $has_guest_note = false;
-    public $base_rental, $utility_rule, $full_refund_days, $partial_refund_days, $partial_refund_percentage, $last_minute_refund_days;
+    public $base_rental, $utility_rule, $full_refund_days, $partial_refund_days, $partial_refund_percentage, $last_minute_refund_days, $default_check_in_time, $default_check_out_time;
     public $downPayment = 0;
     public array $unitStatus = [], $numberingSystems = [], $companyUtilities = [], $utilities = [], $sharedAmenities = [], $companyAmenities = [], $leaseTerms = [], $utilityRules = [];
 
@@ -42,7 +42,10 @@ class PropertySetting extends AppSetting
         $this->has_pricelists = $setting->has_pricelists;
         $this->has_discounts = $setting->has_discounts;
         $this->has_seasonal_discounts = $setting->has_seasonal_discounts;
+
         $this->has_default_check_times = $setting->has_default_check_times;
+        $this->default_check_in_time = $setting->default_check_in_time;
+        $this->default_check_out_time = $setting->default_check_out_time;
         $this->has_online_payment = $setting->has_online_payment;
         $this->has_lock_confirmed_booking = $setting->has_lock_confirmed_booking;
         $this->has_pro_format_invoice = $setting->has_pro_format_invoice;
@@ -118,24 +121,24 @@ class PropertySetting extends AppSetting
         return [
             // Pricing
             Box::make('down-payment', "Down Payment (%)", 'has_down_payment', "Initial payment made to secure a booking.", 'pricing', false, "", null),
-            Box::make('utility-rules', "Utility Billing Rules", 'has_utility_rules', "Allow landlords to set utility billing options (e.g., included or separate).", 'pricing', true, "", null),
+            // Box::make('utility-rules', "Utility Billing Rules", 'has_utility_rules', "Allow landlords to set utility billing options (e.g., included or separate).", 'pricing', true, "", null),
             Box::make('pricelists', "Pricelists", 'has_pricelists', "Set multiple prices per unit, automated discounts, etc.", 'pricing', true, "", null),
-            Box::make('discounts', "Discounts, Loyalty and Gift Card", 'has_discounts', "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet.", 'pricing', true, "", null),
-            Box::make('seasonal-discounts', "Seasonal Discounts", 'has_seasonal_discounts', "Enable flexible pricing for peak and off-peak periods.", 'pricing', true, "", null),
+            // Box::make('discounts', "Discounts, Loyalty and Gift Card", 'has_discounts', "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet.", 'pricing', true, "", null),
+            // Box::make('seasonal-discounts', "Seasonal Discounts", 'has_seasonal_discounts', "Enable flexible pricing for peak and off-peak periods.", 'pricing', true, "", null),
             Box::make('default-check-time', "Default Check-in/Check-out Times", 'has_default_check_times', "Standardize guest arrival and departure hours.", 'booking-settings', true, "", null),
-            Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial. The default can be changed per order or template.", 'booking-settings', true, "https://ndako.koverae", null),
+            // Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial. The default can be changed per order or template.", 'booking-settings', true, "https://ndako.koverae", null),
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
             Box::make('over-booking', "Overbooking Prevention", 'has_overbooking_prevention', "Automatically block double bookings for the same room/unit.", 'booking-settings', true, "", null),
             Box::make('stay-rules', "Minimum & Maximum Stay Rules", 'has_stay_rule_per_unit', "Limit the duration of bookings for specific rooms/units.", 'booking-settings', true, "", null),
             Box::make('refund-policy', "Refund Policy", 'has_refund_policy', "Define your cancellation terms and refund conditions with ease.", 'booking-settings', true, "https://ndako.koverae/docs", null),
             // Housekeeping & Maintenance
-            Box::make('cleaning-frequency', "Cleaning Frequency", 'has_cleaning_frequency', "Set schedules for daily, weekly, or post-checkout cleaning.", 'housekeeping', true, "", null),
+            // Box::make('cleaning-frequency', "Cleaning Frequency", 'has_cleaning_frequency', "Set schedules for daily, weekly, or post-checkout cleaning.", 'housekeeping', true, "", null),
             Box::make('maintenance-alert', "Maintenance Alerts", 'has_maintenance_alerts', "Notify staff of required repairs or inspections.", 'housekeeping', true, "", null),
-            Box::make('housekeeping-staff', "Housekeeping Staff Assignments", 'has_housekeeping_staff', "Allocate cleaning tasks to specific employees.", 'housekeeping', true, "", null),
+            // Box::make('housekeeping-staff', "Housekeeping Staff Assignments", 'has_housekeeping_staff', "Allocate cleaning tasks to specific employees.", 'housekeeping', true, "", null),
             Box::make('maintenance-request', "Maintenance Requests", 'has_maintenance_requests', "Allow tenants to submit repair tickets directly.", 'housekeeping', true, "", null),
             // Resident and Guest Experience
-            Box::make('customer-portal', "Tenant / Guest Portal", 'has_customer_portal', "Provide a platform for tenants to view lease details, pay rent, and report issues.", 'guest-experience', true, "", null),
-            Box::make('in-room-services', "In-Room Services", 'has_in_room_services', "Enable ordering of room service or add-ons through a guest portal.", 'guest-experience', true, "", null),
+            Box::make('customer-portal', "Guest Portal", 'has_customer_portal', "Provide a platform for guests to view booking details, pay, and report issues.", 'guest-experience', true, "", null),
+            // Box::make('in-room-services', "In-Room Services", 'has_in_room_services', "Enable ordering of room service or add-ons through a guest portal.", 'guest-experience', true, "", null),
             Box::make('guest-notes', "Guest Notes", 'has_guest_note', "Record specific guest preferences or past feedback for repeat stays.", 'guest-experience', true, "", null),
         ];
     }
@@ -151,6 +154,9 @@ class PropertySetting extends AppSetting
             BoxInput::make('lease-terms', "", 'select', 'default_lease_term', 'lease-terms', '', false, $this->leaseTerms, $this->has_lease_term)->component('app::blocks.boxes.input.depends'),
             BoxInput::make('down-payment-price', "", 'tel', 'downPayment', 'down-payment', '', false, []),
             BoxInput::make('utility-billing', "", 'select', 'utility_rule', 'utility-rules', '', false, $this->utilityRules, $this->has_utility_rules)->component('app::blocks.boxes.input.depends'),
+            // Default Check Time
+            BoxInput::make('check-in', "Check In", 'time', 'default_check_in_time', 'default-check-time', '', false, [], $this->has_default_check_times)->component('app::blocks.boxes.input.depends'),
+            BoxInput::make('check-out', "Check Out", 'time', 'default_check_out_time', 'default-check-time', '', false, [], $this->has_default_check_times)->component('app::blocks.boxes.input.depends'),
             // Website Integration
             BoxInput::make('full-refund', "Full Refund Days:", 'text', 'full_refund_days', 'refund-policy', '', false, [], $this->has_refund_policy)->component('app::blocks.boxes.input.depends'),
             BoxInput::make('partial-refund', "Partial Refund Days:", 'text', 'partial_refund_days', 'refund-policy', '', false, [], $this->has_refund_policy)->component('app::blocks.boxes.input.depends'),
@@ -180,6 +186,8 @@ class PropertySetting extends AppSetting
             'has_discounts' => $this->has_discounts,
             'has_seasonal_discounts' => $this->has_seasonal_discounts,
             'has_default_check_times' => $this->has_default_check_times,
+            'default_check_in_time' => $this->default_check_in_time,
+            'default_check_out_time' => $this->default_check_out_time,
             'has_online_payment' => $this->has_online_payment,
             'has_lock_confirmed_booking' => $this->has_lock_confirmed_booking,
             'has_overbooking_prevention' => $this->has_overbooking_prevention,

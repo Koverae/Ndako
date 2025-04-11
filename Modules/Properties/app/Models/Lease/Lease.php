@@ -51,8 +51,8 @@ class Lease extends Model
         return $query->where('property_unit_id', $property_unit_id);
     }
 
-    public function invoice() {
-        return $this->hasOne(LeaseInvoice::class);
+    public function invoices() {
+        return $this->hasMany(LeaseInvoice::class);
     }
 
     public function unit() {
