@@ -146,9 +146,12 @@ class GettingStarted extends Component
         if (!in_array($billingCycle, ['monthly', 'yearly'])) {
             $billingCycle = null; // Force user to select if not provided
         }
+
         if($plan !== 'starter'){
             $tag = $plan.'-'.$billingCycle;
             $plan = Plan::getByTag($tag);
+        }else{
+            $plan = Plan::getByTag('starter');
         }
 
         return $plan;
