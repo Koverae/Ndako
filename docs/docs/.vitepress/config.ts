@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: '/docs',
+  base: '/ndako',
   title: "Ndako Documentation",
   description: "Ndako Documentation website",
 //   lastUpdated: true,

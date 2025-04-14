@@ -38,14 +38,13 @@
                         <span class="avatar avatar-sm" style="background-image: url(<?php echo e(Storage::url('avatars/' . auth()->user()->avatar)); ?>)"></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="#" class="dropdown-item kover-navlink">Documentation</a>
-                        <a href="#" class="dropdown-item kover-navlink divider">Support</a>
+                        <a href="https://docs.koverae.com/ndako" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
+                        <a href="https://docs.koverae.com/ndako/faqs/contact-support" class="dropdown-item kover-navlink divider">Support</a>
                         <a href="#" class="dropdown-item kover-navlink">Dark Mode</a>
                         <hr class="dropdown-divider">
                         <a href="<?php echo e(route('settings.users.show', ['user' => auth()->user()->id])); ?>" class="dropdown-item kover-navlink">My Profile</a>
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_kover_subscription')): ?>
-                        <a href="#" class="dropdown-item kover-navlink">My Databases</a>
-                        <a href="#" class="dropdown-item kover-navlink">My Subscription</a>
+                        <a href="<?php echo e(route('settings.general') . '#subs'); ?>" class="dropdown-item kover-navlink">My Subscription</a>
                         <?php endif; ?>
                         <hr class="dropdown-divider">
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('install_pwa')): ?>
