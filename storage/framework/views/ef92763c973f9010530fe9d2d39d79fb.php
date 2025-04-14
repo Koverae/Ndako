@@ -15,6 +15,12 @@
 
             <div class="gap-2 mb-3 row" wire:poll.10s>
 
+                <div class="bg-white empty k_nocontent_help h-100">
+                    <img src="<?php echo e(asset('assets/images/illustrations/errors/503.svg')); ?>"style="height: 450px" alt="">
+                    <p class="empty-title"><?php echo e(__('Welcome to Your Dashboard')); ?></p>
+                    <p class="empty-subtitle"><?php echo e(__('Get a quick overview of your insights and reports.')); ?></p>
+                </div>
+
                 <!--[if BLOCK]><![endif]--><?php if (\Illuminate\Support\Facades\Blade::check('role', 'maintenance-staff')): ?>
 
                 <!-- Total Open Tickets -->

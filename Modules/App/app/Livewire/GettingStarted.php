@@ -51,8 +51,8 @@ class GettingStarted extends Component
         $this->typesOptions = toSelectOptions($types, 'id', 'label');
 
         $roles = [
-            ['id' => 'owner', 'label' => __('Owner / Founder')],
-            ['id' => 'manager', 'label' => __('Hotel Manager')],
+            ['id' => 'owner', 'label' => __('Owner')],
+            ['id' => 'manager', 'label' => __('Hotel/General Manager')],
             ['id' => 'front-desk', 'label' => __('Front Desk / Receptionist')],
             ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
             ['id' => 'accountant', 'label' => __('Accountant')],
