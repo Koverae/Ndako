@@ -137,61 +137,83 @@
                         <!-- Filters -->
                         @foreach ($filters as $key => $values)
                             @php
+                                // Ensure values are always an array
                                 $valueList = is_array($values) ? $values : [$values];
                             @endphp
 
                             <span class="cursor-pointer fs-4" style="background-color: #D8DADD;" wire:click="removeFilter('{{ $key }}')">
                                 <i class="p-1 text-white fas fa-filter rounded-2" style="background-color: #52374B;"></i>
-                                {{ implode(' > ', array_map('ucfirst', $valueList)) }}
+
+                                {{-- Loop through the values --}}
+                                @foreach ($valueList as $value)
+                                    @php
+                                        // Use predefined filter values directly
+                                        $displayValue = $filterTypes[$key][$value] ?? ucfirst($value);  // Fallback to ucfirst() if not mapped
+                                    @endphp
+
+                                    {{ ucfirst($displayValue) }}
+                                    @if (!$loop->last) <span class="text-muted">or</span> @endif
+                                @endforeach
+
                                 <i class="bi bi-x fs-3"></i>
                             </span>
                         @endforeach
                         <!-- Filters -->
 
                         <!-- Group By -->
-                        <span class="cursor-pointer fs-4"style="background-color: #D8DADD;">
-                            <i class="p-1 text-white fas fa-layer-group rounded-2" style="background-color: #017E84;"></i>
-                            Urban Nest
-                            <i class="bi bi-x fs-3"></i>
-                        </span>
+                        @if(!empty($groupBy))
+                            <span class="cursor-pointer fs-4"style="background-color: #D8DADD;">
+                                <i class="p-1 text-white fas fa-layer-group rounded-2" style="background-color: #017E84;"></i>
+                                @foreach($groupBy as $key => $value)
+                                    {{ ucfirst($value) }}
+                                    @if (!$loop->last) > @endif
+                                @endforeach
+                                <i class="bi bi-x fs-3"></i>
+                            </span>
+                        @endif
                         <!-- Group By -->
                     </div>
+
+                    <!-- Search Input -->
                     <input type="text" wire:model.live='search' placeholder="Search..." class="w-auto k_searchview">
-                    <div class="dropdown k_filter_search align-items-end">
-                        <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                            &nbsp;
-                            <!-- Filter icon or text -->
-                        </span>
-                        <!-- Filter dropdown -->
-
-                        <!-- Dropdown Menu -->
-                        <div class="p-3 dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <!-- Loop through the filter groups dynamically -->
-                            @foreach($filterTypes as $group => $options)
-                            <!-- Filter Group: type, status, etc. -->
-                            <h6 class="dropdown-header">{{ ucfirst($group) }}</h6>
-
-                            @foreach($options as $option)
-                                <div class="gap-2 cursor-pointer d-flex rounded-2" wire:click="toggleFilter('{{ $group }}', '{{ $option }}')"
-                                    style="{{ in_array($option, $filters[$group] ?? []) ? 'background-color: #D8DADD; font-weight: bold;' : '' }}">
-
-                                    <!-- Checkmark if selected -->
-                                    <i class="p-2 fas fa-check fw-bold {{ in_array($option, $filters[$group] ?? []) ? '' : 'd-none' }}" style="color: #017E84;"></i>
-
-                                    <span class="p-1 form-check-label">
-                                        {{ ucfirst($option) }}
-                                    </span>
-                                </div>
-                            @endforeach
-
-                            <hr class="dropdown-divider">
-                            @endforeach
-                        </div>
-                        <!-- Dropdown Menu -->
-
-                    </div>
 
                 </div>
+
+                <!-- Group Dropdown Button -->
+                <div class="dropdown k_filter_search align-items-end text-end">
+                    <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                        &nbsp;
+                    </span>
+
+                    <!-- Dropdown Menu -->
+                    <div class="p-3 dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <div class="container p-0">
+                            <div class="gap-1 mb-2 d-flex">
+                                <i class="p-1 fas fa-filter" style="color: #52374B;"></i> <span class="fs-3 fw-bold">Filters</span>
+                            </div>
+
+                            @foreach($filterTypes as $group => $options)
+                                @foreach($options as $key => $option)
+                                    <div class="gap-2 cursor-pointer d-flex rounded-2" wire:click="toggleFilter('{{ $group }}', '{{ $key }}')"
+                                        style="{{ in_array($option, $filters[$group] ?? []) ? 'background-color: #D8DADD; font-weight: bold;' : '' }}">
+
+                                        <i class="p-2 fas fa-check fw-bold {{ in_array($option, $filters[$group] ?? []) ? '' : 'd-none' }}" style="color: #017E84;"></i>
+
+                                        <span class="p-1 form-check-label">
+                                            {{ inverseSlug($option) }}
+                                        </span>
+                                    </div>
+
+                                    @if ($loop->last)
+                                        <hr class="m-2 dropdown-divider">
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        </div>
+                    </div>
+                    <!-- Dropdown Menu -->
+                </div>
+
             </div>
             <!-- Search Bar -->
             @endif

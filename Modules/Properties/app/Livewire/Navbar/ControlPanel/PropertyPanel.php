@@ -10,6 +10,7 @@ use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
 use Modules\App\Services\ReportExportService;
 use Modules\Properties\Models\Property\Property;
+use Modules\Properties\Models\Property\PropertyType;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitTypePricing;
 
@@ -22,6 +23,26 @@ class PropertyPanel extends ControlPanel
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
         $this->new = route('properties.create');
+
+        $types = PropertyType::isCompany(current_company()->id)
+        ->whereIn('property_type_group', ['residential', 'hospitality'])
+        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
+        ->toArray();
+
+        $this->filterTypes = [
+            'property_type_group' => [
+                'residential' => 'residential',    // string filter
+                'hospitality' => 'hospitality',      // string filter
+                'commercial' => 'commercial'               // string filter
+            ],
+            'property_type_id' => $types,
+            'status' => [
+                'active' => 'active',
+                'inactive' => 'inactive',
+                'under-maintenance' => 'under-maintenance',
+            ],
+        ];
+
         if($property){
             $this->showIndicators = true;
             $this->property = $property;

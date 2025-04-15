@@ -58,6 +58,13 @@ class GuestTable extends Table
             }
         }
 
+        // 📦 Grouping (disabled for now)
+        if (!empty($this->groupBy)) {
+            foreach ($this->groupBy as $field => $value) {
+                $query->groupBy($field);
+            }
+        }
+
         return $query; // Returns a Builder instance for querying the User model
     }
 

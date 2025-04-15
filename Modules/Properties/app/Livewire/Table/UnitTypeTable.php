@@ -51,6 +51,13 @@ class UnitTypeTable extends Table
             });
         }
 
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where($field, $value);
+            }
+        }
+
         return $query; // Returns a Builder instance for querying the User model
     }
 

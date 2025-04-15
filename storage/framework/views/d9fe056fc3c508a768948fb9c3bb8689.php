@@ -172,12 +172,24 @@
                         <!-- Filters -->
                         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $filters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $values): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <?php
+                                // Ensure values are always an array
                                 $valueList = is_array($values) ? $values : [$values];
                             ?>
 
                             <span class="cursor-pointer fs-4" style="background-color: #D8DADD;" wire:click="removeFilter('<?php echo e($key); ?>')">
                                 <i class="p-1 text-white fas fa-filter rounded-2" style="background-color: #52374B;"></i>
-                                <?php echo e(implode(' > ', array_map('ucfirst', $valueList))); ?>
+
+                                
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $valueList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
+                                        // Use predefined filter values directly
+                                        $displayValue = $filterTypes[$key][$value] ?? ucfirst($value);  // Fallback to ucfirst() if not mapped
+                                    ?>
+
+                                    <?php echo e(ucfirst($displayValue)); ?>
+
+                                    <!--[if BLOCK]><![endif]--><?php if(!$loop->last): ?> <span class="text-muted">or</span> <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
 
                                 <i class="bi bi-x fs-3"></i>
                             </span>
@@ -185,50 +197,61 @@
                         <!-- Filters -->
 
                         <!-- Group By -->
-                        <span class="cursor-pointer fs-4"style="background-color: #D8DADD;">
-                            <i class="p-1 text-white fas fa-layer-group rounded-2" style="background-color: #017E84;"></i>
-                            Urban Nest
-                            <i class="bi bi-x fs-3"></i>
-                        </span>
+                        <!--[if BLOCK]><![endif]--><?php if(!empty($groupBy)): ?>
+                            <span class="cursor-pointer fs-4"style="background-color: #D8DADD;">
+                                <i class="p-1 text-white fas fa-layer-group rounded-2" style="background-color: #017E84;"></i>
+                                <?php $__currentLoopData = $groupBy; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php echo e(ucfirst($value)); ?>
+
+                                    <?php if(!$loop->last): ?> > <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                                <i class="bi bi-x fs-3"></i>
+                            </span>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         <!-- Group By -->
                     </div>
+
+                    <!-- Search Input -->
                     <input type="text" wire:model.live='search' placeholder="Search..." class="w-auto k_searchview">
-                    <div class="dropdown k_filter_search align-items-end">
-                        <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                            &nbsp;
-                            <!-- Filter icon or text -->
-                        </span>
-                        <!-- Filter dropdown -->
-
-                        <!-- Dropdown Menu -->
-                        <div class="p-3 dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <!-- Loop through the filter groups dynamically -->
-                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $filterTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group => $options): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <!-- Filter Group: type, status, etc. -->
-                            <h6 class="dropdown-header"><?php echo e(ucfirst($group)); ?></h6>
-
-                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="gap-2 cursor-pointer d-flex rounded-2" wire:click="toggleFilter('<?php echo e($group); ?>', '<?php echo e($option); ?>')"
-                                    style="<?php echo e(in_array($option, $filters[$group] ?? []) ? 'background-color: #D8DADD; font-weight: bold;' : ''); ?>">
-
-                                    <!-- Checkmark if selected -->
-                                    <i class="p-2 fas fa-check fw-bold <?php echo e(in_array($option, $filters[$group] ?? []) ? '' : 'd-none'); ?>" style="color: #017E84;"></i>
-
-                                    <span class="p-1 form-check-label">
-                                        <?php echo e(ucfirst($option)); ?>
-
-                                    </span>
-                                </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-
-                            <hr class="dropdown-divider">
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-                        </div>
-                        <!-- Dropdown Menu -->
-
-                    </div>
 
                 </div>
+
+                <!-- Group Dropdown Button -->
+                <div class="dropdown k_filter_search align-items-end text-end">
+                    <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                        &nbsp;
+                    </span>
+
+                    <!-- Dropdown Menu -->
+                    <div class="p-3 dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <div class="container p-0">
+                            <div class="gap-1 mb-2 d-flex">
+                                <i class="p-1 fas fa-filter" style="color: #52374B;"></i> <span class="fs-3 fw-bold">Filters</span>
+                            </div>
+
+                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $filterTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group => $options): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="gap-2 cursor-pointer d-flex rounded-2" wire:click="toggleFilter('<?php echo e($group); ?>', '<?php echo e($key); ?>')"
+                                        style="<?php echo e(in_array($option, $filters[$group] ?? []) ? 'background-color: #D8DADD; font-weight: bold;' : ''); ?>">
+
+                                        <i class="p-2 fas fa-check fw-bold <?php echo e(in_array($option, $filters[$group] ?? []) ? '' : 'd-none'); ?>" style="color: #017E84;"></i>
+
+                                        <span class="p-1 form-check-label">
+                                            <?php echo e(inverseSlug($option)); ?>
+
+                                        </span>
+                                    </div>
+
+                                    <!--[if BLOCK]><![endif]--><?php if($loop->last): ?>
+                                        <hr class="m-2 dropdown-divider">
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                        </div>
+                    </div>
+                    <!-- Dropdown Menu -->
+                </div>
+
             </div>
             <!-- Search Bar -->
             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->

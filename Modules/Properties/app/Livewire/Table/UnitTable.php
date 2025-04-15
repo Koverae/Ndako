@@ -34,7 +34,7 @@ class UnitTable extends Table
     {
         return 'Your Space is Waiting!';
     }
-    
+
     public function emptyText(): string
     {
         return 'Add your first unit to start managing your property with ease. Each unit helps you track availability, reservations, and more.';
@@ -57,6 +57,13 @@ class UnitTable extends Table
             ->orWhereHas('unitType', function($query) {
                 $query->where('name', 'like', '%' . $this->searchQuery . '%');
             });
+        }
+
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where($field, $value);
+            }
         }
 
         return $query; // Returns a Builder instance for querying the User model

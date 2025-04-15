@@ -9,6 +9,7 @@ use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
 use Modules\App\Services\ReportExportService;
+use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnitType;
 
 class UnitTypePanel extends ControlPanel
@@ -19,6 +20,15 @@ class UnitTypePanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+
+        $properties = Property::isCompany(current_company()->id)
+        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
+        ->toArray();
+
+        $this->filterTypes = [
+            'property_id' => $properties,
+        ];
+
         $this->new = route('properties.unit-types.create');
         if($isForm){
             $this->showIndicators = true;

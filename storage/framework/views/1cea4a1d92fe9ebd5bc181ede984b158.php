@@ -22,8 +22,6 @@
 
             <!-- Display panel buttons -->
             <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
-
-
                 <!-- Button view -->
                 <button wire:click="export" title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
                     <i class="fas fa-file-export"></i> <?php echo e(__('Export')); ?>
@@ -40,7 +38,7 @@
 
             <div class="gap-2 mb-3 row">
 
-                
+
                 <!-- Occupancy Rate -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
                     <div class="card-body">

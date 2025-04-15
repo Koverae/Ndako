@@ -43,8 +43,8 @@ return new class extends Migration
             $table->string('companyID')->nullable();
             $table->string('reference')->nullable();
             $table->mediumText('note')->nullable();
-            $table->enum('type', ['individual', 'company'])->default('individual');
-            $table->enum('status', ['draft', 'process', 'posted'])->default('posted');
+            $table->enum('type', ['individual', 'company', 'agent'])->default('individual');
+            $table->boolean('status')->default(true);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();

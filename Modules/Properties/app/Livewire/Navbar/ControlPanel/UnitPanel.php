@@ -10,7 +10,9 @@ use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
 use Modules\App\Services\ReportExportService;
+use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
+use Modules\Properties\Models\Property\PropertyUnitType;
 
 class UnitPanel extends ControlPanel
 {
@@ -20,6 +22,26 @@ class UnitPanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+
+        $properties = Property::isCompany(current_company()->id)
+        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
+        ->toArray();
+
+        $types = PropertyUnitType::isCompany(current_company()->id)
+        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
+        ->toArray();
+
+        $this->filterTypes = [
+            'property_id' => $properties,
+            'status' => [
+                'vacant' => 'Vacant (V)',    // string filter
+                'reserved' => 'Reserved (R)',      // string filter
+                'occupied' => 'Occupied (O)',          // string filter
+                'out-service' => 'Out Of Service (OS)',           // string filter
+            ],
+            'property_unit_type_id' => $types,
+        ];
+
         // dd($this->breadcrumbs);
         if(Auth::user()->can('create_units')){
             $this->new = route('properties.units.create');

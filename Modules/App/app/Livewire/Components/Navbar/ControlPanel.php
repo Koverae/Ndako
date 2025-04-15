@@ -27,6 +27,7 @@ abstract class ControlPanel extends Component
 
     public array $breadcrumbs = [], $selected = [];
     public array $filters = [], $filterTypes = [];
+    public array $groupBy = [];
 
     // public $view_type = 'lists';
 
@@ -153,26 +154,34 @@ abstract class ControlPanel extends Component
         //
     }
 
-    public function toggleFilter(string $key, string $value): void
+    public function toggleFilter($group, $option)
     {
-        if (!isset($this->filters[$key])) {
-            $this->filters[$key] = [];
-        }
-
-        if (in_array($value, $this->filters[$key])) {
-            $this->filters[$key] = array_filter($this->filters[$key], fn($v) => $v !== $value);
+        // Handle boolean, int, and string filter types properly
+        if (array_key_exists($option, $this->filterTypes[$group])) {
+            // For boolean or int keys, use the value as the actual filter key
+            $value = $option;
         } else {
-            $this->filters[$key][] = $value;
+            // Otherwise, treat it as a string
+            $value = $this->filterTypes[$group][$option];
         }
 
-        if (empty($this->filters[$key])) {
-            unset($this->filters[$key]);
+        // Toggle the selected filter
+        if (in_array($value, $this->filters[$group] ?? [])) {
+            // If the option is already selected, remove it
+            $this->filters[$group] = array_filter($this->filters[$group], fn($filter) => $filter !== $value);
+        } else {
+            // Otherwise, add it
+            $this->filters[$group][] = $value;
         }
+
+        $this->dispatch('updateFilters', $this->filters);
     }
 
     public function removeFilter(string $key): void
     {
         unset($this->filters[$key]);
+
+        $this->dispatch('updateFilters', $this->filters);
     }
 
 }

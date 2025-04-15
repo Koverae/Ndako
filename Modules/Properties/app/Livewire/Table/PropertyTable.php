@@ -6,6 +6,7 @@ use App\Models\User;
 use Modules\App\Livewire\Components\Table\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Traits\Table\HasSubData;
@@ -37,7 +38,7 @@ class PropertyTable extends Table
     {
         return 'Your Property Awaits!';
     }
-    
+
     public function emptyText(): string
     {
         return 'Add your first property to begin managing and organizing your listings effortlessly.';
@@ -56,21 +57,44 @@ class PropertyTable extends Table
             });
         }
 
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where(function ($q) use ($field, $value) {
+                    // Handle array of values or single
+                    $values = is_array($value) ? $value : [$value];
+
+                    // Check if column exists on the model's table
+                    $model = $q->getModel();
+                    $table = $model->getTable();
+
+                    if (Schema::hasColumn($table, $field)) {
+                        $q->whereIn($field, $values);
+                    } else {
+                        $q->orWhereHas('type', function ($subQuery) use ($field, $values) {
+                            $subQuery->whereIn($field, $values);
+                        });
+                    }
+                });
+            }
+        }
+
+
         return $query; // Returns a Builder instance for querying the User model
     }
 
     public function subQuery($propertyId = null): Builder
     {
         $query = PropertyUnit::query();
-    
+
         // If a specific property ID is provided, filter by it.
         if ($propertyId) {
             $query->where('property_id', $propertyId);
         }
-    
+
         return $query;
     }
-    
+
     public function subData($propertyId): \Illuminate\Support\Collection
     {
         // Fetch the sub-data for a specific property ID

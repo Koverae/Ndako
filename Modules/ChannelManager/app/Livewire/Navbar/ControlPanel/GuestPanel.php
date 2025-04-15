@@ -19,14 +19,14 @@ class GuestPanel extends ControlPanel
 
         $this->filterTypes = [
             'type' => [
-                'individual',
-                'corporate',
-                'agent'
+                'individual' => 'individual',    // string filter
+                'company' => 'corporate',      // string filter
+                'agent' => 'agent'               // string filter
             ],
             'status' => [
-                'active',
-                'inactive'
-            ]
+                1 => 'active',    // int filter for active status (1 = active, 0 = inactive)
+                0 => 'inactive',  // int filter for inactive status (1 = active, 0 = inactive)
+            ],
         ];
     }
 
