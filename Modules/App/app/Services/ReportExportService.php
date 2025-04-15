@@ -7,6 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -36,8 +37,42 @@ class ReportExportService{
         abort(400, 'Unsupported export format');
     }
 
+
+    public function exportSelected($title = 'export', $items, $columns)
+    {
+        $data = [
+            ['ID', 'Name', 'Email'],
+            [1, 'John Doe', 'john@example.com'],
+            [2, 'Jane Smith', 'jane@example.com'],
+            [3, 'Ali Yusuf', 'ali@example.com'],
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        foreach ($data as $rowIndex => $row) {
+            foreach ($row as $colIndex => $value) {
+                $columnLetter = Coordinate::stringFromColumnIndex($colIndex + 1);
+                $sheet->setCellValue("{$columnLetter}" . ($rowIndex + 1), $value);
+            }
+        }
+
+        $fileName = 'simple_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $filePath = storage_path("app/exports/{$fileName}");
+
+        // Ensure the exports directory exists
+        if (!file_exists(storage_path('app/exports'))) {
+            mkdir(storage_path('app/exports'), 0777, true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+
     /**
-     * Export data to Excel
+     * Export Structured data to Excel
      */
     private function exportToExcel(string $reportTitle, array $summaryData, array $detailedSections)
     {
@@ -104,22 +139,22 @@ class ReportExportService{
             // 🏷 Metric Name (Bold, Larger)
             $boldText = $richText->createTextRun("$metric\n");
             $boldText->getFont()->setBold(true)->setSize(14);
-            
+
             // 📊 Metric Value (Bold, Darker Text)
             $valueText = $richText->createTextRun("Value: {$values['value']}\n");
             $valueText->getFont()->setBold(true)->setSize(12)->getColor()->setRGB('333333');
-            
+
             // 🔄 Change Percentage (Conditional Formatting)
             $changeText = $richText->createTextRun("Change: {$values['change']}");
             $changeText->getFont()->setSize(11);
-            
+
             // Apply Green/Red based on Positive/Negative Change
             if ((float) $values['change'] >= 0) {
                 $changeText->getFont()->setColor(new Color('008000')); // Green for positive change
             } else {
                 $changeText->getFont()->setColor(new Color('FF0000')); // Red for negative change
             }
-            
+
             // Set Rich Text in the merged summary cell
             $summarySheet->getCell("A{$rowNumber}")->setValue($richText);
 
@@ -198,9 +233,9 @@ class ReportExportService{
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="'.$name.'xlsx"',
         ];
-        
+
         return response()->download(storage_path('app/' . $filePath), "{$name}.xlsx", $headers);
-        
+
     }
 
 }

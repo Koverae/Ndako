@@ -1,4 +1,4 @@
- 
+
 @charset "UTF-8";
 /* prettier-ignore */
 /* prettier-ignore */
@@ -5786,6 +5786,9 @@ Control Panel
   min-width: 383px;
   max-width: auto;
   border: 1px solid #dad8dd;
+}
+#actions{
+  border: 0px solid #dad8dd;
 }
 .k_panel_control_actions_search .k_searchview_filters_span{
   font-size: 14px;
@@ -27602,7 +27605,7 @@ WIZARD END
 .plus {
     border-left: 1px solid #ccc;
 } */
- 
+
 .app-sidebar{
     overflow-y: auto;
     height: 100vh;
@@ -27634,8 +27637,8 @@ WIZARD END
         height: 40px;
         width: 40px;
     }
-    
-    
+
+
 /********************
 Dashboards
 ********************/

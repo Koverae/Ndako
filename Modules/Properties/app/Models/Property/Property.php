@@ -17,6 +17,19 @@ class Property extends Model
 
     protected $guarded = [];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($property) {
+            // Delete related floors and amenities
+            $property->floors()->delete();
+            $property->propertyAmenities()->delete();
+            $property->unitTypes()->delete();
+            $property->units()->delete();
+        });
+    }
+
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);

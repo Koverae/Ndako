@@ -15,6 +15,7 @@ class ChannelPanel extends ControlPanel
     public function mount($channel = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         // $this->new = route('properties.create');
         if($channel){
             $this->showIndicators = true;

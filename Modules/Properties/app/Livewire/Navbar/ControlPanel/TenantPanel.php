@@ -12,6 +12,8 @@ class TenantPanel extends ControlPanel
     public function mount($tenant = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
+        $this->generateBreadcrumbs();
         if($isForm){
             $this->showIndicators = true;
         }

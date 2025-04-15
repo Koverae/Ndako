@@ -14,6 +14,7 @@ class UserPanel extends ControlPanel
     public function mount($user = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         $this->new = route('settings.users.create');
         if($user){
             $this->showIndicators = true;

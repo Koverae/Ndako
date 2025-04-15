@@ -15,6 +15,17 @@ class PropertyUnitType extends Model
 
     protected $guarded = [];
 
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($property) {
+            // Delete related prices
+            $property->prices()->delete();
+        });
+    }
+
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);

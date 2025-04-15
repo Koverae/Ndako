@@ -4,7 +4,9 @@
         <table class="table card-table table-vcenter text-nowrap datatable">
             <thead class="list-table">
                 <tr class="list-tr">
-                    <th class="w-1"><input class="m-0 align-middle form-check-input" type="checkbox" aria-label="Select all invoices"></th>
+                    <th class="w-1">
+
+                    <input class="m-0 align-middle form-check-input" type="checkbox" wire:click="$toggle('selectAll')" aria-label="Select all invoices"></th>
                     @foreach($this->columns() as $column)
                         <th wire:click="sort('{{ $column->key }}')" class="cursor-pointer fs-5">
                             {{ $column->label }}
@@ -20,7 +22,7 @@
                     @endforeach
                 </tr>
             </thead>
-            
+
             <tbody class="bg-white ">
                 @foreach($this->data() as  $key => $row)
                 @php
@@ -28,7 +30,7 @@
                 @endphp
                 <tr class="cursor-pointer kover-navlink" wire:click="toggleRowExpansion({{ $row->id }})">
                     <td>
-                        <input class="m-0 align-middle form-check-input" type="checkbox" wire:model.defer="ids.{{ $row->id }}" wire:click="toggleCheckbox({{ $row->id }})" wire:loading.attr="disabled" defer>
+                        <input class="m-0 align-middle form-check-input" type="checkbox" wire:model="selected.{{ $row->id }}" wire:click="toggleCheckbox({{ $row->id }})" wire:loading.attr="disabled" defer>
                     </td>
                     @foreach($this->columns() as $column)
                     <td>
@@ -40,7 +42,7 @@
                         </x-dynamic-component>
                     </td>
                     @endforeach
-                    
+
                     <div class="centered-section ">
 
                     </div>
@@ -48,7 +50,7 @@
                 {{-- @php
                     $subData = method_exists($this, 'subData') ? $this->subData() : null;
                 @endphp --}}
-               
+
                 @php
                     $hasSubData = method_exists($this, 'subData') && method_exists($this, 'subColumns');
                 @endphp

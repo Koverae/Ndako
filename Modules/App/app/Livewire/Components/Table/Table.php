@@ -39,6 +39,7 @@ abstract class Table extends Component
 
     public $perPage = 20, $page = 1, $sortBy = '', $sortDirection = 'asc', $ids = [], $headerText = "Users";
     public bool $hasSubData = false;
+    public array $selected = [], $filters = [];
 
     public function render()
     {
@@ -113,6 +114,8 @@ abstract class Table extends Component
           } else {
               $this->ids[] = $id;
           }
+
+          $this->dispatch('updatedSelected', selected: $this->ids);
         // Toggle the presence of the ID in the array
         // if (in_array($id, $this->ids)) {
         //     $this->ids = array_values(array_diff($this->ids, [$id])); // Remove the ID if it's already present
@@ -121,10 +124,17 @@ abstract class Table extends Component
         // }
       }
 
+      #[On('emptyArray')]
       public function emptyArray()
       {
           // Empty the $ids array
           $this->ids = [];
+          $this->selected = [];
+      }
+
+      #[On('updateFilters')]
+      public function updateFilters($filters){
+        $this->filters = $filters;
       }
 
       #[On('switch-view')]

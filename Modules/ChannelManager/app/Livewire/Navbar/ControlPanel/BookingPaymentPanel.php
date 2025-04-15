@@ -13,6 +13,7 @@ class BookingPaymentPanel extends ControlPanel
     public function mount($invoice = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         // $this->showIndicators = true;
             $this->currentPage = "Payments";
 

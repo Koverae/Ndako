@@ -33,7 +33,7 @@ class GuestTable extends Table
     {
         return 'No Guests Added';
     }
-    
+
     public function emptyText(): string
     {
         return 'Guests will be listed here once added. Start by adding a guest to manage their stays and details easily.';
@@ -49,6 +49,13 @@ class GuestTable extends Table
             $query = Guest::query()
             ->where('name', 'like', '%' . $this->searchQuery . '%')
             ->orWhere('email', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where($field, $value);
+            }
         }
 
         return $query; // Returns a Builder instance for querying the User model

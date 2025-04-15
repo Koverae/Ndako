@@ -15,6 +15,7 @@ class CompanyPanel extends ControlPanel
     public function mount($company = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         $this->new = route('settings.companies.create');
         if($company){
             $this->showIndicators = true;

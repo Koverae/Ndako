@@ -14,6 +14,7 @@ class TaskPanel extends ControlPanel
     public function mount($user = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         $this->currentPage = __("Maintenance Requests");
     }
 

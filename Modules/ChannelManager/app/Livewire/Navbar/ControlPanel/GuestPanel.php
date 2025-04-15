@@ -13,9 +13,21 @@ class GuestPanel extends ControlPanel
     public function mount($isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         // $this->showIndicators = true;
             $this->currentPage = "Guests";
 
+        $this->filterTypes = [
+            'type' => [
+                'individual',
+                'corporate',
+                'agent'
+            ],
+            'status' => [
+                'active',
+                'inactive'
+            ]
+        ];
     }
 
     public function switchButtons() : array

@@ -14,6 +14,7 @@ class PropertyTypePanel extends ControlPanel
     public function mount($type = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         $this->new = route('properties.types.create');
         if($isForm){
             $this->showIndicators = true;

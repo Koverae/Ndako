@@ -17,24 +17,31 @@
                 @endif
 
                 @php
-                    $filteredBreadcrumbs = array_filter($breadcrumbs, function($breadcrumb) {
-                        return $breadcrumb['url'] && $breadcrumb['url'] != route('main', ['subdomain' => current_company()->domain_name]) && $breadcrumb['label'] != 'Inventory' && $breadcrumb['url'] != url()->current();
-                    });
+                    $filteredBreadcrumbs = collect($breadcrumbs)->filter(fn($breadcrumb) =>
+                        $breadcrumb['url'] && $breadcrumb['url'] !== url()->current()
+                    );
                 @endphp
+
                 <div class="min-w-0 gap-2 k_last_breadcrumb_item active align-items-center lh-sm">
-                    @if($filteredBreadcrumbs)
-                        @if($showBreadcrumbs)
-                        <span>
-                            @foreach($filteredBreadcrumbs as $breadcrumb)
-                                @if($breadcrumb['url'])
-                                <a href="{{ $breadcrumb['url'] }}" wire:navigate class="fw-bold text-truncate text-decoration-none" aria-current="page">
-                                    {{-- {{ $loop->index > 0 ? '/' : '' }}  --}}
+
+                    @if($showBreadcrumbs && $filteredBreadcrumbs->isNotEmpty())
+                    <span>
+                        @foreach($filteredBreadcrumbs as $breadcrumb)
+                            @if(!$loop->first)
+                                <span class="mx-1">/</span>
+                            @endif
+
+                            @if(!empty($breadcrumb['url']))
+                                <a href="{{ $breadcrumb['url'] }}" wire:navigate class="fw-bold text-truncate text-decoration-none">
                                     {{ $breadcrumb['label'] }}
                                 </a>
-                                @endif
-                            @endforeach
-                        </span>
-                        @endif
+                            @else
+                                <span class="fw-bold text-truncate text-decoration-none" aria-current="page">
+                                    {{ $breadcrumb['label'] }}
+                                </span>
+                            @endif
+                        @endforeach
+                    </span>
                     @endif
                     <div class="gap-1 d-flex">
                         <span class="min-w-0 text-truncate " style="height: 19px;">
@@ -78,22 +85,117 @@
 
             @if(!$this->isForm)
             <!-- Actions / Search Bar -->
-            <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions_search d-flex align-items-center justify-content-between order-lg-1 ">
-                <span class="p-1 border-0 cursor-pointer">
-                    <i class="bi bi-search"></i>
-                </span>
 
-                <input type="text" wire:model.live='search' placeholder="Search..." class="k_searchview">
+            <!-- Actions -->
 
-                <div class="dropdown k_filter_search align-items-end ">
-                    <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+            {{-- If items selected: Show selected actions --}}
+            @if($hasSelection)
+            <div id="actions" class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions_search d-flex align-items-center justify-content-between order-lg-1 ">
 
-                    </span>
-                    <!-- Filter dropdown -->
-                    <!-- Filter dropdown End -->
+                <div class="gap-3 d-flex align-items-center">
+                    <div class="k_cp_switch_buttons align-items-center">
+
+                        <span class="w-auto gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list">
+                            {{ count($selected) }} selected
+                            <i wire:click="emptyArray" class="bi bi-x"></i>
+                        </span>
+
+                        <!-- Action Buttons -->
+
+                        <!-- Dropdown button -->
+                        <div class="btn-group">
+                            <span class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list w-100" data-bs-toggle="dropdown" aria-expanded="false">
+                               <i class="fas fa-cog"></i> Actions
+                            </span>
+                            <ul class="dropdown-menu">
+                                @foreach($this->actionDropdowns() as $action)
+                                <x-dynamic-component
+                                    :component="$action->component"
+                                    :value="$action"
+                                >
+                                </x-dynamic-component>
+                                @endforeach
+                                <!--<li><hr class="dropdown-divider"></li>-->
+                            </ul>
+                        </div>
+
+                    </div>
                 </div>
-
             </div>
+            <!-- Actions -->
+
+            @else
+            <!-- Search Bar -->
+            <div class="order-2 gap-2 d-none d-lg-inline-flex rounded-2 k_panel_control_actions_search d-flex align-items-center justify-content-between order-lg-1">
+                {{-- Otherwise: Show Search Bar --}}
+                <div class="gap-2 d-flex align-items-center">
+                    <span class="p-1 border-0 cursor-pointer">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <div class="gap-2 d-flex">
+                        <!-- Filters -->
+                        @foreach ($filters as $key => $values)
+                            @php
+                                $valueList = is_array($values) ? $values : [$values];
+                            @endphp
+
+                            <span class="cursor-pointer fs-4" style="background-color: #D8DADD;" wire:click="removeFilter('{{ $key }}')">
+                                <i class="p-1 text-white fas fa-filter rounded-2" style="background-color: #52374B;"></i>
+                                {{ implode(' > ', array_map('ucfirst', $valueList)) }}
+                                <i class="bi bi-x fs-3"></i>
+                            </span>
+                        @endforeach
+                        <!-- Filters -->
+
+                        <!-- Group By -->
+                        <span class="cursor-pointer fs-4"style="background-color: #D8DADD;">
+                            <i class="p-1 text-white fas fa-layer-group rounded-2" style="background-color: #017E84;"></i>
+                            Urban Nest
+                            <i class="bi bi-x fs-3"></i>
+                        </span>
+                        <!-- Group By -->
+                    </div>
+                    <input type="text" wire:model.live='search' placeholder="Search..." class="w-auto k_searchview">
+                    <div class="dropdown k_filter_search align-items-end">
+                        <span class="btn dropdown-toggle rounded-0" style="height: 34px;" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                            &nbsp;
+                            <!-- Filter icon or text -->
+                        </span>
+                        <!-- Filter dropdown -->
+
+                        <!-- Dropdown Menu -->
+                        <div class="p-3 dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <!-- Loop through the filter groups dynamically -->
+                            @foreach($filterTypes as $group => $options)
+                            <!-- Filter Group: type, status, etc. -->
+                            <h6 class="dropdown-header">{{ ucfirst($group) }}</h6>
+
+                            @foreach($options as $option)
+                                <div class="gap-2 cursor-pointer d-flex rounded-2" wire:click="toggleFilter('{{ $group }}', '{{ $option }}')"
+                                    style="{{ in_array($option, $filters[$group] ?? []) ? 'background-color: #D8DADD; font-weight: bold;' : '' }}">
+
+                                    <!-- Checkmark if selected -->
+                                    <i class="p-2 fas fa-check fw-bold {{ in_array($option, $filters[$group] ?? []) ? '' : 'd-none' }}" style="color: #017E84;"></i>
+
+                                    <span class="p-1 form-check-label">
+                                        {{ ucfirst($option) }}
+                                    </span>
+                                </div>
+                            @endforeach
+
+                            <hr class="dropdown-divider">
+                            @endforeach
+                        </div>
+                        <!-- Dropdown Menu -->
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- Search Bar -->
+            @endif
+
             <!-- Actions / Search Bar -->
             @endif
 

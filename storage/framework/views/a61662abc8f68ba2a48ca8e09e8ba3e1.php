@@ -4,7 +4,9 @@
         <table class="table card-table table-vcenter text-nowrap datatable">
             <thead class="list-table">
                 <tr class="list-tr">
-                    <th class="w-1"><input class="m-0 align-middle form-check-input" type="checkbox" aria-label="Select all invoices"></th>
+                    <th class="w-1">
+
+                    <input class="m-0 align-middle form-check-input" type="checkbox" wire:click="$toggle('selectAll')" aria-label="Select all invoices"></th>
                     <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->columns(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <th wire:click="sort('<?php echo e($column->key); ?>')" class="cursor-pointer fs-5">
                             <?php echo e($column->label); ?>
@@ -21,7 +23,7 @@
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </tr>
             </thead>
-            
+
             <tbody class="bg-white ">
                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->data(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php
@@ -29,7 +31,7 @@
                 ?>
                 <tr class="cursor-pointer kover-navlink" wire:click="toggleRowExpansion(<?php echo e($row->id); ?>)">
                     <td>
-                        <input class="m-0 align-middle form-check-input" type="checkbox" wire:model.defer="ids.<?php echo e($row->id); ?>" wire:click="toggleCheckbox(<?php echo e($row->id); ?>)" wire:loading.attr="disabled" defer>
+                        <input class="m-0 align-middle form-check-input" type="checkbox" wire:model="selected.<?php echo e($row->id); ?>" wire:click="toggleCheckbox(<?php echo e($row->id); ?>)" wire:loading.attr="disabled" defer>
                     </td>
                     <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->columns(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <td>
@@ -55,13 +57,13 @@
 <?php endif; ?>
                     </td>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-                    
+
                     <div class="centered-section ">
 
                     </div>
                 </tr>
                 
-               
+
                 <?php
                     $hasSubData = method_exists($this, 'subData') && method_exists($this, 'subColumns');
                 ?>
@@ -130,4 +132,5 @@
     </div>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
-</div><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/table.blade.php ENDPATH**/ ?>
+</div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/table.blade.php ENDPATH**/ ?>

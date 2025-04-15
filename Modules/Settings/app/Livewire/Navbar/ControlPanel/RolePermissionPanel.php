@@ -14,6 +14,7 @@ class RolePermissionPanel extends ControlPanel
     public function mount($role = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
+        $this->generateBreadcrumbs();
         // $this->new = route('settings.companies.create');
         if($role){
             $this->showIndicators = true;
