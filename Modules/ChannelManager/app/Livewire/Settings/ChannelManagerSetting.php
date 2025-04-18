@@ -15,9 +15,10 @@ use Modules\ChannelManager\Models\Channel\Channel;
 class ChannelManagerSetting extends AppSetting
 {
     public $setting;
+
     public bool $has_google_hotel_integration = false, $has_website_integration = false;
     public $google_hotel_client_id, $google_hotel_api_key, $google_hotel_bid;
-    public $publicKey, $secretKey;
+    public $publicKey, $secretKey, $newDomain;
     public array $authorizedDomains = [];
 
     public function mount($setting){
@@ -61,7 +62,7 @@ class ChannelManagerSetting extends AppSetting
             // Website Integration
             BoxInput::make('public-key', "API Public Key", 'text', 'publicKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
             BoxInput::make('secret-key', "API Secret Key", 'text', 'secretKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
-            BoxInput::make('secret-key', "Authorized Domains", 'text', 'secretKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
+            BoxInput::make('new-domain', "Authorized Domains", 'text', 'newDomain', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.authorized-domain'),
         ];
     }
 
@@ -87,4 +88,29 @@ class ChannelManagerSetting extends AppSetting
     public function updated(){
         $this->dispatch('change');
     }
+    public function addDomain()
+    {
+        $domain = trim($this->newDomain);
+
+        if ($domain && !in_array($domain, $this->authorizedDomains)) {
+            $this->authorizedDomains[] = $domain;
+            $this->saveAuthorizedDomains(); // persist immediately
+        }
+
+        $this->newDomain = '';
+    }
+
+    public function removeDomain($domain)
+    {
+        $this->authorizedDomains = array_filter($this->authorizedDomains, fn ($item) => $item !== $domain);
+        $this->saveAuthorizedDomains(); // persist immediately
+    }
+
+    public function saveAuthorizedDomains()
+    {
+        current_company()->client->update([
+            'authorized_domains' => array_values($this->authorizedDomains),
+        ]);
+    }
+
 }

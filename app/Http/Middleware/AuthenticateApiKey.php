@@ -21,10 +21,14 @@ class AuthenticateApiKey
         $publicKey = $request->header('X-API-Key');
         $privateKey = $request->header('X-API-Secret');
 
+        if (!$publicKey || !$privateKey) {
+            return response()->json(['message' => 'API keys are required.'], 401);
+        }
+
         $client = ApiClient::where('public_key ', $publicKey)->first();
 
-        if (! $client) {
-            return response()->json(['message' => 'Invalid API key'], 403);
+        if (!$client || $client->private_key !== $privateKey) {
+            return response()->json(['message' => 'Invalid API keys.'], 401);
         }
 
         $allowedDomains = $client->authorized_domains ?? [];
@@ -34,17 +38,6 @@ class AuthenticateApiKey
             return response()->json(['message' => 'Unauthorized domain'], 403);
         }
         // Log::info('Received API keys:', ['public_key' => $publicKey, 'private_key' => $privateKey]);
-
-
-        if (!$publicKey || !$privateKey) {
-            return response()->json(['message' => 'API keys are required.'], 401);
-        }
-
-        $client = ApiClient::where('public_key', $publicKey)->first();
-
-        if (!$client || $client->private_key !== $privateKey) {
-            return response()->json(['message' => 'Invalid API keys.'], 401);
-        }
 
         // Pass the client data to the request for further use
         $request->merge(['api_client' => $client]);
