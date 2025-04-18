@@ -39,8 +39,11 @@ class AuthenticateApiKey
         }
         // Log::info('Received API keys:', ['public_key' => $publicKey, 'private_key' => $privateKey]);
 
-        // Pass the client data to the request for further use
-        $request->merge(['api_client' => $client]);
+        // // Pass the client data to the request for further use
+        // $request->merge(['api_client' => $client]);
+
+        // Make client available globally
+        app()->instance('ndako.api_client', $client);
 
         return $next($request);
     }
