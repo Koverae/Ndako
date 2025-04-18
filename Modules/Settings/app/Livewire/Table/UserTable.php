@@ -34,7 +34,7 @@ class UserTable extends Table
     {
         return 'No Users Yet';
     }
-    
+
     public function emptyText(): string
     {
         return 'Users will be listed here once added. Start by adding your first user to begin managing access and roles.';
@@ -49,6 +49,13 @@ class UserTable extends Table
             $query = User::query()
                 ->where('name', 'like', '%' . $this->searchQuery . '%')
                 ->orWhere('email', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where($field, $value);
+            }
         }
 
         return  $query;// Returns a Builder instance for querying the User model

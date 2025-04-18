@@ -29,13 +29,13 @@ class UnitForm extends LightWeightForm
     public $unit;
     public $name, $description, $property, $type, $capacity = 1, $size, $status, $unitPrice = null, $floor, $identifier;
     public array $includedFeatures = [], $includedUtilities = [], $typeOptions = [], $statusOptions = [], $leaseTermOptions = [], $floorOptions = [], $propertyOptions = [], $utilitiesOptions = [], $featureOptions = [], $pricingOptions = [];
-    
+
     // Define validation rules
     protected $rules = [
         'name' => 'required|string|max:30',
         'identifier' => 'nullable|string',
         'status' => 'nullable|string',
-        'description' => 'nullable|string:200', 
+        'description' => 'nullable|string:200',
         'property' => 'nullable|integer|exists:properties,id',
         'floor' => 'nullable|integer|exists:property_floors,id',
         'type' => 'nullable|integer|exists:property_unit_types,id',
@@ -43,7 +43,7 @@ class UnitForm extends LightWeightForm
         // 'selectedUtility' => 'required|exists:utilities,id|unique:property_utilities,id',
         // 'selectedFeature' => 'required|exists:features,id|unique:property_features,id'
     ];
-    
+
     public function mount($unit = null){
         if($unit){
             $this->unit = $unit;
@@ -59,7 +59,7 @@ class UnitForm extends LightWeightForm
 
             $this->unitPrice = PropertyUnitType::find($this->type)->price;
             $includedFeatures = PropertyFeature::isCompany(current_company()->id)->isUnitType($this->type)->get();
-            
+
             // Map the data into an array of ['id' => id, 'name' => name]
             $included = $includedFeatures->map(fn ($item) => [
                 'id' => $item->id,                    // The property feature id
@@ -72,7 +72,7 @@ class UnitForm extends LightWeightForm
                 'id',                  // The key for the select options
                 'name'                 // The name to display in the options
             );
-            
+
             $includedUtilities = PropertyUtility::isCompany(current_company()->id)->isUnitType($this->type)->get();
 
             // Map the data into an array of ['id' => id, 'name' => name]
@@ -95,7 +95,7 @@ class UnitForm extends LightWeightForm
         $this->propertyOptions = toSelectOptions(Property::isCompany(current_company()->id)->get(), 'id', 'name');
         $this->featureOptions = toSelectOptions(Feature::isCompany(current_company()->id)->get(), 'id', 'name');
         $this->utilitiesOptions = toSelectOptions(Utility::isCompany(current_company()->id)->get(), 'id', 'name');
-        
+
         $status = [
             ['id' => 'vacant', 'label' => 'Vacant (V)'],
             ['id' => 'reserved', 'label' => 'Reserved (R)'],
@@ -106,7 +106,7 @@ class UnitForm extends LightWeightForm
             ['id' => 'vacant-dirty', 'label' => 'Vacant Dirty (VD)'],
             ['id' => 'compliment', 'label' => 'Compliment (C)'],
             ['id' => 'not-disturb', 'label' => 'Do Not Disturb (DND)'],
-            ['id' => 'Out-service', 'label' => 'Out Of Service (OS)'],
+            ['id' => 'out-service', 'label' => 'Out Of Service (OS)'],
             ['id' => 'due-out', 'label' => 'Due Out / Expected departure (DO/ED)'],
             ['id' => 'expected-arrival', 'label' => 'Expected Arrival (EA)'],
             ['id' => 'check-out', 'label' => 'Check Out (CO)'],
@@ -121,7 +121,7 @@ class UnitForm extends LightWeightForm
         $this->unitPrice = PropertyUnitType::find($this->type)->price;
 
         $includedFeatures = PropertyFeature::isCompany(current_company()->id)->isUnitType($this->type)->get();
-        
+
         // Map the data into an array of ['id' => id, 'name' => name]
         $included = $includedFeatures->map(fn ($item) => [
             'id' => $item->id,                    // The property feature id
@@ -134,7 +134,7 @@ class UnitForm extends LightWeightForm
             'id',                  // The key for the select options
             'name'                 // The name to display in the options
         );
-        
+
         $includedUtilities = PropertyUtility::isCompany(current_company()->id)->isUnitType($this->type)->get();
 
         // Map the data into an array of ['id' => id, 'name' => name]

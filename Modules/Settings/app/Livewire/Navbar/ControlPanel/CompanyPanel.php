@@ -16,6 +16,14 @@ class CompanyPanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+        $this->filterTypes = [
+            'status' => [
+                'active' => 'active',    // string filter
+                'suspended' => 'suspended',
+                'banished' => 'banished',
+            ],
+        ];
+
         $this->new = route('settings.companies.create');
         if($company){
             $this->showIndicators = true;

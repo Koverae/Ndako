@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        
+
         $user = User::find(Auth::user()->id);
         $user->update([
             'last_login_at' => now(),

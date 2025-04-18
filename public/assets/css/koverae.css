@@ -27769,3 +27769,24 @@ Dashboards End
 /* .fc-event {
     cursor: ew-resize !important;
 } */
+
+
+.koverae-editable-editor {
+    height: 150px;
+    width: 946px;
+    border-bottom: 0px solid #D8DADD;
+    padding: 4px 40px 4px;
+    min-height: 150px;
+    min-width: auto;
+    text-align: left;
+    overflow: auto;
+    max-height: 150px;
+}
+.koverae-editable-editor:hover {
+    border-bottom: 1px solid #017e84;
+    outline: none;
+}
+.koverae-editable-editor:focus {
+    /* border-bottom: 1px solid #017e84; */
+    outline: none;
+}

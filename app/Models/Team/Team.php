@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Koverae\KoveraeBilling\Traits\HasSubscriptions;
+use Modules\App\Models\Kredit\Kredit;
 
 class Team extends Model
 {
@@ -36,6 +37,11 @@ class Team extends Model
     public function subscribed()
     {
         return $this->hasOne(PlanSubscription::class, 'subscriber_id', 'id');
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Kredit::class, 'team_id', 'id');
     }
 
 }

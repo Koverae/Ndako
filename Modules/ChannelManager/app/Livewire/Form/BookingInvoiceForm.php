@@ -124,4 +124,19 @@ class BookingInvoiceForm extends LightWeightForm
         $this->dispatch('openModal', component: 'channelmanager::modal.add-invoice-payment-modal', arguments: ['invoice' => $this->invoice->id]);
     }
 
+    public function sendEmail(){
+        $subject = ['{property_name}', '{reference}'];
+        $subjectReplace = [current_property()->name, $this->invoice->reference];
+
+        $content = ['{total_amount}', '{reference}', '{guest_name}', '{company_name}'];
+        $contentReplace = [
+            format_currency($this->invoice->total_amount ?? 0),
+            $this->invoice->reference,
+            $this->invoice->guest->name,
+            current_property()->name,
+        ];
+
+        $this->dispatch('openModal', component: 'app::modal.send-by-email-modal', arguments: ['templateId' => 10, $this->invoice, 'subjectSearch' => $subject, 'subjectReplace' => $subjectReplace, 'contentSearch' => $content, 'contentReplace' => $contentReplace ]);
+    }
+
 }

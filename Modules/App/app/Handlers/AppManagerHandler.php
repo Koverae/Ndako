@@ -4,6 +4,7 @@ namespace Modules\App\Handlers;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Modules\App\Services\Wallet\KreditService;
 use Modules\ChannelManager\Handlers\ChannelManagerAppHandler;
 // use Modules\Dashboards\Handlers\DashboardsAppHandler;
 use Modules\Inventory\Entities\UoM\UnitOfMeasureCategory;
@@ -28,7 +29,7 @@ class AppManagerHandler extends AppHandler
     protected function handleInstallation($company)
     {
         // Example: Create app-manager related data and initial configuration
-        //
+        // $this->createWallet($company);
         // $this->installUnitsOfMeasure($company);
     }
 
@@ -92,6 +93,7 @@ class AppManagerHandler extends AppHandler
         $this->installCurrencies();
         $this->installLanguages();
     }
+
 
     /**
      * Create honorifics titles.

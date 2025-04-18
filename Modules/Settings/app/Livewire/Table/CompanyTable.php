@@ -32,7 +32,7 @@ class CompanyTable extends Table
     {
         return 'No Company Added Yet';
     }
-    
+
     public function emptyText(): string
     {
         return 'Add your first company to start organizing your business details and managing company-wide operations.';
@@ -40,7 +40,17 @@ class CompanyTable extends Table
 
     public function query() : Builder
     {
-        return Company::query(); // Returns a Builder instance for querying the User model
+        $query = Company::query();
+
+
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where($field, $value);
+            }
+        }
+
+        return $query;
     }
 
     // List View

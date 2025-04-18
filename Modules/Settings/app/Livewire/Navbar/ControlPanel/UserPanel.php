@@ -15,6 +15,13 @@ class UserPanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+        $this->filterTypes = [
+            'status' => [
+                'confirmed' => 'Active',    // string filter
+                'never-connected' => 'Inactive',
+            ],
+        ];
+
         $this->new = route('settings.users.create');
         if($user){
             $this->showIndicators = true;

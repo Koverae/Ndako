@@ -17,8 +17,9 @@ use Modules\Properties\Models\Property\PropertyUnitType;
 class UnitPanel extends ControlPanel
 {
     public $unit;
+    public $type;
 
-    public function mount($unit = null, $isForm = false)
+    public function mount($unit = null, $isForm = false, $type = null)
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();

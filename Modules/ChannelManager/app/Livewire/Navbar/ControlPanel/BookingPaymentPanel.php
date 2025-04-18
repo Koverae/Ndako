@@ -14,6 +14,12 @@ class BookingPaymentPanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+        $this->filterTypes = [
+            'status' => [
+                'pending' => 'Pending',    // string filter
+                'posted' => 'Posted',
+            ],
+        ];
         // $this->showIndicators = true;
             $this->currentPage = "Payments";
 

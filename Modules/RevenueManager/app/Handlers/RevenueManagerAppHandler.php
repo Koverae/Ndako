@@ -5,6 +5,7 @@ use App\Models\Company\Company;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Modules\App\Handlers\AppHandler;
+use Modules\App\Services\Wallet\KreditService;
 use Modules\RevenueManager\Models\Accounting\Journal;
 use Modules\RevenueManager\Models\Payment\FollowUpLevel;
 use Modules\RevenueManager\Models\Payment\PaymentDueTerm;
@@ -28,6 +29,7 @@ class RevenueManagerAppHandler extends AppHandler
         $this->createPaymentTerms($company);
         $this->createAccountingJournals($company);
         $this->createFollowUpLevels($company);
+        $this->createWallet($company);
 
     }
 
@@ -36,6 +38,18 @@ class RevenueManagerAppHandler extends AppHandler
         // Example: Drop blog-related tables and clean up configurations
     }
 
+    /**
+     * Create Wallet.
+     *
+     * @param int $companyId
+     */
+    public function createWallet($companyId){
+        $company = Company::find($companyId);
+
+        $kreditService = new KreditService;
+        $kreditService->topUp($company->team->id, 10);
+
+    }
 
     /**
      * Install default company settings and system parameters.

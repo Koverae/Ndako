@@ -40,7 +40,27 @@ class BookingPaymentTable extends Table
 
     public function query() : Builder
     {
-        return BookingPayment::query(); // Returns a Builder instance for querying the User model
+        $query = BookingPayment::query();
+
+
+        // Apply the search query filter if a search query is present
+        if ($this->searchQuery) {
+            // Search both the booking's name and the related guest's name
+            $query = BookingPayment::query()
+            ->where('reference', 'like', '%' . $this->searchQuery . '%')
+            ->orWhereHas('invoice', function($query) {
+                $query->where('reference', 'like', '%' . $this->searchQuery . '%');
+            });
+        }
+
+        // 🎯 Filters
+        if (!empty($this->filters)) {
+            foreach ($this->filters as $field => $value) {
+                $query->where($field, $value);
+            }
+        }
+
+        return $query;
     }
 
     // List View
