@@ -25,7 +25,7 @@
                 <div class="flex-wrap gap-2 d-flex">
                     <div class="gap-1 mb-2 row">
                         <input type="email" wire:model="friend_email" class="k-input col-lg-3 k_user_emails text-truncate" style="width: auto;" placeholder="Enter e-mail address">
-                        
+
                         <select class="k-input k_user_emails col-lg-3" wire:model="friend_role">
                             <option value="">----- Choose ------</option>
                             @foreach (current_company()->roles as $role)
@@ -38,9 +38,9 @@
                                 <option value="{{ $property->id }}">{{ $property->name }}</option>
                             @endforeach
                         </select>
-                
+
                     </div>
-                
+
                     <!-- Second select moved below while still being part of the Invite -->
                     <div class="w-100">
                         <span wire:click="sendInvitation" class="flex-shrink-0 btn btn-primary k_web_settings_invite w-75">
@@ -48,10 +48,10 @@
                             <span wire:loading wire:target="sendInvitation">...</span>
                         </span>
                     </div>
-                    
+
                     @error('friend_email') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
-                
+
             </div>
             <div class="mt-4">
                 <p class="k_form_label">

@@ -17,6 +17,7 @@ class KreditTransaction extends Model
     protected $fillable = [
         'team_id',
         'user_id',
+        'reference',
         'type',
         'action',
         'amount',

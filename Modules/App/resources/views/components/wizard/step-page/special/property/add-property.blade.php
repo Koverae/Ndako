@@ -4,7 +4,7 @@
 
 <div class="row gap-1 justify-content-md-center {{ $this->currentStep == $value->step ? '' : 'd-none' }}">
 
-    <div class="border shadow-sm col-12 col-md-8 mt-2 card">
+    <div class="mt-2 border shadow-sm col-12 col-md-8 card">
         <div class="card-header d-block">
             <h2 class="h2">Add Your Property 🏡</h2>
             <p>Let’s add your property in a few easy steps. This helps you manage bookings and operations efficiently.</p>
@@ -35,7 +35,7 @@
                     @error('type') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="row align-items-start mb-2">
+                <div class="mb-2 row align-items-start">
                     <div class="d-flex">
                         <textarea wire:model="description" class="p-0 m-0 textearea k-input" placeholder="{{ __('Tell me a bit about your property. What makes it awesome?') }}" id="description">
                         </textarea>
@@ -45,7 +45,7 @@
 
                 <div class="mb-3 col-md-12">
                     <label for="floors" class="form-label h3">
-                        {{ __('How many floors are we stacking?') }}
+                        {{ __('How many floors/sections are we stacking?') }}
                     </label>
                     <div class="gap-2 d-flex">
                         <input type="number" class="form-control @error('floors') is-invalid @enderror"

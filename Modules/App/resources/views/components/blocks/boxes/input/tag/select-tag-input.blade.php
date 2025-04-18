@@ -4,7 +4,7 @@
 <div class="mt-3 ps-3">
     @if($value->label)
     <span>
-        {{ $value->label }} : 
+        {{ $value->label }} :
     </span>
     @endif
 
@@ -22,7 +22,7 @@
         </a>
         @endforeach
     </span>
-    
+
     {{-- <div class="flex-wrap gap-1 k_field_tags d-inline-flex k_tags_input k_input">
         @foreach ($value->data['options'] as $text)
 

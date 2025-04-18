@@ -47,7 +47,7 @@ class RevenueManagerAppHandler extends AppHandler
         $company = Company::find($companyId);
 
         $kreditService = new KreditService;
-        $kreditService->topUp($company->team->id, 10);
+        $kreditService->topUp($company->team->id, 10); // The starting kredits is defined by the plan selected
 
     }
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name'); // Name of the client
             $table->string('public_key')->unique();
             $table->string('private_key'); // Secure storage
+            $table->json('authorized_domains')->nullable();  // <== store array of domains here
             $table->timestamps();
         });
     }

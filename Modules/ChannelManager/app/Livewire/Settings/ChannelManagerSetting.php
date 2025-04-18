@@ -18,15 +18,17 @@ class ChannelManagerSetting extends AppSetting
     public bool $has_google_hotel_integration = false, $has_website_integration = false;
     public $google_hotel_client_id, $google_hotel_api_key, $google_hotel_bid;
     public $publicKey, $secretKey;
+    public array $authorizedDomains = [];
 
     public function mount($setting){
         $this->setting = $setting;
 
         $this->publicKey = current_company()->client->public_key ;
         $this->secretKey = current_company()->client->private_key ;
+        $this->authorizedDomains = current_company()->client->authorized_domains;
 
         $this->has_website_integration = $setting->has_website_integration ?? false;
-        
+
         $this->google_hotel_client_id = $setting->google_hotel_client_id;
         $this->google_hotel_api_key = $setting->google_hotel_api_key;
         $this->google_hotel_bid = $setting->google_hotel_bid;
@@ -37,7 +39,7 @@ class ChannelManagerSetting extends AppSetting
     {
         return [
             Block::make('integration', __('Integration')),
-        ];        
+        ];
     }
 
     public function boxes() : array
@@ -59,6 +61,7 @@ class ChannelManagerSetting extends AppSetting
             // Website Integration
             BoxInput::make('public-key', "API Public Key", 'text', 'publicKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
             BoxInput::make('secret-key', "API Secret Key", 'text', 'secretKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
+            BoxInput::make('secret-key', "Authorized Domains", 'text', 'secretKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
         ];
     }
 

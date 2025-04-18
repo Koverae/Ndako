@@ -26,6 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('kredit_id')->nullable();
             $table->unsignedBigInteger('team_id')->nullable();
             $table->foreignId('user_id')->nullable(); // Action By
+            $table->string('reference')->nullable();
             $table->enum('type', ['debit', 'credit'])->default('debit'); // debit, credit
             $table->string('action'); // sms_sent, booking_reminder, etc.
             $table->integer('amount');
