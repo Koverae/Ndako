@@ -23,7 +23,7 @@
 
                 @foreach($this->existingImages as $index => $image)
                 <span class="bg-gray-200 border rounded k-image-box">
-                    <img src="{{ asset('storage/' . $image) }}" class="inline-flex rounded image" alt=""title="Tooltip on top">
+                    <img src="{{ $image }}" class="inline-flex rounded image" alt=""title="Tooltip on top">
                     {{-- <img src="{{ Storage::url('avatars/'.$user->avatar.'') }}" class="inline-flex rounded image" alt=""title="Tooltip on top"> --}}
                     <div class="bottom-0 select-file d-flex position-absolute justify-content-between w100">
                         <span class="p-1 m-1 border-0 k_select_file_button btn btn-light rounded-circle">
@@ -38,11 +38,11 @@
             </div>
 
             <!-- Loading -->
-            <div wire:loading wire:target="newImages" class="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center rounded-lg">
-                <div class="text-white text-xs">Uploading...</div>
+            <div wire:loading wire:target="newImages" class="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 rounded-lg">
+                <div class="text-xs text-white">Uploading...</div>
             </div>
-            <div wire:loading wire:target="removeImage" class="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center rounded-lg">
-                <div class="text-white text-xs">Uploading...</div>
+            <div wire:loading wire:target="removeImage" class="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 rounded-lg">
+                <div class="text-xs text-white">Uploading...</div>
             </div>
             <!-- Loading End -->
 

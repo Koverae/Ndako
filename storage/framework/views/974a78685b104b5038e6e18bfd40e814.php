@@ -28,10 +28,10 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-<?php if (isset($component)) { $__componentOriginal4e4b096b264953ed89e7441106fee3b0 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal4e4b096b264953ed89e7441106fee3b0 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'app::components.blocks.boxes.action.depends','data' => ['value' => $value]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('app::blocks.boxes.action.depends'); ?>
+<?php if (isset($component)) { $__componentOriginald003124b647f30382302963894ce8348 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald003124b647f30382302963894ce8348 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'app::components.blocks.boxes.template.subs','data' => ['value' => $value]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app::blocks.boxes.template.subs'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
@@ -43,11 +43,11 @@ unset($__defined_vars); ?>
 
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal4e4b096b264953ed89e7441106fee3b0)): ?>
-<?php $attributes = $__attributesOriginal4e4b096b264953ed89e7441106fee3b0; ?>
-<?php unset($__attributesOriginal4e4b096b264953ed89e7441106fee3b0); ?>
+<?php if (isset($__attributesOriginald003124b647f30382302963894ce8348)): ?>
+<?php $attributes = $__attributesOriginald003124b647f30382302963894ce8348; ?>
+<?php unset($__attributesOriginald003124b647f30382302963894ce8348); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal4e4b096b264953ed89e7441106fee3b0)): ?>
-<?php $component = $__componentOriginal4e4b096b264953ed89e7441106fee3b0; ?>
-<?php unset($__componentOriginal4e4b096b264953ed89e7441106fee3b0); ?>
-<?php endif; ?><?php /**PATH D:\My Laravel Startup\ndako\storage\framework\views/6ad9f93eccb8ce18eabeb5b920fadaa1.blade.php ENDPATH**/ ?>
+<?php if (isset($__componentOriginald003124b647f30382302963894ce8348)): ?>
+<?php $component = $__componentOriginald003124b647f30382302963894ce8348; ?>
+<?php unset($__componentOriginald003124b647f30382302963894ce8348); ?>
+<?php endif; ?><?php /**PATH D:\My Laravel Startup\ndako\storage\framework\views/422f0d49acb61b83c7760469f2fe2177.blade.php ENDPATH**/ ?>

@@ -2,7 +2,7 @@
     window.LanternEmbed = {
         init: function (formContainerId, apiBaseUrl) {
             // Fetch the API configuration from the backend
-            fetch(`${apiBaseUrl}/api/get-embed-config`)
+            fetch(`${apiBaseUrl}/get-embed-config`)
                 .then(response => response.json())
                 .then(apiConfig => {
                     const apiKey = apiConfig.publicKey;  // Public API key for frontend

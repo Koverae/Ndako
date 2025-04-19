@@ -20,9 +20,9 @@ class CheckAllowedDomains
         $publicKey = $request->header('X-API-Key');
         $privateKey = $request->header('X-API-Secret');
 
-        // if (! $origin || ! $publicKey) {
-        //     return response()->json(['message' => 'Missing origin or app key'], 400);
-        // }
+        if (! $origin || ! $publicKey) {
+            return response()->json(['message' => 'Missing origin or app key'], 400);
+        }
 
         $client = ApiClient::where('public_key ', $publicKey)->first();
 

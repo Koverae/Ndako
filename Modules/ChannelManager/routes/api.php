@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\ChannelManager\Http\Controllers\ChannelManagerController;
+use Modules\ChannelManager\Http\Controllers\Api\V1\UnitController;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\File;
 
 /*
  *--------------------------------------------------------------------------
@@ -24,27 +27,29 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
 // Route::get('/embed/form', [BookingFormController::class, 'embed']);
 
-Route::middleware('check-allowed-domains')->get('/get-embed-config', [BookingFormController::class, 'getEmbedConfig']);
+Route::prefix('v1')->group(function () {
+
+    Route::get('/embed/booking.js', function () {
+        return response(file_get_contents(resource_path('js/embed-booking.js')), 200, [
+            'Content-Type' => 'application/javascript',
+        ]);
+    });
+    
+    Route::middleware('check-allowed-domains')->get('/get-embed-config', [BookingFormController::class, 'getEmbedConfig']);
+});
+
 
 Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
 
+    Route::prefix('v1')->group(function () {
+        Route::get('rooms', [UnitController::class, 'index']);
+        Route::get('room-types', [UnitController::class, 'typeIndex']);
+        Route::get('room-types/{id}', [UnitController::class, 'typeShow']);
+        // Route::apiResource('rooms', UnitController::class);
 
-    Route::get('/rooms/{roomId}', function (Request $request) {
-        // Log::info("Received Room ID: $request->roomId");  // Log received roomId
-        $room = PropertyUnit::find($request->roomId);
-    
-        if (!$room) {
-            return response()->json(['message' => 'Room not found.'], 404);
-        }
-    
-        return response()->json([
-            'name' => $room->name,
-            'type' => $room->unitType->name,
-            'price' => $room->unitType->price,
-            'details' => $room->description,
-        ]);
+        // Embed
+
     });
-
     Route::get('/embed/form', [BookingFormController::class, 'embed']);
     Route::get('/available-rooms-html', [BookingFormController::class, 'availableRoomsHtml']);
     Route::post('/check-availability', [BookingFormController::class, 'checkAvailability']);

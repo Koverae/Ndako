@@ -25,7 +25,10 @@ class PropertyUnitType extends Model
             $property->prices()->delete();
         });
     }
-
+    protected $casts = [
+        'images' => 'array',
+    ];
+    
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
@@ -74,4 +77,17 @@ class PropertyUnitType extends Model
             // ->select(['id', 'price', 'discounted_price'])
             ->first();
     }
+    
+    public function getImagesAttribute($value)
+    {
+        // Decode the JSON stored in the database
+        $images = json_decode($value, true) ?? [];
+
+        // Map the images to the full URL path
+        return collect($images)->map(function ($path) {
+            // Ensure you have a proper URL by prefixing 'storage/'
+            return asset('storage/' . ltrim($path, '/'));
+        })->toArray();
+    }
+
 }

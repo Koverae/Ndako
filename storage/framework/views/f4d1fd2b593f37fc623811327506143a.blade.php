@@ -1,6 +1,6 @@
 <?php extract((new \Illuminate\Support\Collection($attributes->getAttributes()))->mapWithKeys(function ($value, $key) { return [Illuminate\Support\Str::camel(str_replace([':', '.'], ' ', $key)) => $value]; })->all(), EXTR_SKIP); ?>
 @props(['value'])
-<x-app::blocks.boxes.action.depends :value="$value" >
+<x-app::form.tab.group.simple :value="$value" >
 
 {{ $slot ?? "" }}
-</x-app::blocks.boxes.action.depends>
+</x-app::form.tab.group.simple>

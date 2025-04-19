@@ -37,7 +37,7 @@ return new class extends Migration
             $table->enum('invoicing_type', ['rental', 'rate'])->nullable();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('images')->nullable(); // Images
+            $table->text('images')->nullable(); // Images
             $table->unsignedBigInteger('country_id')->nullable();
             $table->unsignedBigInteger('state_id')->nullable();
             $table->string('city')->nullable();
@@ -77,7 +77,7 @@ return new class extends Migration
             $table->string('name')->comment("e.g., 'Premium Room', 'Cluster Room', 'Twin Room'");
             $table->text('description')->nullable();
             $table->decimal('price', 12, 2)->default(0);
-            $table->string('images')->nullable(); // Images
+            $table->text('images')->nullable(); // Images
             $table->integer('capacity')->default(1);
             $table->string('size')->nullable();
             $table->json('unit_features')->nullable();
@@ -116,7 +116,7 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->nullable();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('images')->nullable(); // Images
+            $table->text('images')->nullable(); // Images
             $table->integer('capacity')->default(1);
             $table->json('default_setttings')->nullable();
             $table->boolean('is_available')->default(true);
@@ -160,7 +160,7 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('images')->nullable(); // Images
+            $table->text('images')->nullable(); // Images
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
@@ -205,7 +205,7 @@ return new class extends Migration
             $table->unsignedBigInteger('feature_id');
             $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('property_unit_type_id')->nullable();
-            $table->string('images')->nullable(); // Images
+            $table->text('images')->nullable(); // Images
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
