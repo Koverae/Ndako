@@ -85,7 +85,7 @@
                         localStorage.setItem('selectedRoom', roomId);
 
                         // Fetch room details from the API
-                        fetch(`${apiBaseUrl}/rooms/${roomId}`, {
+                        fetch(`${apiBaseUrl}/embed/rooms/${roomId}`, {
                             headers: {
                                 'X-API-Key': apiKey,
                                 'X-API-Secret': apiSecret,
@@ -93,19 +93,21 @@
                         })
                         .then(response => response.json())
                         .then(roomData => {
-                            if (roomData.name) {
-                                // Display checkout UI with room details
-                                document.getElementById('checkoutSection').innerHTML = `
-                                    <h3>Confirm Booking</h3>
-                                    <p><strong>Room Name:</strong> ${roomData.name} ~ ${roomData.type}</p>
-                                    <p><strong>Price:</strong> ${roomData.price}</p>
-                                    <p><strong>Details:</strong> ${roomData.details}</p>
-                                    <p><strong>Stay:</strong> ${checkIn} ~ ${checkOut}</p>
-                                    <button id="confirmBookingBtn">Confirm Booking</button>
-                                `;
-                            } else {
-                                alert('Room not found.');
-                            }
+                            const roomId = roomData.id;
+                            fetch(`${apiBaseUrl}/confirm-booking-html/${roomId}`, {
+                                headers: {
+                                    'X-API-Key': apiKey,
+                                    'X-API-Secret': apiSecret,
+                                },
+                            })
+                            .then(response => response.text())
+                            .then(html => {
+                                document.getElementById('checkoutSection').innerHTML = html;
+                            })
+                            .catch(error => {
+                                console.error('Error loading room details:', error);
+                                alert('Error loading room details html:', error);
+                            });
                         })
                         .catch(error => {
                             console.error('Error fetching room details:', error);

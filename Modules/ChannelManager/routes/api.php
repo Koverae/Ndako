@@ -50,9 +50,29 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
 
         // Embed
         Route::get('/embed/form', [BookingFormController::class, 'embed']);
+        
+
         Route::post('/check-availability', [BookingFormController::class, 'checkAvailability']);
         Route::get('/available-rooms-html', [BookingFormController::class, 'availableRoomsHtml']);
         Route::post('/confirm-booking', [BookingFormController::class, 'confirmBooking']);
+
+        Route::get('/embed/rooms/{roomId}', function (Request $request) {
+            // Log::info("Received Room ID: $request->roomId");  // Log received roomId
+            $room = PropertyUnit::find($request->roomId);
+        
+            if (!$room) {
+                return response()->json(['message' => 'Room not found.'], 404);
+            }
+        
+            return response()->json([
+                'id' => $room->id,
+                'name' => $room->name,
+                'type' => $room->unitType->name,
+                'price' => $room->unitType->price,
+                'details' => $room->description,
+            ]);
+        });
+        Route::get('/confirm-booking-html/{roomId}', [BookingFormController::class, 'confirmBookingHtml']);
 
     });
 });

@@ -129,7 +129,9 @@ class BookingFormController extends Controller
         $rooms = Cache::get('available_rooms', collect());
 
         // Generate the HTML for the available rooms
-        return view('channelmanager::embed.available-rooms', ['rooms' => $rooms])->render();
+        return view('channelmanager::embed.available-rooms', [
+            'rooms' => $rooms
+            ])->render();
 
     }
 
@@ -141,13 +143,31 @@ class BookingFormController extends Controller
             return response()->json(['message' => 'Room not found.'], 404);
         }
     
+        // Cache::put('available_rooms', $room, now()->addMinutes(10));
         return response()->json([
+            'id' => $room->id,
             'name' => $room->name,
             'type' => $room->unitType->name,
             'price' => $room->unitType->price,
             'details' => $room->description,  // Add more fields as necessary    
         ]);
     }
+
+    public function confirmBookingHtml(Request $request){
+        
+        $room = PropertyUnit::find(6);
+        $checkIn = now();
+        $checkOut = now()->addDays(4);
+        $totalPrice = 25000;
+        // Generate the HTML for the available rooms
+        return view('channelmanager::embed.checkout-section', [
+            'room' => $room,
+            'checkIn' => $checkIn,
+            'checkOut' => $checkOut,
+            'totalPrice' => $totalPrice,
+            ])->render();
+    }
+
     public function confirmBooking(Request $request)
     {
         $validated = $request->validate([

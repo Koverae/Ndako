@@ -74,7 +74,7 @@
                 <div class="room-card">
                     <h3><?php echo e($room->name); ?> <span class="text-muted">(<?php echo e($room->unitType->name); ?>)</span></h3>
                     <p><strong>Capacity:</strong> <?php echo e($room->capacity); ?> people</p>
-                    <p><strong>Price:</strong> $<?php echo e(number_format($room->unitType->price, 2)); ?></p>
+                    <p><strong>Price:</strong> <?php echo e(number_format($room->unitType->getDefaultRate($room->unitType->id)->price, 2)); ?></p>
                     <button class="select-room-btn" data-room-id="<?php echo e($room->id); ?>">Select Room</button>
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

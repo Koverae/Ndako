@@ -73,7 +73,7 @@
                 <div class="room-card">
                     <h3>{{ $room->name }} <span class="text-muted">({{ $room->unitType->name }})</span></h3>
                     <p><strong>Capacity:</strong> {{ $room->capacity }} people</p>
-                    <p><strong>Price:</strong> ${{ number_format($room->unitType->price, 2) }}</p>
+                    <p><strong>Price:</strong> {{ number_format($room->unitType->getDefaultRate($room->unitType->id)->price, 2) }}</p>
                     <button class="select-room-btn" data-room-id="{{ $room->id }}">Select Room</button>
                 </div>
             @empty
