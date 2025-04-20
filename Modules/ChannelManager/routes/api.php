@@ -36,6 +36,7 @@ Route::prefix('v1')->group(function () {
     });
     
     Route::middleware('check-allowed-domains')->get('/get-embed-config', [BookingFormController::class, 'getEmbedConfig']);
+    
 });
 
 
@@ -48,10 +49,10 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
         // Route::apiResource('rooms', UnitController::class);
 
         // Embed
+        Route::get('/embed/form', [BookingFormController::class, 'embed']);
+        Route::post('/check-availability', [BookingFormController::class, 'checkAvailability']);
+        Route::get('/available-rooms-html', [BookingFormController::class, 'availableRoomsHtml']);
+        Route::post('/confirm-booking', [BookingFormController::class, 'confirmBooking']);
 
     });
-    Route::get('/embed/form', [BookingFormController::class, 'embed']);
-    Route::get('/available-rooms-html', [BookingFormController::class, 'availableRoomsHtml']);
-    Route::post('/check-availability', [BookingFormController::class, 'checkAvailability']);
-    Route::post('/confirm-booking', [BookingFormController::class, 'confirmBooking']);
 });

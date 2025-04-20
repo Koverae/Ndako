@@ -13,10 +13,19 @@ use Modules\Properties\Models\Property\PropertyUnitType;
 
 class BookingFormController extends Controller
 {
-    public function getEmbedConfig()
+    public function getEmbedConfig(Request $request)
     {
-        $apiKey = env('NDAKO_APP_KEY');
-        $apiSecret = env('NDAKO_SECRET_KEY');
+        $publicKey = $request->header('X-API-Key');
+        // $origin = $request->header('Origin') ?? parse_url($request->headers->get('Referer'), PHP_URL_HOST);
+    
+        $client = ApiClient::where('public_key', $publicKey)->first();
+    
+        if (!$client) {
+            return response()->json(['success' => false, 'message' => 'Invalid API key.'], 403);
+        }
+
+        $apiKey = $client->public_key;
+        $apiSecret = $client->private_key;
 
         // Return the public API key and any other relevant configuration
         return response()->json([
@@ -28,9 +37,11 @@ class BookingFormController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function embed()
+    public function embed(Request $request)
     {
-        $roomTypes = PropertyUnitType::isCompany(current_company()->id)->get();
+        $client = $request->get('api_client');
+    
+        $roomTypes = PropertyUnitType::with(['property'])->isCompany($client->company_id)->get();
         
         // Generate the HTML for the available rooms
         return view('channelmanager::embed.booking-form', ['roomTypes' => $roomTypes])->render();
@@ -39,20 +50,8 @@ class BookingFormController extends Controller
     public function checkAvailability(Request $request)
     {
         
-        $apiKey = $request->header('X-API-Key');
-        $apiSecret = $request->header('X-API-Secret');
+        $client = $request->get('api_client');
 
-        // Validate API keys
-        $client = ApiClient::where('public_key', $apiKey)->first();
-
-        if (!$client || !hash_equals($client->private_key, $apiSecret)) {
-            return response()->json([
-                'message' => 'Unauthorized: Invalid API keys.',
-            ], 401);
-        }
-
-        // Step 1: Validate the request data
-    
         // Validating that check_in is a required date, it should be a valid date, and it must be today or in the future
         // The 'after_or_equal' rule ensures that check_in cannot be a past date
         // This also ensures that check_in is in a valid date format (Y-m-d)
@@ -90,7 +89,7 @@ class BookingFormController extends Controller
         // Normally, you'd check the availability based on the dates and number of people in a database, but for now, we'll simulate
         
         // Step 1: Fetch rooms that fit the capacity criteria
-        $rooms = PropertyUnit::isCompany(current_company()->id)->where('capacity', '>=', $people)
+        $rooms = PropertyUnit::isCompany($client->company_id)->where('capacity', '>=', $people)
         ->with(['unitType']) // Eager load related price table
         ->when($type, function ($query, $type){
             $query->where('property_unit_type_id', $type);

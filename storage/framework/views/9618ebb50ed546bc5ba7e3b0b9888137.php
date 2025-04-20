@@ -1,6 +1,6 @@
-@extends('channelmanager::layouts.app')
 
-@section('styles')
+
+<?php $__env->startSection('styles'); ?>
     <style>
     .booking_form {
         background-color: #fff;
@@ -186,9 +186,9 @@
         color: #555;
       }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row justify-content-center slide-animated three">
     <form id="checkAvailabilityForm">
         <div class="row g-0 booking_form">
@@ -204,15 +204,15 @@
             </div>
             <div class="col-lg-2">
                 <select class="p-0 border-0 form-control" name="room_type" id="roomType">
-                    <option value="">{{ __('Room Type') }}</option>
-                    @foreach($roomTypes as $type)
-                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                    @endforeach
+                    <option value=""><?php echo e(__('Room Type')); ?></option>
+                    <?php $__currentLoopData = $roomTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($type->id); ?>"><?php echo e($type->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
             <div class="col-lg-2 col-sm-6 ">
                 <div class="qty-buttons">
-                    <label>{{ __('People') }}</label>
+                    <label><?php echo e(__('People')); ?></label>
                     <input type="number" name="people" id="people" min="1" value="1" class="qty form-control">
                 </div>
             </div>
@@ -228,4 +228,6 @@
 </div>
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('channelmanager::layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\My Laravel Startup\ndako\Modules/ChannelManager\resources/views/embed/booking-form.blade.php ENDPATH**/ ?>

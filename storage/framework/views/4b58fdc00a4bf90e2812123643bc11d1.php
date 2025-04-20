@@ -3,6 +3,7 @@
 $__newAttributes = [];
 $__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
     'value',
+    
 ]));
 
 foreach ($attributes->all() as $__key => $__value) {
@@ -20,6 +21,7 @@ unset($__newAttributes);
 
 foreach (array_filter(([
     'value',
+    
 ]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
@@ -31,15 +33,18 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-<?php
-    $property = \Modules\Properties\Models\Property\Property::find($value);
-?>
+<!--[if BLOCK]><![endif]--><?php if($value->parent): ?>
 <div>
-    <!--[if BLOCK]><![endif]--><?php if($property): ?>
-    <a style="text-decoration: none" class="primary" wire:navigate href="<?php echo e(route('properties.show', ['property' => $property->id])); ?>"  tabindex="-1">
-        <?php echo e($property->name ?? ''); ?>
-
+    <!--[if BLOCK]><![endif]--><?php if($value->type == 'link'): ?>
+    <a wire:navigate href="<?php echo e($value->action); ?>" class="outline-none btn btn-link k_web_settings_access_rights">
+        <i class="bi <?php echo e($value->icon); ?> k_button_icon"></i> <span><?php echo e($value->label); ?></span>
+    </a>
+    <?php elseif($value->type == 'modal'): ?>
+    <a class="outline-none btn btn-link k_web_settings_access_rights" onclick="Livewire.dispatch('openModal', <?php echo $value->action; ?>)">
+        <i class="bi <?php echo e($value->icon); ?> k_button_icon"></i> <span><?php echo e($value->label); ?></span>
     </a>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    
+    <br>
 </div>
-<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/table/column/special/property.blade.php ENDPATH**/ ?>
+<?php endif; ?><!--[if ENDBLOCK]><![endif]--><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/blocks/boxes/action/depends.blade.php ENDPATH**/ ?>

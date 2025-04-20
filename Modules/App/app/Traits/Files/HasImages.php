@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 trait HasImages{
 
-    protected function images(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => json_decode($value, true) ?? [],
-            set: fn ($value) => json_encode($value),
-        );
-    }
+    // protected function images(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn ($value) => json_decode($value, true) ?: [], 
+    //         set: fn ($value) => is_array($value) ? json_encode($value) : json_encode([]), // Ensure $value is an array before encoding
+    //     );
+    // }
 
     public function addImage($path)
     {

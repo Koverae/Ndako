@@ -1,6 +1,6 @@
-@extends('channelmanager::layouts.app')
 
-@section('styles')
+
+<?php $__env->startSection('styles'); ?>
 <style>
     .room-container {
         margin-top: 2rem;
@@ -60,25 +60,28 @@
         color: #2f2f2f;
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container">
         <div class="availability-banner">
-            {{ $rooms->count() }} {{ __('room(s) available for the selected dates!') }}
+            <?php echo e($rooms->count()); ?> <?php echo e(__('room(s) available for the selected dates!')); ?>
+
         </div>
 
         <div class="room-container">
-            @forelse ($rooms as $room)
+            <?php $__empty_1 = true; $__currentLoopData = $rooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $room): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="room-card">
-                    <h3>{{ $room->name }} <span class="text-muted">({{ $room->unitType->name }})</span></h3>
-                    <p><strong>Capacity:</strong> {{ $room->capacity }} people</p>
-                    <p><strong>Price:</strong> ${{ number_format($room->unitType->price, 2) }}</p>
-                    <button class="select-room-btn" data-room-id="{{ $room->id }}">Select Room</button>
+                    <h3><?php echo e($room->name); ?> <span class="text-muted">(<?php echo e($room->unitType->name); ?>)</span></h3>
+                    <p><strong>Capacity:</strong> <?php echo e($room->capacity); ?> people</p>
+                    <p><strong>Price:</strong> $<?php echo e(number_format($room->unitType->price, 2)); ?></p>
+                    <button class="select-room-btn" data-room-id="<?php echo e($room->id); ?>">Select Room</button>
                 </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <p class="text-center text-muted">No availability for the selected dates</p>
-            @endforelse
+            <?php endif; ?>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('channelmanager::layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\My Laravel Startup\ndako\Modules/ChannelManager\resources/views/embed/available-rooms.blade.php ENDPATH**/ ?>
