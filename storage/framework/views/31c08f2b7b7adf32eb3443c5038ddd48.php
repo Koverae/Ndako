@@ -131,34 +131,33 @@
         <!-- RIGHT: Payment Section -->
         <div class="booking-column payment-column">
             <h4><?php echo e(__('Payment Information')); ?></h4>
-            <form method="POST" action="#">
-                <?php echo csrf_field(); ?>
-                <div class="form-group">
-                    <label><?php echo e(__('Full Name')); ?></label>
-                    <input type="text" name="name" required placeholder="Brian Mwangi">
-                </div>
+            
+            <div class="form-group">
+                <label><?php echo e(__('Full Name')); ?></label>
+                <input type="text" name="name" required placeholder="Brian Mwangi">
+            </div>
 
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
-                </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
+            </div>
 
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" name="phone" required>
-                </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" required placeholder="">
+            </div>
 
-                <input type="hidden" name="room_id" value="<?php echo e($room->id); ?>">
-                <input type="hidden" name="check_in" value="<?php echo e($checkIn); ?>">
-                <input type="hidden" name="check_out" value="<?php echo e($checkOut); ?>">
-                <input type="hidden" name="total_price" value="<?php echo e($totalPrice ?? $room->price); ?>">
+            <input type="hidden" name="room_id" value="<?php echo e($room->id); ?>">
+            <input type="hidden" name="check_in" value="<?php echo e($checkIn); ?>">
+            <input type="hidden" name="check_out" value="<?php echo e($checkOut); ?>">
+            <input type="hidden" name="total_price" value="<?php echo e($totalPrice ?? $room->price); ?>">
 
-                <button type="submit" class="confirm-payment-btn">
-                    Pay with Paystack
-                </button>
-            </form>
+            <button class="confirm-payment-btn" id="confirmBookingBtn">
+                Pay with Paystack
+            </button>
         </div>
     </div>
+
 </div>
 
 <?php $__env->stopSection(); ?>

@@ -1,10 +1,11 @@
 (function () {
     window.LanternEmbed = {
-        init: function (formContainerId, apiBaseUrl, publicKey, secretKey) {
+        init: function (formContainerId, apiBaseUrl, publicKey, secretKey, successUrl) {
             // Fetch the API configuration from the backend
 
             const apiKey = publicKey;  // Public API key for frontend
             const apiSecret = secretKey;  // Secret API key for backend use
+            const callbackUrl = successUrl;
 
             const container = document.getElementById(formContainerId);
             if (!container) {
@@ -98,6 +99,7 @@
                             const url = new URL(`${apiBaseUrl}/confirm-booking-html/${roomId}`);
                             url.searchParams.append('check_in', checkIn);
                             url.searchParams.append('check_out', checkOut);
+                            url.searchParams.append('callback_url', callbackUrl);
                             
                             fetch(url.toString(), {
                                 headers: {
@@ -122,94 +124,85 @@
                 });
 
                 // 🔥 NEW: Event Listener for Booking Confirmation
-                document.addEventListener('DOMContentLoaded', function () {
-                    const form = document.querySelector('.booking-content-grid');
-                
-                    form.addEventListener('submit', function (e) {
-                        e.preventDefault();
-                
-                        const formData = new FormData(form);
-                
-                        fetch(`${apiBaseUrl}/embed/initiate-booking`, {
+                document.addEventListener('click', function (e) {
+                    if (e.target.id === 'confirmBookingBtn') {
+                        const roomId = localStorage.getItem('selectedRoom');
+                        if (!roomId) {
+                            alert('No room selected.');
+                            return;
+                        }
+
+                        // Send booking request to API
+                        fetch(`${apiBaseUrl}/embed/confirm-booking`, {
                             method: 'POST',
                             headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/json',
                                 'X-API-Key': apiKey,
                                 'X-API-Secret': apiSecret,
-                                'Accept': 'application/json'
                             },
-                            body: formData
+                            body: JSON.stringify({
+                                room_id: roomId,
+                                check_in: document.getElementById('checkIn').value,
+                                check_out: document.getElementById('checkOut').value,
+                                people: document.getElementById('people').value,
+                            }),
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(`Booking initiated. Ref: ${data.payment_ref}`);
-                
-                                // Simulate confirmation step
-                                fetch(`${apiBaseUrl}/embed/confirm-payment`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-API-Key': apiKey,
-                                        'X-API-Secret': apiSecret,
-                                        'X-Requested-With': 'XMLHttpRequest',
-                                    },
-                                    body: JSON.stringify({
-                                        payment_ref: data.payment_ref
-                                    })
-                                })
-                                .then(res => res.json())
-                                .then(confirm => {
-                                    alert(confirm.message);
-                                    window.location.href = '/thank-you';
-                                });
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                alert(result.message || 'Booking Confirmed.');
                             } else {
-                                alert('Failed to initiate booking.');
+                                alert(result.message || 'An error occurred.');
                             }
                         })
                         .catch(error => {
-                            console.error(error);
-                            alert('Something went wrong.');
+                            console.error('Error confirming booking:', error);
+                            alert('An error occurred. Please try again.');
                         });
-                    });
+                    }
                 });
-                
-                // document.addEventListener('click', function (e) {
-                //     if (e.target.id === 'confirmBookingBtn') {
-                //         const roomId = localStorage.getItem('selectedRoom');
-                //         if (!roomId) {
-                //             alert('No room selected.');
-                //             return;
-                //         }
 
-                //         // Send booking request to API
-                //         fetch(`${apiBaseUrl}/confirm-booking`, {
-                //             method: 'POST',
-                //             headers: {
-                //                 'Content-Type': 'application/json',
-                //                 'X-API-Key': apiKey,
-                //                 'X-API-Secret': apiSecret,
-                //             },
-                //             body: JSON.stringify({
-                //                 room_id: roomId,
-                //                 check_in: document.getElementById('checkIn').value,
-                //                 check_out: document.getElementById('checkOut').value,
-                //                 people: document.getElementById('people').value,
-                //             }),
-                //         })
-                //         .then(response => response.json())
-                //         .then(result => {
-                //             if (result.success) {
-                //                 alert(result.message || 'Booking Confirmed.');
-                //             } else {
-                //                 alert(result.message || 'An error occurred.');
-                //             }
-                //         })
-                //         .catch(error => {
-                //             console.error('Error confirming booking:', error);
-                //             alert('An error occurred. Please try again.');
-                //         });
-                //     }
+                
+                // document.getElementById('bookingForm').addEventListener('submit', function (e) {
+                //     e.preventDefault();
+
+                //     const form = e.target;
+                //     const formData = {
+                //         name: form.name.value,
+                //         email: form.email.value,
+                //         phone: form.phone.value,
+                //         room_id: form.room_id.value,
+                //         check_in: form.check_in.value,
+                //         check_out: form.check_out.value,
+                //         total_price: form.total_price.value,
+                //         // callback: callbackUrl,
+                //     };
+                    
+                //     const endpoint = `{{ route('api.initiate-booking') }}?callback=${encodeURIComponent(callbackUrl)}`;
+
+                //     fetch(endpoint, {
+                //         method: "POST",
+                //         headers: {
+                //             "Content-Type": "application/json",
+                //             "X-API-Key": apiKey,
+                //             "X-API-Secret": apiSecret,
+                //         },
+                //         body: JSON.stringify(formData),
+                //     })
+                //     .then(response => response.json())
+                //     .then(data => {
+                //         if (data.success) {
+                //             alert("Booking initiated!");
+                //             window.location.href = formData.success_url || '/booking-success';
+                //             // Later: Trigger Paystack popup here
+                //         } else {
+                //             alert(data.message || "Something went wrong.");
+                //         }
+                //     })
+                //     .catch(err => {
+                //         console.error("Error:", err);
+                //         alert("Failed to initiate booking. Please try again.");
+                //     });
                 // });
 
             })

@@ -111,8 +111,7 @@
         <p>Please review your booking details and complete payment.</p>
     </div>
 
-    <form method="POST" action="#" class="booking-content-grid">
-        @csrf
+    <div class="booking-content-grid">
         <!-- LEFT: Booking Summary -->
         <div class="booking-column">
             <h4>Room Summary</h4>
@@ -132,34 +131,32 @@
         <!-- RIGHT: Payment Section -->
         <div class="booking-column payment-column">
             <h4>{{ __('Payment Information') }}</h4>
-            <form method="POST" action="#">
-                @csrf
-                <div class="form-group">
-                    <label>{{ __('Full Name') }}</label>
-                    <input type="text" name="name" required placeholder="Brian Mwangi">
-                </div>
+            
+            <div class="form-group">
+                <label>{{ __('Full Name') }}</label>
+                <input type="text" name="name" required placeholder="Brian Mwangi">
+            </div>
 
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
-                </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
+            </div>
 
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" name="phone" required placeholder="">
-                </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" required placeholder="">
+            </div>
 
-                <input type="hidden" name="room_id" value="{{ $room->id }}">
-                <input type="hidden" name="check_in" value="{{ $checkIn }}">
-                <input type="hidden" name="check_out" value="{{ $checkOut }}">
-                <input type="hidden" name="total_price" value="{{ $totalPrice ?? $room->price }}">
+            <input type="hidden" name="room_id" value="{{ $room->id }}">
+            <input type="hidden" name="check_in" value="{{ $checkIn }}">
+            <input type="hidden" name="check_out" value="{{ $checkOut }}">
+            <input type="hidden" name="total_price" value="{{ $totalPrice ?? $room->price }}">
 
-                <button type="submit" class="confirm-payment-btn">
-                    Pay with Paystack
-                </button>
-            </form>
+            <button class="confirm-payment-btn" id="confirmBookingBtn">
+                Pay with Paystack
+            </button>
         </div>
-    </form>
+    </div>
 
 </div>
 

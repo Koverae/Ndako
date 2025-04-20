@@ -37,6 +37,8 @@ Route::prefix('v1')->group(function () {
     
     Route::middleware('check-allowed-domains')->get('/get-embed-config', [BookingFormController::class, 'getEmbedConfig']);
     
+    Route::post('/embed/initiate-booking', [BookingFormController::class, 'initiate'])->name('initiate-booking');
+    // Route::get('/embed/confirm-booking/{id}', [BookingFormController::class, 'confirm'])->name('booking.confirm');
 });
 
 
@@ -52,7 +54,6 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
         Route::get('/embed/form', [BookingFormController::class, 'embed']);
         Route::post('/check-availability', [BookingFormController::class, 'checkAvailability']);
         Route::get('/available-rooms-html', [BookingFormController::class, 'availableRoomsHtml']);
-        Route::post('/confirm-booking', [BookingFormController::class, 'confirmBooking']);
         Route::get('/embed/rooms/{roomId}', function (Request $request) {
             // Log::info("Received Room ID: $request->roomId");  // Log received roomId
             $room = PropertyUnit::find($request->roomId);
@@ -70,7 +71,6 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
             ]);
         });
         Route::get('/confirm-booking-html/{roomId}', [BookingFormController::class, 'confirmBookingHtml']);
-        Route::post('/embed/initiate-booking', [BookingFormController::class, 'initiate']);
-        Route::post('/embed/confirm-payment', [BookingFormController::class, 'confirm']);
+        Route::post('/embed/confirm-booking', [BookingFormController::class, 'confirmBooking']);
     });
 });

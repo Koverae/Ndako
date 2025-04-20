@@ -4,6 +4,7 @@ namespace Modules\ChannelManager\Http\Controllers\Embed;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client\ApiClient;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -161,6 +162,7 @@ class BookingFormController extends Controller
         $checkIn = Carbon::parse($request->query('check_in'));
         $checkOut = Carbon::parse($request->query('check_out'));
         $nights = $checkIn->diffInDays($checkOut);
+        // $callback_url = $request->query('callback_url');
 
         $rateService = new RateService();
         $totalPrice = $rateService->getOptimalPricing($room->unitType->id, $nights);
@@ -178,49 +180,50 @@ class BookingFormController extends Controller
     
     public function initiate(Request $request)
     {
-        $data = $request->validate([
-            'room_id' => 'required|exists:rooms,id',
+        $validated = $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
             'phone' => 'required|string',
+            'room_id' => 'required|exists:property_units,id',
             'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
-            'total_price' => 'required|numeric|min:0',
+            'total_price' => 'required|numeric',
+            // 'callback' => 'nullable'
         ]);
 
-        $paymentRef = 'NDK-' . strtoupper(uniqid());
+        // Process the booking and Guest identification or registration
 
-        // $booking = Booking::create([
-        //     ...$data,
-        //     'status' => 'pending',
-        //     'payment_ref' => $paymentRef,
-        // ]);
+        
+        // Save callback in session or encode it into redirect URL
+        Cache::put('callback_url', $request->query('callback_url'), now()->addMinutes(10));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking initiated.',
-            'booking_id' => 1,
-            'payment_ref' => $paymentRef,
-        ]);
+        // 🔁 Actual redirect
+        // return redirect()->route('api.booking.confirm', ['id' => 1]);
+        return [
+            'callback_url' => $request->query('callback')
+        ];
+        
     }
 
-    public function confirm(Request $request)
+    public function confirm(Request $request, $id)
     {
-        $request->validate([
-            'payment_ref' => 'required|string|exists:bookings,payment_ref',
+        $reservation = User::findOrFail($id);
+    
+        // Simulate or verify payment (e.g., via Paystack webhook or ref)
+        // $verified = $this->verifyPayment($reservation);
+    
+        // Retrieve the original success URL
+        $successUrl = Cache::get('callback_url', 'http://thanks.com');
+    
+        // Optional: Add info to query string
+        $query = http_build_query([
+            'name' => $reservation->name,
+            'email' => $reservation->email,
+            'amount' => $reservation->total_price,
+            'ref' => 'TXN123ABC' // or actual transaction ref
         ]);
-
-        // $booking = Booking::where('payment_ref', $request->payment_ref)->first();
-
-        // // Simulated success
-        // $booking->update([
-        //     'status' => 'confirmed',
-        // ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking confirmed.',
-        ]);
+    
+        return redirect()->away($successUrl . '?' . $query);
     }
 
     public function confirmBooking(Request $request)
