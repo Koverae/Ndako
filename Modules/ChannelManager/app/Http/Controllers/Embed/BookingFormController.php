@@ -188,19 +188,19 @@ class BookingFormController extends Controller
             'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
             'total_price' => 'required|numeric',
-            // 'callback' => 'nullable'
+            'callback' => 'nullable'
         ]);
 
         // Process the booking and Guest identification or registration
 
         
         // Save callback in session or encode it into redirect URL
-        Cache::put('callback_url', $request->query('callback_url'), now()->addMinutes(10));
+        Cache::put('callback_url', $request->callback_url, now()->addMinutes(10));
 
         // 🔁 Actual redirect
         // return redirect()->route('api.booking.confirm', ['id' => 1]);
         return [
-            'callback_url' => $request->query('callback')
+            'callback_url' => 'http://localhost::5000/thank-you'
         ];
         
     }
@@ -233,6 +233,7 @@ class BookingFormController extends Controller
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
             'people' => 'required|integer|min:1',
+            'callback_url' => 'nullable'
         ]);
 
         // Ensure the room is still available
@@ -256,7 +257,11 @@ class BookingFormController extends Controller
         //     'people' => $validated['people'],
         // ]);
 
-        return response()->json(['success' => true, 'message' => 'Booking confirmed.']);
+        return response()->json([
+            'success' => true, 
+            'message' => 'Booking confirmed.',
+            'redirect_url' => $request->callback_url
+        ]);
     }
 
 }

@@ -126,83 +126,79 @@
                 // 🔥 NEW: Event Listener for Booking Confirmation
                 document.addEventListener('click', function (e) {
                     if (e.target.id === 'confirmBookingBtn') {
-                        const roomId = localStorage.getItem('selectedRoom');
-                        if (!roomId) {
-                            alert('No room selected.');
-                            return;
-                        }
 
-                        // Send booking request to API
+                        const data = {
+                            room_id: document.getElementById('roomId').value,
+                            check_in: document.getElementById('checkIn').value,
+                            check_out: document.getElementById('checkOut').value,
+                            name: document.getElementById('name').value,
+                            email: document.getElementById('email').value,
+                            phone: document.getElementById('phone').value,
+                            callback_url: callbackUrl, // optional
+                        };
+                
                         fetch(`${apiBaseUrl}/embed/confirm-booking`, {
-                            method: 'POST',
+                            method: "POST",
                             headers: {
-                                'Content-Type': 'application/json',
-                                'X-API-Key': apiKey,
-                                'X-API-Secret': apiSecret,
+                                "Content-Type": "application/json",
+                                "X-API-Key": apiKey,
+                                "X-API-Secret": apiSecret,
                             },
-                            body: JSON.stringify({
-                                room_id: roomId,
-                                check_in: document.getElementById('checkIn').value,
-                                check_out: document.getElementById('checkOut').value,
-                                people: document.getElementById('people').value,
-                            }),
+                            body: JSON.stringify(data),
                         })
                         .then(response => response.json())
                         .then(result => {
                             if (result.success) {
-                                alert(result.message || 'Booking Confirmed.');
+                                // Optional: trigger Paystack here
+                                window.location.href = result.redirect_url || '/booking-success';
                             } else {
-                                alert(result.message || 'An error occurred.');
+                                alert(result.message || "Booking failed.");
                             }
                         })
-                        .catch(error => {
-                            console.error('Error confirming booking:', error);
-                            alert('An error occurred. Please try again.');
+                        .catch(err => {
+                            console.error("Booking error:", err);
+                            alert("Something went wrong.");
                         });
                     }
                 });
-
                 
-                // document.getElementById('bookingForm').addEventListener('submit', function (e) {
-                //     e.preventDefault();
-
-                //     const form = e.target;
-                //     const formData = {
-                //         name: form.name.value,
-                //         email: form.email.value,
-                //         phone: form.phone.value,
-                //         room_id: form.room_id.value,
-                //         check_in: form.check_in.value,
-                //         check_out: form.check_out.value,
-                //         total_price: form.total_price.value,
-                //         // callback: callbackUrl,
-                //     };
-                    
-                //     const endpoint = `{{ route('api.initiate-booking') }}?callback=${encodeURIComponent(callbackUrl)}`;
-
-                //     fetch(endpoint, {
-                //         method: "POST",
-                //         headers: {
-                //             "Content-Type": "application/json",
-                //             "X-API-Key": apiKey,
-                //             "X-API-Secret": apiSecret,
-                //         },
-                //         body: JSON.stringify(formData),
-                //     })
-                //     .then(response => response.json())
-                //     .then(data => {
-                //         if (data.success) {
-                //             alert("Booking initiated!");
-                //             window.location.href = formData.success_url || '/booking-success';
-                //             // Later: Trigger Paystack popup here
-                //         } else {
-                //             alert(data.message || "Something went wrong.");
+                
+                // document.addEventListener('click', function (e) {
+                //     if (e.target.id === 'confirmBookingBtn') {
+                //         const roomId = localStorage.getItem('selectedRoom');
+                //         if (!roomId) {
+                //             alert('No room selected.');
+                //             return;
                 //         }
-                //     })
-                //     .catch(err => {
-                //         console.error("Error:", err);
-                //         alert("Failed to initiate booking. Please try again.");
-                //     });
+
+                //         // Send booking request to API
+                //         fetch(`${apiBaseUrl}/confirm-booking`, {
+                //             method: 'POST',
+                //             headers: {
+                //                 'Content-Type': 'application/json',
+                //                 'X-API-Key': apiKey,
+                //                 'X-API-Secret': apiSecret,
+                //             },
+                //             body: JSON.stringify({
+                //                 room_id: roomId,
+                //                 check_in: document.getElementById('checkIn').value,
+                //                 check_out: document.getElementById('checkOut').value,
+                //                 people: document.getElementById('people').value,
+                //             }),
+                //         })
+                //         .then(response => response.json())
+                //         .then(result => {
+                //             if (result.success) {
+                //                 alert(result.message || 'Booking Confirmed.');
+                //             } else {
+                //                 alert(result.message || 'An error occurred.');
+                //             }
+                //         })
+                //         .catch(error => {
+                //             console.error('Error confirming booking:', error);
+                //             alert('An error occurred. Please try again.');
+                //         });
+                //     }
                 // });
 
             })

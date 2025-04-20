@@ -134,27 +134,27 @@
             
             <div class="form-group">
                 <label>{{ __('Full Name') }}</label>
-                <input type="text" name="name" required placeholder="Brian Mwangi">
+                <input type="text" name="name" id="name" required placeholder="Brian Mwangi">
             </div>
 
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
+                <input type="email" name="email" id="email" required placeholder="brianmwangi@gmail.com">
             </div>
 
             <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" name="phone" required placeholder="">
+                <input type="text" name="phone" id="phone" required placeholder="">
             </div>
 
-            <input type="hidden" name="room_id" value="{{ $room->id }}">
-            <input type="hidden" name="check_in" value="{{ $checkIn }}">
-            <input type="hidden" name="check_out" value="{{ $checkOut }}">
-            <input type="hidden" name="total_price" value="{{ $totalPrice ?? $room->price }}">
+            <input type="hidden" name="room_id" id="roomId" value="{{ $room->id }}">
+            <input type="hidden" name="check_in" id="checkIn" value="{{ $checkIn }}">
+            <input type="hidden" name="check_out" id="checkOut" value="{{ $checkOut }}">
+            <input type="hidden" name="total_price" id="totalPrice" value="{{ $totalPrice ?? $room->price }}">
 
-            <button class="confirm-payment-btn" id="confirmBookingBtn">
+            <span id="confirmBookingBtn" class="confirm-payment-btn">
                 Pay with Paystack
-            </button>
+            </span>
         </div>
     </div>
 
