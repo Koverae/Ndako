@@ -111,41 +111,42 @@
         <p>Please review your booking details and complete payment.</p>
     </div>
 
-    <div class="booking-content-grid">
+    <form method="POST" action="#" class="booking-content-grid">
+        @csrf
         <!-- LEFT: Booking Summary -->
         <div class="booking-column">
             <h4>Room Summary</h4>
-            <p><strong>Room:</strong> {{ $room->name }} <span class="text-muted">({{ $room->type }})</span></p>
+            <p><strong>Room:</strong> {{ $room->name }} <span class="text-muted">({{ $room->unitType->name }})</span></p>
             <p><strong>Guests:</strong> {{ $room->capacity }} {{ Str::plural('guest', $room->capacity) }}</p>
             <p><strong>Details:</strong> {{ $room->details }}</p>
 
             <h4 class="mt-4">Stay Duration</h4>
-            <p><strong>Check-in:</strong> {{ $checkIn }}</p>
-            <p><strong>Check-out:</strong> {{ $checkOut }}</p>
+            <p><strong>Check-in:</strong> {{ $checkIn->format("F d, Y") }}</p>
+            <p><strong>Check-out:</strong> {{ $checkOut->format("F d, Y") }}</p>
 
             <h4 class="mt-4">Pricing</h4>
-            <p><strong>Nightly Rate:</strong> KSh {{ number_format($room->price, 2) }}</p>
+            <p><strong>Nightly Rate:</strong> KSh {{ number_format($room->unitType->getDefaultRate($room->unitType->id)->price, 2) }}</p>
             <p><strong>Total (est.):</strong> KSh {{ number_format($totalPrice ?? $room->price, 2) }}</p>
         </div>
 
         <!-- RIGHT: Payment Section -->
         <div class="booking-column payment-column">
-            <h4>Payment Information</h4>
+            <h4>{{ __('Payment Information') }}</h4>
             <form method="POST" action="#">
                 @csrf
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="card_name" required>
+                    <label>{{ __('Full Name') }}</label>
+                    <input type="text" name="name" required placeholder="Brian Mwangi">
                 </div>
 
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" name="email" required>
+                    <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
                 </div>
 
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="text" name="phone" required>
+                    <input type="text" name="phone" required placeholder="">
                 </div>
 
                 <input type="hidden" name="room_id" value="{{ $room->id }}">
@@ -158,7 +159,8 @@
                 </button>
             </form>
         </div>
-    </div>
+    </form>
+
 </div>
 
 @endsection

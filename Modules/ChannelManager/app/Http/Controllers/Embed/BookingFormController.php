@@ -4,12 +4,14 @@ namespace Modules\ChannelManager\Http\Controllers\Embed;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client\ApiClient;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
+use Modules\RevenueManager\Services\Pricing\RateService;
 
 class BookingFormController extends Controller
 {
@@ -153,19 +155,72 @@ class BookingFormController extends Controller
         ]);
     }
 
-    public function confirmBookingHtml(Request $request){
+    public function confirmBookingHtml(Request $request, $roomId){
         
-        $room = PropertyUnit::find(6);
-        $checkIn = now();
-        $checkOut = now()->addDays(4);
-        $totalPrice = 25000;
+        $room = PropertyUnit::find($roomId);
+        $checkIn = Carbon::parse($request->query('check_in'));
+        $checkOut = Carbon::parse($request->query('check_out'));
+        $nights = $checkIn->diffInDays($checkOut);
+
+        $rateService = new RateService();
+        $totalPrice = $rateService->getOptimalPricing($room->unitType->id, $nights);
+        
         // Generate the HTML for the available rooms
         return view('channelmanager::embed.checkout-section', [
             'room' => $room,
             'checkIn' => $checkIn,
             'checkOut' => $checkOut,
+            'nights' => $nights,
             'totalPrice' => $totalPrice,
             ])->render();
+    }
+
+    
+    public function initiate(Request $request)
+    {
+        $data = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'phone' => 'required|string',
+            'check_in' => 'required|date',
+            'check_out' => 'required|date|after:check_in',
+            'total_price' => 'required|numeric|min:0',
+        ]);
+
+        $paymentRef = 'NDK-' . strtoupper(uniqid());
+
+        // $booking = Booking::create([
+        //     ...$data,
+        //     'status' => 'pending',
+        //     'payment_ref' => $paymentRef,
+        // ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking initiated.',
+            'booking_id' => 1,
+            'payment_ref' => $paymentRef,
+        ]);
+    }
+
+    public function confirm(Request $request)
+    {
+        $request->validate([
+            'payment_ref' => 'required|string|exists:bookings,payment_ref',
+        ]);
+
+        // $booking = Booking::where('payment_ref', $request->payment_ref)->first();
+
+        // // Simulated success
+        // $booking->update([
+        //     'status' => 'confirmed',
+        // ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking confirmed.',
+        ]);
     }
 
     public function confirmBooking(Request $request)

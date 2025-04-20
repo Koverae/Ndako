@@ -115,32 +115,32 @@
         <!-- LEFT: Booking Summary -->
         <div class="booking-column">
             <h4>Room Summary</h4>
-            <p><strong>Room:</strong> <?php echo e($room->name); ?> <span class="text-muted">(<?php echo e($room->type); ?>)</span></p>
+            <p><strong>Room:</strong> <?php echo e($room->name); ?> <span class="text-muted">(<?php echo e($room->unitType->name); ?>)</span></p>
             <p><strong>Guests:</strong> <?php echo e($room->capacity); ?> <?php echo e(Str::plural('guest', $room->capacity)); ?></p>
             <p><strong>Details:</strong> <?php echo e($room->details); ?></p>
 
             <h4 class="mt-4">Stay Duration</h4>
-            <p><strong>Check-in:</strong> <?php echo e($checkIn); ?></p>
-            <p><strong>Check-out:</strong> <?php echo e($checkOut); ?></p>
+            <p><strong>Check-in:</strong> <?php echo e($checkIn->format("F d, Y")); ?></p>
+            <p><strong>Check-out:</strong> <?php echo e($checkOut->format("F d, Y")); ?></p>
 
             <h4 class="mt-4">Pricing</h4>
-            <p><strong>Nightly Rate:</strong> KSh <?php echo e(number_format($room->price, 2)); ?></p>
+            <p><strong>Nightly Rate:</strong> KSh <?php echo e(number_format($room->unitType->getDefaultRate($room->unitType->id)->price, 2)); ?></p>
             <p><strong>Total (est.):</strong> KSh <?php echo e(number_format($totalPrice ?? $room->price, 2)); ?></p>
         </div>
 
         <!-- RIGHT: Payment Section -->
         <div class="booking-column payment-column">
-            <h4>Payment Information</h4>
+            <h4><?php echo e(__('Payment Information')); ?></h4>
             <form method="POST" action="#">
                 <?php echo csrf_field(); ?>
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="card_name" required>
+                    <label><?php echo e(__('Full Name')); ?></label>
+                    <input type="text" name="name" required placeholder="Brian Mwangi">
                 </div>
 
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" name="email" required>
+                    <input type="email" name="email" required placeholder="brianmwangi@gmail.com">
                 </div>
 
                 <div class="form-group">

@@ -50,12 +50,9 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
 
         // Embed
         Route::get('/embed/form', [BookingFormController::class, 'embed']);
-        
-
         Route::post('/check-availability', [BookingFormController::class, 'checkAvailability']);
         Route::get('/available-rooms-html', [BookingFormController::class, 'availableRoomsHtml']);
         Route::post('/confirm-booking', [BookingFormController::class, 'confirmBooking']);
-
         Route::get('/embed/rooms/{roomId}', function (Request $request) {
             // Log::info("Received Room ID: $request->roomId");  // Log received roomId
             $room = PropertyUnit::find($request->roomId);
@@ -73,6 +70,7 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
             ]);
         });
         Route::get('/confirm-booking-html/{roomId}', [BookingFormController::class, 'confirmBookingHtml']);
-
+        Route::post('/embed/initiate-booking', [BookingFormController::class, 'initiate']);
+        Route::post('/embed/confirm-payment', [BookingFormController::class, 'confirm']);
     });
 });
