@@ -1,0 +1,48 @@
+<?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
+
+$__newAttributes = [];
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
+    'value',
+]));
+
+foreach ($attributes->all() as $__key => $__value) {
+    if (in_array($__key, $__propNames)) {
+        $$__key = $$__key ?? $__value;
+    } else {
+        $__newAttributes[$__key] = $__value;
+    }
+}
+
+$attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
+
+unset($__propNames);
+unset($__newAttributes);
+
+foreach (array_filter(([
+    'value',
+]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+    $$__key = $$__key ?? $__value;
+}
+
+$__defined_vars = get_defined_vars();
+
+foreach ($attributes->all() as $__key => $__value) {
+    if (array_key_exists($__key, $__defined_vars)) unset($$__key);
+}
+
+unset($__defined_vars); ?>
+<?php
+    $type = \Modules\Properties\Models\Property\PropertyUnitType::find($value);
+    $defaultPrice = \Modules\Properties\Models\Property\PropertyUnitTypePricing::isPropertyUnit($type->id)
+    ->isDefault(true)
+    ->first();
+?>
+<div>
+    <?php if($defaultPrice): ?>
+    <a style="text-decoration: none" class="primary" tabindex="-1">
+        <?php echo e(format_currency($defaultPrice->price) ?? ''); ?> / <?php echo e($defaultPrice->lease->description); ?>
+
+    </a>
+    <?php endif; ?>
+</div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules\App\resources\views\components\table\column\special\unit-price.blade.php ENDPATH**/ ?>

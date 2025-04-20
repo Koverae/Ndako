@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'embed-booking.js', 'embed/form'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'embed-booking.js', 'embed/*', 'embed/form'],
 
     'allowed_methods' => ['*'],
 

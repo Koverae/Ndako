@@ -5,6 +5,11 @@ use Modules\ChannelManager\Http\Controllers\ChannelManagerController;
 use Modules\ChannelManager\Http\Controllers\Api\V1\UnitController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
+use Modules\ChannelManager\Http\Controllers\Api\V1\Embed\BookingFormController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+// use Modules\ChannelManager\Http\Controllers\Embed\BookingFormController;
+use Modules\Properties\Models\Property\PropertyUnit;
 
 /*
  *--------------------------------------------------------------------------
@@ -16,10 +21,6 @@ use Illuminate\Support\Facades\File;
  * is assigned the "api" middleware group. Enjoy building your API!
  *
 */
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Modules\ChannelManager\Http\Controllers\Embed\BookingFormController;
-use Modules\Properties\Models\Property\PropertyUnit;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('channelmanager', ChannelManagerController::class)->names('channelmanager');
@@ -72,5 +73,6 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
         });
         Route::get('/confirm-booking-html/{roomId}', [BookingFormController::class, 'confirmBookingHtml']);
         Route::post('/embed/confirm-booking', [BookingFormController::class, 'confirmBooking']);
+        
     });
 });

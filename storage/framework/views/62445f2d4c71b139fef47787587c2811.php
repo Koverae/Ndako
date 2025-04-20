@@ -1,0 +1,1 @@
+<?php /**PATH D:\My Laravel Startup\ndako\Modules\App\resources\views\components\table\calendar\simple.blade.php ENDPATH**/ ?>

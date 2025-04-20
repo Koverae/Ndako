@@ -126,7 +126,7 @@
                 // 🔥 NEW: Event Listener for Booking Confirmation
                 document.addEventListener('click', function (e) {
                     if (e.target.id === 'confirmBookingBtn') {
-
+                        
                         const data = {
                             room_id: document.getElementById('roomId').value,
                             check_in: document.getElementById('checkIn').value,
@@ -150,6 +150,7 @@
                         .then(result => {
                             if (result.success) {
                                 // Optional: trigger Paystack here
+                                alert(result.message);
                                 window.location.href = result.redirect_url || '/booking-success';
                             } else {
                                 alert(result.message || "Booking failed.");
