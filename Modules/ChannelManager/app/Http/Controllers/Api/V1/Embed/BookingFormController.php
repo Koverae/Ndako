@@ -9,7 +9,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Modules\Accounting\Entities\Journal;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
@@ -229,6 +231,9 @@ class BookingFormController extends Controller
 
     public function confirmBooking(Request $request)
     {
+        
+        $client = $request->get('api_client');
+
         // $request->validate([
         //     'room_id' => 'required|integer|exists:property_units,id',
         //     'check_in' => 'required|date|after_or_equal:today',
@@ -261,23 +266,71 @@ class BookingFormController extends Controller
         }
 
         // Create Or Get Guest
-        $guest = Guest::where('email', $request->email)->firstOrCreate([
-            'name' => $request->name,
-            'phone' => $request->phone,
-        ]);
+        $guest = Guest::firstOrCreate(
+            ['company_id' => $client->company_id, 'email' => $request->email],
+            ['name' => $request->name, 'phone' => $request->phone]
+        );
 
         // Create booking
-        // Booking::create([
-        //     'property_unit_id' => $room->id,
-        //     'check_in' => $request->check_in,
-        //     'check_out' => $request->check_out,
-        //     'people' => $request->people,
-        // ]);
+        $rateService = new RateService();
 
+        $paidAmount = 0;
+
+        $booking = Booking::create([
+            'company_id' => $client->company_id,
+            'property_unit_id' => $room->id,
+            'guest_id' => $guest->id,
+            // 'agent_id' => Auth::user()->id,
+            'guests' => $request->people,
+            'check_in' => $request->check_in,
+            'check_out' => $request->check_out,
+            'unit_price' => $rateService->getDefaultRate($room->unitType->id)->price,
+            'paid_amount' => $paidAmount,
+            'due_amount' => $request->total_amount,
+            'total_amount' => $request->total_amount,
+            'status' => $request->status,
+            'payment_status' => 'unpaid',
+            'invoice_status' => 'not_invoiced',
+            // Add the check-in and check-out status fields
+            'check_in_status' => 'pending', // Check if check-in is today
+            'check_out_status' => 'pending', // Initial status
+            'source' => 'website'
+        ]);
+        $booking->save();
+
+        $booking->unit->update([
+            'status' => 'reserved'
+        ]);
+        $this->createInvoice($booking);
+        
         return response()->json([
             'success' => true, 
             'message' => 'Booking confirmed.',
             'redirect_url' => $request->callback_url
+        ]);
+    }
+    
+    public function createInvoice($booking){
+
+        $invoice = BookingInvoice::create([
+            'company_id' => $booking->company_id,
+            'booking_id' => $booking->id,
+            'guest_id' => $booking->guest_id,
+            'date' => now(),
+            'due_date' => $booking->check_out,
+            'payment_status' => $booking->payment_status,
+            // 'agent_id' => Auth::user()->id,
+            'terms' => $booking->terms,
+            'total_amount' => $booking->total_amount,
+            'paid_amount' => $booking->paid_amount,
+            'due_amount' => $booking->due_amount,
+            'status' => 'draft',
+            'to_checked' => false,
+        ]);
+        $invoice->save();
+
+        $booking->update([
+            'invoice_status' => 'invoiced'
         ]);
     }
 
