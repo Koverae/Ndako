@@ -25,7 +25,8 @@
                     <div>&lt;script src="{{ env("APP_URL") }}/api/v1/embed/booking.js"&gt;&lt;/script&gt;</div>
                     <div>&lt;script&gt;</div>
                     <div style="padding-left: 1rem;">document.addEventListener('DOMContentLoaded', function () {</div>
-                    <div style="padding-left: 2rem;">NdakoEmbed.init('bookingFormContainer',</div>
+                    <div style="padding-left: 2rem;">NdakoEmbed.init(,</div>
+                    <div style="padding-left: 3rem;">'bookingFormContainer',</div>
                     <div style="padding-left: 3rem;">'{{ env("APP_URL") }}/api/v1',</div>
                     <div style="padding-left: 3rem;">'YOUR PUBLIC KEY',</div>
                     <div style="padding-left: 3rem;">'YOUR SECRET KEY',</div>
