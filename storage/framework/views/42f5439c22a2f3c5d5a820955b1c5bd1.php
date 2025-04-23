@@ -1,1 +1,0 @@
-<?php /**PATH D:\My Laravel Startup\ndako\Modules\App\resources\views\components\form\input\file\photo.blade.php ENDPATH**/ ?>

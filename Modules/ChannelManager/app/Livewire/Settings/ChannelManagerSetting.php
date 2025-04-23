@@ -26,7 +26,7 @@ class ChannelManagerSetting extends AppSetting
 
         $this->publicKey = current_company()->client->public_key ;
         $this->secretKey = current_company()->client->private_key ;
-        $this->authorizedDomains = current_company()->client->authorized_domains;
+        $this->authorizedDomains = current_company()->client->authorized_domains ?? [];
 
         $this->has_website_integration = $setting->has_website_integration ?? false;
 
