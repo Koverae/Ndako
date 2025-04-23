@@ -27790,3 +27790,14 @@ Dashboards End
     /* border-bottom: 1px solid #017e84; */
     outline: none;
 }
+
+
+
+/********************
+Widget Code
+********************/
+.widget-code{
+  heiht: 214px;
+  width: 640px;
+  max-width: 450px;
+}

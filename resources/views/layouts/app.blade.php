@@ -64,6 +64,7 @@
     @livewire('wire-elements-modal')
     <!-- Custom JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     @stack('scripts') <!-- This is where scripts pushed with @push('scripts') will be loaded -->
     <!-- Custom JS -->
 </body>

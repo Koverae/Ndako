@@ -63,6 +63,7 @@ class ChannelManagerSetting extends AppSetting
             BoxInput::make('public-key', "API Public Key", 'text', 'publicKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
             BoxInput::make('secret-key', "API Secret Key", 'text', 'secretKey', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.api'),
             BoxInput::make('new-domain', "Authorized Domains", 'text', 'newDomain', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.authorized-domain'),
+            BoxInput::make('new-domain', "Booking Widgets", 'text', 'newDomain', 'website-integration', '', false, [], $this->has_website_integration)->component('app::blocks.boxes.input.special.booking-widget'),
         ];
     }
 

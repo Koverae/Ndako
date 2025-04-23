@@ -7811,3 +7811,21 @@ function formatDate(date) {
         year: 'numeric'  
     });
 }
+
+// Copy Booking Widget Snippet
+// function copyWidgetSnippet() {
+//     const code = `<script src="http://app.koverae.test/api/v1/embed/booking.js"></script>
+// <script>
+// document.addEventListener('DOMContentLoaded', function () {
+//     LanternEmbed.init('bookingFormContainer',
+//         'http://app.koverae.test/api/v1',
+//         'YOUR PUBLIC KEY',
+//         'YOUR SECRET KEY',
+//         'http://test.com/thank-you'
+//     );
+// });
+// </script>`;
+//     navigator.clipboard.writeText(code).then(() => {
+//         alert("Snippet copied!");
+//     });
+// }
