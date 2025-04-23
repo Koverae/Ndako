@@ -22,11 +22,11 @@
             <div style="overflow-x: auto; white-space: nowrap; padding-top: 1rem;" id="scrollableSnippet">
                 <div id="widgetSnippet">
                     <div><span style="color: #718096;">&lt;!-- Start of Ndako Script --&gt;</span></div>
-                    <div>&lt;script src="http://app.koverae.test/api/v1/embed/booking.js"&gt;&lt;/script&gt;</div>
+                    <div>&lt;script src="{{ env("APP_URL") }}/api/v1/embed/booking.js"&gt;&lt;/script&gt;</div>
                     <div>&lt;script&gt;</div>
                     <div style="padding-left: 1rem;">document.addEventListener('DOMContentLoaded', function () {</div>
-                    <div style="padding-left: 2rem;">LanternEmbed.init('bookingFormContainer',</div>
-                    <div style="padding-left: 3rem;">'http://app.koverae.test/api/v1',</div>
+                    <div style="padding-left: 2rem;">NdakoEmbed.init('bookingFormContainer',</div>
+                    <div style="padding-left: 3rem;">'{{ env("APP_URL") }}/api/v1',</div>
                     <div style="padding-left: 3rem;">'YOUR PUBLIC KEY',</div>
                     <div style="padding-left: 3rem;">'YOUR SECRET KEY',</div>
                     <div style="padding-left: 3rem;">'YOUR CALLBACK PAGE'</div>
@@ -46,9 +46,11 @@
               <li class="mb-1">Paste it just before the <code>&lt;/body&gt;</code> tag of your website, or wherever you want the booking form to appear.</li>
               <li class="mb-1">Replace the following:
                 <ul class="mt-1">
-                  <li class="mb-1"><b>YOUR PUBLIC KEY</b> → with your public API key (provided above).</li>
-                  <li class="mb-1"><b>YOUR SECRET KEY</b> → with your secret API key (keep this private).</li>
-                  <li class="mb-1"><b>YOUR CALLBACK PAGE</b> → with your custom "Thank You" page link, e.g. https://example.com/thank-you (optional).</li>
+                    <li class="mb-1"><strong>bookingFormContainer</strong> → with the ID of the element (e.g., a <code>&lt;div&gt;</code>) where the form should appear.<br>
+                        For example: <code>&lt;div id="myBookingForm"&gt;&lt;/div&gt;</code>.</li>
+                    <li class="mb-1"><b>YOUR PUBLIC KEY</b> → with your public API key (provided above).</li>
+                    <li class="mb-1"><b>YOUR SECRET KEY</b> → with your secret API key (keep this private).</li>
+                    <li class="mb-1"><b>YOUR CALLBACK PAGE</b> → with your custom "Thank You" page link, e.g. <b>https://example.com/thank-you</b>.</li>
                 </ul>
               </li>
             </ol>

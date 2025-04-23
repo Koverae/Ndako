@@ -7817,7 +7817,7 @@ function formatDate(date) {
 //     const code = `<script src="http://app.koverae.test/api/v1/embed/booking.js"></script>
 // <script>
 // document.addEventListener('DOMContentLoaded', function () {
-//     LanternEmbed.init('bookingFormContainer',
+//     NdakoEmbed.init('bookingFormContainer',
 //         'http://app.koverae.test/api/v1',
 //         'YOUR PUBLIC KEY',
 //         'YOUR SECRET KEY',

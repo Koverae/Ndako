@@ -96,7 +96,7 @@ $unitTypes = UnitType::with(['unitTypePricings' => function ($query) use ($prope
 
 (function () {
     // Embed script initialization
-    window.LanternEmbed = {
+    window.NdakoEmbed = {
         init: function (formContainerId, apiKey, apiSecret) {
             const container = document.getElementById(formContainerId);
 

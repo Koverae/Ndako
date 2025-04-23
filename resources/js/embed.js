@@ -1,6 +1,6 @@
 (function () {
     // Embed script initialization
-    window.LanternEmbed = {
+    window.NdakoEmbed = {
         init: function (formContainerId) {
             const container = document.getElementById(formContainerId);
 

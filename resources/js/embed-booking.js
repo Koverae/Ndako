@@ -1,5 +1,5 @@
 (function () {
-    window.LanternEmbed = {
+    window.NdakoEmbed = {
         init: function (formContainerId, apiBaseUrl, publicKey, secretKey, successUrl) {
             // Fetch the API configuration from the backend
 
