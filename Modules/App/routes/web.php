@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Koverae\KoveraeBilling\Controllers\Payments\PaystackController as PaymentsPaystackController;
 use Modules\App\Http\Controllers\AppController;
 use Modules\App\Http\Controllers\PaymentGateway\PaystackController;
+use Modules\App\Livewire\ImportFile;
 use Modules\App\Livewire\Subscription\SubscriptionPage;
 
 
@@ -18,6 +19,8 @@ use Modules\App\Livewire\Subscription\SubscriptionPage;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/import', ImportFile::class)->name('import');
 
 Route::middleware('identify-kover')->group(function () {
     Route::get('/subcribe', SubscriptionPage::class)->name('subscribe');

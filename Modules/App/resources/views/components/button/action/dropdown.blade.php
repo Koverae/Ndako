@@ -3,7 +3,7 @@
 ])
 <div>
     <li
-    class="gap-2 cursor-pointer dropdown-item dropdown-hover kover-link"
+    class="gap-2 cursor-pointer dropdown-item dropdown-hover kover-navlink"
     @if($value->isConfirm)
         wire:confirm="{{ $value->confirmText }}"
     @endif

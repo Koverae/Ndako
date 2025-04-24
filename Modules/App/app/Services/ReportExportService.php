@@ -37,27 +37,41 @@ class ReportExportService{
         abort(400, 'Unsupported export format');
     }
 
-
     public function exportSelected($title = 'export', $items, $columns)
     {
-        $data = [
-            ['ID', 'Name', 'Email'],
-            [1, 'John Doe', 'john@example.com'],
-            [2, 'Jane Smith', 'jane@example.com'],
-            [3, 'Ali Yusuf', 'ali@example.com'],
-        ];
+        // Example data - you should replace this with the actual $items data you want to export
+        $data = [];
+        foreach ($items as $item) {
+            $row = [];
+            foreach ($columns as $column) {
+                // Assuming each $item has a method or attribute that corresponds to the $column name
+                $row[] = $item->{$column};
+            }
+            $data[] = $row;
+        }
 
+        // Create a new Spreadsheet instance
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        // Set header row (you can replace with dynamic column names)
+        foreach ($columns as $colIndex => $column) {
+            $columnLetter = Coordinate::stringFromColumnIndex($colIndex + 1);
+            $sheet->setCellValue("{$columnLetter}1", ucfirst($column));  // Setting headers (e.g., 'ID', 'Name', 'Email')
+        }
+
+        // Fill the sheet with data (from the $data array)
         foreach ($data as $rowIndex => $row) {
             foreach ($row as $colIndex => $value) {
                 $columnLetter = Coordinate::stringFromColumnIndex($colIndex + 1);
-                $sheet->setCellValue("{$columnLetter}" . ($rowIndex + 1), $value);
+                $sheet->setCellValue("{$columnLetter}" . ($rowIndex + 2), $value); // Fill starting from row 2
             }
         }
 
-        $fileName = 'simple_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        // Create a filename for the exported file
+        $fileName = "{$title}_" . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        // Define the file path where the export will be stored
         $filePath = storage_path("app/exports/{$fileName}");
 
         // Ensure the exports directory exists
@@ -65,16 +79,19 @@ class ReportExportService{
             mkdir(storage_path('app/exports'), 0777, true);
         }
 
+        // Create a writer instance and save the spreadsheet to the file
         $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
 
+        // Return the file for download, and delete it after sending
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
+
 
     /**
      * Export Structured data to Excel
      */
-    private function exportToExcel(string $reportTitle, array $summaryData, array $detailedSections)
+    private function exportToExcel(string $reportTitle, array $summaryData = [], array $detailedSections)
     {
 
         $spreadsheet = new Spreadsheet();

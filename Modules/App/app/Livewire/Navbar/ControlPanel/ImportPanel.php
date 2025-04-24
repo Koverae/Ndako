@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Properties\Livewire\Navbar\ControlPanel;
+namespace Modules\App\Livewire\Navbar\ControlPanel;
+
+// use Modules\App\Livewire\Components\Navbar\ControlPanel;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
 use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
@@ -15,55 +15,31 @@ use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
 
-class UnitPanel extends ControlPanel
+class ImportPanel extends ControlPanel
 {
+    
     public $unit;
     public $type;
 
     public function mount($unit = null, $isForm = false, $type = null)
     {
-        $this->showBreadcrumbs = true;
+        $this->showBreadcrumbs = false;
         $this->generateBreadcrumbs();
+        $this->isForm = true;
 
         $properties = Property::isCompany(current_company()->id)
         ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
         ->toArray();
 
-        $types = PropertyUnitType::isCompany(current_company()->id)
-        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
-        ->toArray();
-
-        $this->filterTypes = [
-            'property_id' => $properties,
-            'status' => [
-                'vacant' => 'Vacant (V)',    // string filter
-                'reserved' => 'Reserved (R)',      // string filter
-                'occupied' => 'Occupied (O)',          // string filter
-                'out-service' => 'Out Of Service (OS)',           // string filter
-            ],
-            'property_unit_type_id' => $types,
-        ];
-
-        // dd($this->breadcrumbs);
-        if(Auth::user()->can('create_units')){
-            $this->new = route('properties.units.create');
-        }
-        if($unit){
-            $this->showIndicators = true;
-            $this->unit = $unit;
-            $this->isForm = true;
-            $this->currentPage = $unit->name;
-        }else{
-            $this->currentPage = "Units";
-        }
+        $this->currentPage = "Units";
 
     }
 
     public function actionButtons(): array
     {
         return [
-            ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
-            ActionButton::make('import', 'Import Records', 'import', false, "fas fa-upload"),
+            ActionButton::make('export', 'Export', 'exportAll', false, "fas fa-download"),
+            ActionButton::make('import', 'Import', 'import', false, "fas fa-upload"),
             ActionButton::make('unarchive', 'Unarchive', 'unarchive', false, "fas fa-inbox"),
             ActionButton::make('duplicate', 'Duplicate', 'duplicateItems', false, "fas fa-copy"),
             ActionButton::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
@@ -194,5 +170,4 @@ class UnitPanel extends ControlPanel
         $newUnit->save();
 
     }
-
 }

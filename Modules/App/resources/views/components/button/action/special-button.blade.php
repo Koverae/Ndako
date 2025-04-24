@@ -3,8 +3,8 @@
     'status'
 ])
 <div>
-    <li class="cursor-pointer dropdown-item kover-navlink" wire:click="{{ $value->action }}" wire:target="{{ $value->action }}">
-        {!! $value->label !!}
+    <li class="gap-2 cursor-pointer dropdown-item dropdown-hover kover-navlink" wire:click="{{ $value->action }}" wire:target="{{ $value->action }}">
+        <i class="{{ $value->icon }}"></i> <span>{{ $value->label }}</span>
     </li>
     @if($value->separator)
     <li><hr class="separator"></li>

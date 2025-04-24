@@ -34,6 +34,10 @@ class PropertyUnit extends Model
         return $this->belongsTo(Property::class, 'property_id', 'id');
     }
 
+    public function floor() {
+        return $this->belongsTo(PropertyFloor::class, 'floor_id', 'id');
+    }
+
     public function unitType() {
         return $this->belongsTo(PropertyUnitType::class, 'property_unit_type_id', 'id');
     }

@@ -49,20 +49,21 @@
                         </span>
                         <div class="gap-1 k_cp_action_menus d-flex align-items-center pe-2">
 
-                            <div class="k_dropdown dropdown dropend lh-1 dropdown-no-caret">
-                                <a href="#" class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-gear" wire:loading.remove></i>
-                                </a>
-                                <div class="k_dropdown_menu dropdown-menu dropdown-menu-end">
-
-                                    @foreach($this->actionButtons() as $action_button)
+                            <!-- Gear button -->
+                            <div class="btn-group">
+                                <span class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-gear"></i>
+                                </span>
+                                <ul class="dropdown-menu">
+                                    @foreach($this->actionButtons() as $action)
                                     <x-dynamic-component
-                                        :component="$action_button->component"
-                                        :value="$action_button"
+                                        :component="$action->component"
+                                        :value="$action"
                                     >
                                     </x-dynamic-component>
                                     @endforeach
-                                </div>
+                                    <!--<li><hr class="dropdown-divider"></li>-->
+                                </ul>
                             </div>
                         </div>
                         @if($this->showIndicators)
