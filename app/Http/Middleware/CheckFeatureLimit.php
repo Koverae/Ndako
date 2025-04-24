@@ -30,7 +30,9 @@ class CheckFeatureLimit
         $currentCount = $company->{$feature}()->count(); // Dynamic model name
 
         if ($currentCount >= $allowedLimit) {
-            return response()->json(['message' => "You have reached your $feature limit. Upgrade your plan to add more."], 403);
+            $title = inverseSlug($feature)." limit has been reached";
+            $message = "You have reached your $allowedLimit $feature limit. Upgrade your plan to add more.";
+            return response()->view('errors.feature-missing', compact('feature', 'title', 'message'), 403);
         }
 
         return $next($request);

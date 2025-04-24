@@ -26,11 +26,18 @@ class CheckFeatureAccess
 
         $team = $user->company->team;
 
-        // Ensure the user is logged in and has access to the feature
+        // Ensure the user is logged in and has access to the feature (For APIs)
         if (!$team || !hasFeature($team, $feature)) {
-
-            return response()->json(['message' => "The feature ".inverseSlug($feature)." is not available on your plan."], 403);
+            $title = inverseSlug($feature)." is not available on your plan.";
+            $message = "The feature ".inverseSlug($feature)." is not available on your plan.";
+            return response()->view('errors.feature-missing', compact('feature', 'title', 'message'), 403);
         }
+
+        // // Ensure the user is logged in and has access to the feature (For APIs)
+        // if (!$team || !hasFeature($team, $feature)) {
+
+        //     return response()->json(['message' => "The feature ".inverseSlug($feature)." is not available on your plan."], 403);
+        // }
 
 
         return $next($request);

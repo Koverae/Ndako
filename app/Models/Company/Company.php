@@ -19,6 +19,7 @@ use Modules\Settings\Models\Language\Language;
 use Modules\Settings\Models\Localization\Country;
 use Illuminate\Support\Str;
 use Modules\Properties\Models\Property\Property;
+use Modules\Properties\Models\Property\PropertyUnit;
 use Spatie\Permission\Models\Role;
 
 class Company extends Model
@@ -167,6 +168,14 @@ class Company extends Model
     public function properties()
     {
         return $this->hasMany(Property::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get units for the company.
+     */
+    public function units()
+    {
+        return $this->hasMany(PropertyUnit::class, 'company_id', 'id');
     }
 
     /**

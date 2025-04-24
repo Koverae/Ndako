@@ -91,6 +91,10 @@ class ChannelManagerSetting extends AppSetting
     }
     public function addDomain()
     {
+        $this->validate([
+            'newDomain' => 'nullable|url'
+        ]);
+        
         $domain = trim($this->newDomain);
 
         if ($domain && !in_array($domain, $this->authorizedDomains)) {
@@ -109,6 +113,7 @@ class ChannelManagerSetting extends AppSetting
 
     public function saveAuthorizedDomains()
     {
+
         current_company()->client->update([
             'authorized_domains' => array_values($this->authorizedDomains),
         ]);

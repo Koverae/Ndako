@@ -28,10 +28,10 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-<?php if (isset($component)) { $__componentOriginal9358054e83f0a2349469c2d9e5b5cab9 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal9358054e83f0a2349469c2d9e5b5cab9 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'app::components.blocks.simple','data' => ['value' => $value]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('app::blocks.simple'); ?>
+<?php if (isset($component)) { $__componentOriginald0cd479a8bc4dd97879c2b220bb05454 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0cd479a8bc4dd97879c2b220bb05454 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'app::components.navbar.switch-button','data' => ['value' => $value]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app::navbar.switch-button'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
@@ -43,11 +43,11 @@ unset($__defined_vars); ?>
 
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal9358054e83f0a2349469c2d9e5b5cab9)): ?>
-<?php $attributes = $__attributesOriginal9358054e83f0a2349469c2d9e5b5cab9; ?>
-<?php unset($__attributesOriginal9358054e83f0a2349469c2d9e5b5cab9); ?>
+<?php if (isset($__attributesOriginald0cd479a8bc4dd97879c2b220bb05454)): ?>
+<?php $attributes = $__attributesOriginald0cd479a8bc4dd97879c2b220bb05454; ?>
+<?php unset($__attributesOriginald0cd479a8bc4dd97879c2b220bb05454); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal9358054e83f0a2349469c2d9e5b5cab9)): ?>
-<?php $component = $__componentOriginal9358054e83f0a2349469c2d9e5b5cab9; ?>
-<?php unset($__componentOriginal9358054e83f0a2349469c2d9e5b5cab9); ?>
-<?php endif; ?><?php /**PATH D:\My Laravel Startup\ndako\storage\framework\views/16b734e22bdd9917477546dd9e8d1798.blade.php ENDPATH**/ ?>
+<?php if (isset($__componentOriginald0cd479a8bc4dd97879c2b220bb05454)): ?>
+<?php $component = $__componentOriginald0cd479a8bc4dd97879c2b220bb05454; ?>
+<?php unset($__componentOriginald0cd479a8bc4dd97879c2b220bb05454); ?>
+<?php endif; ?><?php /**PATH D:\My Laravel Startup\ndako\storage\framework\views/5f92c91f210efc833acfa55233f15077.blade.php ENDPATH**/ ?>

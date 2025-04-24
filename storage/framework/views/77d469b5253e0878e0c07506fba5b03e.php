@@ -33,18 +33,7 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-<!--[if BLOCK]><![endif]--><?php if($value->parent): ?>
-<div class="mt-3 ps-3" wire:transition.duration.500ms>
-    <!--[if BLOCK]><![endif]--><?php if($value->label): ?>
-    <span>
-        <?php echo e($value->label); ?> :
-    </span>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-
-    <input type="<?php echo e($value->type); ?>" disabled wire:model="<?php echo e($value->model); ?>" class="w-auto k-input" placeholder="<?php echo e($value->placeholder); ?>" id="<?php echo e($value->model); ?>">
-    <i class="cursor-pointer bi bi-arrow-right-short fw-bold"></i>
-    <i class="cursor-pointer fas fa-copy fw-bold" title="Copy"></i>
-    
-    
-</div>
-<?php endif; ?><!--[if ENDBLOCK]><![endif]--><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/blocks/boxes/input/special/api.blade.php ENDPATH**/ ?>
+<button  title="<?php echo e(ucfirst($value->key)); ?> view" class="k_switch_view btn btn-secondary <?php echo e($value->key == $this->view_type ? 'active' : ''); ?> k_list" wire:click.prevent="switchView('<?php echo e($value->key); ?>')">
+    <i class="bi <?php echo e($value->icon); ?>"></i>
+</button>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/navbar/switch-button.blade.php ENDPATH**/ ?>

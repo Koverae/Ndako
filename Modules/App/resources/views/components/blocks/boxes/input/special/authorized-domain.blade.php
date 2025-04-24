@@ -12,6 +12,8 @@
 
     <input type="text" wire:model="{{ $value->model }}" class="w-auto k-input" placeholder="{{ $value->placeholder }}" id="{{ $value->model }}">
     <i class="cursor-pointer bi bi-arrow-right-short fw-bold" wire:click="addDomain" wire:target="addDomain"></i>
+    <br>
+    @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror
 
     <span class="mt-3 d-block">
         @foreach($this->authorizedDomains as $domain)
