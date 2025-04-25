@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Modules\App\Traits\Files\HasImportLogic;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\Settings\Models\Localization\Country;
 
 class Guest extends Model
 {
@@ -63,7 +64,34 @@ class Guest extends Model
         return $this->hasMany(Booking::class, 'guest_id', 'id');
     }
 
-    
+    public function country() {
+        return $this->belongsTo(Country::class, 'country_id', 'id');
+    }
+
+    // Import Logic
+
+    public static function processImportRow(array $data): array
+    {
+        // Country
+        if (isset($data['country'])) {
+            $country = Country::where('common_name', $data['country'])->first();
+            if (!$country) {
+                Log::warning("Import: Country '{$data['country']}' not found.");
+            }
+            $data['country_id'] = $country?->id;
+            unset($data['country']);
+        }
+
+        // Address
+        if(isset($data['address'])) {
+            $street = $data['address'];
+            $data['street'] = $street;
+            unset($data['address']);
+        }
+
+        return $data;
+    }
+
     public static function processImportPreviewRow(array $row, bool $forImport = false): array
     {
 
