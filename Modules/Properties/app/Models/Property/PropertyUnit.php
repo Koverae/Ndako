@@ -7,13 +7,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Modules\Properties\Database\Factories\Property/PropertyUnitFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
+use Modules\App\Traits\Files\HasImportLogic;
 use Modules\ChannelManager\Models\Booking\Booking;
 
 class PropertyUnit extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasImportLogic;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'property_id',
+        'property_unit_type_id',
+        'floor_id',
+        'status_id',
+        'name',
+        'description',
+        'images',
+        'capacity',
+        'default_setttings',
+        'is_available',
+        'is_cleaned',
+        'status',
+        'last_cleaned_at',
+    ];
+
+    // protected $guarded = [];
 
     public function scopeIsCompany(Builder $query, $company_id)
     {
@@ -45,4 +64,44 @@ class PropertyUnit extends Model
     public function bookings() {
         return $this->hasMany(Booking::class, 'property_unit_id', 'id');
     }
+
+    // Import Logic
+    
+    public static function processImportRow(array $data): array
+    {
+        // Convert unit type name to ID
+        if (isset($data['unit_type'])) {
+            $unitType = PropertyUnitType::where('name', $data['unit_type'])->first();
+            if (!$unitType) {
+                Log::warning("Import: Unit type '{$data['unit_type']}' not found.");
+            }
+            $data['property_unit_type_id'] = $unitType?->id;
+
+            // Remove the original 'unit_type' column to avoid mass assignment error
+            unset($data['unit_type']);
+        }
+
+        // Do similar for 'property', 'floor', etc.
+        if (isset($data['property'])) {
+            $property = Property::where('name', $data['property'])->first();
+            if (!$property) {
+                Log::warning("Import: Property '{$data['property']}' not found.");
+            }
+            $data['property_id'] = $property?->id;
+            unset($data['property']);
+        }
+
+        // Floor
+        if (isset($data['floor'])) {
+            $floor = PropertyFloor::where('name', $data['floor'])->first();
+            if (!$floor) {
+                Log::warning("Import: Floor '{$data['floor']}' not found.");
+            }
+            $data['floor_id'] = $floor?->id;
+            unset($data['floor']);
+        }
+
+        return $data;
+    }
+    
 }

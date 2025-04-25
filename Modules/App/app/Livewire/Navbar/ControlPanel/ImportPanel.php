@@ -17,53 +17,14 @@ use Modules\Properties\Models\Property\PropertyUnitType;
 
 class ImportPanel extends ControlPanel
 {
-    
+
     public $unit;
     public $type;
 
     public function mount($unit = null, $isForm = false, $type = null)
     {
-        $this->showBreadcrumbs = false;
-        $this->generateBreadcrumbs();
         $this->isForm = true;
-
-        $properties = Property::isCompany(current_company()->id)
-        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
-        ->toArray();
-
-        $this->currentPage = "Units";
-
-    }
-
-    public function actionButtons(): array
-    {
-        return [
-            ActionButton::make('export', 'Export', 'exportAll', false, "fas fa-download"),
-            ActionButton::make('import', 'Import', 'import', false, "fas fa-upload"),
-            ActionButton::make('unarchive', 'Unarchive', 'unarchive', false, "fas fa-inbox"),
-            ActionButton::make('duplicate', 'Duplicate', 'duplicateItems', false, "fas fa-copy"),
-            ActionButton::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
-        ];
-    }
-
-    public function actionDropdowns(): array
-    {
-        return [
-            ActionDropdown::make('export', 'Export', 'exportSelected', false, "fas fa-download"),
-            ActionDropdown::make('archive', 'Archive', 'archive', false, "fas fa-archive"),
-            ActionDropdown::make('unarchive', 'Unarchive', 'unarchive', false, "fas fa-inbox"),
-            ActionDropdown::make('duplicate', 'Duplicate', 'duplicateItems', false, "fas fa-copy"),
-            ActionDropdown::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
-        ];
-    }
-
-    public function switchButtons() : array
-    {
-        return  [
-            // make($key, $label)
-            SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
-            // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
-        ];
+        $this->currentPage = "Import a file";
     }
 
     public function exportAll(){

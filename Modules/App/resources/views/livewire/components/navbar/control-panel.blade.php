@@ -47,6 +47,7 @@
                         <span class="min-w-0 text-truncate " style="height: 19px;">
                             {{ $this->currentPage }}
                         </span>
+                        @if(count($this->actionButtons()) >= 1)
                         <div class="gap-1 k_cp_action_menus d-flex align-items-center pe-2">
 
                             <!-- Gear button -->
@@ -66,6 +67,7 @@
                                 </ul>
                             </div>
                         </div>
+                        @endif
                         @if($this->showIndicators)
                         <div class="k_form_status_indicator_buttons d-flex">
                             <span wire:loading.remove wire:click.prevent="saveUpdate()" wire:target="saveUpdate()" class="px-1 py-0 cursor-pointer k_form_button_save btn-light rounded-1 lh-sm">

@@ -20,11 +20,12 @@ use Modules\App\Livewire\Subscription\SubscriptionPage;
 |
 */
 
-Route::get('/import', ImportFile::class)->name('import');
 
 Route::middleware('identify-kover')->group(function () {
-    Route::get('/subcribe', SubscriptionPage::class)->name('subscribe');
 
+    Route::get('/import/{model}', ImportFile::class)->name('import');
+
+    Route::get('/subcribe', SubscriptionPage::class)->name('subscribe');
 
     // Paystack Payment
     Route::post('/paystack/pay', [PaystackController::class, 'initiate'])->name('paystack.pay');
