@@ -71,7 +71,7 @@
                                                 <tr>
                                                     <td>
                                                         <a href="{{ config('app.url') }}">
-                                                            <img src="{{ public_path('assets/images/logo/logo-black.png') }}" width="116" height="34" alt="" />
+                                                            <img src="{{ asset('assets/images/logo/logo-black.png') }}" width="116" height="34" alt="" />
                                                         </a>
                                                     </td>
                                                     <td class="text-right">
@@ -85,7 +85,7 @@
                                     </tr>
                                 </table>
                                 <!-- Header -->
-                                
+
                                 <!-- Email Body -->
                                 <div class="main-content">
                                     <table class="box" cellpadding="0" cellspacing="0">
@@ -98,7 +98,7 @@
                                                             <table class="icon icon-lg bg-green" cellspacing="0" cellpadding="0">
                                                                 <tr>
                                                                     <td valign="middle" align="center">
-                                                                        <img src="{{ public_path('assets/images/email/icons-white-check.png')}}" class=" va-middle" width="40" height="40" alt="check" />
+                                                                        <img src="{{ asset('assets/images/email/icons-white-check.png')}}" class=" va-middle" width="40" height="40" alt="check" />
                                                                     </td>
                                                                 </tr>
                                                             </table>
@@ -136,7 +136,7 @@
                                                                 Arden BOUET, CEO at <a href="https://koverae.com/emails?utm_source=email" class="text-default font-weight-bold">Koverae</a>
                                                             </p>
                                                             <p>
-                                                                <img src="{{ public_path('assets/images/email/founder.jpg') }}" class=" avatar" width="72" height="72" alt="Arden BOUET" />
+                                                                <img src="{{ asset('assets/images/email/founder.jpg') }}" class=" avatar" width="72" height="72" alt="Arden BOUET" />
                                                             </p>
                                                         </td>
                                                     </tr>
@@ -145,7 +145,7 @@
                                         </tr>
                                     </table>
                                 </div>
-                                
+
                                 <!-- Footer -->
                                 <table cellspacing="0" cellpadding="0">
                                     <tr>
@@ -182,7 +182,7 @@
                                                                 </td>
                                                                 <td class="px-sm">
                                                                     <a href="https://tabler.io/emails?utm_source=demo">
-                                                                        <img src="{{ public_path('assets/images/email/icons-gray-brand-instagram.png')}}" class=" va-middle" width="24" height="24" alt="brand-instagram" />
+                                                                        <img src="{{ asset('assets/images/email/icons-gray-brand-instagram.png')}}" class=" va-middle" width="24" height="24" alt="brand-instagram" />
                                                                     </a>
                                                                 </td>
                                                             </tr>
