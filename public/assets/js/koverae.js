@@ -7812,6 +7812,9 @@ function formatDate(date) {
     });
 }
 
+// Import File DropZone
+
+
 // Copy Booking Widget Snippet
 // function copyWidgetSnippet() {
 //     const code = `<script src="http://app.koverae.test/api/v1/embed/booking.js"></script>
