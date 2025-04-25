@@ -27805,9 +27805,17 @@ Widget Code
 /********************
 File Import Zone
 ********************/
+.preview-table{
+    /*  */
+}
+
+/********************
+File Import Zone
+********************/
 
 .file-upload-container {
     position: relative;
+    /* width: 500px; */
     min-width: 300px;
     width: 100%;
     height: 200px;

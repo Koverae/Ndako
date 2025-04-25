@@ -38,14 +38,15 @@
             </div>
 
             @if (!empty($previewData))
-                <div class="overflow-x-auto mt-3 mb-3">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ __('Data Preview') }}</h3>
-
-                    <table class="min-w-full divide-y divide-gray-200 border rounded-lg overflow-hidden shadow border-1">
-                        <thead class="bg-gray-100 text-gray-700 text-sm uppercase tracking-wider">
+            <div class="preview-table mt-3 mb-3">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ __('Data Preview') }}</h3>
+            
+                <div class="overflow-x-auto rounded-lg border shadow-sm">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-700">
+                        <thead class="bg-gray-100 uppercase tracking-wider text-xs text-gray-600">
                             <tr>
                                 @foreach(array_keys($previewData[0]) as $header)
-                                    <th class="px-4 py-3 text-left">{{ $header }}</th>
+                                    <th class="px-4 py-3 whitespace-nowrap">{{ $header }}</th>
                                 @endforeach
                             </tr>
                         </thead>
@@ -53,13 +54,14 @@
                             @foreach($previewData as $row)
                                 <tr class="hover:bg-gray-50 transition duration-150">
                                     @foreach($row as $cell)
-                                        <td class="px-4 py-2 text-gray-700 whitespace-nowrap">{{ $cell }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap">{{ $cell }}</td>
                                     @endforeach
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+            </div>
             @endif
 
             <button type="submit" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2 w-100">Import</button>

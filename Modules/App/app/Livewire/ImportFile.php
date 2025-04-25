@@ -38,6 +38,7 @@ class ImportFile extends Component
             'mod_unit_types' => "Unit Types",
             'mod_units' => "Units",
             'mod_floors' => "Floors",
+            'mod_guests' => "Guests",
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -49,6 +50,7 @@ class ImportFile extends Component
             'mod_properties' => \Modules\Properties\Models\Property\Property::class,
             'mod_units' => \Modules\Properties\Models\Property\PropertyUnit::class,
             'mod_floors' => \Modules\Properties\Models\Property\PropertyFloor::class,
+            'mod_guests' => \Modules\ChannelManager\Models\Guest\Guest::class,
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -62,6 +64,7 @@ class ImportFile extends Component
             'mod_unit_types' => "properties.unit-types.lists",
             'mod_units' => "properties.units.lists",
             'mod_floors' => "dashboard",
+            'mod_guests' => "guests.lists",
             // Add more here
             default => abort(404, 'Invalid model'),
         };

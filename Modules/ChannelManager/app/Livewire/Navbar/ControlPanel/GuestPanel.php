@@ -33,7 +33,7 @@ class GuestPanel extends ControlPanel
     public function actionButtons(): array
     {
         return [
-            ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
+            // ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
             ActionButton::make('import', 'Import Records', 'importRecords', false, "fas fa-upload"),
         ];
     }
@@ -46,5 +46,26 @@ class GuestPanel extends ControlPanel
             SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
             SwitchButton::make('map',"switchView('map')", icon: "bi-map"),
         ];
+    }
+
+    public function importRecords(){
+        return $this->redirect(route('import.records', 'mod_guests'), true);
+    }
+
+    public function deleteSelectedItems(){
+
+        PropertyUnit::isCompany(current_company()->id)
+            ->whereIn('id', $this->selected)
+            ->delete();
+
+        LivewireAlert::title('Items deleted!')
+        ->text('Selected items were deleted successfully!')
+        ->success()
+        ->position('top-end')
+        ->timer(4000)
+        ->toast()
+        ->show();
+
+        return $this->redirect(route('properties.units.lists'), navigate:true);
     }
 }

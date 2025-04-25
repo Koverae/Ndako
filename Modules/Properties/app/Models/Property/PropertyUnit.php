@@ -103,6 +103,7 @@ class PropertyUnit extends Model
 
         return $data;
     }
+    
     public static function processImportPreviewRow(array $row, bool $forImport = false): array
     {
         $propertyName = trim($row['property'] ?? '');
