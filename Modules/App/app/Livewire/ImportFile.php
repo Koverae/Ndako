@@ -15,6 +15,7 @@ class ImportFile extends Component
     public $file;
     public string $model;
     public string $modelSlug;
+    public array $previewData = [];
 
     protected $rules = [
         'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
@@ -102,9 +103,53 @@ class ImportFile extends Component
             session()->flash('error', 'There was an error importing the file.');
         }
     
-        $this->reset('file');
+        $this->reset('file', 'previewData');
     }
 
+    public function updatedFile()
+    {
+        $this->preview(); // Automatically call preview when file is updated
+    }
+
+    public function preview()
+    {
+        $this->validate();
+
+        try {
+            $spreadsheet = IOFactory::load($this->file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+    
+            if (count($rows) < 2) {
+                session()->flash('error', 'The uploaded file is empty or improperly formatted.');
+                return;
+            }
+
+            $modelClass = $this->model;
+    
+            array_shift($rows); // Skip the first row (e.g., "Units" title)
+            $columns = array_map('trim', array_shift($rows)); // Actual column headers on 2nd row
+
+            $previewRows = [];
+            foreach ($rows as $index => $row) {
+                $data = array_combine($columns, $row);
+                if (!$data) continue;
+
+                if (method_exists($modelClass, 'processImportPreviewRow')) {
+                    $processed = $modelClass::processImportPreviewRow($data);
+                    $previewRows[] = $processed;
+                } else {
+                    $previewRows[] = $data;
+                }
+            }
+
+            $this->previewData = $previewRows;
+
+        } catch (\Throwable $e) {
+            Log::error('Preview error: ' . $e->getMessage());
+            session()->flash('error', 'There was an error previewing the file.');
+        }
+    }
 
     public function render()
     {

@@ -103,5 +103,38 @@ class PropertyUnit extends Model
 
         return $data;
     }
+    public static function processImportPreviewRow(array $row, bool $forImport = false): array
+    {
+        $propertyName = trim($row['property'] ?? '');
+        $unitTypeName = trim($row['unit_type'] ?? '');
+        $floorName = trim($row['floor'] ?? '');
     
+        Log::debug('Processing Row', [
+            'unit_type_input' => $unitTypeName,
+            'floor_input' => $floorName,
+        ]);
+    
+        $property = Property::whereRaw('LOWER(name) = ?', [strtolower($propertyName)])->first();
+        $unitType = PropertyUnitType::whereRaw('LOWER(name) = ?', [strtolower($unitTypeName)])->first();
+        $floor = PropertyFloor::whereRaw('LOWER(name) = ?', [strtolower($floorName)])->first();
+    
+        // if ($forImport) {
+        //     return [
+        //         'name' => trim($row['name']),
+        //         'unit_type_id' => optional($unitType)->id,
+        //         'floor_id' => optional($floor)->id,
+        //         'company_id' => current_company()->id,
+        //     ];
+        // }
+    
+        return [
+            'Name' => $row['name'] ?? '',
+            'Description' => $row['description'] ?? '',
+            'Property' => optional($property)->name ?? "❌ Not Found: $propertyName",
+            'Unit Type' => optional($unitType)->name ?? "❌ Not Found: $unitTypeName",
+            'Floor' => optional($floor)->name ?? "❌ Not Found: $floorName",
+            // 'Status' => inverseSlug($row['status']),
+        ];
+    }
+
 }

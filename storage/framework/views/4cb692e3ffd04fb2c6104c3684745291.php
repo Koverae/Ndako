@@ -45,23 +45,34 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
             </div>
-    
-            <div class="mb-4">
-                <label for="model" class="block text-sm font-medium text-gray-700">Selected Model <?php echo e(Str::headline($modelSlug)); ?></label>
-                <select id="model" wire:model="model" class="mt-1 block w-full">
-                    <option></option>
-                    <option value="\Modules\Properties\Models\Property\PropertyUnit::class"><?php echo e(__('Property Units')); ?></option>
-                    <!-- Add more models as needed -->
-                </select>
-                <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['model'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
+            
+            <div wire:loading wire:target="file" class="text-sm text-gray-500">
+                Previewing data...
             </div>
+            
+            <!--[if BLOCK]><![endif]--><?php if(!empty($previewData)): ?>
+                <div class="overflow-auto mt-6">
+                    <h3 class="text-lg font-semibold mb-2">Preview</h3>
+                    <table class="min-w-full border border-gray-300 text-sm">
+                        <thead>
+                            <tr>
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = array_keys($previewData[0]); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $header): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <th class="px-2 py-1 border"><?php echo e($header); ?></th>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $previewData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <tr>
+                                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $row; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cell): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <td class="px-2 py-1 border"><?php echo e($cell); ?></td>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                                </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     
             <button type="submit" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2 w-100">Import</button>
         </form>

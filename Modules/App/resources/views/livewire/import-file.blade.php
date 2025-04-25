@@ -22,16 +22,34 @@
                 <input id="file" type="file" wire:model="file" class="mt-1 block w-full" />
                 @error('file') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
-    
-            <div class="mb-4">
-                <label for="model" class="block text-sm font-medium text-gray-700">Selected Model {{ Str::headline($modelSlug) }}</label>
-                <select id="model" wire:model="model" class="mt-1 block w-full">
-                    <option></option>
-                    <option value="\Modules\Properties\Models\Property\PropertyUnit::class">{{__('Property Units')}}</option>
-                    <!-- Add more models as needed -->
-                </select>
-                @error('model') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            
+            <div wire:loading wire:target="file" class="text-sm text-gray-500">
+                Previewing data...
             </div>
+            
+            @if (!empty($previewData))
+                <div class="overflow-auto mt-6">
+                    <h3 class="text-lg font-semibold mb-2">Preview</h3>
+                    <table class="min-w-full border border-gray-300 text-sm">
+                        <thead>
+                            <tr>
+                                @foreach(array_keys($previewData[0]) as $header)
+                                    <th class="px-2 py-1 border">{{ $header }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($previewData as $row)
+                                <tr>
+                                    @foreach($row as $cell)
+                                        <td class="px-2 py-1 border">{{ $cell }}</td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
     
             <button type="submit" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2 w-100">Import</button>
         </form>
