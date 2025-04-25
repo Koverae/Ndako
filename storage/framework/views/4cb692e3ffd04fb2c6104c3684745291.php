@@ -86,6 +86,9 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
             <button type="submit" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2 w-100">Import</button>
+            <div wire:loading wire:target="file" class="text-sm text-gray-500 p-2">
+                <div class="loader-ball"></div>
+            </div>
         </form>
 
         <!--[if BLOCK]><![endif]--><?php if(session()->has('message')): ?>

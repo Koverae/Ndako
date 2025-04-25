@@ -14,7 +14,43 @@ class Guest extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'user_id',
+        'avatar',
+        'name',
+        'company_name',
+        'language_id',
+    
+        // Address
+        'street',
+        'street2',
+        'city',
+        'state',
+        'country_id',
+        'zip',
+    
+        // Contact Info
+        'identity_proof',
+        'identity',
+        'phone',
+        'mobile',
+        'email',
+        'website',
+        'tags',
+    
+        // Individual
+        'job',
+        'has_receipt_reminder',
+        'days_before',
+    
+        // MISC
+        'companyID',
+        'reference',
+        'note',
+        'type',
+        'status',
+    ];
 
     public function scopeIsCompany(Builder $query, $company_id)
     {

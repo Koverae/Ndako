@@ -30,6 +30,14 @@ class GuestPanel extends ControlPanel
         ];
     }
 
+    public function actionButtons(): array
+    {
+        return [
+            ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
+            ActionButton::make('import', 'Import Records', 'importRecords', false, "fas fa-upload"),
+        ];
+    }
+
     public function switchButtons() : array
     {
         return  [
