@@ -1,5 +1,9 @@
 <?php $__env->startSection('title', "Import File"); ?>
 
+<?php $__env->startSection('styles'); ?>
+    <style>
+    </style>
+<?php $__env->stopSection(); ?>
 <!-- Control Panel -->
 <?php $__env->startSection('control-panel'); ?>
 <?php
@@ -26,12 +30,12 @@ if (isset($__slots)) unset($__slots);
         <img src="<?php echo e(asset('assets/images/illustrations/file-icon.svg')); ?>"style="height: 200px" alt="">
         <p class="empty-title"><?php echo e(__('Drop or upload a file to import')); ?></p>
         <p class="empty-subtitle"><?php echo e(__('Excel files are recommended as formatting is automatic. But, you can also use .csv files')); ?></p>
-        
-        <a href="#" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2">
-            <i class="fas fa-download"></i> <?php echo e(__('Import Template for Units')); ?>
 
-        </a>
-        
+        <span wire:click="downloadTemplate" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2">
+            <i class="fas fa-download"></i> <?php echo e(__("Import Template for $modelName")); ?>
+
+        </span>
+
         <form wire:submit.prevent="import" class="p-2 mb-2 mt-3">
 
             <div class="file-upload-container" id="file-upload-container">
@@ -40,6 +44,7 @@ if (isset($__slots)) unset($__slots);
                 </label>
                 <input type="file" wire:model="file" id="file-upload" class="file-upload-input">
                 <div id="file-name" class="file-name"></div>
+                <div wire:loading wire:target="file" class="loader-progress"></div>
             </div>
             <br />
             <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['file'];
@@ -50,27 +55,28 @@ $message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
-            
+
             <div wire:loading wire:target="file" class="text-sm text-gray-500">
-                Previewing data...
+                <div class="loader-dots"></div> Previewing data
             </div>
 
             <!--[if BLOCK]><![endif]--><?php if(!empty($previewData)): ?>
-                <div class="overflow-auto mt-4">
-                    <h3 class="text-lg font-semibold mb-2"><?php echo e(__('Data Preview')); ?></h3>
-                    <table class="min-w-full border border-gray-300 text-sm">
-                        <thead>
+                <div class="overflow-x-auto mt-3 mb-3">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4"><?php echo e(__('Data Preview')); ?></h3>
+
+                    <table class="min-w-full divide-y divide-gray-200 border rounded-lg overflow-hidden shadow border-1">
+                        <thead class="bg-gray-100 text-gray-700 text-sm uppercase tracking-wider">
                             <tr>
                                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = array_keys($previewData[0]); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $header): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <th class="px-2 py-1 border"><?php echo e($header); ?></th>
+                                    <th class="px-4 py-3 text-left"><?php echo e($header); ?></th>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200">
                             <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $previewData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <tr>
+                                <tr class="hover:bg-gray-50 transition duration-150">
                                     <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $row; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cell): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <td class="px-2 py-1 border"><?php echo e($cell); ?></td>
+                                        <td class="px-4 py-2 text-gray-700 whitespace-nowrap"><?php echo e($cell); ?></td>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
@@ -78,20 +84,20 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                     </table>
                 </div>
             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-    
+
             <button type="submit" class="btn btn-outline-primary k_form_button_create gap-2 d-flex fs-3 mt-2 w-100">Import</button>
         </form>
-    
+
         <!--[if BLOCK]><![endif]--><?php if(session()->has('message')): ?>
             <div class="mt-4 text-green-600"><?php echo e(session('message')); ?></div>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-    
+
         <?php if(session()->has('error')): ?>
             <div class="mt-4 text-red-600"><?php echo e(session('error')); ?></div>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-        
+
         <p>Need Help? <a href="#" style="color: #0E6163;">Import FAQ</a></p>
-        
+
     </div>
 </section>
 <!-- Page Content -->
@@ -136,4 +142,5 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
             fileUploadContainer.style.borderColor = '#0E6163';
         });
 
-    </script><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/import-file.blade.php ENDPATH**/ ?>
+    </script>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/import-file.blade.php ENDPATH**/ ?>

@@ -27864,3 +27864,31 @@ File Import Zone
 .file-upload-container:hover .file-upload-label {
     /* color: #E6F2F3; */
 }
+
+/********************
+Loader
+********************/
+
+.loader-dots {
+    width: 120px;
+    height: 20px;
+    -webkit-mask:linear-gradient(90deg,#0E6163 70%,#0E61630 0) 0/20%;
+    background:
+    linear-gradient(#0E6163 0 0) 0/0% no-repeat
+    #ddd;
+    animation: l4 2s infinite steps(6);
+}
+@keyframes l4 {
+    100% {background-size:120%}
+}
+.loader-progress {
+    width: 120px;
+    height: 20px;
+    background:
+    linear-gradient(#0E6163 0 0) 0/0% no-repeat
+    #ddd;
+    animation: l1 2s infinite linear;
+}
+@keyframes l1 {
+    100% {background-size:100%}
+}

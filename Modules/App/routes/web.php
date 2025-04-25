@@ -23,7 +23,7 @@ use Modules\App\Livewire\Subscription\SubscriptionPage;
 
 Route::middleware('identify-kover')->group(function () {
 
-    Route::get('/import/{model}', ImportFile::class)->name('import');
+    Route::get('/import/{model}', ImportFile::class)->name('import.records');
 
     Route::get('/subcribe', SubscriptionPage::class)->name('subscribe');
 
