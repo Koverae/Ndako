@@ -47,7 +47,7 @@ Route::middleware('identify-kover')->group(function () {
         Route::get('/{type}', PropertyTypeShow::class)->name('show');
 
     });
-    
+
     // Unit Types
     Route::prefix('/unit-types')->name('properties.unit-types.')->group(function() {
         Route::get('/', UnitTypeLists::class)->name('lists');

@@ -13,8 +13,8 @@ class ImportFile extends Component
     use WithFileUploads;
 
     public $file;
-    public string $model;
-    public string $modelSlug, $modelName;
+    public string $model, $modelSlug, $modelName;
+    public bool $updateExisting = true, $skipDuplicates  = true;
     public array $previewData = [];
 
     protected $rules = [
@@ -48,6 +48,19 @@ class ImportFile extends Component
             'mod_properties' => \Modules\Properties\Models\Property\Property::class,
             'mod_units' => \Modules\Properties\Models\Property\PropertyUnit::class,
             'mod_floors' => \Modules\Properties\Models\Property\PropertyFloor::class,
+            // Add more here
+            default => abort(404, 'Invalid model'),
+        };
+    }
+
+    public function resolveModelRouteFromSlug($slug): string
+    {
+        return match($slug) {
+            'mod_properties' => "properties.lists",
+            'mod_property_types' => "properties.types.lists",
+            'mod_unit_types' => "properties.unit-types.lists",
+            'mod_units' => "properties.units.lists",
+            'mod_floors' => "dashboard",
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -109,7 +122,7 @@ class ImportFile extends Component
                 $modelClass::create($data);
             }
 
-            session()->flash('message', 'Units imported successfully!');
+            session()->flash('message', "$this->modelName imported successfully!");
         } catch (Exception $e) {
             Log::error('Import error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
@@ -118,6 +131,7 @@ class ImportFile extends Component
         }
 
         $this->reset('file', 'previewData');
+        return $this->redirect(route($this->resolveModelRouteFromSlug($this->modelSlug), true));
     }
 
     public function updatedFile()

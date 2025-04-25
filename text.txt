@@ -1,0 +1,10 @@
+
+                // Inject default company_id if needed
+                if (!isset($data['company_id']) || empty($data['company_id'])) {
+                    $data['company_id'] = current_company()->id ?? null;
+                }
+
+                // ✨ Process with model-specific logic
+                if (method_exists($modelClass, 'processImportRow')) {
+                    $data = $modelClass::processImportRow($data);
+                }

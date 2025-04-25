@@ -63,10 +63,7 @@ class UnitPanel extends ControlPanel
     {
         return [
             ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
-            ActionButton::make('import', 'Import Records', 'import', false, "fas fa-upload"),
-            ActionButton::make('unarchive', 'Unarchive', 'unarchive', false, "fas fa-inbox"),
-            ActionButton::make('duplicate', 'Duplicate', 'duplicateItems', false, "fas fa-copy"),
-            ActionButton::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
+            ActionButton::make('import', 'Import Records', 'importRecords', false, "fas fa-upload"),
         ];
     }
 
@@ -165,6 +162,10 @@ class UnitPanel extends ControlPanel
         ->show();
 
         return $this->redirect(route('properties.units.lists'), navigate:true);
+    }
+
+    public function importRecords(){
+        return $this->redirect(route('import.records', 'mod_units'), true);
     }
 
     public function duplicate($unitId)

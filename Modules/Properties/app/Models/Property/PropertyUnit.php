@@ -66,7 +66,7 @@ class PropertyUnit extends Model
     }
 
     // Import Logic
-    
+
     public static function processImportRow(array $data): array
     {
         // Convert unit type name to ID
@@ -108,25 +108,27 @@ class PropertyUnit extends Model
         $propertyName = trim($row['property'] ?? '');
         $unitTypeName = trim($row['unit_type'] ?? '');
         $floorName = trim($row['floor'] ?? '');
-    
+
         Log::debug('Processing Row', [
             'unit_type_input' => $unitTypeName,
             'floor_input' => $floorName,
         ]);
-    
+
         $property = Property::whereRaw('LOWER(name) = ?', [strtolower($propertyName)])->first();
         $unitType = PropertyUnitType::whereRaw('LOWER(name) = ?', [strtolower($unitTypeName)])->first();
         $floor = PropertyFloor::whereRaw('LOWER(name) = ?', [strtolower($floorName)])->first();
-    
-        // if ($forImport) {
-        //     return [
-        //         'name' => trim($row['name']),
-        //         'unit_type_id' => optional($unitType)->id,
-        //         'floor_id' => optional($floor)->id,
-        //         'company_id' => current_company()->id,
-        //     ];
-        // }
-    
+
+        if ($forImport) {
+            return [
+                'company_id' => current_company()->id,
+                'name' => $row['name'] ?? "",
+                'description' => $row['description'] ?? "",
+                'property_id' => optional($property)->id,
+                'property_unit_type_id' => optional($unitType)->id,
+                'floor_id' => optional($floor)->id,
+            ];
+        }
+
         return [
             'Name' => $row['name'] ?? '',
             'Description' => $row['description'] ?? '',
