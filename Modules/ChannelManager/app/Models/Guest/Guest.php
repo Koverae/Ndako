@@ -95,11 +95,6 @@ class Guest extends Model
     public static function processImportPreviewRow(array $row, bool $forImport = false): array
     {
 
-        Log::debug('Processing Row', [
-            // 'unit_type_input' => $unitTypeName,
-            // 'floor_input' => $floorName,
-        ]);
-
         if ($forImport) {
             return [
                 'company_id' => current_company()->id,
