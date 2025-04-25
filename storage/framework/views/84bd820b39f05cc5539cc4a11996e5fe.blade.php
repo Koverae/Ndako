@@ -1,6 +1,6 @@
 <?php extract((new \Illuminate\Support\Collection($attributes->getAttributes()))->mapWithKeys(function ($value, $key) { return [Illuminate\Support\Str::camel(str_replace([':', '.'], ' ', $key)) => $value]; })->all(), EXTR_SKIP); ?>
-@props(['value','id'])
-<x-app::table.column.special.operation-type :value="$value" :id="$id" >
+@props(['value'])
+<x-app::button.action.dropdown :value="$value" >
 
 {{ $slot ?? "" }}
-</x-app::table.column.special.operation-type>
+</x-app::button.action.dropdown>

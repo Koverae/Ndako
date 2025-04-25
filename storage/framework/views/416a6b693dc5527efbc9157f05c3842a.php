@@ -2,7 +2,7 @@
 
 $__newAttributes = [];
 $__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
-    'value',
+    'value'
 ]));
 
 foreach ($attributes->all() as $__key => $__value) {
@@ -19,7 +19,7 @@ unset($__propNames);
 unset($__newAttributes);
 
 foreach (array_filter(([
-    'value',
+    'value'
 ]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
@@ -31,15 +31,20 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-<?php
-    $type = \Modules\Properties\Models\Property\PropertyType::find($value);
-?>
 <div>
-    <!--[if BLOCK]><![endif]--><?php if($type): ?>
-    <a style="text-decoration: none" class="primary" wire:navigate href="<?php echo e(route('properties.show', ['property' => $type->id])); ?>"  tabindex="-1">
-        <?php echo e($type->name ?? ''); ?>
+    <li
+    class="gap-2 cursor-pointer dropdown-item dropdown-hover kover-navlink"
+    <?php if($value->isConfirm): ?>
+        wire:confirm="<?php echo e($value->confirmText); ?>"
+    <?php endif; ?>
+    wire:click="<?php echo e($value->action); ?>"
+    wire:target="<?php echo e($value->action); ?>"
+>
+        <i class="<?php echo e($value->icon); ?>"></i> <span><?php echo e($value->label); ?></span>
+    </li>
 
-    </a>
+    <!--[if BLOCK]><![endif]--><?php if($value->separator): ?>
+    <li><hr class="separator"></li>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>
-<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/table/column/special/property-type.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/button/action/dropdown.blade.php ENDPATH**/ ?>

@@ -3,6 +3,7 @@
 namespace Modules\App\Livewire;
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -77,49 +78,62 @@ class ImportFile extends Component
 
         try {
             $spreadsheet = IOFactory::load($this->file->getRealPath());
-            $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray();
+            // Get all sheets (support for multi-sheet import)
+            $sheets = $spreadsheet->getAllSheets();
+            // $sheet = $spreadsheet->getActiveSheet();
 
-            if (count($rows) < 2) {
-                session()->flash('error', 'The uploaded file is empty or improperly formatted.');
-                return;
-            }
+            // Begin a database transaction for safe rollback on failure
+            // DB::beginTransaction();
 
-            array_shift($rows); // Skip the first row (e.g., "Units" title)
-            $columns = array_map('trim', array_shift($rows)); // Actual column headers on 2nd row
+            // Loop through each sheet in the workbook
+            foreach ($sheets as $sheet) {
+                // Convert sheet data to array
+                $rows = $sheet->toArray();
 
-            $modelClass = $this->model;
+                // Skip if there are not enough rows (e.g., empty sheet)
+                if (count($rows) < 2) continue;
 
-            foreach ($rows as $rowIndex => $row) {
-                if (empty(array_filter($row))) {
-                    continue; // Skip empty rows
+                // if (count($rows) < 2) {
+                //     session()->flash('error', 'The uploaded file is empty or improperly formatted.');
+                //     return;
+                // }
+
+                array_shift($rows); // Skip the first row (e.g., "Units" title)
+                $columns = array_map('trim', array_shift($rows)); // Actual column headers on 2nd row
+
+                $modelClass = $this->model;
+
+                foreach ($rows as $rowIndex => $row) {
+                    if (empty(array_filter($row))) {
+                        continue; // Skip empty rows
+                    }
+
+                    $data = array_combine($columns, $row);
+
+                    if (!$data) {
+                        Log::warning("Skipping row {$rowIndex} — column mismatch", [
+                            'columns' => $columns,
+                            'row' => $row,
+                        ]);
+                        continue;
+                    }
+
+                    // Inject default company_id if needed
+                    if (!isset($data['company_id']) || empty($data['company_id'])) {
+                        $data['company_id'] = current_company()->id ?? null;
+                    }
+
+                    // ✨ Process with model-specific logic
+                    if (method_exists($modelClass, 'processImportRow')) {
+                        $data = $modelClass::processImportRow($data);
+                    }
+
+                    // Remove null values from columns that might have been left empty
+                    $data = array_filter($data, fn ($value) => $value !== null && $value !== '');
+
+                    // Create record
+                    $modelClass::create($data);
                 }
-
-                $data = array_combine($columns, $row);
-
-                if (!$data) {
-                    Log::warning("Skipping row {$rowIndex} — column mismatch", [
-                        'columns' => $columns,
-                        'row' => $row,
-                    ]);
-                    continue;
-                }
-
-                // Inject default company_id if needed
-                if (!isset($data['company_id']) || empty($data['company_id'])) {
-                    $data['company_id'] = current_company()->id ?? null;
-                }
-
-                // ✨ Process with model-specific logic
-                if (method_exists($modelClass, 'processImportRow')) {
-                    $data = $modelClass::processImportRow($data);
-                }
-
-                // Remove null values from columns that might have been left empty
-                $data = array_filter($data, fn ($value) => $value !== null && $value !== '');
-
-                // Create record
-                $modelClass::create($data);
             }
 
             session()->flash('message', "$this->modelName imported successfully!");
