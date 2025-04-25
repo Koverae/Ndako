@@ -21,11 +21,12 @@ class Template extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($subject, $content, $company)
+    public function __construct($subject, $content, $company, $attachment)
     {
         $this->subject = $subject;
         $this->content = $content;
         $this->company = $company;
+        $this->attachment = $attachment;
     }
 
 /**
@@ -44,6 +45,12 @@ public function envelope(): Envelope
      */
     public function build(): self
     {
-        return $this->view('app::emails.template');
+        $email = $this->view('app::emails.template');
+    
+        if ($this->attachment) {
+            $email->attach($this->attachment); // Full path or stream
+        }
+    
+        return $email;
     }
 }

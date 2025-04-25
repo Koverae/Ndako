@@ -2,29 +2,84 @@
 
 namespace Modules\App\Livewire\Modal;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Livewire\WithFileUploads;
 use LivewireUI\Modal\ModalComponent;
 use Modules\App\Models\Email\EmailTemplate;
 use Modules\ChannelManager\Models\Guest\Guest;
+use Modules\App\Emails\Template;
+use Illuminate\Support\Facades\Log;
 
 class SendByEmailModal extends ModalComponent
 {
     use WithFileUploads;
 
+    public $model;
     public $template;
 
-    public $model;
+    public $email;
+    public $subject;
+    public $content;
+    public $template_id;
+    public $contact;
+    public $file;
 
-    public $email, $subject, $content, $template_id, $contact, $file;
-    public array $templates = [], $recipient_emails =[];
+    public array $templates = [];
+    public array $recipient_emails = [];
 
     public function mount($templateId, $model, $subjectSearch = [], $subjectReplace = [], $contentSearch = [], $contentReplace = [])
     {
         $this->model = $model;
+        $this->templates = $this->getTemplates();
 
-        // Step 1: Define available templates
-        $this->templates = [
+        // Find selected template
+        $selected = collect($this->templates)->firstWhere('id', $templateId);
+        $this->template = (object) $selected;
+
+        // Load guest/contact info
+        $this->contact = Guest::find($model['guest_id']);
+
+        $recipientField = $this->template->recipient_emails ?? '';
+        $this->recipient_emails = array_filter(array_merge(
+            explode(',', $recipientField),
+            [$this->contact->email ?? null]
+        ));
+
+        // Replace placeholders
+        $this->subject = str_replace($subjectSearch, $subjectReplace, $this->template->subject);
+        $content = str_replace($contentSearch, $contentReplace, $this->template->content);
+
+        // Bold placeholders (if any remain)
+        $this->content = preg_replace('/\{(.*?)\}/', '<b>{$1}</b>', $content);
+
+        $this->template_id = $this->template->id;
+    }
+
+    public function updatedEmail($value)
+    {
+        $this->addEmail();
+    }
+
+    public function addEmail()
+    {
+        $this->validate([
+            'email' => ['required', 'email', Rule::notIn($this->recipient_emails)],
+        ]);
+
+        $this->recipient_emails[] = $this->email;
+        $this->email = '';
+    }
+
+    public function render()
+    {
+        return view('app::livewire.modal.send-by-email-modal');
+    }
+
+    protected function getTemplates(): array
+    {
+        return [
+
             [
                 'id' => 1,
                 'apply_to' => 'booking',
@@ -166,52 +221,6 @@ class SendByEmailModal extends ModalComponent
                 'content' => "Hi Team,<br>A new booking has been made for {property_name} from {check_in} to {check_out}.<br>Please prepare accordingly.<br><br>--Ndako System",
             ],
         ];
-
-        // Step 2: Find the selected template by ID
-        $selected = collect($this->templates)->firstWhere('id', $templateId);
-
-        // Step 3: Set your template
-        $this->template = (object) $selected; // Cast to object for dot access like $template->subject
-
-        // Step 4: Use data for dynamic fields
-        $this->contact = Guest::find($model['guest_id']);
-        $this->recipient_emails = explode(',', $this->template->recipient_emails ?? '');
-        $this->recipient_emails[] = $this->contact->email;
-
-        $this->subject = str_replace(
-            $subjectSearch,
-            $subjectReplace,
-            $this->template->subject
-        );
-
-
-        $this->content = str_replace(
-            $contentSearch,
-            $contentReplace,
-            $this->template->content
-        );$this->content = preg_replace('/\{(.*?)\}/', '<b>{$1}</b>', $this->content);
-
-
-        $this->template_id = $this->template->id;
-    }
-
-    public function render()
-    {
-        return view('app::livewire.modal.send-by-email-modal');
-    }
-    public function updatedEmail($value){
-        $this->addEmail();
-    }
-
-    public function addEmail()
-    {
-        $this->validate([
-            'email' => ['required', 'email', Rule::notIn($this->recipient_emails)],
-        ]);
-
-        // Validate email format if needed
-        $this->recipient_emails[] = $this->email;
-        $this->email = ''; // Clear the input field after adding an email
     }
 
     public function removeEmail($index)
@@ -219,4 +228,34 @@ class SendByEmailModal extends ModalComponent
         unset($this->recipient_emails[$index]);
         $this->recipient_emails = array_values($this->recipient_emails);
     }
+
+    public function sendEmail(){
+        try {
+
+            $recipients = collect($this->recipient_emails)
+                ->flatten()
+                ->unique()
+                ->filter()
+                ->values();
+
+            foreach ($recipients as $email) {
+                Mail::to($email)->send(new Template(
+                    subject: $this->subject,
+                    content: $this->content,
+                    company: current_company(),
+                    attachment: storage_path('app/public/invoices/invoice.pdf')
+                ));
+            }
+
+            return back()->with('success', 'Email sent to all recipients successfully.');
+        } catch (\Exception $e) {
+            Log::error('Email sending failed', [
+                'emails' => $this->recipient_emails,
+                'message' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'We couldn’t send the email to all recipients. Please try again later.');
+        }
+    }
 }
+
