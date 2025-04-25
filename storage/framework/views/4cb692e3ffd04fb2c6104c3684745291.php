@@ -1,68 +1,5 @@
 <?php $__env->startSection('title', "Import File"); ?>
 
-<?php $__env->startSection('styles'); ?>
-    <style>
-        /* Base styling */
-        .file-upload-container {
-            position: relative;
-            width: 300px;
-            height: 200px;
-            border: 2px dashed #0E6163;
-            border-radius: 8px;
-            background-color: #f7f7f7;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        .file-upload-label {
-            font-size: 18px;
-            color: #0E6163;
-            font-weight: 600;
-            margin: 10px 0;
-            cursor: pointer;
-        }
-
-        .file-upload-input {
-            display: none;
-        }
-
-        .file-upload-container:hover {
-            background-color: #e9f1ff;
-            border-color: #E6F2F3;
-        }
-
-        .file-upload-container:active {
-            background-color: #d1e7ff;
-        }
-
-        /* Icon styling */
-        .fas.fa-cloud-upload-alt {
-            font-size: 48px;
-            color: #0E6163;
-        }
-
-        /* File name display */
-        .file-name {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #666;
-            max-width: 80%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* File hover animation */
-        .file-upload-container:hover .file-upload-label {
-            /* color: #E6F2F3; */
-        }
-
-    </style>
-<?php $__env->stopSection(); ?>
 <!-- Control Panel -->
 <?php $__env->startSection('control-panel'); ?>
 <?php
@@ -82,6 +19,7 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
 <?php $__env->stopSection(); ?>
+
 <!-- Page Content -->
 <section class="w-100">
     <div class="empty k_nocontent_help h-100">
@@ -94,20 +32,17 @@ if (isset($__slots)) unset($__slots);
 
         </a>
         
-        <form wire:submit.prevent="import" class="p-2 mb-2">
+        <form wire:submit.prevent="import" class="p-2 mb-2 mt-3">
 
             <div class="file-upload-container" id="file-upload-container">
                 <label for="file-upload" class="file-upload-label">
                     <i class="fas fa-cloud-upload-alt"></i> Click or drag to upload
                 </label>
-                <input type="file" id="file-upload" class="file-upload-input" accept="image/*" multiple>
+                <input type="file" wire:model="file" id="file-upload" class="file-upload-input">
                 <div id="file-name" class="file-name"></div>
             </div>
-
-            <div class="mb-4">
-                <label for="file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                <input id="file" type="file" wire:model="file" class="mt-1 block w-full" />
-                <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['file'];
+            <br />
+            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['file'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -115,15 +50,14 @@ $message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
-            </div>
             
             <div wire:loading wire:target="file" class="text-sm text-gray-500">
                 Previewing data...
             </div>
 
             <!--[if BLOCK]><![endif]--><?php if(!empty($previewData)): ?>
-                <div class="overflow-auto mt-6">
-                    <h3 class="text-lg font-semibold mb-2">Preview</h3>
+                <div class="overflow-auto mt-4">
+                    <h3 class="text-lg font-semibold mb-2"><?php echo e(__('Data Preview')); ?></h3>
                     <table class="min-w-full border border-gray-300 text-sm">
                         <thead>
                             <tr>
