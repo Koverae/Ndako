@@ -10,6 +10,7 @@ use Modules\App\Models\Email\EmailTemplate;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\App\Emails\Template;
 use Illuminate\Support\Facades\Log;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class SendByEmailModal extends ModalComponent
 {
@@ -231,23 +232,33 @@ class SendByEmailModal extends ModalComponent
 
     public function sendEmail(){
         try {
-
+            // Ensure emails are unique and flat
             $recipients = collect($this->recipient_emails)
                 ->flatten()
                 ->unique()
-                ->filter()
-                ->values();
+                ->filter() // remove empty/null values
+                ->toArray();
 
-            foreach ($recipients as $email) {
-                Mail::to($email)->send(new Template(
-                    subject: $this->subject,
-                    content: $this->content,
-                    company: current_company(),
-                    attachment: storage_path('app/public/invoices/invoice.pdf')
-                ));
-            }
+            // Optional: Log recipients for debugging
+            Log::info('Sending email to recipients:', $recipients);
 
-            return back()->with('success', 'Email sent to all recipients successfully.');
+            Mail::to($recipients)->send(new Template(
+                subject: $this->subject,
+                content: $this->content,
+                company: current_company(),
+                attachment: storage_path('app/public/invoices/invoice.pdf')
+            ));
+
+            $this->closeModal();
+
+            LivewireAlert::title('Email Sent!')
+            ->text('Email sent to all recipients successfully.')
+            ->success()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+
         } catch (\Exception $e) {
             Log::error('Email sending failed', [
                 'emails' => $this->recipient_emails,

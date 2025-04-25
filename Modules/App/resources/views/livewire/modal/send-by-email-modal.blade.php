@@ -4,11 +4,11 @@
                 <h4 class="modal-title text-break">Koverae</h4>
                 <span class="btn-close" wire:click="$dispatch('closeModal')"></span>
             </div>
-            <form wire:submit.prevent="sendEmail">
+            <form>
                 <div class="modal-body position-relative">
 
                 <div class="k_form_renderer k_form_nosheet k_form_editable d-block">
-                    
+
                     <div class="k_inner_group">
 
                         <!-- Emails -->
@@ -22,7 +22,7 @@
                             <!-- Input Form -->
                             <div class="k_cell k_wrap_input flex-grow-1 gap-3">
                                 <input type="text" wire:model="email" class="k-input" style="padding: 1px 0 0; width: 75%;" id="date_0">
-                                
+
                                 <span class="btn btn-primary gap-2" wire:click="addEmail">
                                     <i class="fas fa-user-plus"></i> {{__('Add')}}
                                 </span>
@@ -30,7 +30,7 @@
                             </div>
 
                             <span class="loader-spin-1" wire:loading wire:target="addEmail"></span>
-                            
+
                             <div class="w-75 d-flex mt-2">
                                 @foreach ($recipient_emails as $email)
                                 <a class="cursor-pointer badge rounded-pill k_web_settings_users" style="background-color: #097274;">
@@ -38,7 +38,7 @@
                                     <i class="bi bi-x cancelled_icon" wire:click="removeEmail('{{ $email }}')" wire:target="removeEmail('{{ $email }}')" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ __('Remove') }}"></i>
                                 </a>
                                 @endforeach
-                                
+
                             </div>
                         </div>
                         <div class="d-flex" style="margin-bottom: 8px;">
@@ -50,13 +50,18 @@
                             </div>
                             <!-- Input Form -->
                             <div class="k_cell k_wrap_input flex-grow-1">
-                                <input type="text" wire:model.blur="subject" class="k-input" style="padding: 1px 0 0" id="date_0">
+                                <input type="text" wire:model.live="subject" class="k-input" style="padding: 1px 0 0" id="date_0">
                                 @error('subject') <span class="error">{{ $message }}</span> @enderror
                                 </div>
                         </div>
-
-                        <div class="note-editable koverae-editable-editor koverae-editor" contenteditable="true" id="body_0" wire:model="content" >
-                            {!! $content !!}
+                        {{-- <div
+                            id="body_0"
+                            class="koverae-editable-editor koverae-editor k-input"
+                            contenteditable="true"
+                            wire:ignore
+                        >{!! $content !!}</div> --}}
+                        <div x-data="{ content: @entangle('content') }">
+                            <div class="koverae-editable-editor koverae-editor k-input" x-on:blur="content = $event.target.innerHTML" contenteditable="true">{!! $content !!}</div>
                         </div>
 
                     </div>
@@ -117,4 +122,5 @@
                 </div>
             </form>
         </div>
+
 </div>

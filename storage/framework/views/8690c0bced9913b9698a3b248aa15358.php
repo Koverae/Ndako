@@ -4,11 +4,11 @@
                 <h4 class="modal-title text-break">Koverae</h4>
                 <span class="btn-close" wire:click="$dispatch('closeModal')"></span>
             </div>
-            <form wire:submit.prevent="sendEmail">
+            <form>
                 <div class="modal-body position-relative">
 
                 <div class="k_form_renderer k_form_nosheet k_form_editable d-block">
-                    
+
                     <div class="k_inner_group">
 
                         <!-- Emails -->
@@ -22,7 +22,7 @@
                             <!-- Input Form -->
                             <div class="k_cell k_wrap_input flex-grow-1 gap-3">
                                 <input type="text" wire:model="email" class="k-input" style="padding: 1px 0 0; width: 75%;" id="date_0">
-                                
+
                                 <span class="btn btn-primary gap-2" wire:click="addEmail">
                                     <i class="fas fa-user-plus"></i> <?php echo e(__('Add')); ?>
 
@@ -38,7 +38,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                             </div>
 
                             <span class="loader-spin-1" wire:loading wire:target="addEmail"></span>
-                            
+
                             <div class="w-75 d-flex mt-2">
                                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $recipient_emails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $email): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <a class="cursor-pointer badge rounded-pill k_web_settings_users" style="background-color: #097274;">
@@ -46,7 +46,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                     <i class="bi bi-x cancelled_icon" wire:click="removeEmail('<?php echo e($email); ?>')" wire:target="removeEmail('<?php echo e($email); ?>')" data-bs-toggle="tooltip" data-bs-placement="right" title="<?php echo e(__('Remove')); ?>"></i>
                                 </a>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-                                
+
                             </div>
                         </div>
                         <div class="d-flex" style="margin-bottom: 8px;">
@@ -58,7 +58,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                             </div>
                             <!-- Input Form -->
                             <div class="k_cell k_wrap_input flex-grow-1">
-                                <input type="text" wire:model.blur="subject" class="k-input" style="padding: 1px 0 0" id="date_0">
+                                <input type="text" wire:model.live="subject" class="k-input" style="padding: 1px 0 0" id="date_0">
                                 <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['subject'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -69,10 +69,9 @@ endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                 </div>
                         </div>
-
-                        <div class="note-editable koverae-editable-editor koverae-editor" contenteditable="true" id="body_0" wire:model="content" >
-                            <?php echo $content; ?>
-
+                        
+                        <div x-data="{ content: <?php if ((object) ('content') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('content'->value()); ?>')<?php echo e('content'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('content'); ?>')<?php endif; ?> }">
+                            <div class="koverae-editable-editor koverae-editor k-input" x-on:blur="content = $event.target.innerHTML" contenteditable="true"><?php echo $content; ?></div>
                         </div>
 
                     </div>
@@ -114,5 +113,6 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </form>
         </div>
+
 </div>
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/modal/send-by-email-modal.blade.php ENDPATH**/ ?>
