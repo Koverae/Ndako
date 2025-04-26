@@ -17,7 +17,7 @@
             <button onclick="copyWidgetSnippet()" style="position: absolute; top: 0.5rem; right: 0.5rem; background: #017E84; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; z-index: 10;">
                 Copy
             </button>
-        
+
             <!-- Scrollable content -->
             <div style="overflow-x: auto; white-space: nowrap; padding-top: 1rem;" id="scrollableSnippet">
                 <div id="widgetSnippet">
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        
+
     </div>
 
 </div>

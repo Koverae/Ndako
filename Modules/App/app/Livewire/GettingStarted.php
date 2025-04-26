@@ -32,7 +32,7 @@ class GettingStarted extends Component
         'rooms' => 'required|integer|min:1',
         'city' => 'required|string|max:50',
         'country' => 'required|integer|exists:countries,id',
-        'website' => 'required|url',
+        'website' => 'nullable|url|unique:companies,website',
         'role' => 'required|string',
     ];
 
