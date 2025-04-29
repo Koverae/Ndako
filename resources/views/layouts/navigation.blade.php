@@ -80,6 +80,32 @@
                             </a>
                         </li>
 
+                        @can('manage_properties') <!-- manage_expenses -->
+                        <li class="nav-item dropdown" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                              <span class="nav-link-title">
+                                  {{ __('Reservations') }}
+                              </span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-menu-columns">
+                                    <!-- Left Side -->
+                                    <div class="dropdown-menu-column">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.lists') }}">
+                                            {{ __('Reservations') }}
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.payments.lists') }}">
+                                            {{ __('Payments') }}
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
+                                            {{ __('Guests') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        @endcan
+
                         @can('manage_properties')
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
@@ -161,6 +187,7 @@
                             </div>
                         </li>
                         @endcan
+
 
                         {{-- @can('manage_reservations')
                         <li class="nav-item dropdown" data-turbolinks>

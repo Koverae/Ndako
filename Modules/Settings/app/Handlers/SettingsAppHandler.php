@@ -105,6 +105,7 @@ class SettingsAppHandler extends AppHandler
             // Accountant
             'view_financial_reports',
             'manage_invoices',
+            'manage_expenses',
             'process_refunds',
 
             // Guest
@@ -139,6 +140,7 @@ class SettingsAppHandler extends AppHandler
                 'view_financial_reports',
                 'view_property_reports',
                 'manage_rooms',
+                'manage_expenses',
                 'create_units',
                 'manage_staff',
                 'manage_billing',
@@ -172,6 +174,7 @@ class SettingsAppHandler extends AppHandler
                 'check_out_guests',
                 'manage_guest_profiles',
                 'assign_rooms',
+                // 'manage_expenses',
             ],
             'maintenance-staff' => [
                 'view_maintenance_tasks',
@@ -181,6 +184,7 @@ class SettingsAppHandler extends AppHandler
             'accountant' => [
                 'view_financial_reports',
                 'manage_invoices',
+                'manage_expenses',
                 'process_refunds',
             ],
             'guest' => [

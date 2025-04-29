@@ -81,6 +81,36 @@
                             </a>
                         </li>
 
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_properties')): ?> <!-- manage_expenses -->
+                        <li class="nav-item dropdown" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                              <span class="nav-link-title">
+                                  <?php echo e(__('Reservations')); ?>
+
+                              </span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-menu-columns">
+                                    <!-- Left Side -->
+                                    <div class="dropdown-menu-column">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.lists')); ?>">
+                                            <?php echo e(__('Reservations')); ?>
+
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.payments.lists')); ?>">
+                                            <?php echo e(__('Payments')); ?>
+
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
+                                            <?php echo e(__('Guests')); ?>
+
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <?php endif; ?>
+
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_properties')): ?>
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
@@ -173,6 +203,7 @@
                             </div>
                         </li>
                         <?php endif; ?>
+
 
                         
 
