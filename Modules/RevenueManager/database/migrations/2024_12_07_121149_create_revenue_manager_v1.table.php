@@ -215,6 +215,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
         // Journal Entries
         Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
@@ -229,6 +230,33 @@ return new class extends Migration
             $table->decimal('balance', $precision = 12, $scale = 2)->default(0);
             $table->boolean('is_matching')->default(false);
             $table->enum('status', ['draft', 'posted', 'cancelled'])->default('posted');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // Expenses
+        Schema::create('expense_categories', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->enum('type', ['operational', 'staffing', 'guest_services', 'marketing', 'property', 'technology', 'financial_legal', 'inventory', 'capital', 'miscellaneous'])->nullable();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('expenses', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('expense_category_id');
+            $table->unsignedBigInteger('property_id')->nullable();
+            $table->unsignedBigInteger('property_unit_id')->nullable();
+            $table->string('title');
+            $table->decimal('amount', 10, 2)->default(0);
+            $table->text('note')->nullable();
+            $table->boolean('is_recurrent')->default(false);
+            $table->enum('recurrence', ['daily', 'weekly', 'monthly', 'quaterly', 'yearly'])->nullable();
+            $table->date('next_due_at')->nullable();
+            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('paid');
 
             $table->timestamps();
             $table->softDeletes();
@@ -269,6 +297,12 @@ return new class extends Migration
             $table->dropSoftDeletes();
         });
         Schema::table('journal_entries', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('expense_categories', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('expenses', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }
