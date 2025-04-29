@@ -11,6 +11,12 @@
 
                 </a>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <!--[if BLOCK]><![endif]--><?php if($this->newModal): ?>
+                <span wire:click="<?php echo e($this->newModal); ?>" class="btn btn-outline-primary k_form_button_create">
+                    <?php echo e(__('New')); ?>
+
+                </span>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 <!--[if BLOCK]><![endif]--><?php if($this->add): ?>
                 <a wire:click="add" class="btn btn-outline-primary k_form_button_create">
                     <?php echo e($createButtonLabel); ?>

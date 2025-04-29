@@ -10,6 +10,11 @@
                     {{ __('New') }}
                 </a>
                 @endif
+                @if($this->newModal)
+                <span wire:click="{{ $this->newModal }}" class="btn btn-outline-primary k_form_button_create">
+                    {{ __('New') }}
+                </span>
+                @endif
                 @if($this->add)
                 <a wire:click="add" class="btn btn-outline-primary k_form_button_create">
                     {{ $createButtonLabel }}

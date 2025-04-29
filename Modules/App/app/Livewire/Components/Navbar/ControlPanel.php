@@ -23,7 +23,7 @@ abstract class ControlPanel extends Component
     public bool $change = false, $showBreadcrumbs = true, $hasSelection = false, $showCreateButton = true, $showPagination = false, $showIndicators= false, $isForm = false;
 
     // Configurable options
-    public $separator = '/', $urlPrefix = '', $currentPage, $new, $add, $event, $createButtonLabel = 'Nouveau';
+    public $separator = '/', $urlPrefix = '', $currentPage, $new, $newModal, $add, $event, $createButtonLabel = 'Nouveau';
 
     public array $breadcrumbs = [], $selected = [];
     public array $filters = [], $filterTypes = [];

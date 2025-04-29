@@ -15,7 +15,7 @@ class ExpensePanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
-        $this->new = route('expenses.create');
+        $this->newModal = "newExpense";
         if($category){
             $this->showIndicators = true;
             $this->category = $category;
@@ -34,4 +34,10 @@ class ExpensePanel extends ControlPanel
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
         ];
     }
+
+    // New expense modal
+    public function newExpense(){
+        $this->dispatch('openModal', component: 'revenuemanager::modal.add-expense-modal');
+    }
+
 }

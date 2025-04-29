@@ -13,7 +13,7 @@ class ExpenseCategory extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $guarded = [];
+    protected $fillable = ['company_id', 'name', 'type', 'description'];
 
 
     public function scopeIsCompany(Builder $query, $company_id)
@@ -22,7 +22,7 @@ class ExpenseCategory extends Model
     }
 
     public function expenses() {
-        return $this->hasMany(ExpenseCategory::class, 'expense_category_id', 'id');
+        return $this->hasMany(Expense::class, 'expense_category_id', 'id');
     }
 
 }

@@ -57,10 +57,10 @@ class ExpenseTable extends Table
         return [
             Column::make('reference', __('Reference')),
             Column::make('title', label: __('Title')),
-            Column::make('category', __('Category'))->component('app::table.column.special.expense.category'),
+            Column::make('expense_category_id', __('Category'))->component('app::table.column.special.expense.category'),
             Column::make('amount', __('Amount'))->component('app::table.column.special.price'),
             Column::make('date', __('Date'))->component('app::table.column.special.price'),
-            Column::make('status', __('Satus')),
+            Column::make('status', __('Status')),
         ];
     }
 }

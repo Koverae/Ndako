@@ -15,15 +15,32 @@ use Modules\App\Livewire\Components\Form\Table;
 use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Livewire\Components\Form\Template\LightWeightForm;
 use Modules\App\Traits\Form\Button\ActionBarButton as ActionBarButtonTrait;
+use Modules\RevenueManager\Models\Expenses\Expense;
 
 class ExpenseForm extends LightWeightForm
 {
-    public function render()
+    use ActionBarButtonTrait;
+
+    public Expense $expense;
+
+    public $reference, $title, $status, $date, $amount = 0;
+
+    public function mount($expense = null){
+        if($expense){
+            $this->reference = $expense->reference;
+            $this->title = $expense->title;
+            $this->status = $expense->status;
+            $this->date = $expense->date;
+            $this->amount = $expense->amount;
+            // $this->date = $expense->date;
+        }
+    }
+
+    public function statusBarButtons() : array
     {
-        return <<<'blade'
-            <div>
-                <h3>The <code>ExpenseForm</code> livewire component is loaded from the <code>RevenueManager</code> module.</h3>
-            </div>
-        blade;
+        return [
+            StatusBarButton::make('pending', __('Draft'), 'draft'),
+            StatusBarButton::make('paid', __('Posted'), 'posted'),
+        ];
     }
 }
