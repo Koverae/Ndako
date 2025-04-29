@@ -84,21 +84,18 @@
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
-                                  {{ __('Reservations') }}
+                                  {{ __('Expenses') }}
                               </span>
                             </a>
                             <div class="dropdown-menu">
                                 <div class="dropdown-menu-columns">
                                     <!-- Left Side -->
                                     <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.lists') }}">
-                                            {{ __('Reservations') }}
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('expenses.categories.lists') }}">
+                                            {{ __('Expense Categories') }}
                                         </a>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.payments.lists') }}">
-                                            {{ __('Payments') }}
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
-                                            {{ __('Guests') }}
+                                            {{ __('Expenses') }}
                                         </a>
                                     </div>
                                 </div>

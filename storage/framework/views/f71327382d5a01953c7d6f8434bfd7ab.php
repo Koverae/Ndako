@@ -85,7 +85,7 @@
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
-                                  <?php echo e(__('Reservations')); ?>
+                                  <?php echo e(__('Expenses')); ?>
 
                               </span>
                             </a>
@@ -93,16 +93,12 @@
                                 <div class="dropdown-menu-columns">
                                     <!-- Left Side -->
                                     <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.lists')); ?>">
-                                            <?php echo e(__('Reservations')); ?>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('expenses.categories.lists')); ?>">
+                                            <?php echo e(__('Expense Categories')); ?>
 
                                         </a>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.payments.lists')); ?>">
-                                            <?php echo e(__('Payments')); ?>
-
-                                        </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
-                                            <?php echo e(__('Guests')); ?>
+                                            <?php echo e(__('Expenses')); ?>
 
                                         </a>
                                     </div>

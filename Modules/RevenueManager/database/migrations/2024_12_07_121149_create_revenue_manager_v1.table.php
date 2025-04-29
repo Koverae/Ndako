@@ -250,11 +250,13 @@ return new class extends Migration
             $table->unsignedBigInteger('expense_category_id');
             $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('property_unit_id')->nullable();
+            $table->string('reference')->nullable();
             $table->string('title');
             $table->decimal('amount', 10, 2)->default(0);
             $table->text('note')->nullable();
             $table->boolean('is_recurrent')->default(false);
             $table->enum('recurrence', ['daily', 'weekly', 'monthly', 'quaterly', 'yearly'])->nullable();
+            $table->date('date')->nullable();
             $table->date('next_due_at')->nullable();
             $table->enum('status', ['pending', 'paid', 'cancelled'])->default('paid');
 

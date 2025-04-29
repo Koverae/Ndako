@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\RevenueManager\Http\Controllers\RevenueManagerController;
+use Modules\RevenueManager\Livewire\ExpenseCategory\Lists as ExpenseCategoryList;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +17,6 @@ use Modules\RevenueManager\Http\Controllers\RevenueManagerController;
 
 Route::middleware('identify-kover')->group( function () {
     Route::resource('revenuemanager', RevenueManagerController::class)->names('revenuemanager');
+    
+    Route::get('/expenses/categories', ExpenseCategoryList::class)->name('expenses.categories.lists');
 });
