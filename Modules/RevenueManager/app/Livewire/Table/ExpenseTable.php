@@ -14,7 +14,7 @@ class ExpenseTable extends Table
 {
     
     public array $data = [];  // Search query
-    public $categories;  // Users to display
+    public $expenses;  // Users to display
 
     public function mount(){
         $this->data = ['title', 'description'];

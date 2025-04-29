@@ -97,7 +97,7 @@
                                             <?php echo e(__('Expense Categories')); ?>
 
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.payments.lists')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('expenses.lists')); ?>">
                                             <?php echo e(__('Expenses')); ?>
 
                                         </a>

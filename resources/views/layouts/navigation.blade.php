@@ -94,7 +94,7 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('expenses.categories.lists') }}">
                                             {{ __('Expense Categories') }}
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.payments.lists') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('expenses.lists') }}">
                                             {{ __('Expenses') }}
                                         </a>
                                     </div>
