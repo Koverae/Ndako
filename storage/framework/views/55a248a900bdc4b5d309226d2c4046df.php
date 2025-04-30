@@ -63,6 +63,12 @@
 
                         </li>
                     </a>
+                    <a  href="<?php echo e(route('dashboard', ['dash' => 'expense'])); ?>" wire:navigate>
+                        <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'expense' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                                <?php echo e(__('Expenses')); ?>
+
+                        </li>
+                    </a>
                 </ul>
                 <?php endif; ?>
 
@@ -156,6 +162,23 @@ unset($__params);
 unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
+            <?php elseif($dash == 'expense'): ?>
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('revenuemanager::dashboards.expense', []);
+
+$__html = app('livewire')->mount($__name, $__params, 'lw-221140226-4', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
             <?php elseif($dash == 'property'): ?>
             <?php
 $__split = function ($name, $params = []) {
@@ -163,7 +186,7 @@ $__split = function ($name, $params = []) {
 };
 [$__name, $__params] = $__split('properties::dashboards.property', []);
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-221140226-4', $__slots ?? [], get_defined_vars());
+$__html = app('livewire')->mount($__name, $__params, 'lw-221140226-5', $__slots ?? [], get_defined_vars());
 
 echo $__html;
 
@@ -180,7 +203,7 @@ $__split = function ($name, $params = []) {
 };
 [$__name, $__params] = $__split('properties::dashboards.ticket', []);
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-221140226-5', $__slots ?? [], get_defined_vars());
+$__html = app('livewire')->mount($__name, $__params, 'lw-221140226-6', $__slots ?? [], get_defined_vars());
 
 echo $__html;
 

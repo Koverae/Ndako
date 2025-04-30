@@ -59,6 +59,11 @@
                                 {{ __('Invoicing') }}
                         </li>
                     </a>
+                    <a  href="{{ route('dashboard', ['dash' => 'expense']) }}" wire:navigate>
+                        <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="{{ $dash == 'expense' ? 'background-color: #E6F2F3 ;' : '' }} ">
+                                {{ __('Expenses') }}
+                        </li>
+                    </a>
                 </ul>
                 @endcan
 
@@ -90,6 +95,8 @@
             <livewire:channelmanager::dashboards.room />
             @elseif($dash == 'invoicing')
             <livewire:revenuemanager::dashboards.invoicing />
+            @elseif($dash == 'expense')
+            <livewire:revenuemanager::dashboards.expense />
             @elseif($dash == 'property')
             <livewire:properties::dashboards.property />
             @elseif($dash == 'tickets')
