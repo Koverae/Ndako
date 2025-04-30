@@ -129,6 +129,8 @@ class Expense extends Component
         // Monthly Expenses
         $this->monthlyExpenses = $this->getMonthlyExpensess();
 
+        $this->fetchExpenseByCategory();
+
     }
 
     public function updatedPeriod(){
@@ -193,48 +195,39 @@ class Expense extends Component
     }
 
 
-    public function fetchRevenueByType()
+    public function fetchExpenseByCategory()
     {
         $startDate = Carbon::now()->subDays($this->period);
         $endDate = Carbon::now();
 
-        $this->revenueByType = PropertyUnitType::isCompany(current_company()->id)
-            ->when($this->property, function ($query) {
-                $query->where('property_id', $this->property); // Apply filter if $property is set
-            })
-            ->with(['units.bookings' => function ($query) use ($startDate, $endDate) {
-                $query->select(
-                'property_unit_id', // Keep only necessary columns in SELECT
-                DB::raw("SUM(CASE WHEN status IN ('canceled') THEN DATEDIFF(LEAST(check_out, '$endDate'), GREATEST(check_in, '$startDate')) ELSE 0 END) as nights_canceled"),
-                DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN DATEDIFF(LEAST(check_out, '$endDate'), GREATEST(check_in, '$startDate')) ELSE 0 END) as nights_sold"),
-                DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
-            )
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('check_in', [$startDate, $endDate])
-                    ->orWhereBetween('check_out', [$startDate, $endDate])
-                    ->orWhere(function ($query) use ($startDate, $endDate) {
-                        $query->where('check_in', '<', $startDate)
-                                ->where('check_out', '>', $endDate);
-                    });
-            })
-            ->groupBy('property_unit_id'); // Ensure only aggregated columns are used
-            }])
-            ->get()
-            ->map(function ($roomType) {
-                $totalRevenue = $roomType->units->flatMap(fn($unit) => $unit->bookings)->sum('revenue');
+        $this->expenseByCategory = ExpenseCategory::isCompany(current_company()->id)
+        ->with(['expenses' => function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        }])
+        ->get()
+            ->map( function ($category) {
+
+                $totalSpent = $category->expenses->sum('amount');
+                $totalExpenses = $category->expenses->count(); // Count actual expense records
 
                 return [
-                    'label' => $roomType->name, // Room type name
-                    'value' => $totalRevenue,   // Revenue
+                    'label' => $category->name,
+                    'value' => $totalSpent,
                 ];
             })
-            ->filter(fn($roomType) => $roomType['value'] > 0) // Exclude room types with no revenue
+            // ->sortByDesc('value') // Sort by revenue descending
             ->values(); // Reset array keys
+        
     }
 
 
     public function render()
     {
-        return view('revenuemanager::livewire.dashboards.expense');
+        return view('revenuemanager::livewire.dashboards.expense', [
+            'expenseCategoryChartData' => [
+                'labels' => $this->expenseByCategory->pluck('label')->toArray(),
+                'series' => $this->expenseByCategory->pluck('value')->toArray(),
+            ]
+        ]);
     }
 }

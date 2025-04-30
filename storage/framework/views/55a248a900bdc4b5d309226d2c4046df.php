@@ -217,5 +217,86 @@ if (isset($__slots)) unset($__slots);
           </div>
         </div>
 
+    <!-- Mobile Version of Dashboard Module -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="dashboardOffcanvas" aria-labelledby="offcanvasEndLabel">
+        <div class="offcanvas-header">
+        <h1 class="offcanvas-title h1" id="offcanvasEndLabel"><?php echo e(__('Dashboards')); ?></h1>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="p-0 offcanvas-body">
+            <div class="flex-grow-0 flex-shrink-0 mb-5 overflow-auto bg-white border-left col-md-12 app-sidebar bg-view position-relative pe-1 ps-3" style=" z-index: 500;">
+              <form action="./" method="get" autocomplete="off" novalidate class="sticky-top">
+  
+                  <!--[if BLOCK]><![endif]--><?php if(!Auth::user()->can('view_reports')): ?>
+                  <ul class="pt-3" style="margin-left: 10px;">
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'home'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'home' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                          <?php echo e(__('Home')); ?>
+
+                          </li>
+                      </a>
+                  </ul>
+                  <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+  
+                  <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_reservation_reports')): ?>
+                  <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><?php echo e(__('Reservations')); ?></b></header>
+                  <ul class="mb-4" style="margin-left: 10px;">
+  
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'reservations'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'reservations' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                          <?php echo e(__('Reservations')); ?>
+
+                          </li>
+                      </a>
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'properties'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink <?php echo e($dash == 'properties' ? 'selected' : ''); ?> text-decoration-none panel-category">
+                          <?php echo e(__('Rooms')); ?>
+
+                          </li>
+                      </a>
+                  </ul>
+                  <?php endif; ?>
+  
+                  <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_financial_reports')): ?>
+                  <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><?php echo e(__('Revenue & Financials')); ?></b></header>
+                  <ul class="mb-4" style="margin-left: 10px;">
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'invoicing'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'invoicing' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                                  <?php echo e(__('Invoicing')); ?>
+
+                          </li>
+                      </a>
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'expense'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'expense' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                                  <?php echo e(__('Expenses')); ?>
+
+                          </li>
+                      </a>
+                  </ul>
+                  <?php endif; ?>
+  
+                  <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_property_reports')): ?>
+                  <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><?php echo e(__('Properties')); ?></b></header>
+                  <ul class="mb-4" style="margin-left: 10px;">
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'property'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'property' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                          <?php echo e(__('Properties')); ?>
+
+                          </li>
+                      </a>
+                      <a  href="<?php echo e(route('dashboard', ['dash' => 'tickets'])); ?>" wire:navigate>
+                          <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'tickets' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
+                          <?php echo e(__('Maintenance Overview')); ?>
+
+                          </li>
+                      </a>
+                  </ul>
+                  <?php endif; ?>
+  
+              </form>
+            </div>
+        </div>
+    </div>
+    <!-- Mobile Version of Dashboard Module End -->
     </div>
 <?php /**PATH D:\My Laravel Startup\ndako\resources\views/livewire/dashboards/overview.blade.php ENDPATH**/ ?>

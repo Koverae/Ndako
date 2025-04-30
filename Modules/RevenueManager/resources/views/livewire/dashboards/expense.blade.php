@@ -28,14 +28,21 @@
             </div>
 
             <!-- Display panel buttons -->
-            <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
+            <div class="k_cp_switch_buttons gap-2 d-print-none d-xl-inline-flex btn-group text-end">
+
+                <!-- Open Dashboard -->
+                <a title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash" data-bs-toggle="offcanvas" href="#dashboardOffcanvas" role="button" aria-controls="offcanvasEnd">
+                    <i class="fas fa-hand-point-right"></i> {{__('Dashboards')}}
+                </a>
+                <!-- Open Dashboard -->
 
                 <!-- Button view -->
-                <button wire:click="export" title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
+                <button wire:click="export" title="export" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
                     <i class="fas fa-file-export"></i> {{__('Export')}}
                 </button>
                 <!-- Button view -->
             </div>
+            
         </div>
     </div>
     <!-- Controls Panel End -->
@@ -311,8 +318,8 @@
                     type: 'pie',
                     height: 350
                 },
-                labels: @json($roomTypeChartData['labels'] ?? []), // Prevent errors if empty
-                series: @json($roomTypeChartData['series'] ?? []), // Prevent errors if empty
+                labels: @json($expenseCategoryChartData['labels'] ?? []), // Prevent errors if empty
+                series: @json($expenseCategoryChartData['series'] ?? []), // Prevent errors if empty
                 colors: [
                     '#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0',
                     '#00E396', '#008FFB', '#D7263D', '#F86624', '#A633FF',

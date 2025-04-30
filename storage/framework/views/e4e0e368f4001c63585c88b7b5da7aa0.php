@@ -28,15 +28,23 @@
             </div>
 
             <!-- Display panel buttons -->
-            <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
+            <div class="k_cp_switch_buttons gap-2 d-print-none d-xl-inline-flex btn-group text-end">
+
+                <!-- Open Dashboard -->
+                <a title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash" data-bs-toggle="offcanvas" href="#dashboardOffcanvas" role="button" aria-controls="offcanvasEnd">
+                    <i class="fas fa-hand-point-right"></i> <?php echo e(__('Dashboards')); ?>
+
+                </a>
+                <!-- Open Dashboard -->
 
                 <!-- Button view -->
-                <button wire:click="export" title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
+                <button wire:click="export" title="export" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
                     <i class="fas fa-file-export"></i> <?php echo e(__('Export')); ?>
 
                 </button>
                 <!-- Button view -->
             </div>
+            
         </div>
     </div>
     <!-- Controls Panel End -->
@@ -240,7 +248,7 @@
             const spent = <?php echo json_encode($monthlyExpenses->pluck('spent'), 15, 512) ?>;
             // const unpaidAmounts = <?php echo json_encode($monthlyExpenses->pluck('unpaid'), 15, 512) ?>; /* Revenue data for y-axis*/
 
-            // new ApexCharts(document.getElementById('monthly-expenses-chart'), {
+            new ApexCharts(document.getElementById('monthly-expenses-chart'), {
                 chart: {
                     type: "bar",
                     fontFamily: 'inherit',
@@ -319,8 +327,8 @@
                     type: 'pie',
                     height: 350
                 },
-                labels: <?php echo json_encode($roomTypeChartData['labels'] ?? [], 15, 512) ?>, // Prevent errors if empty
-                series: <?php echo json_encode($roomTypeChartData['series'] ?? [], 15, 512) ?>, // Prevent errors if empty
+                labels: <?php echo json_encode($expenseCategoryChartData['labels'] ?? [], 15, 512) ?>, // Prevent errors if empty
+                series: <?php echo json_encode($expenseCategoryChartData['series'] ?? [], 15, 512) ?>, // Prevent errors if empty
                 colors: [
                     '#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0',
                     '#00E396', '#008FFB', '#D7263D', '#F86624', '#A633FF',
