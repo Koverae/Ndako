@@ -75,14 +75,14 @@
                 <!-- Average Invoice End -->
 
                 <!-- DSO -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
                         <h3 class="h3"><?php echo e(__('Top Spending Category')); ?></h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;"><?php echo e(__('Maintenance')); ?></h3>
-                        <span class="text-muted"><?php echo e(format_currency((97000))); ?> <?php echo e(__('spent')); ?></span>
+                        <h3 class="h3" style="font-size: 40px;" title="<?php echo e(__($bestCategory['category_name'] ?? '')); ?>"><?php echo e(__($bestCategory['category_name'] ?? '')); ?></h3>
+                        <span class="text-muted"><?php echo e(format_currency(($bestCategory['total_amount'] ?? 0))); ?> <?php echo e(__('spent')); ?></span>
                     </div>
                     </div>
                 </div>
@@ -90,7 +90,124 @@
 
             </div>
 
-            
+            <div class="gap-7 row">
+
+                <!-- Invoiced by Month -->
+                
+                <!-- Invoiced by Month End -->
+
+                <!-- Top Invoices -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-12">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Expenses')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Reference')); ?></th>
+                                <th><?php echo e(__('Title')); ?></th>
+                                <th><?php echo e(__('Status')); ?></th>
+                                <th><?php echo e(__('Agent')); ?></th>
+                                <th><?php echo e(__('Date')); ?></th>
+                                <th><?php echo e(__('Amount')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $expenses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $expense): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($expense->reference); ?></td>
+                                <td><?php echo e($expense->title); ?></td>
+                                <td>
+                                    <!--[if BLOCK]><![endif]--><?php if($expense->status == 'pending'): ?>
+                                    <?php echo e(__('Pending')); ?>
+
+                                    <?php elseif($expense->status == 'paid'): ?>
+                                    <?php echo e(__('Paid')); ?>
+
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                </td>
+                                <td><?php echo e($expense->agent->name ?? ''); ?></td>
+                                <td><?php echo e(\Carbon\Carbon::parse($expense->date)->format('m/d/y')); ?></td>
+                                <td><?php echo e(__(format_currency($expense->amount))); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Invoices End -->
+
+                <!-- Top Expense Categories -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Expense Categories')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Name')); ?></th>
+                                <th><?php echo e(__('Amount Spent')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $expenseCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($category['category_name']); ?></td>
+                                <td><?php echo e(__(format_currency($category['total_amount']))); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Expense Categories End -->
+
+                <!-- Top Rooms -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-6">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Rooms')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Room')); ?></th>
+                                <th><?php echo e(__('Room Type')); ?></th>
+                                <th><?php echo e(__('Amount Spent')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $expenseCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($category['category_name']); ?></td>
+                                <td><?php echo e(__(format_currency($category['total_amount']))); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Rooms End -->
+
+                <!-- Top Payments -->
+                
+                <!-- Top Payments End -->
+
+            </div>
 
         </div>
 

@@ -134,10 +134,10 @@
                                     <!--[if BLOCK]><![endif]--><?php if($invoice->payment_status == 'partial'): ?>
                                     <?php echo e(__('Partially Paid')); ?>
 
-                                    <?php elseif($invoice == 'pending'): ?>
+                                    <?php elseif($invoice->payment_status == 'pending'): ?>
                                     <?php echo e(__('Not Paid')); ?>
 
-                                    <?php elseif($invoice == 'paid'): ?>
+                                    <?php elseif($invoice->payment_status == 'paid'): ?>
                                     <?php echo e(__('Paid')); ?>
 
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->

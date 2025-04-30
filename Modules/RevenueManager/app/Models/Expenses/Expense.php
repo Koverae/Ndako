@@ -2,6 +2,7 @@
 
 namespace Modules\RevenueManager\Models\Expenses;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,7 @@ class Expense extends Model
         'expense_category_id',
         'property_id',
         'property_unit_id',
+        'agent_id',
         'title',
         'amount',
         'note',
@@ -51,6 +53,10 @@ class Expense extends Model
 
     public function property() {
         return $this->belongsTo(Property::class, 'property_id', 'id');
+    }
+
+    public function agent() {
+        return $this->belongsTo(User::class, 'agent_id', 'id');
     }
 
     // protected static function newFactory(): Expenses/ExpenseFactory

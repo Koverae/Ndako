@@ -130,9 +130,9 @@
                                 <td>
                                     @if($invoice->payment_status == 'partial')
                                     {{ __('Partially Paid') }}
-                                    @elseif($invoice == 'pending')
+                                    @elseif($invoice->payment_status == 'pending')
                                     {{ __('Not Paid') }}
-                                    @elseif($invoice == 'paid')
+                                    @elseif($invoice->payment_status == 'paid')
                                     {{ __('Paid') }}
                                     @endif
                                 </td>

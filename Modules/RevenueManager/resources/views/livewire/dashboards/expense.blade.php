@@ -74,14 +74,14 @@
                 <!-- Average Invoice End -->
 
                 <!-- DSO -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
                         <h3 class="h3">{{ __('Top Spending Category') }}</h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ __('Maintenance') }}</h3>
-                        <span class="text-muted">{{ format_currency((97000)) }} {{ __('spent') }}</span>
+                        <h3 class="h3" style="font-size: 40px;" title="{{ __($bestCategory['category_name'] ?? '') }}">{{ __($bestCategory['category_name'] ?? '') }}</h3>
+                        <span class="text-muted">{{ format_currency(($bestCategory['total_amount'] ?? 0)) }} {{ __('spent') }}</span>
                     </div>
                     </div>
                 </div>
@@ -89,10 +89,10 @@
 
             </div>
 
-            {{-- <div class="gap-7 row">
+            <div class="gap-7 row">
 
                 <!-- Invoiced by Month -->
-                <div class="p-0 k-dash-category col-md-12 col-lg-12">
+                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-12">
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
@@ -101,7 +101,7 @@
                     </div>
                     <div id="monthly-invoices-chart" wire:ignore></div>
 
-                </div>
+                </div> --}}
                 <!-- Invoiced by Month End -->
 
                 <!-- Top Invoices -->
@@ -109,37 +109,35 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Invoices') }}
+                            {{ __('Top Expenses') }}
                         </div>
                     </div>
                     <table class="k-borderless-table">
                         <thead>
                             <tr>
                                 <th>{{ __('Reference') }}</th>
-                                <th>{{ __('Guest') }}</th>
+                                <th>{{ __('Title') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Agent') }}</th>
                                 <th>{{ __('Date') }}</th>
-                                <th>{{ __('Revenue') }}</th>
+                                <th>{{ __('Amount') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($invoices as $key => $invoice)
+                            @forelse($expenses as $key => $expense)
                             <tr>
-                                <td>{{ $invoice->reference }}</td>
-                                <td>{{ $invoice->guest->name }}</td>
+                                <td>{{ $expense->reference }}</td>
+                                <td>{{ $expense->title }}</td>
                                 <td>
-                                    @if($invoice->payment_status == 'partial')
-                                    {{ __('Partially Paid') }}
-                                    @elseif($invoice == 'pending')
-                                    {{ __('Not Paid') }}
-                                    @elseif($invoice == 'paid')
+                                    @if($expense->status == 'pending')
+                                    {{ __('Pending') }}
+                                    @elseif($expense->status == 'paid')
                                     {{ __('Paid') }}
                                     @endif
                                 </td>
-                                <td>{{ $invoice->agent->name }}</td>
-                                <td>{{ \Carbon\Carbon::parse($invoice->date)->format('m/d/y') }}</td>
-                                <td>{{ __(format_currency($invoice->total_amount)) }}</td>
+                                <td>{{ $expense->agent->name ?? '' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($expense->date)->format('m/d/y') }}</td>
+                                <td>{{ __(format_currency($expense->amount)) }}</td>
                             </tr>
                             @empty
                             <tr></tr>
@@ -149,8 +147,67 @@
                 </div>
                 <!-- Top Invoices End -->
 
+                <!-- Top Expense Categories -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Top Expense Categories') }}
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Amount Spent') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($expenseCategories as $key => $category)
+                            <tr>
+                                <td>{{ $category['category_name'] }}</td>
+                                <td>{{ __(format_currency($category['total_amount'])) }}</td>
+                            </tr>
+                            @empty
+                            <tr></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Expense Categories End -->
+
+                <!-- Top Rooms -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-6">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Top Rooms') }}
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Room') }}</th>
+                                <th>{{ __('Room Type') }}</th>
+                                <th>{{ __('Amount Spent') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($expenseCategories as $key => $category)
+                            <tr>
+                                <td>{{ $category['category_name'] }}</td>
+                                <td>{{ __(format_currency($category['total_amount'])) }}</td>
+                            </tr>
+                            @empty
+                            <tr></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Rooms End -->
+
                 <!-- Top Payments -->
-                <div class="p-0 k-dash-category col-md-12 col-lg-12">
+                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-12">
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
@@ -179,10 +236,10 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
+                </div> --}}
                 <!-- Top Payments End -->
 
-            </div> --}}
+            </div>
 
         </div>
 

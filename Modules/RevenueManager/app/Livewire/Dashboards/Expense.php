@@ -17,7 +17,7 @@ class Expense extends Component
 {
     public $period = 7, $property;
     public $spentAmount = 0, $unpaidAmount = 0, $averageSpentAmount = 0, $numberOfExpenses = 0;
-    public $properties, $units, $unitTypes, $mothlyInvoices, $bestCategory, $expenses;
+    public $properties, $units, $unitTypes, $mothlyInvoices, $bestCategory, $expenses, $expenseCategories, $rooms;
     public $startDate, $endDate;
 
     public function mount(){
@@ -72,16 +72,15 @@ class Expense extends Component
         $this->averageSpentAmount = round($expenseStats->average_spent_amount) ?? 0;
         $this->numberOfExpenses = $expenseStats->number_of_expenses ?? 0;
 
-        $expenseCategories = ExpenseCategory::isCompany(current_company()->id)
+        $this->expenseCategories = ExpenseCategory::isCompany(current_company()->id)
         ->with(['expenses' => function ($query) {
-            $query->select('id', 'property_id', 'amount', DB::raw('COUNT(id) as expenses'))
-            ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()]);
+            $query->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()]);
         }])
         ->get()
         ->map( function ($category) {
 
             $totalSpent = $category->expenses->sum('amount');
-            $totalExpenses = $category->expenses->sum('expenses');
+            $totalExpenses = $category->expenses->count(); // Count actual expense records
 
             return [
                 'category_name' => $category->name,
@@ -89,8 +88,46 @@ class Expense extends Component
                 'expenses' => $totalExpenses,
             ];
         })
+        ->sortByDesc('total_amount') // Sort by revenue descending
+        ->values(); // Re-index the collection
+
+        $this->bestCategory = $this->expenseCategories->first();
+
+        // Expenses
+        $this->expenses = ExpensesModel::isCompany(current_company()->id)
+        ->with(['property' => function ($query) {
+            $query->when($this->property, function ($property){
+                $property->where('id', $this->property);
+            });
+        }])
+        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->get()
+        ->sortByDesc('amount');
+
+        // Rooms
+        $this->rooms = PropertyUnit::isCompany(current_company()->id)
+        ->when($this->property, function ($query) {
+            $query->where('property_id', $this->property); // Apply filter if $property is set
+        })
+        ->with(['bookings' => function ($query) {
+            $query->select('id', 'property_unit_id', 'total_amount', DB::raw('DATEDIFF(check_out, check_in) as nights'))
+            ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
+            ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()]);
+        }])
+        ->get()
+        ->map(function ($room) {
+            $totalRevenue = $room->bookings->sum('total_amount');
+            $totalNights = $room->bookings->sum('nights');
+
+            return [
+                'room_name' => $room->name,
+                'total_revenue' => $totalRevenue,
+                'total_nights' => $totalNights,
+            ];
+        })
         ->sortByDesc('total_revenue') // Sort by revenue descending
         ->values(); // Re-index the collection
+
     }
 
     public function render()
