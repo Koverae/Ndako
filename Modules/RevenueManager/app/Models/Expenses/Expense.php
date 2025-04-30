@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Properties\Models\Property\Property;
 
 class Expense extends Model
 {
@@ -46,6 +47,10 @@ class Expense extends Model
 
     public function category() {
         return $this->belongsTo(ExpenseCategory::class, 'expense_category_id', 'id');
+    }
+
+    public function property() {
+        return $this->belongsTo(Property::class, 'property_id', 'id');
     }
 
     // protected static function newFactory(): Expenses/ExpenseFactory

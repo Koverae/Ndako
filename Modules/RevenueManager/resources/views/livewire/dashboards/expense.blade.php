@@ -13,6 +13,7 @@
                     <option value="180">{{ __('Last 180 days') }}</option>
                     <option value="365">{{ __('Last 365 days') }}</option>
                 </select>
+                {{-- <input type="date" wire:model="" class="k-input"> --}}
                 <select wire:model.live="property" id="" class="w-auto k-input fs-3">
                     @foreach($properties as $index => $property)
                     <option value="{{ $property->id }}">{{ $property->name }}</option>
@@ -42,16 +43,16 @@
     <div class="overflow-hidden k-grid-overlay col-lg-12">
         <div class="container-xl">
 
-            {{-- <div class="gap-2 mb-3 row">
+            <div class="gap-2 mb-3 row">
 
                 <!-- Invoiced -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Invoiced') }}</h3>
+                        <h3 class="h3">{{ __('Total Expenses') }}</h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ format_currency($invoicedAmount) }}</h3>
+                        <h3 class="h3" style="font-size: 40px;" title="{{ format_currency($spentAmount) }}">{{ format_currency($spentAmount) }}</h3>
                         <span class="text-muted">{{ format_currency($unpaidAmount) }} {{ __('unpaid') }}</span>
                     </div>
                     </div>
@@ -62,11 +63,11 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <h3 class="h3">{{ __('Average Invoice') }}</h3>
+                            <h3 class="h3">{{ __('Average Expense') }}</h3>
                         </div>
                         <div class="text-center text-truncate">
-                            <h3 class="h3" style="font-size: 40px;">{{ format_currency($averageInvoiceAmount) }}</h3>
-                            <span class="text-muted">{{ $numberOfInvoices }} {{ __('invoices') }}</span>
+                            <h3 class="h3" style="font-size: 40px;" title="{{ format_currency($averageSpentAmount) }}">{{ format_currency($averageSpentAmount) }}</h3>
+                            <span class="text-muted">{{ $numberOfExpenses }} {{ __('expense(s)') }}</span>
                         </div>
                     </div>
                 </div>
@@ -76,17 +77,17 @@
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Days Sales Outstanding (DSO)') }}</h3>
+                        <h3 class="h3">{{ __('Top Spending Category') }}</h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ $dso }} {{ __('days') }}</h3>
-                        <span class="text-muted">{{ __('in current year') }}</span>
+                        <h3 class="h3" style="font-size: 40px;">{{ __('Maintenance') }}</h3>
+                        <span class="text-muted">{{ format_currency((97000)) }} {{ __('spent') }}</span>
                     </div>
                     </div>
                 </div>
                 <!-- DSO End -->
 
-            </div> --}}
+            </div>
 
             {{-- <div class="gap-7 row">
 

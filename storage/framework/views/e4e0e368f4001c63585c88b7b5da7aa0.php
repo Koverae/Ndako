@@ -13,6 +13,7 @@
                     <option value="180"><?php echo e(__('Last 180 days')); ?></option>
                     <option value="365"><?php echo e(__('Last 365 days')); ?></option>
                 </select>
+                
                 <select wire:model.live="property" id="" class="w-auto k-input fs-3">
                     <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $properties; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $property): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($property->id); ?>"><?php echo e($property->name); ?></option>
@@ -43,7 +44,51 @@
     <div class="overflow-hidden k-grid-overlay col-lg-12">
         <div class="container-xl">
 
-            
+            <div class="gap-2 mb-3 row">
+
+                <!-- Invoiced -->
+                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3"><?php echo e(__('Total Expenses')); ?></h3>
+                    </div>
+                    <div class="text-center text-truncate">
+                        <h3 class="h3" style="font-size: 40px;" title="<?php echo e(format_currency($spentAmount)); ?>"><?php echo e(format_currency($spentAmount)); ?></h3>
+                        <span class="text-muted"><?php echo e(format_currency($unpaidAmount)); ?> <?php echo e(__('unpaid')); ?></span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Invoiced End -->
+
+                <!-- Average Invoice -->
+                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <h3 class="h3"><?php echo e(__('Average Expense')); ?></h3>
+                        </div>
+                        <div class="text-center text-truncate">
+                            <h3 class="h3" style="font-size: 40px;" title="<?php echo e(format_currency($averageSpentAmount)); ?>"><?php echo e(format_currency($averageSpentAmount)); ?></h3>
+                            <span class="text-muted"><?php echo e($numberOfExpenses); ?> <?php echo e(__('expense(s)')); ?></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Average Invoice End -->
+
+                <!-- DSO -->
+                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3"><?php echo e(__('Top Spending Category')); ?></h3>
+                    </div>
+                    <div class="text-center text-truncate">
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e(__('Maintenance')); ?></h3>
+                        <span class="text-muted"><?php echo e(format_currency((97000))); ?> <?php echo e(__('spent')); ?></span>
+                    </div>
+                    </div>
+                </div>
+                <!-- DSO End -->
+
+            </div>
 
             
 

@@ -12,7 +12,7 @@ use Modules\RevenueManager\Models\Expenses\Expense;
 
 class ExpenseTable extends Table
 {
-    
+
     public array $data = [];  // Search query
     public $expenses;  // Users to display
 
@@ -59,7 +59,7 @@ class ExpenseTable extends Table
             Column::make('title', label: __('Title')),
             Column::make('expense_category_id', __('Category'))->component('app::table.column.special.expense.category'),
             Column::make('amount', __('Amount'))->component('app::table.column.special.price'),
-            Column::make('date', __('Date'))->component('app::table.column.special.price'),
+            Column::make('date', __('Date'))->component('app::table.column.special.date.basic'),
             Column::make('status', __('Status')),
         ];
     }
