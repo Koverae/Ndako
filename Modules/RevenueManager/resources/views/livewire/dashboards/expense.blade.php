@@ -193,10 +193,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($expenseCategories as $key => $category)
+                            @forelse($rooms as $key => $room)
                             <tr>
-                                <td>{{ $category['category_name'] }}</td>
-                                <td>{{ __(format_currency($category['total_amount'])) }}</td>
+                                <td>{{ $room['room_name'] }}</td>
+                                <td>{{ $room['room_type'] }}</td>
+                                <td>{{ __(format_currency($room['total_amount'])) }}</td>
                             </tr>
                             @empty
                             <tr></tr>

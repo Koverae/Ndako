@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Modules\App\Traits\Files\HasImportLogic;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\RevenueManager\Models\Expenses\Expense;
 
 class PropertyUnit extends Model
 {
@@ -63,6 +64,10 @@ class PropertyUnit extends Model
 
     public function bookings() {
         return $this->hasMany(Booking::class, 'property_unit_id', 'id');
+    }
+
+    public function expenses() {
+        return $this->hasMany(Expense::class, 'property_unit_id', 'id');
     }
 
     // Import Logic

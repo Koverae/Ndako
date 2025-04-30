@@ -250,6 +250,7 @@ return new class extends Migration
             $table->unsignedBigInteger('expense_category_id');
             $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('property_unit_id')->nullable();
+            $table->unsignedBigInteger('agent_id')->nullable();
             $table->string('reference')->nullable();
             $table->string('title');
             $table->decimal('amount', 10, 2)->default(0);

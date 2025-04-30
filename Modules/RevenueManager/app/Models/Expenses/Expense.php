@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Properties\Models\Property\Property;
+use Modules\Properties\Models\Property\PropertyUnit;
 
 class Expense extends Model
 {
@@ -53,6 +54,10 @@ class Expense extends Model
 
     public function property() {
         return $this->belongsTo(Property::class, 'property_id', 'id');
+    }
+
+    public function unit() {
+        return $this->belongsTo(PropertyUnit::class, 'property_unit_id', 'id');
     }
 
     public function agent() {

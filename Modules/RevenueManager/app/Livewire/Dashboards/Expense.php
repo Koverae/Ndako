@@ -109,23 +109,22 @@ class Expense extends Component
         ->when($this->property, function ($query) {
             $query->where('property_id', $this->property); // Apply filter if $property is set
         })
-        ->with(['bookings' => function ($query) {
-            $query->select('id', 'property_unit_id', 'total_amount', DB::raw('DATEDIFF(check_out, check_in) as nights'))
-            ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-            ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()]);
+        ->with(['expenses' => function ($query) {
+            $query->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()]);
         }])
         ->get()
         ->map(function ($room) {
-            $totalRevenue = $room->bookings->sum('total_amount');
-            $totalNights = $room->bookings->sum('nights');
+            $totalSpent = $room->expenses->sum('amount');
+            $totalExpenses = $room->expenses->count();
 
             return [
                 'room_name' => $room->name,
-                'total_revenue' => $totalRevenue,
-                'total_nights' => $totalNights,
+                'room_type' => $room->unitType->name,
+                'total_amount' => $totalSpent,
+                'total_expenses' => $totalExpenses,
             ];
         })
-        ->sortByDesc('total_revenue') // Sort by revenue descending
+        ->sortByDesc('total_amount') // Sort by revenue descending
         ->values(); // Re-index the collection
 
     }

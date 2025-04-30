@@ -190,10 +190,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $expenseCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $rooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $room): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td><?php echo e($category['category_name']); ?></td>
-                                <td><?php echo e(__(format_currency($category['total_amount']))); ?></td>
+                                <td><?php echo e($room['room_name']); ?></td>
+                                <td><?php echo e($room['room_type']); ?></td>
+                                <td><?php echo e(__(format_currency($room['total_amount']))); ?></td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
