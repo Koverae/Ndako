@@ -103,7 +103,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
                 <!-- Input Form -->
                 <div class="k_cell k_wrap_input flex-grow-1">
-                    <input type="date" wire:model="birthday" class="k-input" id="model_0">
+                    <input type="date" wire:model="date" class="k-input" id="model_0">
                 </div>
               </div>
 

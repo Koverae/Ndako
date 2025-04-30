@@ -4,7 +4,6 @@ namespace Modules\RevenueManager\Livewire\Dashboards;
 
 use Carbon\Carbon;
 use Livewire\Component;
-use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
@@ -17,7 +16,7 @@ class Expense extends Component
 {
     public $period = 7, $property;
     public $spentAmount = 0, $unpaidAmount = 0, $averageSpentAmount = 0, $numberOfExpenses = 0;
-    public $properties, $units, $unitTypes, $mothlyInvoices, $bestCategory, $expenses, $expenseCategories, $rooms;
+    public $properties, $units, $unitTypes, $monthlyExpenses, $bestCategory, $expenses, $expenseCategories, $rooms, $expenseByCategory;
     public $startDate, $endDate;
 
     public function mount(){
@@ -127,7 +126,112 @@ class Expense extends Component
         ->sortByDesc('total_amount') // Sort by revenue descending
         ->values(); // Re-index the collection
 
+        // Monthly Expenses
+        $this->monthlyExpenses = $this->getMonthlyExpensess();
+
     }
+
+    public function updatedPeriod(){
+        $this->loadData();
+    }
+    
+    public function getMonthlyExpensess(): \Illuminate\Support\Collection
+    {
+        $startOfYear = now()->startOfYear();
+        $endOfYear = now()->endOfYear();
+
+        $expenses = ExpensesModel::with(['unit' => function ($subQuery) {
+                $subQuery->when($this->property, function ($property){
+                    $property->where('property_id', $this->property);
+                });
+            }])
+            ->whereBetween('date', [$startOfYear, $endOfYear])
+                ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(amount) as total_amount')
+                    ->groupBy('year', 'month')
+                        ->orderByRaw('year ASC, month ASC')
+                            ->get();
+
+        return $expenses->map(fn ($expense) => [
+            'month'   => Carbon::create($expense->year, $expense->month, 1)->format('F Y'),
+            'spent' => round((float) $expense->total_amount, 2),
+        ]);
+    }
+
+    // Export Dashboard
+    public function export(ReportExportService $exportService)
+    {
+
+        // ✅ Summary Data (Example: Dashboard Stats)
+        $summaryData = [
+            'Total Expenses' => ['value' => format_currency($this->spentAmount), 'change' => format_currency($this->unpaidAmount)],
+            'Average Expense' => ['value' => format_currency($this->averageSpentAmount), 'change' => $this->numberOfExpenses],
+            'Top Spending Category' => ['value' => $this->bestCategory['category_name'], 'change' => $this->bestCategory['total_amount'] ?? 0],
+        ];
+
+        $topExpenses = $this->expenses->map(function ($expense) {
+            return [
+                'reference' => $expense->reference,
+                'title' => $expense->title,
+                'agent' => $expense->agent->name ?? 'N/A',
+                'status' => $expense->status,
+                'date' => Carbon::parse($expense->date)->format('m/d/y') ?? 'N/A',
+                'amount' => format_currency($expense->amount)
+            ];
+        })
+        ->sortByDesc('revenue');
+
+        $topExpenseCategories = $this->expenseCategories;
+
+        // Assign to detailed sections
+        $detailedSections = [
+            'Top Expenses' => $topExpenses,
+            'Top Expense Categories' => $topExpenseCategories,
+        ];
+
+        // ✅ Export Report
+        return $exportService->export('Expense Report', $summaryData, $detailedSections, 'xlsx');
+    }
+
+
+    public function fetchRevenueByType()
+    {
+        $startDate = Carbon::now()->subDays($this->period);
+        $endDate = Carbon::now();
+
+        $this->revenueByType = PropertyUnitType::isCompany(current_company()->id)
+            ->when($this->property, function ($query) {
+                $query->where('property_id', $this->property); // Apply filter if $property is set
+            })
+            ->with(['units.bookings' => function ($query) use ($startDate, $endDate) {
+                $query->select(
+                'property_unit_id', // Keep only necessary columns in SELECT
+                DB::raw("SUM(CASE WHEN status IN ('canceled') THEN DATEDIFF(LEAST(check_out, '$endDate'), GREATEST(check_in, '$startDate')) ELSE 0 END) as nights_canceled"),
+                DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN DATEDIFF(LEAST(check_out, '$endDate'), GREATEST(check_in, '$startDate')) ELSE 0 END) as nights_sold"),
+                DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
+            )
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('check_in', [$startDate, $endDate])
+                    ->orWhereBetween('check_out', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('check_in', '<', $startDate)
+                                ->where('check_out', '>', $endDate);
+                    });
+            })
+            ->groupBy('property_unit_id'); // Ensure only aggregated columns are used
+            }])
+            ->get()
+            ->map(function ($roomType) {
+                $totalRevenue = $roomType->units->flatMap(fn($unit) => $unit->bookings)->sum('revenue');
+
+                return [
+                    'label' => $roomType->name, // Room type name
+                    'value' => $totalRevenue,   // Revenue
+                ];
+            })
+            ->filter(fn($roomType) => $roomType['value'] > 0) // Exclude room types with no revenue
+            ->values(); // Reset array keys
+    }
+
 
     public function render()
     {

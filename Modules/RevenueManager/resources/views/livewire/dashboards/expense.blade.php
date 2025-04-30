@@ -91,18 +91,30 @@
 
             <div class="gap-7 row">
 
-                <!-- Invoiced by Month -->
-                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-12">
+                <!-- Expense by Month -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-12">
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Invoiced by Month') }}
+                            {{ __('Expense by Month') }}
                         </div>
                     </div>
-                    <div id="monthly-invoices-chart" wire:ignore></div>
+                    <div id="monthly-expenses-chart" wire:ignore></div>
 
-                </div> --}}
-                <!-- Invoiced by Month End -->
+                </div>
+                <!-- Expense by Month End -->
+
+                <!-- Expense by Category -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-12">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Expense by Category') }}
+                        </div>
+                    </div>
+                    <div id="bestExpenseCategoryChart"></div>
+                </div>
+                <!-- Expense by Category End -->
 
                 <!-- Top Invoices -->
                 <div class="p-0 k-dash-category col-md-12 col-lg-12">
@@ -207,53 +219,20 @@
                 </div>
                 <!-- Top Rooms End -->
 
-                <!-- Top Payments -->
-                {{-- <div class="p-0 k-dash-category col-md-12 col-lg-12">
-                    <!-- separator -->
-                    <div class="g-col-sm-2">
-                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Payments') }}
-                        </div>
-                    </div>
-                    <table class="k-borderless-table">
-                        <thead>
-                            <tr>
-                                <th>{{ __('Reference') }}</th>
-                                <th>{{ __('Invoice') }}</th>
-                                <th>{{ __('Date') }}</th>
-                                <th>{{ __('Amount') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($payments as $key => $payment)
-                            <tr>
-                                <td>{{ $payment->reference }}</td>
-                                <td>{{ $payment->invoice->reference }}</td>
-                                <td>{{ \Carbon\Carbon::parse($payment->date)->format('m/d/y') }}</td>
-                                <td>{{ __(format_currency($payment->amount)) }}</td>
-                            </tr>
-                            @empty
-                            <tr></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div> --}}
-                <!-- Top Payments End -->
-
             </div>
 
         </div>
 
     </div>
 
-{{-- <script>
+<script>
 
     document.addEventListener('livewire:navigated', function () {
-            const months = @json($mothlyInvoices->pluck('month'));
-            const revenues = @json($mothlyInvoices->pluck('revenue'));
-            const unpaidAmounts = @json($mothlyInvoices->pluck('unpaid')); /* Revenue data for y-axis*/
+            const months = @json($monthlyExpenses->pluck('month'));
+            const spent = @json($monthlyExpenses->pluck('spent'));
+            // const unpaidAmounts = @json($monthlyExpenses->pluck('unpaid')); /* Revenue data for y-axis*/
 
-            new ApexCharts(document.getElementById('monthly-invoices-chart'), {
+            new ApexCharts(document.getElementById('monthly-expenses-chart'), {
                 chart: {
                     type: "bar",
                     fontFamily: 'inherit',
@@ -280,13 +259,8 @@
 
                 series: [
                     {
-                        name: "{{ __('Revenue') }}",
-                        data: revenues,
-                    },
-
-                    {
-                        name: "{{ __('Unpaid Amount') }}",
-                        data: unpaidAmounts,
+                        name: "{{ __('Amount Spent') }}",
+                        data: spent,
                     }
                 ],
                 tooltip: {
@@ -319,17 +293,49 @@
                 },
                 yaxis: {
                     title: {
-                        text: '{{ __('Revenue') }}', // Add y-axis label "Revenue"
+                        text: '{{ __('Amount Spent') }}', // Add y-axis label "Revenue"
                     },
                     labels: {
                         padding: 25
                     },
                 },
-                colors: ["#017E84", '#72374B'],
+                colors: ["#017E84"],
                 legend: {
                     show: false,
                 },
             }).render();
+
+            // Expense by Category
+            const chartOptions = {
+                chart: {
+                    type: 'pie',
+                    height: 350
+                },
+                labels: @json($roomTypeChartData['labels'] ?? []), // Prevent errors if empty
+                series: @json($roomTypeChartData['series'] ?? []), // Prevent errors if empty
+                colors: [
+                    '#017E84', '#72374B', '#FEB019', '#FF4560', '#775DD0',
+                    '#00E396', '#008FFB', '#D7263D', '#F86624', '#A633FF',
+                    '#66DA26', '#E91E63', '#2B908F', '#F9A3A4', '#D9A404'
+                ], // Adjust colors as needed
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            if (chartOptions.series.length > 0) {
+                const bestExpenseCategoryChart = new ApexCharts(document.querySelector('#bestExpenseCategoryChart'), chartOptions);
+                bestExpenseCategoryChart.render();
+            }
     });
-</script> --}}
+    
+</script>
 </div>

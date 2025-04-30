@@ -107,6 +107,7 @@ class Invoicing extends Component
     public function updatedPeriod(){
         $this->loadData();
     }
+    
     public function getMonthlyInvoices(): \Illuminate\Support\Collection
     {
         $startOfYear = now()->startOfYear();
