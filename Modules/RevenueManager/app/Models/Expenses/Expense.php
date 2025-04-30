@@ -7,12 +7,13 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\App\Traits\Files\HasImportLogic;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
 
 class Expense extends Model
 {
-    use HasFactory;
+    use HasFactory, HasImportLogic;
 
     /**
      * The attributes that are mass assignable.
@@ -64,8 +65,66 @@ class Expense extends Model
         return $this->belongsTo(User::class, 'agent_id', 'id');
     }
 
-    // protected static function newFactory(): Expenses/ExpenseFactory
-    // {
-    //     // return Expenses/ExpenseFactory::new();
-    // }
+    // Import Logic
+
+    public static function processImportRow(array $data): array
+    {
+        // Property
+        if (isset($data['property'])) {
+            $property = Property::where('name', $data['property'])->first();
+            if (!$property) {
+                
+            }
+            $data['property_id'] = $property?->id;
+            unset($data['property']);
+        }
+
+        // Room
+        if (isset($data['room'])) {
+            $room = PropertyUnit::where('name', $data['room'])->first();
+            if (!$room) {
+                
+            }
+            $data['property_unit_id'] = $room?->id;
+            unset($data['room']);
+        }
+
+        // Category
+        if (isset($data['category'])) {
+            $category = ExpenseCategory::where('name', $data['category'])->first();
+            if (!$category) {
+                // 
+            }
+            $data['expense_category_id'] = $category?->id;
+            unset($data['category']);
+        }
+
+        return $data;
+    }
+
+    public static function processImportPreviewRow(array $row, bool $forImport = false): array
+    {
+        $unit = PropertyUnit::where('name', $row['room'])->first();
+
+        if ($forImport) {
+            return [
+                'company_id' => current_company()->id,
+                'reference' => $row['reference'] ?? "N/A",
+                'title' => $row['title'] ?? "N/A",
+                'category' => $row['category'] ?? "N/A",
+                'amount' => $row['amount'] ?? "N/A",
+                'date' => Carbon::parse($row['date'])->format('m/d/y') ?? "N/A",
+            ];
+        }
+
+        return [
+            'Room' => $unit->name ?? 'N/A',
+            'Reference' => $row['reference'] ?? '',
+            'Title' => $row['title'] ?? '',
+            'Category' => $row['category'] ?? '',
+            'Amount' => $row['amount'] ?? '',
+            'Date' => Carbon::parse($row['date'])->format('m/d/y') ?? '',
+        ];
+    }
+
 }

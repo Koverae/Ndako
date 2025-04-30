@@ -76,7 +76,7 @@ class Guest extends Model
         if (isset($data['country'])) {
             $country = Country::where('common_name', $data['country'])->first();
             if (!$country) {
-                Log::warning("Import: Country '{$data['country']}' not found.");
+                // Log::warning("Import: Country '{$data['country']}' not found.");
             }
             $data['country_id'] = $country?->id;
             unset($data['country']);

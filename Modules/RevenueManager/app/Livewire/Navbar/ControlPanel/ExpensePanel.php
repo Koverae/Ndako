@@ -27,6 +27,14 @@ class ExpensePanel extends ControlPanel
 
     }
 
+    public function actionButtons(): array
+    {
+        return [
+            // ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
+            ActionButton::make('import', 'Import Records', 'importRecords', false, "fas fa-upload"),
+        ];
+    }
+
     public function switchButtons() : array
     {
         return  [
@@ -38,6 +46,11 @@ class ExpensePanel extends ControlPanel
     // New expense modal
     public function newExpense(){
         $this->dispatch('openModal', component: 'revenuemanager::modal.add-expense-modal');
+    }
+    
+
+    public function importRecords(){
+        return $this->redirect(route('import.records', 'mod_expenses'), true);
     }
 
 }
