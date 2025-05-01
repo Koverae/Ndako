@@ -3,9 +3,12 @@
 namespace Modules\RevenueManager\Livewire\Navbar\ControlPanel;
 
 use Illuminate\Support\Facades\Route;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
+use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
+use Modules\RevenueManager\Models\Expenses\Expense;
 
 class ExpensePanel extends ControlPanel
 {
@@ -35,6 +38,17 @@ class ExpensePanel extends ControlPanel
         ];
     }
 
+    public function actionDropdowns(): array
+    {
+        return [
+            ActionDropdown::make('export', 'Export', 'exportSelected', false, "fas fa-download"),
+            // ActionDropdown::make('archive', 'Archive', 'archive', false, "fas fa-archive"),
+            // ActionDropdown::make('unarchive', 'Unarchive', 'unarchive', false, "fas fa-inbox"),
+            // ActionDropdown::make('duplicate', 'Duplicate', 'duplicateItems', false, "fas fa-copy"),
+            ActionDropdown::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
+        ];
+    }
+
     public function switchButtons() : array
     {
         return  [
@@ -51,6 +65,23 @@ class ExpensePanel extends ControlPanel
 
     public function importRecords(){
         return $this->redirect(route('import.records', 'mod_expenses'), true);
+    }
+
+    public function deleteSelectedItems(){
+
+        Expense::isCompany(current_company()->id)
+            ->whereIn('id', $this->selected)
+            ->delete();
+
+        LivewireAlert::title('Items deleted!')
+        ->text('Selected items were deleted successfully!')
+        ->success()
+        ->position('top-end')
+        ->timer(4000)
+        ->toast()
+        ->show();
+
+        return $this->redirect(route('expenses.lists'), navigate:true);
     }
 
 }

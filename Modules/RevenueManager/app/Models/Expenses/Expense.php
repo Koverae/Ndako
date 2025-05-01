@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use Modules\App\Traits\Files\HasImportLogic;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
@@ -30,6 +31,7 @@ class Expense extends Model
         'is_recurrent',
         'recurrence',
         'next_due_at',
+        'date',
         'status',
     ];
 
@@ -71,12 +73,22 @@ class Expense extends Model
     {
         // Property
         if (isset($data['property'])) {
-            $property = Property::where('name', $data['property'])->first();
+
+            $allProperties = Property::isCompany(current_company()->id)->get();
+            $inputName = $data['property'];
+    
+            $property = $allProperties->sortByDesc(function ($property) use ($inputName) {
+                similar_text(strtolower($property->name), strtolower($inputName), $percent);
+                return $percent;
+            })->first();
+
             if (!$property) {
                 
             }
             $data['property_id'] = $property?->id;
             unset($data['property']);
+        }else{
+            session()->flash('error', 'The property is missing!');
         }
 
         // Room
@@ -99,11 +111,26 @@ class Expense extends Model
             unset($data['category']);
         }
 
+        // Date
+        if (isset($data['date'])) {
+            $date = Carbon::parse($data['date'])->format('Y-m-d');
+            $data['date'] = $date;
+            Log::info('Date: '. $date);
+        }
+
         return $data;
     }
 
     public static function processImportPreviewRow(array $row, bool $forImport = false): array
     {
+        $allProperties = Property::isCompany(current_company()->id)->get();
+        $inputName = $row['property'];
+
+        $property = $allProperties->sortByDesc(function ($property) use ($inputName) {
+            similar_text(strtolower($property->name), strtolower($inputName), $percent);
+            return $percent;
+        })->first();
+
         $unit = PropertyUnit::where('name', $row['room'])->first();
 
         if ($forImport) {
@@ -113,11 +140,13 @@ class Expense extends Model
                 'title' => $row['title'] ?? "N/A",
                 'category' => $row['category'] ?? "N/A",
                 'amount' => $row['amount'] ?? "N/A",
-                'date' => Carbon::parse($row['date'])->format('m/d/y') ?? "N/A",
+                // 'date' => Carbon::parse($row['date'])->format('m/d/y') ?? "N/A",
+                'date' => $row['date'] ?? today(),
             ];
         }
 
         return [
+            'Property' => $property->name ?? 'N/A',
             'Room' => $unit->name ?? 'N/A',
             'Reference' => $row['reference'] ?? '',
             'Title' => $row['title'] ?? '',
