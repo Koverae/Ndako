@@ -2,12 +2,14 @@
 
 namespace Modules\RevenueManager\Livewire\Navbar\ControlPanel;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
 use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
+use Modules\App\Services\ReportExportService;
 use Modules\RevenueManager\Models\Expenses\Expense;
 
 class ExpensePanel extends ControlPanel
@@ -33,8 +35,8 @@ class ExpensePanel extends ControlPanel
     public function actionButtons(): array
     {
         return [
-            // ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
             ActionButton::make('import', 'Import Records', 'importRecords', false, "fas fa-upload"),
+            ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
         ];
     }
 
@@ -65,6 +67,30 @@ class ExpensePanel extends ControlPanel
 
     public function importRecords(){
         return $this->redirect(route('import.records', 'mod_expenses'), true);
+    }
+
+    public function exportAll(){
+        $exportService = new ReportExportService();
+
+        $expenses = Expense::isCompany(current_company()->id)->get()
+        ->map(function ($expense) {
+
+            return [
+                'property' => $expense->property->name ?? "N/A",
+                'unit' => $expense->unit->name ?? "N/A",
+                'reference' => $expense->reference,
+                'title' => $expense->title,
+                'category' => $expense->category->name ?? "N/A",
+                'amount' => $expense->amount,
+                'date' => Carbon::parse($expense->date)->format('d/m/Y'),
+            ];
+        });
+
+        $detailedSections = [
+            'Expenses' => $expenses,
+        ];
+
+        return $exportService->export("Expenses_export", [], $detailedSections);
     }
 
     public function deleteSelectedItems(){
