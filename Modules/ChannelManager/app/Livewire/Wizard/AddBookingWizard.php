@@ -92,7 +92,7 @@ class AddBookingWizard extends SimpleWizard
             ->get();
     }
 
-    
+
     public function loadMore()
     {
         $this->perPage += 5;
@@ -201,8 +201,9 @@ class AddBookingWizard extends SimpleWizard
             return;
         }
 
-        if($this->downPayment >= 1){
-            $this->dueAmount = $this->totalAmount - $this->downPayment;
+        $this->dueAmount = $this->totalAmount - $this->downPayment;
+
+        if ($this->downPayment >= 1) {
             $this->status = 'confirmed';
             $this->paymentStatus = 'partial';
             $this->invoiceStatus = 'invoiced';

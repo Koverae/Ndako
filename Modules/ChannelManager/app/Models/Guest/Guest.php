@@ -24,7 +24,7 @@ class Guest extends Model
         'name',
         'company_name',
         'language_id',
-    
+
         // Address
         'street',
         'street2',
@@ -32,7 +32,7 @@ class Guest extends Model
         'state',
         'country_id',
         'zip',
-    
+
         // Contact Info
         'identity_proof',
         'identity',
@@ -41,12 +41,12 @@ class Guest extends Model
         'email',
         'website',
         'tags',
-    
+
         // Individual
         'job',
         'has_receipt_reminder',
         'days_before',
-    
+
         // MISC
         'companyID',
         'reference',

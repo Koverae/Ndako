@@ -98,8 +98,8 @@ return new class extends Migration
             $table->string('reference')->nullable();
             $table->integer('guests')->default(1);
             $table->mediumText('note')->nullable();
-            $table->date('check_in');
-            $table->date('check_out');
+            $table->datetime('check_in');
+            $table->datetime('check_out');
             $table->decimal('unit_price', $precision = 12, $scale = 2)->default(0);
             $table->decimal('total_amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('paid_amount', $precision = 12, $scale = 2)->default(0);
@@ -119,8 +119,8 @@ return new class extends Migration
             $table->decimal('extra_charge', 8, 2)->default(0);
 
             // Additional fields for check-in/check-out process
-            $table->timestamp('actual_check_in')->nullable(); // Exact time of check-in
-            $table->timestamp('actual_check_out')->nullable(); // Exact time of check-out
+            $table->datetime('actual_check_in')->nullable(); // Exact time of check-in
+            $table->datetime('actual_check_out')->nullable(); // Exact time of check-out
             $table->enum('check_in_status', ['pending', 'checked_in'])->default('pending'); // Track check-in status
             $table->enum('check_out_status', ['pending', 'checked_out'])->default('pending'); // Track check-out status
 

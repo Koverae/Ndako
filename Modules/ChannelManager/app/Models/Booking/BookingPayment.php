@@ -14,7 +14,20 @@ class BookingPayment extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'booking_invoice_id',
+        'journal_id',
+        'reference',
+        'transaction_id',
+        'amount',
+        'due_amount',
+        'date',
+        'payment_method',
+        'type',
+        'status',
+        'note',
+    ];
 
     public static function boot() {
         parent::boot();

@@ -76,14 +76,14 @@ class Expense extends Model
 
             $allProperties = Property::isCompany(current_company()->id)->get();
             $inputName = $data['property'];
-    
+
             $property = $allProperties->sortByDesc(function ($property) use ($inputName) {
                 similar_text(strtolower($property->name), strtolower($inputName), $percent);
                 return $percent;
             })->first();
 
             if (!$property) {
-                
+
             }
             $data['property_id'] = $property?->id;
             unset($data['property']);
@@ -95,7 +95,7 @@ class Expense extends Model
         if (isset($data['room'])) {
             $room = PropertyUnit::where('name', $data['room'])->first();
             if (!$room) {
-                
+
             }
             $data['property_unit_id'] = $room?->id;
             unset($data['room']);
@@ -105,7 +105,7 @@ class Expense extends Model
         if (isset($data['category'])) {
             $category = ExpenseCategory::where('name', $data['category'])->first();
             if (!$category) {
-                // 
+                //
             }
             $data['expense_category_id'] = $category?->id;
             unset($data['category']);
@@ -151,8 +151,8 @@ class Expense extends Model
             'Reference' => $row['reference'] ?? '',
             'Title' => $row['title'] ?? '',
             'Category' => $row['category'] ?? '',
-            'Amount' => $row['amount'] ?? '',
             'Date' => Carbon::parse($row['date'])->format('m/d/y') ?? '',
+            'Amount' => $row['amount'] ?? '',
         ];
     }
 

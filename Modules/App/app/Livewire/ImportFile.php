@@ -40,6 +40,7 @@ class ImportFile extends Component
             'mod_floors' => "Floors",
             'mod_guests' => "Guests",
             'mod_expenses' => "Expenses",
+            'mod_bookings' => "Bookings",
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -53,6 +54,7 @@ class ImportFile extends Component
             'mod_floors' => \Modules\Properties\Models\Property\PropertyFloor::class,
             'mod_guests' => \Modules\ChannelManager\Models\Guest\Guest::class,
             'mod_expenses' => \Modules\RevenueManager\Models\Expenses\Expense::class,
+            'mod_bookings' => \Modules\ChannelManager\Models\Booking\Booking::class,
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -68,6 +70,7 @@ class ImportFile extends Component
             'mod_floors' => "dashboard",
             'mod_guests' => "guests.lists",
             'mod_expenses' => "expenses.lists",
+            'mod_bookings' => "bookings.lists",
             // Add more here
             default => abort(404, 'Invalid model'),
         };

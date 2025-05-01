@@ -16,7 +16,29 @@ class BookingInvoice extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'booking_id',
+        'date',
+        'reference',
+        'guest_id',
+        'payment_reference',
+        'due_date',
+        'tax_percentage',
+        'tax_amount',
+        'discount_percentage',
+        'discount_amount',
+        'total_amount',
+        'paid_amount',
+        'due_amount',
+        'status',
+        'payment_status',
+        'guest_reference',
+        'agent_id',
+        'auto_post',
+        'to_checked',
+        'terms',
+    ];
 
     public static function boot() {
         parent::boot();

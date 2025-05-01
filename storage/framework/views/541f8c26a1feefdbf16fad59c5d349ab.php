@@ -78,7 +78,10 @@ unset($__defined_vars); ?>
                                     <button class="mt-3 btn w-100" wire:click="pickRoom('<?php echo e($room->id); ?>')" <?php echo e($this->startDate == '' && $this->endDate == '' ? 'disabled' : ""); ?>  <?php if($this->selectedRoom): ?> <?php echo e($this->selectedRoom->id == $room->id ? 'disabled' : ''); ?> <?php endif; ?>><?php echo e(__('Choose')); ?></button>
                                 </div>
                                 <div class="col-md-5 d-none d-lg-block">
-                                    <img src="<?php echo e(asset('storage/' . ($room->unitType->firstImage() ?? 'assets/images/default/placeholder.png'))); ?>" width="300px" height="auto" alt="<?php echo e($room->name); ?>" class="image">
+                                    <img src="<?php echo e($room->unitType->images
+                                        ? asset('storage/' . $room->unitType->firstImage())
+                                        : asset('storage/assets/images/default/placeholder.png')); ?>" width="300px" height="auto" alt="<?php echo e($room->name); ?>" class="image">
+                                        
                                 </div>
                             </div>
                         </div>
