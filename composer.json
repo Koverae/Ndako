@@ -10,6 +10,7 @@
         "jantinnerezo/livewire-alert": "^4.0",
         "koverae/koverae-billing": "^1.0",
         "laravel/framework": "^11.9",
+        "laravel/reverb": "^1.5",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
         "laravel/vonage-notification-channel": "^3.3",

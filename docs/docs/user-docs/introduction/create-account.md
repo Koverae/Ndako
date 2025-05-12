@@ -10,9 +10,10 @@ Go to [ndako.koverae.com](https://ndako.koverae.com) and click the **"Get Starte
 
 You will be redirected to the account creation page at:
 
-👉 `dashboard.koverae.com/register`
+👉 `app.ndako.tech/register`
 
 ---
+
 
 ## Step 2: Create Your Account
 
@@ -26,6 +27,7 @@ Fill in the required details:
 Once submitted, you’ll receive an **OTP (One-Time Password)** on your phone.  
 Enter the OTP to verify your phone number and continue.
 
+![Koverae Billing](/screenshots/register-page.png)
 ---
 
 ## Step 3: Provide Your Business Info

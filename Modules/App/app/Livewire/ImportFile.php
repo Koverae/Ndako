@@ -141,7 +141,13 @@ class ImportFile extends Component
                     $data = array_filter($data, fn ($value) => $value !== null && $value !== '');
 
                     // Create record
-                    $modelClass::create($data);
+                    $model = $modelClass::create($data);
+
+                    // ✨Process the after creation
+                    if (method_exists($modelClass, 'processAfterImportRow')) {
+                        $modelClass::processAfterImportRow($model);
+                    }
+
                 }
             }
 

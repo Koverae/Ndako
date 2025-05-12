@@ -33,6 +33,17 @@ return new class extends Migration
             $table->text('meta')->nullable(); // JSON
             $table->timestamps();
         });
+
+        // Notifications
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('type'); // e.g., booking.created, payment.received
+            $table->json('data'); // Store notification details
+            $table->timestamp('read_at')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -42,5 +53,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('kredits');
         Schema::dropIfExists('kredit_transactions');
+        Schema::dropIfExists('notifications');
     }
 };
