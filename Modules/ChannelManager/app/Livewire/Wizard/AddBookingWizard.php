@@ -8,9 +8,11 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Modules\App\Events\NotificationEvent;
 use Modules\App\Livewire\Components\Wizard\SimpleWizard;
 use Modules\App\Livewire\Components\Wizard\Step;
 use Modules\App\Livewire\Components\Wizard\StepPage;
+use Modules\App\Models\Notification\Notification;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
@@ -261,6 +263,19 @@ class AddBookingWizard extends SimpleWizard
         }
 
         session()->flash('success', __('Booking confirmed! Your reservation has been successfully added.'));
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $booking->company_id,
+            'type' => 'booking.created',
+            'data' => [
+                'message' => "New booking #{$booking->reference} for {$booking->guest->name}",
+                'booking_id' => $booking->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
 
         return $this->redirect(route('bookings.lists'), navigate: true);
         // return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);

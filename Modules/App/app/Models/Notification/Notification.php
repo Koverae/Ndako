@@ -4,6 +4,7 @@ namespace Modules\App\Models\Notification;
 
 use App\Models\Company\Company;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -32,5 +33,13 @@ class Notification extends Model
     public function markAsRead()
     {
         $this->update(['read_at' => now()]);
+    }
+
+    public function scopeIsRead(Builder $query){
+        $query->where('read_at', '<>', null);
+    }
+
+    public function scopeIsUnread(Builder $query){
+        $query->where('read_at', null);
     }
 }

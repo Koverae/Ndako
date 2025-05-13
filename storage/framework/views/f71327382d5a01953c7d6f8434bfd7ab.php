@@ -23,14 +23,24 @@
                     </a>
                 </div>
                 <!-- Translate End -->
-                
+
                 <!-- Chat & Notifications -->
-                <div class="nav-item dropdown d-none d-md-flex me-3">
-                    <a class="px-0 nav-link" data-bs-toggle="offcanvas" href="#notificationOffcanvas" role="button" aria-controls="offcanvasEnd">
-                        <i class="bi bi-chat" style="font-size: 16px;"></i>
-                        <span class="badge bg-green"></span>
-                    </a>
-                </div>
+                    <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('app::components.notification-trigger', []);
+
+$__html = app('livewire')->mount($__name, $__params, 'lw-4197708357-0', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
                 <!-- Chat & Notifications End -->
 
                 <!-- User's Avatar -->

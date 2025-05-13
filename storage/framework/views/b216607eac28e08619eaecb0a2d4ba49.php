@@ -65,7 +65,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 <label for="startDate" class="form-label">
                     From
                 </label>
-                <input type="datetime-local" class="form-control <?php $__errorArgs = ['startDate'];
+                <input type="date" class="form-control <?php $__errorArgs = ['startDate'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -90,7 +90,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                 <label for="endDate" class="form-label">
                     Until
                 </label>
-                <input type="datetime-local" class="form-control <?php $__errorArgs = ['endDate'];
+                <input type="date" class="form-control <?php $__errorArgs = ['endDate'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }

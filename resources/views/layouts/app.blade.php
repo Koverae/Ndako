@@ -64,7 +64,7 @@
         @yield('content')
         <!-- Page Content End -->
 
-        <livewire:notifications />
+        <livewire:app::components.notification-bell />
 
     </main>
 

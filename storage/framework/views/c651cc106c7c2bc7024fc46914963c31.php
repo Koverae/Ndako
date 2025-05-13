@@ -70,7 +70,7 @@
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
-[$__name, $__params] = $__split('notifications', []);
+[$__name, $__params] = $__split('app::components.notification-bell', []);
 
 $__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-0', $__slots ?? [], get_defined_vars());
 
