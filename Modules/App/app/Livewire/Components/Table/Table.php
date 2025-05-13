@@ -177,4 +177,7 @@ abstract class Table extends Component
         $this->searchQuery = $search;
         $this->query();
     }
+
+    // Calendar View
+
 }

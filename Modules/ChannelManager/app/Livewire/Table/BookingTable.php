@@ -11,7 +11,9 @@ use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Traits\Table\HasCalendar;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\ChannelManager\Models\PropertyUnit;
 use Modules\ChannelManager\Services\Booking\BookingService;
+use Modules\Properties\Models\Property\PropertyUnit as PropertyPropertyUnit;
 
 class BookingTable extends Table
 {
@@ -19,14 +21,16 @@ class BookingTable extends Table
 
     public array $data = [];
     public $unitID;
+    public $selectedUnit = null, $units;
     protected $bookingService;
 
-    public function boot(BookingService $bookingService){
+    public function boot(BookingService $bookingService)
+    {
         $this->bookingService = $bookingService;
     }
 
-    public function mount($events = [], $options = []){
-
+    public function mount($events = [], $options = [])
+    {
         $this->view_type = 'calendar';
         $this->view = 'app::livewire.components.table.template.calendar';
         $this->loadBookings();
@@ -34,25 +38,19 @@ class BookingTable extends Table
         $this->data = ['integration_status', 'last_sync_date'];
         $this->unitID = request()->query('unit', null);
 
-        // Calendar View
-        // $this->events = $events;
         $this->options = array_merge([
-            'initialView' => 'dayGridMonth',
-            'editable' => false,
+            'initialView' => 'timeGridWeek',
+            'editable' => true,
+            'selectable' => true,
         ], $options);
+
+        $this->units = PropertyPropertyUnit::isCompany(current_company()->id)->get();
     }
 
-    // public function createRoute() : string
-    // {
-    //     return route('properties.units.create');
-    // }
-
-
-    public function showRoute($id) : string
+    public function showRoute($id): string
     {
         return route('bookings.show', ['booking' => $id]);
     }
-
 
     public function emptyTitle(): string
     {
@@ -64,34 +62,28 @@ class BookingTable extends Table
         return 'Your reservations will appear here once added. Start by creating a new reservation to manage your bookings seamlessly.';
     }
 
-
-    public function query() : Builder
+    public function query(): Builder
     {
         $query = Booking::query();
 
-        // Filter by property ID from the URL
-        if ($this->unitID) {
-            $query->isUnit($this->unitID);
+        if ($this->selectedUnit) {
+            $query->where('property_unit_id', $this->selectedUnit);
+        } elseif ($this->unitID) {
+            $query->where('property_unit_id', $this->unitID);
         }
 
-        // Apply the search query filter if a search query is present
         if ($this->searchQuery) {
-            // Search both the booking's name and the related guest's name
-            $query = Booking::query()
-            ->where('reference', 'like', '%' . $this->searchQuery . '%')
-            ->orWhereHas('guest', function($query) {
-                $query->where('name', 'like', '%' . $this->searchQuery . '%');
-            })
-            ->orWhereHas('unit', function($query) {
-                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            $query->where(function ($q) {
+                $q->where('reference', 'like', '%' . $this->searchQuery . '%')
+                  ->orWhereHas('guest', fn($q) => $q->where('name', 'like', '%' . $this->searchQuery . '%'))
+                  ->orWhereHas('unit', fn($q) => $q->where('name', 'like', '%' . $this->searchQuery . '%'));
             });
         }
 
-        return $query; // Returns a Builder instance for querying the User model
+        return $query;
     }
 
-    // List View
-    public function columns() : array
+    public function columns(): array
     {
         return [
             Column::make('reference', __('Reference'))->component('app::table.column.special.show-title-link'),
@@ -108,85 +100,75 @@ class BookingTable extends Table
         ];
     }
 
-    // Kanban View
-    public function cards() : array
+    public function cards(): array
     {
         return [
             Card::make('name', "name", "", $this->data),
         ];
     }
 
-    // Calendar View
     public function loadBookings()
     {
-        $this->events = $this->data()->map(function ($booking) {
-
+        $this->events = $this->query()->with(['unit', 'guest', 'unit.unitType', 'channel'])->get()->map(function ($booking) {
             return [
-                'id'    => $booking->id,
-                'title' => $booking->unit->name,
-                'start' => $booking->check_in,
-                'end'   => Carbon::parse($booking->check_out)->addDays(1),
-                'color' => $this->getStatusColor($booking->status) ,
+                'id' => $booking->id,
+                'title' => $booking->unit->name ?? 'Unknown Unit',
+                'start' => Carbon::parse($booking->check_in)->toDateTimeString(),
+                'end' => Carbon::parse($booking->check_out)->toDateTimeString(),
+                'color' => $this->getStatusColor($booking->status),
                 'extendedProps' => [
-                    'reference' => $booking->reference,
-                    'guest' => $booking->guest->name,
-                    'room'  => $booking->unit->name,
-                    'unitType'  => $booking->unit->unitType->name,
-                    'channel'  => $booking->channel->name ?? 'Direct Booking',
+                    'reference' => $booking->reference ?? 'N/A',
+                    'guest' => $booking->guest->name ?? 'N/A',
+                    'room' => $booking->unit->name ?? 'N/A',
+                    'unitType' => $booking->unit->unitType->name ?? 'N/A',
+                    'channel' => $booking->channel->name ?? 'Direct Booking',
                     'status' => ucfirst($booking->status),
-                ]
+                ],
             ];
         })->toArray();
 
         $this->dispatch('calendarUpdated', ['events' => $this->events]);
     }
 
-    public function getStatusColor($status) {
-        switch ($status) {
-            case 'pending':
-                return '#fbc02d'; // Yellow
-            case 'confirmed':
-                return '#017E84'; // Green
-            case 'completed':
-                return '#1e88e5'; // Blue
-            case 'canceled':
-                return '#e53935'; // Red
-            default:
-                return '#757575'; // Gray (Fallback)
-        }
-    }
-
-    public function getCheckInStatus($booking){
-        // 
+    public function getStatusColor($status)
+    {
+        return match (strtolower($status)) {
+            'pending' => '#fbc02d',
+            'confirmed' => '#017E84',
+            'completed' => '#1e88e5',
+            'canceled' => '#e53935',
+            default => '#757575',
+        };
     }
 
     #[On('updateBookingDate')]
     public function updateBookingDate($bookingId, $start, $end)
     {
         $this->bookingService->updateBookingDate($bookingId, $start, $end);
-        $this->redirect(route('bookings.lists'), true);
+        $this->loadBookings();
+        $this->dispatch('calendarUpdated');
     }
-    
-    public function fetchEvents()
+
+    #[On('selectUnit')]
+    public function selectUnit($unitId)
     {
-        return $this->data()->map(function ($booking) {
-
-            return [
-                'id'    => $booking->id,
-                'title' => $booking->unit->name,
-                'start' => $booking->check_in,
-                'end'   => Carbon::parse($booking->check_out)->addDays(1),
-                'color' => $this->getStatusColor($booking->status) ,
-                'extendedProps' => [
-                    'reference' => $booking->reference,
-                    'guest' => $booking->guest->name,
-                    'room'  => $booking->unit->name,
-                    'unitType'  => $booking->unit->unitType->name,
-                    'channel'  => $booking->channel->name ?? 'Direct Booking',
-                    'status' => ucfirst($booking->status),
-                ]
-            ];
-        })->toArray();
+        $this->selectedUnit = $unitId;
+        $this->loadBookings();
+        $this->dispatch('calendarUpdated');
     }
 
+    #[On('clearUnitFilter')]
+    public function clearUnitFilter()
+    {
+        $this->selectedUnit = null;
+        $this->loadBookings();
+        $this->dispatch('calendarUpdated');
+    }
+
+    // public function render()
+    // {
+    //     return view($this->view, [
+    //         'units' => PropertyUnit::all(),
+    //     ]);
+    // }
 }

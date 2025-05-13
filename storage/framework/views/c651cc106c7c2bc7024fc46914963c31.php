@@ -24,6 +24,7 @@
 
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/de3e85d402.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <!-- Font Awesome -->
 
     <!-- Libs JS -->
@@ -36,7 +37,8 @@
     <script src="<?php echo e(asset('assets/js/koverae.js?'.time())); ?>" data-navigate-track></script>
 
     <!-- FullCalendar CSS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    
 
     <!-- Scripts -->
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>

@@ -2,7 +2,7 @@
     <a class="px-0 nav-link" data-bs-toggle="offcanvas" href="#notificationOffcanvas" role="button" aria-controls="notificationOffcanvas">
         <i class="bi bi-bell" style="font-size: 16px;"></i>
         <!--[if BLOCK]><![endif]--><?php if($unreadCount > 0): ?>
-            <span class="badge text-white font-weight-bold" style="background-color: #017E84;" x-bind:class="{ 'animate-pulse': hasNew }"><?php echo e($unreadCount); ?></span>
+            <span class="text-white badge font-weight-bold" style="background-color: #017E84;" x-bind:class="{ 'animate-pulse': hasNew }"><?php echo e($unreadCount); ?></span>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </a>
 </div>
