@@ -5,15 +5,15 @@ namespace Modules\ChannelManager\Livewire\Table;
 use Carbon\Carbon;
 use Modules\App\Livewire\Components\Table\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\On;
 use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Traits\Table\HasCalendar;
 use Modules\ChannelManager\Models\Booking\Booking;
-use Modules\ChannelManager\Models\PropertyUnit;
 use Modules\ChannelManager\Services\Booking\BookingService;
-use Modules\Properties\Models\Property\PropertyUnit as PropertyPropertyUnit;
+use Modules\Properties\Models\Property\PropertyUnit;
 
 class BookingTable extends Table
 {
@@ -21,7 +21,8 @@ class BookingTable extends Table
 
     public array $data = [];
     public $unitID;
-    public $selectedUnit = null, $units;
+    public $selectedUnit = null;
+    public $units;
     protected $bookingService;
 
     public function boot(BookingService $bookingService)
@@ -33,18 +34,15 @@ class BookingTable extends Table
     {
         $this->view_type = 'calendar';
         $this->view = 'app::livewire.components.table.template.calendar';
-        $this->loadBookings();
-
         $this->data = ['integration_status', 'last_sync_date'];
         $this->unitID = request()->query('unit', null);
-
+        $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
         $this->options = array_merge([
             'initialView' => 'timeGridWeek',
             'editable' => true,
             'selectable' => true,
         ], $options);
-
-        $this->units = PropertyPropertyUnit::isCompany(current_company()->id)->get();
+        $this->loadBookings();
     }
 
     public function showRoute($id): string
@@ -110,19 +108,22 @@ class BookingTable extends Table
     public function loadBookings()
     {
         $this->events = $this->query()->with(['unit', 'guest', 'unit.unitType', 'channel'])->get()->map(function ($booking) {
+            $status = strtolower($booking->status);
+            Log::debug("Booking {$booking->id} Status: {$status}");
             return [
                 'id' => $booking->id,
                 'title' => $booking->unit->name ?? 'Unknown Unit',
                 'start' => Carbon::parse($booking->check_in)->toDateTimeString(),
                 'end' => Carbon::parse($booking->check_out)->toDateTimeString(),
-                'color' => $this->getStatusColor($booking->status),
+                'backgroundColor' => $this->getStatusColor($status),
+                'borderColor' => $this->getStatusColor($status),
                 'extendedProps' => [
                     'reference' => $booking->reference ?? 'N/A',
                     'guest' => $booking->guest->name ?? 'N/A',
                     'room' => $booking->unit->name ?? 'N/A',
                     'unitType' => $booking->unit->unitType->name ?? 'N/A',
                     'channel' => $booking->channel->name ?? 'Direct Booking',
-                    'status' => ucfirst($booking->status),
+                    'status' => ucfirst($status),
                 ],
             ];
         })->toArray();
@@ -132,7 +133,7 @@ class BookingTable extends Table
 
     public function getStatusColor($status)
     {
-        return match (strtolower($status)) {
+        return match ($status) {
             'pending' => '#fbc02d',
             'confirmed' => '#017E84',
             'completed' => '#1e88e5',
@@ -165,10 +166,10 @@ class BookingTable extends Table
         $this->dispatch('calendarUpdated');
     }
 
-    // public function render()
-    // {
-    //     return view($this->view, [
-    //         'units' => PropertyUnit::all(),
-    //     ]);
-    // }
+    public function render()
+    {
+        return view($this->view, [
+            'units' => $this->units,
+        ]);
+    }
 }
