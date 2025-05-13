@@ -15,12 +15,96 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             max-width: 300px;
-            font-size: 12px;
+            font-size: 13px;
             color: #374151;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .fc-event-custom {
             background-color: var(--status-color, #757575) !important;
             border: none !important;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+            max-height: 120px;
+            overflow: hidden;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .fc-event-custom:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            border: 2px solid transparent;
+            background: linear-gradient(var(--status-color), var(--status-color)) padding-box, linear-gradient(45deg, #0E6163, #3aa8aa) border-box;
+        }
+        .event-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: white;
+            font-size: 13px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+            line-height: 1.3;
+        }
+        .event-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .event-reference {
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .event-status-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: white;
+            opacity: 0.8;
+        }
+        .event-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .event-guest, .event-room, .event-dates {
+            font-size: 13px;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+        .event-channel {
+            background: white;
+            color: #1f2937;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 10px;
+            line-height: 1.2;
+        }
+        .event-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .event-action-icon {
+            font-size: 16px;
+            color: white;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+        .event-action-icon:hover {
+            opacity: 1;
         }
         .scrollbar-thin {
             scrollbar-width: thin;
@@ -36,22 +120,45 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         .rooms-header h3 {
             font-size: 1.25rem;
             font-weight: 600;
             color: #1f2937;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .rooms-header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .clear-filter-btn, .new-booking-btn {
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .clear-filter-btn {
-            font-size: 0.875rem;
             color: #0E6163;
             background: none;
             border: none;
-            cursor: pointer;
-            transition: color 0.15s ease-in-out;
         }
         .clear-filter-btn:hover {
             color: #094445;
+        }
+        .new-booking-btn {
+            color: white;
+            background: linear-gradient(45deg, #0E6163, #2c8f91);
+            border: none;
+        }
+        .new-booking-btn:hover {
+            background: linear-gradient(45deg, #094445, #3aa8aa);
+            animation: pulse 1.5s infinite;
         }
         .rooms-container {
             position: relative;
@@ -77,6 +184,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .room-card:hover {
             transform: translateY(-4px);
@@ -92,7 +200,7 @@
             justify-content: space-between;
         }
         .room-card-header h4 {
-            font-size: 0.875rem;
+            font-size: 0.975rem;
             font-weight: 600;
             color: #1f2937;
             overflow: hidden;
@@ -116,7 +224,7 @@
         }
         .room-type {
             margin-top: 0.5rem;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             color: #4b5563;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -129,7 +237,7 @@
             margin-top: 0.5rem;
         }
         .room-status {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 500;
         }
         .room-status.vacant {
@@ -139,7 +247,7 @@
             color: #dc2626;
         }
         .room-capacity {
-            font-size: 0.75rem;
+            font-size: 0.80rem;
             color: #6b7280;
             display: flex;
             align-items: center;
@@ -163,14 +271,58 @@
             pointer-events: none;
             background: linear-gradient(to left, #ffffff, transparent);
         }
+        .fc-button {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem !important;
+            transition: all 0.2s ease !important;
+        }
+        .fc-button:hover {
+            background: linear-gradient(45deg, #0E6163, #2c8f91) !important;
+            color: white !important;
+        }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
         @media (max-width: 640px) {
             .room-card {
                 flex: 0 0 16rem;
+            }
+            .rooms-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .rooms-header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .clear-filter-btn, .new-booking-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+            .fc-event-custom {
+                padding: 6px;
+                font-size: 11px;
+                max-height: 100px;
+            }
+            .event-reference {
+                font-size: 13px;
+            }
+            .event-guest, .event-room, .event-dates {
+                font-size: 11px;
+            }
+            .event-channel {
+                font-size: 10px;
+                padding: 1px 4px;
+            }
+            .event-action-icon {
+                font-size: 14px;
+            }
+            .fc-button {
+                padding: 0.4rem 0.8rem !important;
+                font-size: 0.75rem !important;
             }
         }
     </style>
@@ -199,9 +351,34 @@
     <div class="rooms-section">
         <div class="rooms-header">
             <h3>Rooms</h3>
-            <!--[if BLOCK]><![endif]--><?php if($selectedUnit): ?>
-                <button wire:click="clearUnitFilter" class="clear-filter-btn">Clear Filter</button>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            <div class="rooms-header-actions">
+                <!--[if BLOCK]><![endif]--><?php if($selectedUnit): ?>
+                    <button wire:click="clearUnitFilter" class="clear-filter-btn">Clear Filter</button>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                
+                <!--[if BLOCK]><![endif]--><?php if (\Illuminate\Support\Facades\Blade::check('role', 'front-desk')): ?>
+                
+                    <!--[if BLOCK]><![endif]--><?php if($units->isNotEmpty()): ?>
+                    <?php
+                        $startDate = now();
+                        $endDate = now()->addDays(1);
+                    ?>
+                    
+                    <button
+                        onclick="Livewire.dispatch('openModal', {
+                            component: 'channelmanager::modal.add-booking-modal',
+                            arguments: {
+                                startDate: '<?php echo e($startDate->toISOString()); ?>',
+                                endDate: '<?php echo e($endDate->toISOString()); ?>'
+                            }
+                        })"
+                        class="new-booking-btn"
+                    >
+                        New Booking
+                    </button>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            </div>
         </div>
         <div class="rooms-container">
             <div class="rooms-scroll">
@@ -213,7 +390,7 @@
                         </div>
                         <p class="room-type"><?php echo e($unit->unitType->name ?? 'N/A'); ?></p>
                         <div class="room-footer">
-                            <span class="room-status <?php echo e($unit->status == 'vacant' ? 'vacant' : 'occupied'); ?>"><?php echo e(ucfirst($unit->status)); ?></span>
+                            <span class="room-status <?php echo e($unit->status == 'vacant' ? 'vacant' : 'occupied'); ?>"><?php echo e(inverseSlug($unit->status)); ?></span>
                             <span class="room-capacity">Capacity: <?php echo e($unit->capacity ?? 'N/A'); ?> <i class="bi bi-people"></i></span>
                         </div>
                     </div>
@@ -253,7 +430,7 @@
     </div>
 
     <!-- Calendar -->
-    <div id="calendar" class="rounded-lg" wire:ignore></div>
+    <div id="calendar" class="rounded-lg" style="min-height: 500px;"></div>
 </div>
 
 <script>
@@ -262,6 +439,9 @@
         initializeCalendar();
     });
 
+    Livewire.on('calendarUpdated', function() {
+            setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
+        });
     let calendar = null;
 
     function initializeCalendar(eventsData = <?php echo json_encode($events ?? [], 15, 512) ?>) {
@@ -351,20 +531,25 @@
 
                 return {
                     html: `
-                        <div class="d-flex justify-content-between fc-event-custom animate__animated animate__fadeIn" style="--status-color: ${statusColor}; color: white; padding: 5px; border-radius: 5px;">
-                            <div class="text-left">
-                                <span class="cursor-pointer" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.booking-modal', arguments: {booking: ${event.id}}})">
-                                    <strong>${event.title} - ${event.extendedProps.unitType}</strong>
-                                </span>
-                                <br>
-                                <span style="font-size: 12px;">${event.extendedProps.status}</span>
-                            </div>
-                            <div class="text-right cursor-pointer">
-                                <span class="mb-2" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: ${event.id}}})">
-                                    <i class="fas fa-user-cog fs-2" style="color: #fff;"></i>
-                                </span>
-                                <br>
-                                <span class="bg-white fs-6 text-primary badge rounded-pill">${event.extendedProps.channel}</span>
+                        <div class="fc-event-custom animate__animated animate__fadeIn" style="--status-color: ${statusColor};">
+                            <div class="event-content">
+                                <div class="event-header">
+                                    <span class="cursor-pointer event-reference" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.booking-modal', arguments: {booking: ${event.id}}})">
+                                        ${event.extendedProps.reference}
+                                    </span>
+                                    <span class="event-status-icon"></span>
+                                </div>
+                                <div class="event-details">
+                                    <span class="event-guest">${event.extendedProps.guest}</span>
+                                    <span class="event-room">${event.extendedProps.room} - ${event.extendedProps.unitType}</span>
+                                    <span class="event-dates">${formatDate(event.start)} ~ ${formatDate(event.end)}</span>
+                                </div>
+                                <div class="event-footer">
+                                    <span class="event-channel">${event.extendedProps.channel}</span>
+                                    <div class="event-actions">
+                                        <i class="cursor-pointer fas fa-user-cog event-action-icon" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: ${event.id}}})"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>`
                 };
@@ -428,5 +613,4 @@
             day: 'numeric'
         });
     }
-</script>
-<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/calendar.blade.php ENDPATH**/ ?>
+</script><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/calendar.blade.php ENDPATH**/ ?>

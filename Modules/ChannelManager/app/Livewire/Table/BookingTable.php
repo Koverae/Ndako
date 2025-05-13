@@ -39,7 +39,7 @@ class BookingTable extends Table
         $this->unitID = request()->query('unit', null);
         $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
         $this->options = array_merge([
-            'initialView' => 'timeGridWeek',
+            'initialView' => 'dayGridMonth',
             'editable' => true,
             'selectable' => true,
         ], $options);
@@ -126,7 +126,8 @@ class BookingTable extends Table
                         'guest' => $booking->guest->name ?? 'N/A',
                         'room' => $booking->unit->name ?? 'N/A',
                         'unitType' => $booking->unit->unitType->name ?? 'N/A',
-                        'channel' => $booking->channel->name ?? 'Direct Booking',
+                        // 'channel' => $booking->channel->name ?? 'Direct Booking',
+                        'channel' => inverseSlug($booking->source) ?? 'Direct Booking',
                         'status' => ucfirst($status),
                     ],
                 ];
@@ -151,7 +152,8 @@ class BookingTable extends Table
     public function updateBookingDate($bookingId, $start, $end)
     {
         $this->bookingService->updateBookingDate($bookingId, $start, $end);
-        $this->loadBookings();
+        // $this->loadBookings();
+        $this->redirect(route('bookings.lists'), true);
     }
 
     public function selectUnit($unitId)
@@ -169,11 +171,11 @@ class BookingTable extends Table
         $this->loadBookings();
     }
 
-    public function render()
-    {
-        return view($this->view, [
-            'units' => $this->units,
-            'events' => $this->events,
-        ]);
-    }
+    // public function render()
+    // {
+    //     return view($this->view, [
+    //         'units' => $this->units,
+    //         'events' => $this->events,
+    //     ]);
+    // }
 }
