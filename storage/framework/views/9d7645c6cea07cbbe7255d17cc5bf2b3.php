@@ -28,10 +28,10 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<?php if($status): ?>
+<!--[if BLOCK]><![endif]--><?php if($status): ?>
     <div <?php echo e($attributes->merge(['class' => 'font-medium text-sm text-green-600 dark:text-green-400'])); ?>>
         <?php echo e($status); ?>
 
     </div>
-<?php endif; ?>
+<?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 <?php /**PATH D:\My Laravel Startup\ndako\resources\views/components/auth-session-status.blade.php ENDPATH**/ ?>

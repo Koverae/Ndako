@@ -1,180 +1,180 @@
-<style>
-    .calendar-legend .legend-item {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
-    }
-    .calendar-tooltip {
-        position: fixed;
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        padding: 8px 12px;
-        border-radius: 6px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        max-width: 300px;
-        font-size: 12px;
-        color: #374151;
-    }
-    .fc-event-custom {
-        background-color: var(--status-color, #757575) !important;
-        border: none !important;
-    }
-    .scrollbar-thin {
-        scrollbar-width: thin;
-    }
-    .scrollbar-thumb-gray-300 {
-        scrollbar-color: #d1d5db #f3f4f6;
-    }
-    .rooms-section {
-        margin-bottom: 1.5rem;
-    }
-    .rooms-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.75rem;
-    }
-    .rooms-header h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1f2937;
-    }
-    .clear-filter-btn {
-        font-size: 0.875rem;
-        color: #0E6163;
-        background: none;
-        border: none;
-        cursor: pointer;
-        transition: color 0.15s ease-in-out;
-    }
-    .clear-filter-btn:hover {
-        color: #094445;
-    }
-    .rooms-container {
-        position: relative;
-    }
-    .rooms-scroll {
-        display: flex;
-        gap: 1rem;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: thin;
-        scrollbar-color: #d1d5db #f3f4f6;
-    }
-    .room-card {
-        scroll-snap-align: start;
-        flex: 0 0 18rem;
-        padding: 1rem;
-        background-color: #ffffff;
-        background-image: linear-gradient(45deg, #f9fafb 25%, transparent 25%, transparent 50%, #f9fafb 50%, #f9fafb 75%, transparent 75%, transparent);
-        background-size: 4px 4px;
-        border-radius: 0.75rem;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .room-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-    .room-card.selected {
-        border: 2px solid transparent;
-        background: linear-gradient(#eff6ff, #eff6ff) padding-box, linear-gradient(45deg, #0E6163, #2c8f91) border-box;
-    }
-    .room-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .room-card-header h4 {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #1f2937;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    .status-dot {
-        width: 0.75rem;
-        height: 0.75rem;
-        border-radius: 50%;
-        transition: transform 0.2s ease;
-    }
-    .status-dot.vacant {
-        background-color: #0E6163;
-    }
-    .status-dot.vacant:hover {
-        animation: pulse 1.5s infinite;
-    }
-    .status-dot.occupied {
-        background-color: #ef4444;
-    }
-    .room-type {
-        margin-top: 0.5rem;
-        font-size: 0.75rem;
-        color: #4b5563;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    .room-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 0.5rem;
-    }
-    .room-status {
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    .room-status.available {
-        color: #0E6163;
-    }
-    .room-status.occupied {
-        color: #dc2626;
-    }
-    .room-capacity {
-        font-size: 0.75rem;
-        color: #6b7280;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-    .gradient-overlay-left {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 1.5rem;
-        height: 100%;
-        pointer-events: none;
-        background: linear-gradient(to right, #ffffff, transparent);
-    }
-    .gradient-overlay-right {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 1.5rem;
-        height: 100%;
-        pointer-events: none;
-        background: linear-gradient(to left, #ffffff, transparent);
-    }
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-    }
-    @media (max-width: 640px) {
-        .room-card {
-            flex: 0 0 16rem;
+<div class="p-4 bg-white rounded-lg shadow-sm calendar-container" wire:key="calendar-container">
+    <style>
+        .calendar-legend .legend-item {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
         }
-    }
-</style>
+        .calendar-tooltip {
+            position: fixed;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 300px;
+            font-size: 12px;
+            color: #374151;
+        }
+        .fc-event-custom {
+            background-color: var(--status-color, #757575) !important;
+            border: none !important;
+        }
+        .scrollbar-thin {
+            scrollbar-width: thin;
+        }
+        .scrollbar-thumb-gray-300 {
+            scrollbar-color: #d1d5db #f3f4f6;
+        }
+        .rooms-section {
+            margin-bottom: 1.5rem;
+        }
+        .rooms-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        .rooms-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .clear-filter-btn {
+            font-size: 0.875rem;
+            color: #0E6163;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out;
+        }
+        .clear-filter-btn:hover {
+            color: #094445;
+        }
+        .rooms-container {
+            position: relative;
+        }
+        .rooms-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db #f3f4f6;
+        }
+        .room-card {
+            scroll-snap-align: start;
+            flex: 0 0 18rem;
+            padding: 1rem;
+            background-color: #ffffff;
+            background-image: linear-gradient(45deg, #f9fafb 25%, transparent 25%, transparent 50%, #f9fafb 50%, #f9fafb 75%, transparent 75%, transparent);
+            background-size: 4px 4px;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .room-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .room-card.selected {
+            border: 2px solid transparent;
+            background: linear-gradient(#eff6ff, #eff6ff) padding-box, linear-gradient(45deg, #0E6163, #2c8f91) border-box;
+        }
+        .room-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .room-card-header h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .status-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+        .status-dot.vacant {
+            background-color: #0E6163;
+        }
+        .status-dot.vacant:hover {
+            animation: pulse 1.5s infinite;
+        }
+        .status-dot.occupied {
+            background-color: #ef4444;
+        }
+        .room-type {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #4b5563;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .room-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+        .room-status {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .room-status.vacant {
+            color: #0E6163;
+        }
+        .room-status.occupied {
+            color: #dc2626;
+        }
+        .room-capacity {
+            font-size: 0.75rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .gradient-overlay-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1.5rem;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(to right, #ffffff, transparent);
+        }
+        .gradient-overlay-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1.5rem;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(to left, #ffffff, transparent);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @media (max-width: 640px) {
+            .room-card {
+                flex: 0 0 16rem;
+            }
+        }
+    </style>
 
-<div class="p-4 bg-white rounded-lg shadow-sm calendar-container">
     <!-- Alerts -->
     @if (session()->has('success'))
         <div class="p-3 mb-4 alert alert-success d-flex align-items-center justify-content-between animate__animated animate__fadeIn" role="alert">
@@ -213,7 +213,7 @@
                         </div>
                         <p class="room-type">{{ $unit->unitType->name ?? 'N/A' }}</p>
                         <div class="room-footer">
-                            <span class="room-status {{ $unit->status == 'vacant' ? 'available' : 'occupied' }}">{{ ucfirst($unit->status) }}</span>
+                            <span class="room-status {{ $unit->status == 'vacant' ? 'vacant' : 'occupied' }}">{{ ucfirst($unit->status) }}</span>
                             <span class="room-capacity">Capacity: {{ $unit->capacity ?? 'N/A' }} <i class="bi bi-people"></i></span>
                         </div>
                     </div>
@@ -262,6 +262,7 @@
     });
 
     Livewire.on('calendarUpdated', function({ events }) {
+        console.log('Calendar updated with events:', events);
         initializeCalendar(events);
     });
 
@@ -269,7 +270,10 @@
 
     function initializeCalendar(eventsData) {
         let calendarEl = document.getElementById('calendar');
-        if (!calendarEl) return;
+        if (!calendarEl) {
+            console.error('Calendar element not found');
+            return;
+        }
 
         if (calendar) {
             calendar.destroy();

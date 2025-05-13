@@ -109,7 +109,7 @@ class BookingTable extends Table
     {
         $this->events = $this->query()->with(['unit', 'guest', 'unit.unitType', 'channel'])->get()->map(function ($booking) {
             $status = strtolower($booking->status);
-            Log::debug("Booking {$booking->id} Status: {$status}");
+            Log::debug("Booking {$booking->id} Status: {$status}, Unit ID: {$booking->property_unit_id}");
             return [
                 'id' => $booking->id,
                 'title' => $booking->unit->name ?? 'Unknown Unit',
@@ -128,6 +128,7 @@ class BookingTable extends Table
             ];
         })->toArray();
 
+        Log::debug("Events loaded: " . json_encode($this->events));
         $this->dispatch('calendarUpdated', ['events' => $this->events]);
     }
 
@@ -150,13 +151,13 @@ class BookingTable extends Table
         $this->dispatch('calendarUpdated');
     }
 
-    #[On('selectUnit')]
     public function selectUnit($unitId)
     {
+        Log::debug("selectUnit called with unitId: {$unitId}");
         $this->selectedUnit = $unitId;
         $this->loadBookings();
-        $this->dispatch('calendarUpdated');
     }
+
 
     #[On('clearUnitFilter')]
     public function clearUnitFilter()
@@ -166,10 +167,10 @@ class BookingTable extends Table
         $this->dispatch('calendarUpdated');
     }
 
-    public function render()
-    {
-        return view($this->view, [
-            'units' => $this->units,
-        ]);
-    }
+    // public function render()
+    // {
+    //     return view($this->view, [
+    //         'units' => $this->units,
+    //     ]);
+    // }
 }
