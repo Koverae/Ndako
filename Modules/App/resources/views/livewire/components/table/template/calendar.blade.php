@@ -258,34 +258,32 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.debug('DOM loaded, initializing calendar');
         initializeCalendar();
-    });
-
-    Livewire.on('calendarUpdated', function({ events }) {
-        console.log('Calendar updated with events:', events);
-        initializeCalendar(events);
     });
 
     let calendar = null;
 
-    function initializeCalendar(eventsData) {
-        let calendarEl = document.getElementById('calendar');
+    function initializeCalendar(eventsData = @json($events ?? [])) {
+        const calendarEl = document.getElementById('calendar');
         if (!calendarEl) {
             console.error('Calendar element not found');
             return;
         }
 
         if (calendar) {
+            console.debug('Destroying existing calendar');
             calendar.destroy();
         }
 
-        eventsData = eventsData || @json($events ?? []);
+        console.debug('Initializing calendar with events:', eventsData);
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: '{{ $options['initialView'] }}',
             editable: {{ $options['editable'] ? 'true' : 'false' }},
             selectable: {{ $options['selectable'] ? 'true' : 'false' }},
             select: function(info) {
+                console.debug('Calendar select:', info);
                 Livewire.dispatch('openModal', {
                     component: 'channelmanager::modal.add-booking-modal',
                     arguments: {
@@ -297,8 +295,9 @@
             events: eventsData,
             timeZone: 'local',
             eventDrop: function(info) {
-                let newStart = info.event.start ? info.event.start.toISOString() : null;
-                let newEnd = info.event.end ? info.event.end.toISOString() : null;
+                console.debug('Event dropped:', info.event);
+                const newStart = info.event.start ? info.event.start.toISOString() : null;
+                const newEnd = info.event.end ? info.event.end.toISOString() : null;
 
                 Livewire.dispatch('updateBookingDate', {
                     bookingId: info.event.id,
@@ -307,8 +306,9 @@
                 });
             },
             eventResize: function(info) {
-                let newStart = info.event.start ? info.event.start.toISOString() : null;
-                let newEnd = info.event.end ? info.event.end.toISOString() : null;
+                console.debug('Event resized:', info.event);
+                const newStart = info.event.start ? info.event.start.toISOString() : null;
+                const newEnd = info.event.end ? info.event.end.toISOString() : null;
 
                 Livewire.dispatch('updateBookingDate', {
                     bookingId: info.event.id,
@@ -317,8 +317,9 @@
                 });
             },
             eventMouseEnter: function(info) {
-                let event = info.event;
-                let tooltip = document.createElement('div');
+                console.debug('Event mouse enter:', info.event);
+                const event = info.event;
+                const tooltip = document.createElement('div');
                 tooltip.className = 'calendar-tooltip';
                 tooltip.innerHTML = `
                     <strong>${event.extendedProps.reference}</strong><br>
@@ -339,12 +340,14 @@
                 info.el.setAttribute('data-tooltip-id', event.id);
             },
             eventMouseLeave: function(info) {
-                let tooltip = document.querySelector('.calendar-tooltip');
+                console.debug('Event mouse leave:', info.event);
+                const tooltip = document.querySelector('.calendar-tooltip');
                 if (tooltip) tooltip.remove();
             },
             eventContent: function(info) {
-                let event = info.event;
-                let statusColor = getStatusColor(event.extendedProps.status);
+                console.debug('Rendering event content:', info.event);
+                const event = info.event;
+                const statusColor = getStatusColor(event.extendedProps.status);
 
                 return {
                     html: `
@@ -378,10 +381,32 @@
         });
 
         calendar.render();
+        console.debug('Calendar rendered with events:', calendar.getEvents());
     }
 
+    Livewire.on('calendarUpdated', function(data) {
+        console.log('Received calendarUpdated event with data:', data);
+        const events = data.events || [];
+        console.debug('Extracted events:', events);
+
+        if (!calendar) {
+            console.warn('Calendar not initialized, reinitializing');
+            initializeCalendar(events);
+            return;
+        }
+
+        if (!Array.isArray(events)) {
+            console.error('Invalid events data:', events);
+            initializeCalendar([]);
+            return;
+        }
+
+        console.debug('Reinitializing calendar with new events');
+        initializeCalendar(events);
+    });
+
     function getStatusColor(status) {
-        console.log('Status:', status);
+        console.debug('Getting status color for:', status);
         switch (status.toLowerCase()) {
             case 'pending':
                 return '#fbc02d';

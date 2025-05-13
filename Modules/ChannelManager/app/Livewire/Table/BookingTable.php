@@ -23,6 +23,7 @@ class BookingTable extends Table
     public $unitID;
     public $selectedUnit = null;
     public $units;
+    public $events = [];
     protected $bookingService;
 
     public function boot(BookingService $bookingService)
@@ -66,6 +67,7 @@ class BookingTable extends Table
 
         if ($this->selectedUnit) {
             $query->where('property_unit_id', $this->selectedUnit);
+            Log::debug("Filtering bookings for unit: {$this->selectedUnit}");
         } elseif ($this->unitID) {
             $query->where('property_unit_id', $this->unitID);
         }
@@ -107,26 +109,28 @@ class BookingTable extends Table
 
     public function loadBookings()
     {
-        $this->events = $this->query()->with(['unit', 'guest', 'unit.unitType', 'channel'])->get()->map(function ($booking) {
-            $status = strtolower($booking->status);
-            Log::debug("Booking {$booking->id} Status: {$status}, Unit ID: {$booking->property_unit_id}");
-            return [
-                'id' => $booking->id,
-                'title' => $booking->unit->name ?? 'Unknown Unit',
-                'start' => Carbon::parse($booking->check_in)->toDateTimeString(),
-                'end' => Carbon::parse($booking->check_out)->toDateTimeString(),
-                'backgroundColor' => $this->getStatusColor($status),
-                'borderColor' => $this->getStatusColor($status),
-                'extendedProps' => [
-                    'reference' => $booking->reference ?? 'N/A',
-                    'guest' => $booking->guest->name ?? 'N/A',
-                    'room' => $booking->unit->name ?? 'N/A',
-                    'unitType' => $booking->unit->unitType->name ?? 'N/A',
-                    'channel' => $booking->channel->name ?? 'Direct Booking',
-                    'status' => ucfirst($status),
-                ],
-            ];
-        })->toArray();
+        $this->events = $this->query()->with(['unit', 'guest', 'unit.unitType', 'channel'])
+            ->get()
+            ->map(function ($booking) {
+                $status = strtolower($booking->status);
+                Log::debug("Booking {$booking->id} Status: {$status}, Unit ID: {$booking->property_unit_id}");
+                return [
+                    'id' => $booking->id,
+                    'title' => $booking->unit->name ?? 'Unknown Unit',
+                    'start' => Carbon::parse($booking->check_in)->toDateTimeString(),
+                    'end' => Carbon::parse($booking->check_out)->toDateTimeString(),
+                    'backgroundColor' => $this->getStatusColor($status),
+                    'borderColor' => $this->getStatusColor($status),
+                    'extendedProps' => [
+                        'reference' => $booking->reference ?? 'N/A',
+                        'guest' => $booking->guest->name ?? 'N/A',
+                        'room' => $booking->unit->name ?? 'N/A',
+                        'unitType' => $booking->unit->unitType->name ?? 'N/A',
+                        'channel' => $booking->channel->name ?? 'Direct Booking',
+                        'status' => ucfirst($status),
+                    ],
+                ];
+            })->toArray();
 
         Log::debug("Events loaded: " . json_encode($this->events));
         $this->dispatch('calendarUpdated', ['events' => $this->events]);
@@ -148,7 +152,6 @@ class BookingTable extends Table
     {
         $this->bookingService->updateBookingDate($bookingId, $start, $end);
         $this->loadBookings();
-        $this->dispatch('calendarUpdated');
     }
 
     public function selectUnit($unitId)
@@ -158,19 +161,19 @@ class BookingTable extends Table
         $this->loadBookings();
     }
 
-
     #[On('clearUnitFilter')]
     public function clearUnitFilter()
     {
+        Log::debug("clearUnitFilter called");
         $this->selectedUnit = null;
         $this->loadBookings();
-        $this->dispatch('calendarUpdated');
     }
 
-    // public function render()
-    // {
-    //     return view($this->view, [
-    //         'units' => $this->units,
-    //     ]);
-    // }
+    public function render()
+    {
+        return view($this->view, [
+            'units' => $this->units,
+            'events' => $this->events,
+        ]);
+    }
 }
