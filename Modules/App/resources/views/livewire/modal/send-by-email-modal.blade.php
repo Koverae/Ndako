@@ -60,7 +60,7 @@
     </style>
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title text-break">Koverae</h4>
+                <h4 class="modal-title text-break">Ndako</h4>
                 <span class="btn-close" wire:click="$dispatch('closeModal')"></span>
             </div>
             <form>
@@ -137,7 +137,7 @@
                                     @if ($file || $attachment)
                                         <div class="gap-2 d-flex align-items-center">
                                             <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 1.6rem;"></i>
-                                            <span class="file-name text-900">
+                                            <span class="mb-3 file-name text-900">
                                                 {{ $file ? $file->getClientOriginalName() : basename($attachment) }}
                                             </span>
                                         </div>
