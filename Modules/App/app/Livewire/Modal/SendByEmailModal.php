@@ -144,6 +144,16 @@ class SendByEmailModal extends ModalComponent
     }
 
     /**
+     * Clear the uploaded file and generated attachment.
+     */
+    public function clearFile()
+    {
+        $this->file = null;
+        $this->attachment = null;
+        Log::info('File and attachment cleared');
+    }
+
+    /**
      * Add a new email to the recipient list after validation.
      */
     public function addEmail()
@@ -177,8 +187,8 @@ class SendByEmailModal extends ModalComponent
     {
         $applyTo = $this->template->apply_to;
         $templateMap = [
-            'invoice' => 'templates.invoice',
-            'payment' => 'templates.payment',
+            'invoice' => 'app::pdf.templates.invoice',
+            'payment' => 'app::pdf.templates.payment',
         ];
 
         if (!isset($templateMap[$applyTo])) {
@@ -191,7 +201,7 @@ class SendByEmailModal extends ModalComponent
             $pdfData = array_merge([
                 'guest_name' => $this->contact->name ?? 'Guest',
                 'company_name' => current_company()->name ?? 'Company',
-                'date' => now()->format('d M Y'),
+                // 'date' => ,
             ], $data);
             Log::info('PDF data prepared', ['pdfData' => $pdfData]);
 

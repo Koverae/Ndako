@@ -174,7 +174,9 @@ class BookingInvoiceForm extends LightWeightForm
     ];
     $data = [
         'total_amount' => format_currency($this->invoice->total_amount ?? 0),
-        'reference' => $this->invoice->reference,
+        'reference' => $this->invoice->booking->reference,
+        'invoice_reference' => $this->invoice->reference,
+        'date' => $this->invoice->date,
         'payment_method' => 'M-Pesa',
         'company_phone' => '+254 123 456 789',
     ];
@@ -197,7 +199,18 @@ class BookingInvoiceForm extends LightWeightForm
     ];
     Log::info('Dispatching openModal for SendByEmailModal', $dispatchData);
 
-    $this->dispatch('openModal', $dispatchData);
+    $this->dispatch('openModal', component: 'app::modal.send-by-email-modal', arguments: [
+        'templateId' => 11, // Booking Invoice
+        'model' => [
+            'guest_id' => (int) $this->invoice->guest_id, // Ensure integer
+            'booking_id' => (int) $this->invoice->booking_id, // Ensure integer
+        ],
+        'subjectSearch' => $subject,
+        'subjectReplace' => $subjectReplace,
+        'contentSearch' => $content,
+        'contentReplace' => $contentReplace,
+        'data' => $data,
+    ]);
 }
 
 }

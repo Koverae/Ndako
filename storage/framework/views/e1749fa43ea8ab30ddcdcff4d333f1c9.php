@@ -51,12 +51,12 @@
     <div class="container">
         <div class="header">
             <h1>Invoice</h1>
-            <p>{{ $company_name }}</p>
+            <p><?php echo e($company_name); ?></p>
         </div>
         <div class="details">
-            <p><strong>Guest:</strong> {{ $guest_name }}</p>
-            <p><strong>Invoice Reference:</strong> {{ $invoice_reference ?? 'ND/INV-' . time() }}</p>
-            <p><strong>Date:</strong> {{ $date }}</p>
+            <p><strong>Guest:</strong> <?php echo e($guest_name); ?></p>
+            <p><strong>Invoice Reference:</strong> <?php echo e($invoice_reference ?? 'ND/INV-' . time()); ?></p>
+            <p><strong>Date:</strong> <?php echo e($date); ?></p>
             <table>
                 <thead>
                     <tr>
@@ -66,16 +66,17 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Booking {{ $reference ?? 'N/A' }}</td>
-                        <td>{{ $total_amount  }}</td>
+                        <td>Booking <?php echo e($reference ?? 'N/A'); ?></td>
+                        <td><?php echo e($total_amount); ?></td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="footer">
             <p>Thank you for your business!</p>
-            <p>Contact us at {{ $company_phone ?? 'N/A' }}</p>
+            <p>Contact us at <?php echo e($company_phone ?? 'N/A'); ?></p>
         </div>
     </div>
 </body>
 </html>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/pdf/templates/invoice.blade.php ENDPATH**/ ?>
