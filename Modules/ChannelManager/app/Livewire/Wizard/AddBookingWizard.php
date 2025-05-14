@@ -325,4 +325,36 @@ class AddBookingWizard extends SimpleWizard
         ]);
     }
 
+    // Send Email
+    public function sendBookingConfirmationEmail($payment){
+
+        $model = [
+            'guest_id' => (int) $this->booking->guest_id, // Ensure integer
+            'booking_id' => (int) $this->booking->id, // Ensure integer
+        ];
+
+        $subjectReplace = [
+            $this->booking->reference,
+            current_property()->name ?? 'Hotel',
+        ];
+
+        $contentReplace = [
+            $this->booking->guest->name ?? 'Arden BOUET',
+            format_currency($payment->amount ?? 0),
+            $this->booking->reference,
+            current_property()->name,
+        ];
+        $data = [
+            'total_amount' => format_currency($payment->amount ?? 0),
+            'reference' => $payment->reference,
+            'booking_reference' => $this->booking->reference,
+            'date' => $payment->date,
+            'payment_method' => $payment->payment_method,
+            // 'company_phone' => '+254 123 456 789',
+        ];
+
+        // Send Payment Receipt Email
+        $this->guestCommunicationService->initiateTemplate(10, $model, $subjectReplace, $contentReplace, $data);
+    }
+
 }
