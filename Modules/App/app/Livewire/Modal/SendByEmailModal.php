@@ -75,23 +75,10 @@ class SendByEmailModal extends ModalComponent
     public function mount(
         $templateId,
         $model,
-        $subjectSearch = [],
         $subjectReplace = [],
-        $contentSearch = [],
         $contentReplace = [],
         $data = []
     ) {
-        // Log all mount parameters
-        Log::info('SendByEmailModal mount called', [
-            'templateId' => $templateId,
-            'model' => $model,
-            'model_type' => gettype($model),
-            'subjectSearch' => $subjectSearch,
-            'subjectReplace' => $subjectReplace,
-            'contentSearch' => $contentSearch,
-            'contentReplace' => $contentReplace,
-            'data' => $data,
-        ]);
 
         // Ensure $model is an array
         $this->model = is_array($model) ? $model : [];

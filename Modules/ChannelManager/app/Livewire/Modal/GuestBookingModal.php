@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use LivewireUI\Modal\ModalComponent;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Livewire\WithFileUploads;
+use Modules\App\Services\GuestCommunicationService;
 use Modules\App\Services\PaymentGateway\PaystackService;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
@@ -22,10 +23,12 @@ class GuestBookingModal extends ModalComponent
 
     private BookingService $bookingService;
     private PaystackService $paystackService;
+    private GuestCommunicationService $guestCommunicationService;
 
-    public function boot(BookingService $bookingService, PaystackService $paystackService){
+    public function boot(BookingService $bookingService, PaystackService $paystackService, GuestCommunicationService $guestCommunicationService){
         $this->bookingService = $bookingService;
         $this->paystackService = $paystackService;
+        $this->guestCommunicationService = $guestCommunicationService;
     }
 
     public function rules()
@@ -86,7 +89,7 @@ class GuestBookingModal extends ModalComponent
             'method' => $this->paymentMethod,
             'bookingId' => $this->booking->id
         ];
-        
+
         if($this->paymentMethod == 'paystack'){
             $responseData = $this->paystackService->initializePayment($this->booking->guest->name, $this->booking->guest->email, $this->paymentAmount, $extraData);
             return $this->dispatch('openPaystackPopup', $responseData->data->authorization_url);
@@ -130,8 +133,13 @@ class GuestBookingModal extends ModalComponent
         ]);
         $this->paymentAmount = 0;
         // $this->closeModal();
+
+        // Send Email
+        $this->sendEmail($payment);
+
         // Send success message
-        session()->flash('message', 'Your payment has been successfully processed!');
+
+        session()->flash('success', 'Your payment has been successfully processed!');
     }
 
     #[On('paymentCompleted')]
@@ -141,18 +149,18 @@ class GuestBookingModal extends ModalComponent
         session()->forget('paystack_payment_reference'); // Destroy session after retrieving
         // Verify payment from Paystack
         $paystackKey = settings()->paystack_secret_key;
-    
+
         $response = Http::withToken($paystackKey)->get("https://api.paystack.co/transaction/verify/{$reference}");
-    
+
         $responseData = $response->json();
-    
+
         if (isset($responseData['data']) && $responseData['data']['status'] === 'success') {
             session()->flash('success', 'Payment successful!');
         } else {
             session()->flash('error', 'Payment failed!');
         }
     }
-    
+
     #[On('checkPaymentStatus')]
     public function checkPaymentStatus()
     {
@@ -175,6 +183,38 @@ class GuestBookingModal extends ModalComponent
         } else {
             session()->flash('error', 'Payment failed!');
         }
+    }
+
+    // Send Email
+    public function sendEmail($payment){
+
+        $model = [
+            'guest_id' => (int) $this->booking->guest_id, // Ensure integer
+            'booking_id' => (int) $this->booking->id, // Ensure integer
+        ];
+
+        $subjectReplace = [
+            $this->booking->reference,
+            current_property()->name ?? 'Hotel',
+        ];
+
+        $contentReplace = [
+            $this->booking->guest->name ?? 'Arden BOUET',
+            format_currency($payment->amount ?? 0),
+            $this->booking->reference,
+            current_property()->name,
+        ];
+        $data = [
+            'total_amount' => format_currency($payment->amount ?? 0),
+            'reference' => $payment->reference,
+            'booking_reference' => $this->booking->reference,
+            'date' => $payment->date,
+            'payment_method' => $payment->payment_method,
+            // 'company_phone' => '+254 123 456 789',
+        ];
+
+        // Send Payment Receipt Email
+        $this->guestCommunicationService->initiateTemplate(10, $model, $subjectReplace, $contentReplace, $data);
     }
 
 }

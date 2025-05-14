@@ -6,7 +6,7 @@
         <p><strong>Guest:</strong> {{ $guest_name }}</p>
         <p><strong>Receipt Number:</strong> {{ $reference }}</p>
         <p><strong>Payment Date:</strong> {{ $date }}</p>
-        <p><strong>Payment Method:</strong> {{ $payment_method ?? 'M-Pesa' }}</p>
+        <p><strong>Payment Method:</strong> {{ inverseSlug($payment_method) ?? 'N/A' }}</p>
     </div>
 
     <!-- Payment Details -->
@@ -20,8 +20,8 @@
         </thead>
         <tbody>
             <tr>
-                <td>Payment for Booking #{{ $reference }}</td>
-                <td>{{ $payment_method ?? 'N/A' }}</td>
+                <td>Payment for Booking #{{ $booking_reference }}</td>
+                <td>{{ inverseSlug($payment_method) ?? 'N/A' }}</td>
                 <td>{{ $total_amount }}</td>
             </tr>
             <tr class="total">
@@ -37,7 +37,7 @@
         <p>We’ve received your payment of {{ $total_amount }} for booking #{{ $reference }}. We look forward to hosting you at {{ $company_name }}!</p>
     </div>
     
-    <div class="container">
+    {{-- <div class="container">
         <div class="header">
             <h1>Payment Receipt</h1>
             <p>{{ $company_name }}</p>
@@ -53,5 +53,5 @@
             <p>Thank you for your payment!</p>
             <p>Contact us at {{ $company_phone ?? 'N/A' }}</p>
         </div>
-    </div>
+    </div> --}}
 @endsection

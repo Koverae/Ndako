@@ -23,7 +23,13 @@ class GuestCommunicationService{
      * @param array $data Additional data for PDF generation (e.g., total_amount, guest_name).
      */
 
-    public function initiateTemplate($templateId, $model, $subjectReplace, $contentReplace, $data){
+    public function initiateTemplate(
+        $templateId,
+        $model,
+        $subjectReplace,
+        $contentReplace,
+        $data
+    ){
 
         // Ensure $model is an array
         $model = is_array($model) ? $model : [];
@@ -72,6 +78,14 @@ class GuestCommunicationService{
         $attachment = $this->generatePdfAttachment($data, $template, $contact);
         Log::info('Mount completed', ['attachment' => $attachment]);
 
+        // Send Email
+        $this->sendEmail(
+            $recipientEmails,
+            $template,
+            $subject,
+            $content,
+            $attachment
+        );
 
     }
 
@@ -85,12 +99,12 @@ class GuestCommunicationService{
         return [
             [
                 'id' => 1,
-                'apply_to' => 'booking',
+                'apply_to' => 'booking-confirmation',
                 'name' => 'Booking Confirmation',
                 'subject' => 'Booking Confirmed: Ref {reference} at {property_name}',
-                'subjectSearch' => [],
+                'subjectSearch' => ['{reference}', '{property_name}'],
                 'content' => "Hi {guest_name},<br>Your booking {reference} at {property_name} from {check_in} to {check_out} is confirmed.<br>Total Amount: <b>{total_amount}</b>.<br>We look forward to hosting you!<br><br>--{company_name} Team",
-                'contentSearch' => [],
+                'contentSearch' => ['{guest_name}', '{property_name}', '{check_in}', '{check_out}', '{total_amount}', '{company_name}'],
                 'recipientEmails' => 'laudbouetoumoussa@gmail.com',
             ],
             [
@@ -187,10 +201,10 @@ class GuestCommunicationService{
                 'id' => 10,
                 'apply_to' => 'payment',
                 'name' => 'Payment Confirmation',
-                'subject' => 'Payment Received for Booking {reference}',
-                'subjectSearch' => [],
+                'subject' => 'Payment Received for Booking {reference} - {property_name}',
+                'subjectSearch' => ['{reference}', '{property_name}'],
                 'content' => "Hi {guest_name},<br>We’ve received your payment of <b>{total_amount}</b> for booking {reference}.<br>Thank you!<br><br>--{company_name}",
-                'contentSearch' => [],
+                'contentSearch' => ['{guest_name}', '{total_amount}', '{reference}', '{company_name}'],
                 'recipientEmails' => 'laudbouetoumoussa@gmail.com',
             ],
             [

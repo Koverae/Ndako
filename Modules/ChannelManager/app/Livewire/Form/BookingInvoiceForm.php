@@ -126,91 +126,39 @@ class BookingInvoiceForm extends LightWeightForm
         $this->dispatch('openModal', component: 'channelmanager::modal.add-invoice-payment-modal', arguments: ['invoice' => $this->invoice->id]);
     }
 
-    public function sendEmail()
-{
-    // Validate invoice and related data
-    if (!$this->invoice || !$this->invoice->guest_id || !$this->invoice->booking_id) {
-        Log::error('Invalid invoice data for email', [
-            'invoice_id' => $this->invoice->id ?? null,
-            'guest_id' => $this->invoice->guest_id ?? null,
-            'booking_id' => $this->invoice->booking_id ?? null,
-        ]);
-        LivewireAlert::title('Error')
-            ->text('Cannot send email: Invalid invoice or guest.')
-            ->error()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-        return;
-    }
+    public function sendEmail(){
 
-    // Validate guest existence
-    $guest = Guest::find($this->invoice->guest_id);
-    if (!$guest) {
-        Log::error('Guest not found for invoice', [
-            'invoice_id' => $this->invoice->id,
-            'guest_id' => $this->invoice->guest_id,
-        ]);
-        LivewireAlert::title('Error')
-            ->text('Cannot send email: Guest not found.')
-            ->error()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-        return;
-    }
+        $subject = ['{property_name}', '{reference}'];
+        $subjectReplace = [current_property()->name, $this->invoice->reference];
 
-    $subject = ['{property_name}', '{reference}'];
-    $subjectReplace = [current_property()->name, $this->invoice->reference];
+        $content = ['{total_amount}', '{reference}', '{guest_name}', '{company_name}'];
+        $contentReplace = [
+            format_currency($this->invoice->total_amount ?? 0),
+            $this->invoice->reference,
+            $this->invoice->guest->name ?? 'Arden BOUET',
+            current_property()->name,
+        ];
+        $data = [
+            'total_amount' => format_currency($this->invoice->total_amount ?? 0),
+            'reference' => $this->invoice->booking->reference,
+            'invoice_reference' => $this->invoice->reference,
+            'date' => $this->invoice->date,
+            'payment_method' => 'M-Pesa',
+            'company_phone' => '+254 123 456 789',
+        ];
 
-    $content = ['{total_amount}', '{reference}', '{guest_name}', '{company_name}'];
-    $contentReplace = [
-        format_currency($this->invoice->total_amount ?? 0),
-        $this->invoice->reference,
-        $guest->name,
-        current_property()->name,
-    ];
-    $data = [
-        'total_amount' => format_currency($this->invoice->total_amount ?? 0),
-        'reference' => $this->invoice->booking->reference,
-        'invoice_reference' => $this->invoice->reference,
-        'date' => $this->invoice->date,
-        'payment_method' => 'M-Pesa',
-        'company_phone' => '+254 123 456 789',
-    ];
-
-    // Log dispatched data
-    $dispatchData = [
-        'component' => 'app::modal.send-by-email-modal',
-        'arguments' => [
-            'templateId' => 11,
+        $this->dispatch('openModal', component: 'app::modal.send-by-email-modal', arguments: [
+            'templateId' => 11, // Booking Invoice
             'model' => [
-                'guest_id' => (int) $this->invoice->guest_id,
-                'booking_id' => (int) $this->invoice->booking_id,
+                'guest_id' => (int) $this->invoice->guest_id, // Ensure integer
+                'booking_id' => (int) $this->invoice->booking_id, // Ensure integer
             ],
-            'subjectSearch' => $subject,
+            // 'subjectSearch' => $subject,
             'subjectReplace' => $subjectReplace,
-            'contentSearch' => $content,
+            // 'contentSearch' => $content,
             'contentReplace' => $contentReplace,
             'data' => $data,
-        ],
-    ];
-    Log::info('Dispatching openModal for SendByEmailModal', $dispatchData);
-
-    $this->dispatch('openModal', component: 'app::modal.send-by-email-modal', arguments: [
-        'templateId' => 11, // Booking Invoice
-        'model' => [
-            'guest_id' => (int) $this->invoice->guest_id, // Ensure integer
-            'booking_id' => (int) $this->invoice->booking_id, // Ensure integer
-        ],
-        'subjectSearch' => $subject,
-        'subjectReplace' => $subjectReplace,
-        'contentSearch' => $content,
-        'contentReplace' => $contentReplace,
-        'data' => $data,
-    ]);
-}
+        ]);
+    }
 
 }
