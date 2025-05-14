@@ -145,7 +145,7 @@ class SendByEmailModal extends ModalComponent
         $this->template_id = $this->template->id;
 
         // Generate PDF attachment if applicable
-        $this->attachment = $this->guestCommunicationService->generatePdfAttachment($data, $this->templates, $this->template_id);
+        $this->attachment = $this->guestCommunicationService->generatePdfAttachment($data, $this->template, $this->template_id);
         Log::info('Mount completed', ['attachment' => $this->attachment]);
     }
 
