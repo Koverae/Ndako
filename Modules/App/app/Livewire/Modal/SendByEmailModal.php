@@ -130,7 +130,7 @@ class SendByEmailModal extends ModalComponent
         }
 
         // Set recipient emails
-        $recipientField = $this->template->recipient_emails ?? '';
+        $recipientField = $this->template->recipientEmails ?? '';
         $this->recipient_emails = array_filter(array_merge(
             explode(',', $recipientField),
             [$this->contact ? $this->contact->email : null]
@@ -138,8 +138,8 @@ class SendByEmailModal extends ModalComponent
         Log::info('Recipient emails set', ['recipient_emails' => $this->recipient_emails]);
 
         // Replace placeholders in subject and content
-        $this->subject = str_replace($subjectSearch, $subjectReplace, $this->template->subject);
-        $content = str_replace($contentSearch, $contentReplace, $this->template->content);
+        $this->subject = str_replace($this->template->subjectSearch, $subjectReplace, $this->template->subject);
+        $content = str_replace($this->template->contentSearch, $contentReplace, $this->template->content);
         $this->content = preg_replace('/\{(.*?)\}/', '<b>{$1}</b>', $content);
 
         $this->template_id = $this->template->id;

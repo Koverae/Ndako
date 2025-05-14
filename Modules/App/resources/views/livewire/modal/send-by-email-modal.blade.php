@@ -104,7 +104,7 @@
                             <!-- Input Label -->
                             <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
                                 <label class="k_form_label">
-                                    Sujet :
+                                    {{ __('Subject') }}
                                 </label>
                             </div>
                             <!-- Input Form -->
@@ -163,7 +163,7 @@
                             <!-- Input Label -->
                             <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
                                 <label class="k_form_label">
-                                    Modèle d'email :
+                                    {{ __('Email Template') }}
                                 </label>
                             </div>
                             <!-- Input Form -->

@@ -112,7 +112,8 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                             <!-- Input Label -->
                             <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
                                 <label class="k_form_label">
-                                    Sujet :
+                                    <?php echo e(__('Subject')); ?>
+
                                 </label>
                             </div>
                             <!-- Input Form -->
@@ -182,7 +183,8 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                             <!-- Input Label -->
                             <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
                                 <label class="k_form_label">
-                                    Modèle d'email :
+                                    <?php echo e(__('Email Template')); ?>
+
                                 </label>
                             </div>
                             <!-- Input Form -->
