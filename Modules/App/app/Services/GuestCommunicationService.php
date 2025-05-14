@@ -75,6 +75,8 @@ class GuestCommunicationService{
                 'subject' => 'Booking Confirmed: Ref {reference} at {property_name}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Your booking {reference} at {property_name} from {check_in} to {check_out} is confirmed.<br>Total Amount: <b>{total_amount}</b>.<br>We look forward to hosting you!<br><br>--{company_name} Team",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 2,
@@ -83,6 +85,8 @@ class GuestCommunicationService{
                 'subject' => 'Get Ready for Your Stay at {property_name}!',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Your stay is just around the corner!<br>Check-in Date: <b>{check_in}</b><br>Need help? Contact us anytime at {company_phone}.<br><br>--{company_name} Team",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 3,
@@ -91,6 +95,8 @@ class GuestCommunicationService{
                 'subject' => 'Your Check-In Details for {property_name}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Welcome! Here's everything you need for check-in:<br>Room Number: {room_number}<br>Arrival Date: {check_in}<br><br>See you soon!<br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 20,
@@ -99,6 +105,8 @@ class GuestCommunicationService{
                 'subject' => 'How is Your Stay So Far at {property_name}?',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We hope you're enjoying your stay. If you need anything, we're here for you.<br><br>--{company_name} Team",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 4,
@@ -107,6 +115,8 @@ class GuestCommunicationService{
                 'subject' => 'Check-Out Reminder for Your Stay at {property_name}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>This is a kind reminder that your check-out is scheduled for {check_out}.<br>We hope you had a great stay!<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 5,
@@ -115,6 +125,8 @@ class GuestCommunicationService{
                 'subject' => 'Your Booking {reference} has been Cancelled',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Your reservation {reference} has been cancelled. If you have questions about the refund, reach out to us.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 6,
@@ -123,6 +135,8 @@ class GuestCommunicationService{
                 'subject' => 'Your Booking {reference} has been Updated',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Your booking has been updated with the latest details. Please check your dashboard for more info.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 7,
@@ -131,6 +145,8 @@ class GuestCommunicationService{
                 'subject' => 'How Was Your Stay at {property_name}?',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We hope you enjoyed your stay! Could you take a minute to leave us a review?<br>Your feedback helps us grow.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 8,
@@ -139,6 +155,8 @@ class GuestCommunicationService{
                 'subject' => 'Exclusive Offer for Your Next Stay at {property_name}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We’d love to host you again. Here's a <b>{discount}% discount</b> for your next visit!<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 9,
@@ -147,6 +165,8 @@ class GuestCommunicationService{
                 'subject' => '🎉 Happy Birthday, {guest_name}!',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We at {company_name} wish you a wonderful birthday!<br>Here’s a small gift for your next stay.<br><br>🎁 Enjoy!",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 10,
@@ -155,6 +175,8 @@ class GuestCommunicationService{
                 'subject' => 'Payment Received for Booking {reference}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We’ve received your payment of <b>{total_amount}</b> for booking {reference}.<br>Thank you!<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 11,
@@ -173,6 +195,8 @@ class GuestCommunicationService{
                 'subject' => 'Reminder: Invoice Due for Booking {reference}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>This is a reminder to complete the payment of <b>{total_amount}</b> for your stay.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 13,
@@ -181,6 +205,8 @@ class GuestCommunicationService{
                 'subject' => 'Action Required: Overdue Payment for Booking {reference}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Your payment for booking {reference} is overdue. Please clear it to avoid penalties.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 14,
@@ -189,6 +215,8 @@ class GuestCommunicationService{
                 'subject' => 'Refund Issued for Booking {reference}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We’ve processed your refund of <b>{refund_amount}</b> for booking {reference}.<br>Expect to see it within 3-5 business days.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 15,
@@ -197,6 +225,8 @@ class GuestCommunicationService{
                 'subject' => 'Maintenance Request for Room {room_number}',
                 'subjectSearch' => [],
                 'content' => "Hi Team,<br>A new maintenance issue has been reported in Room {room_number}.<br>Please review and act accordingly.<br><br>--Ndako System",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 16,
@@ -205,6 +235,8 @@ class GuestCommunicationService{
                 'subject' => 'Update on Your Maintenance Request (Ref {reference})',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>We wanted to update you on the status of your request. It is now marked as {status}.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 17,
@@ -213,6 +245,8 @@ class GuestCommunicationService{
                 'subject' => 'Scheduled Housekeeping for Room {room_number}',
                 'subjectSearch' => [],
                 'content' => "Hi Team,<br>Housekeeping is scheduled for Room {room_number} on {scheduled_date}.<br><br>--Ndako System",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 18,
@@ -221,6 +255,8 @@ class GuestCommunicationService{
                 'subject' => 'Your Lease Expires on {lease_end_date}',
                 'subjectSearch' => [],
                 'content' => "Hi {guest_name},<br>Your lease at {property_name} will end on {lease_end_date}.<br>Please contact us if you'd like to renew.<br><br>--{company_name}",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
             [
                 'id' => 19,
@@ -229,6 +265,8 @@ class GuestCommunicationService{
                 'subject' => 'New Booking Received: {reference}',
                 'subjectSearch' => [],
                 'content' => "Hi Team,<br>A new booking has been made for {property_name} from {check_in} to {check_out}.<br>Please prepare accordingly.<br><br>--Ndako System",
+                'contentSearch' => [],
+                'recipientEmails' => ['laudbouetoumoussa@gmail.com'],
             ],
         ];
     }
