@@ -24,14 +24,14 @@ body {
 
 /* Page container */
 .page {
-    width: 180mm; /* Reduced from 210mm to fit within margins */
-    min-height: 267mm; /* Adjusted for 15mm margins */
+    width: 180mm;
+    min-height: 267mm;
     padding: 15mm;
     margin: 0 auto;
     background: #fff;
     box-sizing: border-box;
-    max-width: 100%; /* For browser responsiveness */
-    overflow: hidden; /* Prevent content clipping */
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* Header */
@@ -82,7 +82,7 @@ body {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 8mm;
-    table-layout: fixed; /* Prevent column overflow */
+    table-layout: fixed;
 }
 
 .table th, .table td {
@@ -90,7 +90,7 @@ body {
     padding: 3mm;
     text-align: left;
     font-size: 10pt;
-    overflow-wrap: break-word; /* Wrap long text */
+    overflow-wrap: break-word;
 }
 
 .table th {
@@ -109,14 +109,73 @@ body {
 }
 
 /* Column widths for invoice table */
-.table.invoice-table th:nth-child(1), .table.invoice-table td:nth-child(1) { width: 50%; } /* Description */
-.table.invoice-table th:nth-child(2), .table.invoice-table td:nth-child(2) { width: 15%; } /* Quantity */
-.table.invoice-table th:nth-child(3), .table.invoice-table td:nth-child(3) { width: 20%; } /* Unit Price */
-.table.invoice-table th:nth-child(4), .table.invoice-table td:nth-child(4) { width: 15%; } /* Total */
+.table.invoice-table th:nth-child(1), .table.invoice-table td:nth-child(1) { width: 50%; }
+.table.invoice-table th:nth-child(2), .table.invoice-table td:nth-child(2) { width: 15%; }
+.table.invoice-table th:nth-child(3), .table.invoice-table td:nth-child(3) { width: 20%; }
+.table.invoice-table th:nth-child(4), .table.invoice-table td:nth-child(4) { width: 15%; }
 
 /* Column widths for payment table */
-.table.payment-table th:nth-child(1), .table.payment-table td:nth-child(1) { width: 70%; } /* Description */
-.table.payment-table th:nth-child(2), .table.payment-table td:nth-child(2) { width: 30%; } /* Amount */
+.table.payment-table th:nth-child(1), .table.payment-table td:nth-child(1) { width: 70%; }
+.table.payment-table th:nth-child(2), .table.payment-table td:nth-child(2) { width: 30%; }
+
+/* Booking Details */
+.booking-details {
+    background: #f8f9fa;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 5mm;
+    margin-bottom: 8mm;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.booking-details h2 {
+    font-size: 12pt;
+    color: #097274;
+    margin: 0 0 4mm;
+    border-bottom: 1px solid #097274;
+    padding-bottom: 2mm;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 10pt;
+    margin: 2mm 0;
+}
+
+.detail-item i {
+    color: #097274;
+    font-size: 12pt;
+    margin-right: 2mm;
+}
+
+.detail-item strong {
+    color: #097274;
+    margin-right: 1mm;
+}
+
+.total-amount {
+    background: #e5e7eb;
+    padding: 3mm;
+    border-radius: 4px;
+    font-size: 11pt;
+    font-weight: 600;
+    text-align: right;
+    margin-top: 4mm;
+}
+
+.confirmation-message {
+    font-size: 10pt;
+    line-height: 1.5;
+    margin-top: 5mm;
+    color: #4b5563;
+}
 
 /* Content Section */
 .content {
@@ -143,7 +202,7 @@ body {
     text-align: center;
     font-size: 9pt;
     color: #4b5563;
-    margin-top: 10mm; /* Relative positioning */
+    margin-top: 10mm;
 }
 
 .footer p {
@@ -190,6 +249,18 @@ body {
     .header-info h1 {
         font-size: 14pt;
     }
+
+    .booking-details {
+        padding: 10px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .total-amount {
+        font-size: 10pt;
+    }
 }
     </style>
 </head>
@@ -197,13 +268,13 @@ body {
     <div class="page">
         <div class="header">
             <div class="header-logo">
-                <img src="{{ asset('images/logo.png') }}" alt="Koverae Logo">
+                <img src="{{ current_company()->avatar ? Storage::url('avatars/' . current_company()->avatar) . '?v=' . time() : asset('assets/images/logo/logo-black.png') }}" alt="{{ current_company()->name }} Logo">
             </div>
             <div class="header-info">
                 <h1>{{ current_company()->name }}</h1>
                 <p>{{ current_company()->address ?? '123 Hospitality Lane, Nairobi, Kenya' }}</p>
                 <p>Phone: {{ current_company()->phone ?? '+254 123 456 789' }}</p>
-                <p>Email: {{ current_company()->email ?? 'contact@koverae.com' }}</p>
+                <p>Email: {{ current_company()->email ?? 'ndako@koverae.com' }}</p>
             </div>
         </div>
         
@@ -212,7 +283,7 @@ body {
         <!-- Footer -->
         <div class="footer">
             <p>Thank you for choosing {{ current_company()->name }}.</p>
-            <p>Contact us at {{ current_company()->phone ?? '+254 123 456 789' }} or {{ current_company()->email ?? 'contact@koverae.com' }}.</p>
+            <p>Contact us at {{ current_company()->phone ?? '+254 123 456 789' }} or {{ current_company()->email ?? 'ndako@koverae.com' }}.</p>
         </div>
     </div>
 </body>
