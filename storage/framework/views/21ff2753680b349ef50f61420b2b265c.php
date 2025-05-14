@@ -172,7 +172,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
                     <div class="d-flex justify-content-between">
                         <span>&nbsp;</span>
-                        <button type="submit" wire:click='addPayment' class="btn btn-primary text-end">Pay</button>
+                        <button type="submit" wire:click='addPayment' wire:loading.class="disabled" class="btn btn-primary text-end">Pay</button>
                     </div>
                 </div>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
