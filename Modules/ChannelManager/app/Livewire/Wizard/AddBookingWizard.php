@@ -280,6 +280,9 @@ class AddBookingWizard extends SimpleWizard
 
         event(new NotificationEvent($notification));
 
+        // Send Email
+        $this->sendBookingConfirmationEmail($booking);
+
         return $this->redirect(route('bookings.lists'), navigate: true);
         // return $this->redirect(route('bookings.show', ['booking' => $booking->id]), navigate: true);
         // return $this->redirect(route('dashboard', ['dash' => 'home']), navigate: true);
@@ -332,22 +335,22 @@ class AddBookingWizard extends SimpleWizard
     public function sendBookingConfirmationEmail($booking){
 
         $model = [
-            'guest_id' => (int) $this->booking->guest_id, // Ensure integer
-            'booking_id' => (int) $this->booking->id, // Ensure integer
+            'guest_id' => (int) $booking->guest_id, // Ensure integer
+            'booking_id' => (int) $booking->id, // Ensure integer
         ];
 
         $subjectReplace = [
-            $this->booking->reference,
+            $booking->reference,
             current_property()->name ?? 'Hotel',
         ];
 
         $contentReplace = [
             $booking->guest->name ?? 'Arden BOUET',
             current_property()->name,
-            format_currency($booking->amount ?? 0),
-            $booking->check_in,
-            $booking->check_out,
-            $booking->total_amount,
+            // format_currency($booking->amount ?? 0),
+            Carbon::parse($booking->check_in)->format('d M Y'),
+            Carbon::parse($booking->check_out)->format('d M Y'),
+            format_currency($booking->total_amount ?? 0),
             current_company()->name
         ];
         $data = [

@@ -284,6 +284,7 @@ body {
         <div class="footer">
             <p>Thank you for choosing <?php echo e(current_company()->name); ?>.</p>
             <p>Contact us at <?php echo e(current_company()->phone ?? '+254 123 456 789'); ?> or <?php echo e(current_company()->email ?? 'ndako@koverae.com'); ?>.</p>
+            <p>Powered by <a href="https://ndako.koverae.com/?utm=mail"><b>Ndako</b></a></p>
         </div>
     </div>
 </body>

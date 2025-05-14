@@ -5,8 +5,8 @@
         <div class="guest-details">
             <p><strong>Guest:</strong> {{ $guest_name }}</p>
             <p><strong>Booking Reference:</strong> {{ $reference }}</p>
-            <p><strong>Check-In Date:</strong> {{ $check_in ?? $date }}</p>
-            <p><strong>Check-Out Date:</strong> {{ $check_out ?? 'N/A' }}</p>
+            <p><strong>Check-In Date:</strong> {{ \Carbon\Carbon::parse($check_in)->format('d M Y') ?? "N/A" }}</p>
+            <p><strong>Check-Out Date:</strong> {{ \Carbon\Carbon::parse($check_out)->format('d M Y') ?? 'N/A' }}</p>
         </div>
 
         <!-- Booking Details -->
@@ -27,7 +27,7 @@
                 </div>
                 <div class="detail-item">
                     <i class="bi bi-calendar-check"></i>
-                    <strong>Dates:</strong> {{ $check_in ?? $date }} to {{ $check_out ?? 'N/A' }}
+                    <strong>Dates:</strong> {{ \Carbon\Carbon::parse($check_in)->format('d M Y') ?? "N/A" }} to {{ \Carbon\Carbon::parse($check_out)->format('d M Y') ?? 'N/A' }}
                 </div>
             </div>
             <div class="total-amount">

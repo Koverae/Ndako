@@ -94,7 +94,7 @@
                         <div class="mt-1 text-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <button type="submit" wire:click='createBooking' class="btn btn-primary">Pay</button>
+                    <button type="submit" wire:click='createBooking' wire:loading.class="disabled" class="btn btn-primary">Pay</button>
                 </div>
                 @endif
             </div>
