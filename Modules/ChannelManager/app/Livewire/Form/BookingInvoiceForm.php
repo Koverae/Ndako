@@ -19,6 +19,8 @@ use Modules\App\Traits\Form\Button\ActionBarButton as ActionBarButtonTrait;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Properties\Models\Property\PropertyUnit;
 
@@ -124,19 +126,78 @@ class BookingInvoiceForm extends LightWeightForm
         $this->dispatch('openModal', component: 'channelmanager::modal.add-invoice-payment-modal', arguments: ['invoice' => $this->invoice->id]);
     }
 
-    public function sendEmail(){
-        $subject = ['{property_name}', '{reference}'];
-        $subjectReplace = [current_property()->name, $this->invoice->reference];
-
-        $content = ['{total_amount}', '{reference}', '{guest_name}', '{company_name}'];
-        $contentReplace = [
-            format_currency($this->invoice->total_amount ?? 0),
-            $this->invoice->reference,
-            $this->invoice->guest->name,
-            current_property()->name,
-        ];
-
-        $this->dispatch('openModal', component: 'app::modal.send-by-email-modal', arguments: ['templateId' => 10, $this->invoice, 'subjectSearch' => $subject, 'subjectReplace' => $subjectReplace, 'contentSearch' => $content, 'contentReplace' => $contentReplace ]);
+    public function sendEmail()
+{
+    // Validate invoice and related data
+    if (!$this->invoice || !$this->invoice->guest_id || !$this->invoice->booking_id) {
+        Log::error('Invalid invoice data for email', [
+            'invoice_id' => $this->invoice->id ?? null,
+            'guest_id' => $this->invoice->guest_id ?? null,
+            'booking_id' => $this->invoice->booking_id ?? null,
+        ]);
+        LivewireAlert::title('Error')
+            ->text('Cannot send email: Invalid invoice or guest.')
+            ->error()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+        return;
     }
+
+    // Validate guest existence
+    $guest = Guest::find($this->invoice->guest_id);
+    if (!$guest) {
+        Log::error('Guest not found for invoice', [
+            'invoice_id' => $this->invoice->id,
+            'guest_id' => $this->invoice->guest_id,
+        ]);
+        LivewireAlert::title('Error')
+            ->text('Cannot send email: Guest not found.')
+            ->error()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+        return;
+    }
+
+    $subject = ['{property_name}', '{reference}'];
+    $subjectReplace = [current_property()->name, $this->invoice->reference];
+
+    $content = ['{total_amount}', '{reference}', '{guest_name}', '{company_name}'];
+    $contentReplace = [
+        format_currency($this->invoice->total_amount ?? 0),
+        $this->invoice->reference,
+        $guest->name,
+        current_property()->name,
+    ];
+    $data = [
+        'total_amount' => format_currency($this->invoice->total_amount ?? 0),
+        'reference' => $this->invoice->reference,
+        'payment_method' => 'M-Pesa',
+        'company_phone' => '+254 123 456 789',
+    ];
+
+    // Log dispatched data
+    $dispatchData = [
+        'component' => 'app::modal.send-by-email-modal',
+        'arguments' => [
+            'templateId' => 11,
+            'model' => [
+                'guest_id' => (int) $this->invoice->guest_id,
+                'booking_id' => (int) $this->invoice->booking_id,
+            ],
+            'subjectSearch' => $subject,
+            'subjectReplace' => $subjectReplace,
+            'contentSearch' => $content,
+            'contentReplace' => $contentReplace,
+            'data' => $data,
+        ],
+    ];
+    Log::info('Dispatching openModal for SendByEmailModal', $dispatchData);
+
+    $this->dispatch('openModal', $dispatchData);
+}
 
 }

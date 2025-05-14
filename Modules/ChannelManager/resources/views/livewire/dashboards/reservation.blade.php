@@ -164,12 +164,12 @@
                             <tr>
                                 <td>{{ $booking->guest->name }}</td>
                                 <td>{{ __('Room') }} {{ $booking->unit->name }}</td>
-                                <td>{{ $booking->agent->name }}</td>
+                                <td>{{ $booking->agent->name ?? 'N/A' }}</td>
                                 <td>{{ __(format_currency($booking->total_amount)) }}</td>
                             </tr>
                             @empty
                             <tr>
-
+                                {{ __('No data available') }}
                             </tr>
                             @endforelse
                         </tbody>
@@ -199,7 +199,7 @@
                             <tr>
                                 <td>{{ $booking->guest->name }}</td>
                                 <td>{{ __('Room') }} {{ $booking->unit->name }}</td>
-                                <td>{{ $booking->agent->name }}</td>
+                                <td>{{ $booking->agent->name ?? 'N/A' }}</td>
                                 <td>{{ __(format_currency($booking->total_amount)) }}</td>
                             </tr>
                             @empty

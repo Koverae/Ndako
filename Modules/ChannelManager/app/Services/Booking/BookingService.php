@@ -170,14 +170,15 @@ class BookingService
         }
 
         // ✅ Ensure payment is complete before check-out
-        if ($booking->total_amount !== $booking->amount_paid) {
-            $outstandingBalance = $booking->total_amount - $booking->amount_paid;
+        if ($booking->total_amount !== $booking->paid_amount) {
+            $outstandingBalance = $booking->total_amount - $booking->paid_amount;
             session()->flash('error', "Check-out denied! Outstanding balance of " . format_currency($outstandingBalance) . " must be cleared first.");
             return redirect()->back();
         }
 
         // ✅ Allow check-out on or before the check-out date
-        if ($booking->check_out >= now()) {
+        // if ($booking->check_out >= now()) {
+        if ($booking->check_out) {
             // Update the room's status (pending cleaning before availability)
             $booking->unit->update([
                 'status' => 'vacant',

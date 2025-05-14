@@ -31,7 +31,7 @@ class General extends AppSetting
     public $paystackPublicKey, $paystackSecretKey, $paystackBaseUrl, $paystackMerchandEmail;
 
     public $default_currency, $koverae_digest, $has_customer_account = 'on_invitation', $geolocation_provider = 'open_street_map';
-    public bool $has_default_check_times = false, $has_online_payment = false, $has_lock_confirmed_booking = false, $has_pro_format_invoice = false, $has_overbooking_prevention = false, $has_stay_rule_per_unit = false, $has_cleaning_frequency = false, $has_maintenance_alerts = false, $has_housekeeping_staff = false, $has_maintenance_requests = false, 
+    public bool $has_default_check_times = false, $has_online_payment = false, $has_lock_confirmed_booking = false, $has_pro_format_invoice = false, $has_overbooking_prevention = false, $has_stay_rule_per_unit = false, $has_cleaning_frequency = false, $has_maintenance_alerts = false, $has_housekeeping_staff = false, $has_maintenance_requests = false,
     $has_paystack = false, $has_digest_email = true, $has_default_access_right = true, $has_geo_localization = false, $has_recaptcha = false, $has_reset_password = true, $has_quick_find = true, $has_import_from_xls = true;
 
     public function mount($setting){

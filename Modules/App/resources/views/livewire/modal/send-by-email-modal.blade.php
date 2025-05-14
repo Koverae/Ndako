@@ -20,10 +20,10 @@
                                 </label>
                             </div>
                             <!-- Input Form -->
-                            <div class="k_cell k_wrap_input flex-grow-1 gap-3">
+                            <div class="gap-3 k_cell k_wrap_input flex-grow-1">
                                 <input type="text" wire:model="email" class="k-input" style="padding: 1px 0 0; width: 75%;" id="date_0">
 
-                                <span class="btn btn-primary gap-2" wire:click="addEmail">
+                                <span class="gap-2 btn btn-primary" wire:click="addEmail">
                                     <i class="fas fa-user-plus"></i> {{__('Add')}}
                                 </span>
                                 @error('email') <span class="error">{{ $message }}</span> @enderror
@@ -31,7 +31,7 @@
 
                             <span class="loader-spin-1" wire:loading wire:target="addEmail"></span>
 
-                            <div class="w-75 d-flex mt-2">
+                            <div class="mt-2 w-75 d-flex">
                                 @foreach ($recipient_emails as $email)
                                 <a class="cursor-pointer badge rounded-pill k_web_settings_users" style="background-color: #097274;">
                                     < {{ $email }} >
@@ -66,33 +66,21 @@
 
                     </div>
 
-                    {{-- <div class="k_inner_group">
-                        <div class="d-flex" style="margin-bottom: 8px;">
-                            <div x-data="{ fileInput: null }">
-                            <label for="fileInput" class="p-2 m-1 border-0 rounded k_select_file_button btn btn-light">
-                                <span x-text="fileInput ? fileInput.name + ' (' + fileInput.type + ')' : 'Choose File'"></span>
-                                <input type="file" id="fileInput" wire:model="file" x-ref="fileInput" class="d-none" />
-                                </label>
-                            </div>
-                            <div
-                                x-data="{ uploading: false, progress: 0 }"
-                                x-on:livewire-upload-start="uploading = true"
-                                x-on:livewire-upload-finish="uploading = false"
-                                x-on:livewire-upload-error="uploading = false"
-                                x-on:livewire-upload-progress="progress = $event.detail.progress">
-                                @if ($file)
-                                    <img src="{{ $file->temporaryUrl() }}">
-                                @endif
-                                <!-- File Input -->
-                                <input type="file" wire:model="file">
-
-                                <!-- Progress Bar -->
-                                <div x-show="uploading">
-                                    <progress max="100" x-bind:value="progress"></progress>
-                                </div>
-                            </div>
+                    <!-- Attachment -->
+                    <div class="mb-3 k_inner_group">
+                        <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
+                            <label for="file" class="k_form_label">{{ __('Attachment (Optional PDF)') }}:</label>
                         </div>
-                    </div> --}}
+                        <div class="k_cell k_wrap_input flex-grow-1">
+                            <input type="file" wire:model="file" class="k-input" id="file" accept=".pdf">
+                            @if ($attachment)
+                                <small class="mt-1 text-muted d-block">{{ __('A generated PDF will be attached automatically.') }}</small>
+                            @endif
+                            @error('file')
+                                <span class="error text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
 
                     <div class="k_inner_group">
                         <div class="d-flex" style="margin-bottom: 8px;">
