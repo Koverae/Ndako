@@ -3,11 +3,52 @@
 namespace Modules\App\Services;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Modules\App\Emails\Template;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class GuestCommunicationService{
 
-    
+
+    /**
+     * Initialize the modal with template and model data, replacing placeholders.
+     *
+     * @param int $templateId ID of the selected email template.
+     * @param mixed $model Model data (e.g., booking, invoice).
+     * @param array $subjectSearch Placeholders to search in subject.
+     * @param array $subjectReplace Values to replace in subject.
+     * @param array $contentSearch Placeholders to search in content.
+     * @param array $contentReplace Values to replace in content.
+     * @param array $data Additional data for PDF generation (e.g., total_amount, guest_name).
+     */
+
+    public function initiateTemplate($templateId, $model){
+
+        // Ensure $model is an array
+        $model = is_array($model) ? $model : [];
+        Log::info('Normalized model', ['model' => $model]);
+
+        $templates = $this->getTemplates();
+
+        // Find selected template
+        $selected = collect($templates)->firstWhere('id', $templateId);
+        if (!$selected) {
+            Log::warning('Invalid template ID provided', ['template_id' => $templateId]);
+            LivewireAlert::title('Error')
+                ->text('Invalid email template selected.')
+                ->error()
+                ->position('top-end')
+                ->timer(4000)
+                ->toast()
+                ->show();
+            return false;
+        }
+        $template = (object) $selected;
+
+    }
+
     /**
      * Load available email templates.
      *
@@ -206,4 +247,89 @@ class GuestCommunicationService{
         }
     }
 
+
+    /**
+     * Send the email with optional attachment.
+     *
+     * @param array $recipientEmails Data for PDF rendering (e.g., total_amount, guest_name).
+     * @throws \Exception If email sending fails.
+     */
+    public function sendEmail(
+        $recipientEmails,
+        $template,
+        $subject,
+        $content,
+        $attachment,
+        $file = null
+    )
+    {
+
+        try {
+
+            // Prepare recipients
+            $recipients = collect($recipientEmails)
+                ->flatten()
+                ->unique()
+                ->filter()
+                ->toArray();
+
+            if (empty($recipients)) {
+                throw new \Exception('No valid recipients provided.');
+            }
+
+            // Determine attachment
+            $attachmentPath = $attachment;
+            if ($file) {
+                $attachmentPath = $file->store('public/attachments');
+                $attachmentPath = storage_path('app/' . $attachmentPath);
+            }
+
+            // Log email details
+            Log::info('Preparing to send email', [
+                'template_id' => $template->id,
+                'apply_to' => $template->apply_to,
+                'recipients' => $recipients,
+                'attachment' => $attachmentPath,
+            ]);
+
+            // Send email
+            Mail::to($recipients)->send(new Template(
+                subject: $subject,
+                content: $content,
+                company: current_company(),
+                attachment: $attachmentPath
+            ));
+
+            // Clean up temporary attachment
+            if ($attachmentPath && $attachment && Storage::exists('public/' . basename($attachmentPath))) {
+                Storage::delete('public/' . basename($attachmentPath));
+            }
+
+            // Show success alert
+            LivewireAlert::title('Email Sent!')
+                ->text('Email sent to all recipients successfully.')
+                ->success()
+                ->position('top-end')
+                ->timer(4000)
+                ->toast()
+                ->show();
+
+            // $this->closeModal();
+
+        } catch (\Exception $e) {
+            Log::error('Email sending failed', [
+                'template_id' => $template->id,
+                'recipients' => $recipientEmails,
+                'error' => $e->getMessage(),
+            ]);
+
+            LivewireAlert::title('Email Failed')
+                ->text('We couldn’t send the email. Please try again later.')
+                ->error()
+                ->position('top-end')
+                ->timer(4000)
+                ->toast()
+                ->show();
+        }
+    }
 }

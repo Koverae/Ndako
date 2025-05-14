@@ -190,81 +190,20 @@ class SendByEmailModal extends ModalComponent
      */
     public function sendEmail()
     {
-        try {
-            // Validate inputs
-            $this->validate([
-                'recipient_emails' => ['required', 'array', 'min:1'],
-                'recipient_emails.*' => ['email'],
-                'subject' => ['required', 'string', 'max:255'],
-                'content' => ['required', 'string'],
-                'file' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
-            ]);
+        // Validate inputs
+        $this->validate();
 
-            // Prepare recipients
-            $recipients = collect($this->recipient_emails)
-                ->flatten()
-                ->unique()
-                ->filter()
-                ->toArray();
+        // Send Email
+        $this->guestCommunicationService->sendEmail(
+            $this->recipient_emails,
+            $this->template,
+            $this->subject,
+            $this->content,
+            $this->attachment
+        );
 
-            if (empty($recipients)) {
-                throw new \Exception('No valid recipients provided.');
-            }
+        $this->closeModal();
 
-            // Determine attachment
-            $attachmentPath = $this->attachment;
-            if ($this->file) {
-                $attachmentPath = $this->file->store('public/attachments');
-                $attachmentPath = storage_path('app/' . $attachmentPath);
-            }
-
-            // Log email details
-            Log::info('Preparing to send email', [
-                'template_id' => $this->template_id,
-                'apply_to' => $this->template->apply_to,
-                'recipients' => $recipients,
-                'attachment' => $attachmentPath,
-            ]);
-
-            // Send email
-            Mail::to($recipients)->send(new Template(
-                subject: $this->subject,
-                content: $this->content,
-                company: current_company(),
-                attachment: $attachmentPath
-            ));
-
-            // Clean up temporary attachment
-            if ($attachmentPath && $this->attachment && Storage::exists('public/' . basename($attachmentPath))) {
-                Storage::delete('public/' . basename($attachmentPath));
-            }
-
-            // Show success alert
-            LivewireAlert::title('Email Sent!')
-                ->text('Email sent to all recipients successfully.')
-                ->success()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-
-            $this->closeModal();
-
-        } catch (\Exception $e) {
-            Log::error('Email sending failed', [
-                'template_id' => $this->template_id,
-                'recipients' => $this->recipient_emails,
-                'error' => $e->getMessage(),
-            ]);
-
-            LivewireAlert::title('Email Failed')
-                ->text('We couldn’t send the email. Please try again later.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-        }
     }
 
     /**
