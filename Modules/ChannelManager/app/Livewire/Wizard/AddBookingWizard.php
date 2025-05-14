@@ -13,6 +13,7 @@ use Modules\App\Livewire\Components\Wizard\SimpleWizard;
 use Modules\App\Livewire\Components\Wizard\Step;
 use Modules\App\Livewire\Components\Wizard\StepPage;
 use Modules\App\Models\Notification\Notification;
+use Modules\App\Services\GuestCommunicationService;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
@@ -29,6 +30,7 @@ class AddBookingWizard extends SimpleWizard
     public array $paymentOptions = [];
     public bool $checkedIn = true;
     protected $rateService, $bookingService;
+    private GuestCommunicationService $guestCommunicationService;
 
     // Define validation rules
     protected $rules = [
@@ -42,9 +44,10 @@ class AddBookingWizard extends SimpleWizard
         'checkedIn' => 'nullable|boolean',
     ];
 
-    public function boot(RateService $rateService, BookingService $bookingService){
+    public function boot(RateService $rateService, BookingService $bookingService, GuestCommunicationService $guestCommunicationService){
         $this->rateService = $rateService;
         $this->bookingService = $bookingService;
+        $this->guestCommunicationService = $guestCommunicationService;
     }
 
     public function mount($startDate = null, $endDate = null){
@@ -326,7 +329,7 @@ class AddBookingWizard extends SimpleWizard
     }
 
     // Send Email
-    public function sendBookingConfirmationEmail($payment){
+    public function sendBookingConfirmationEmail($booking){
 
         $model = [
             'guest_id' => (int) $this->booking->guest_id, // Ensure integer
@@ -339,22 +342,28 @@ class AddBookingWizard extends SimpleWizard
         ];
 
         $contentReplace = [
-            $this->booking->guest->name ?? 'Arden BOUET',
-            format_currency($payment->amount ?? 0),
-            $this->booking->reference,
+            $booking->guest->name ?? 'Arden BOUET',
             current_property()->name,
+            format_currency($booking->amount ?? 0),
+            $booking->check_in,
+            $booking->check_out,
+            $booking->total_amount,
+            current_company()->name
         ];
         $data = [
-            'total_amount' => format_currency($payment->amount ?? 0),
-            'reference' => $payment->reference,
-            'booking_reference' => $this->booking->reference,
-            'date' => $payment->date,
-            'payment_method' => $payment->payment_method,
+            'total_amount' => format_currency($booking->amount ?? 0),
+            'reference' => $booking->reference,
+            'booking_reference' => $booking->reference,
+            'date' => $booking->date,
+            'check_in' => $booking->check_in,
+            'check_out' => $booking->check_out,
+            'room_type' => $booking->unit->unitType->name,
+            'guest_count' => $booking->unit->unitType->capacity,
             // 'company_phone' => '+254 123 456 789',
         ];
 
         // Send Payment Receipt Email
-        $this->guestCommunicationService->initiateTemplate(10, $model, $subjectReplace, $contentReplace, $data);
+        $this->guestCommunicationService->initiateTemplate(1, $model, $subjectReplace, $contentReplace, $data);
     }
 
 }

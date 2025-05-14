@@ -313,6 +313,7 @@ class GuestCommunicationService{
         $templateMap = [
             'invoice' => 'app::pdf.templates.invoice',
             'payment' => 'app::pdf.templates.payment',
+            'booking-confirmation' => 'app::pdf.templates.booking-confirmation',
         ];
 
         if (!isset($templateMap[$applyTo])) {
