@@ -182,6 +182,26 @@
                         @endcan
 
 
+                        @can('manage_reservations')
+                        <li class="nav-item dropdown" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                              <span class="nav-link-title">
+                                  {{ __('Point of Sales') }}
+                              </span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-menu-columns">
+                                    <!-- Left Side -->
+                                    <div class="dropdown-menu-column">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('properties.units.lists') }}">
+                                            {{ __('Overview') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        @endcan
+
                         {{-- @can('manage_reservations')
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >

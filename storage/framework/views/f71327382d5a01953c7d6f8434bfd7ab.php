@@ -212,6 +212,28 @@ if (isset($__slots)) unset($__slots);
                         <?php endif; ?>
 
 
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_reservations')): ?>
+                        <li class="nav-item dropdown" data-turbolinks>
+                            <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                              <span class="nav-link-title">
+                                  <?php echo e(__('Point of Sales')); ?>
+
+                              </span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-menu-columns">
+                                    <!-- Left Side -->
+                                    <div class="dropdown-menu-column">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('properties.units.lists')); ?>">
+                                            <?php echo e(__('Overview')); ?>
+
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <?php endif; ?>
+
                         
 
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('access_settings')): ?>

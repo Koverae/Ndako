@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koverae POS Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a {
+            color: #045054;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #033a3f;
+        }
+        button, label {
+            cursor: pointer;
+        }
+
+        /* Header */
+        .header {
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        .header .logo img {
+            height: 32px;
+            width: auto;
+        }
+        .header .property-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #045054;
+        }
+        .header .user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header .user span {
+            font-size: 13px;
+            color: #4b5563;
+        }
+        .header .user a {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main {
+            margin-top: 56px; /* Header height */
+            padding: 16px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            position: sticky;
+            top: 56px;
+            background-color: #ffffff;
+            padding: 8px;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+            z-index: 800;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px 32px 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .search-bar input:focus {
+            outline: none;
+            border-color: #045054;
+        }
+        .search-bar .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 12px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+        .category {
+            padding: 8px 16px;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            white-space: nowrap;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .category:hover {
+            background-color: #045054;
+            color: #ffffff;
+            border-color: #045054;
+        }
+        .category.home {
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .category.home i {
+            font-size: 18px;
+        }
+
+        /* Product List */
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .product {
+            background-color: #ffffff;
+            border: 1px solid #f9fafb;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.2s, border 0.2s;
+            cursor: pointer;
+        }
+        .product:hover {
+            transform: scale(1.03);
+            border-color: #045054;
+        }
+        .product img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+        .product .product-content {
+            padding: 8px;
+        }
+        .product .product-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1f2937;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .product .price-tag {
+            font-size: 13px;
+            font-weight: 700;
+            color: #045054;
+            margin-top: 4px;
+        }
+        .product .stock-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: #e5e7eb;
+            color: #1f2937;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .product .info-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            background-color: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 16px;
+            margin-bottom: 80px; /* Space for fixed calculator */
+        }
+        .order-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db transparent;
+        }
+        .order-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .order-list::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+        }
+        .order-list::-webkit-scrollbar-thumb:hover {
+            background-color: #045054;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .order-item:hover {
+            background-color: #e6f2f3;
+        }
+        .order-item .name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .order-item .price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #045054;
+            width: 80px;
+            text-align: right;
+        }
+        .order-item .details {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .order-total {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding: 12px 0;
+            background-color: #f9fafb;
+            border-radius: 4px;
+        }
+        .order-total .label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .order-total .value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #045054;
+        }
+        .order-total .subentry {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Calculator */
+        .calculator {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #d8dadd;
+            padding: 8px 16px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .calculator .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .calculator input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .calculator input:focus {
+            outline: none;
+            border-color: #045054;
+        }
+        .calculator .mode {
+            padding: 10px 16px;
+            background-color: #e0edef;
+            border: 1px solid #017e84;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #045054;
+        }
+        .calculator .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+        .calculator .keypad button {
+            padding: 12px;
+            border: none;
+            background-color: #ffffff;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            transition: background-color 0.2s;
+        }
+        .calculator .keypad button:hover {
+            background-color: #045054;
+            color: #ffffff;
+        }
+        .calculator .keypad .action {
+            background-color: #e5e7eb;
+        }
+        .calculator .keypad .action:hover {
+            background-color: #d1d5db;
+        }
+        .calculator .keypad .pay {
+            background-color: #045054;
+            color: #ffffff;
+        }
+        .calculator .keypad .pay:hover {
+            background-color: #033a3f;
+        }
+        .calculator .keypad .customer {
+            background-color: #ffffff;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .calculator .keypad .customer:hover {
+            background-color: #f1f3f4;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 1024px) {
+            .product-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        @media screen and (max-width: 768px) {
+            .product-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .calculator .keypad {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .calculator .input-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .calculator .mode {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        @media screen and (max-width: 507px) {
+            .product-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .product .product-name,
+            .product .price-tag {
+                font-size: 12px;
+            }
+            .main {
+                padding: 8px;
+            }
+            .header {
+                padding: 8px 12px;
+            }
+            .header .logo img {
+                height: 28px;
+            }
+            .header .property-name {
+                font-size: 14px;
+            }
+            .header .user span,
+            .header .user a {
+                font-size: 12px;
+            }
+        }
+        @media screen and (max-width: 380px) {
+            .product-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .product .product-name,
+            .product .price-tag {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAAAiCAYAAACJHLh/AAAACXBIWXMAAAsTAAALEwEAmpwYAAABZElEQVR4nO3aMUrEQBSA4d3FKBaiCAoKQkRBRATb6A+wEv1iX0R/QDwJFrETbETEWGltbGzsLCwsLDR2ZjfZ3b3kHDzM7ryZ+XZm5p3ZmcGYAOD/AO8A/xJ4n8D7BN4n8D6B9wn8T+B9Au8TeJ/A+wTeJ/A+gfMJvE/gfQLvE3ifwPsE3ifwPoH3CbxP4H0C7xN4n8D7BN4n8D6B9wm8T+B9Au8TeJ/A+wTeJ/A+gfMJvE/gfQLvE3ifwPsE3ifwPoH3CbxP4H0C7xN4n8D7BN4n8D6B9wm8T+B9Au8TeJ/A+wTeJ/A+gfMJvE/gfQLvE3ifwPsE3ifwPoH3CbxP4H0C7xN4n8D7BN4n8D6B9wm8T+B9Au8TeJ/A+wTeJ/A+gfMJvE/gfQLvE3ifwPsE3ifwPoH3CbxP4H0C7xN4n8D7BN4n8D6B9wm8T+B9Au8TeJ/A+wTeJ/A+gfMJvE/gfQLvE3ifwPsE3ifwPoH3CbxP4P0B/gXwfxuM6aA4AAAAAElFTkSuQmCC" alt="Koverae Logo">
+        </div>
+        <div class="property-name">Koverae Hotel</div>
+        <div class="user">
+            <span>John Doe</span>
+            <a href="#">Logout</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" placeholder="Search products..." aria-label="Search products">
+            <i class="bi bi-search search-icon"></i>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <div class="category home">
+                <i class="bi bi-house-fill"></i>
+            </div>
+            <div class="category">Rooms</div>
+            <div class="category">Dining</div>
+            <div class="category">Amenities</div>
+            <div class="category">Services</div>
+        </div>
+
+        <!-- Product List -->
+        <div class="product-list">
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Deluxe+Suite" alt="Deluxe Suite">
+                <div class="product-content">
+                    <div class="product-name">Deluxe Suite</div>
+                    <div class="price-tag">KES 20,000</div>
+                </div>
+                <div class="stock-badge">10</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Breakfast" alt="Breakfast">
+                <div class="product-content">
+                    <div class="product-name">Breakfast</div>
+                    <div class="price-tag">KES 2,500</div>
+                </div>
+                <div class="stock-badge">50</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Spa+Session" alt="Spa Session">
+                <div class="product-content">
+                    <div class="product-name">Spa Session</div>
+                    <div class="price-tag">KES 5,000</div>
+                </div>
+                <div class="stock-badge">20</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Airport+Transfer" alt="Airport Transfer">
+                <div class="product-content">
+                    <div class="product-name">Airport Transfer</div>
+                    <div class="price-tag">KES 3,000</div>
+                </div>
+                <div class="stock-badge">15</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Executive+Suite" alt="Executive Suite">
+                <div class="product-content">
+                    <div class="product-name">Executive Suite</div>
+                    <div class="price-tag">KES 25,000</div>
+                </div>
+                <div class="stock-badge">8</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Dinner+Package" alt="Dinner Package">
+                <div class="product-content">
+                    <div class="product-name">Dinner Package</div>
+                    <div class="price-tag">KES 4,000</div>
+                </div>
+                <div class="stock-badge">30</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Pool+Access" alt="Pool Access">
+                <div class="product-content">
+                    <div class="product-name">Pool Access</div>
+                    <div class="price-tag">KES 1,500</div>
+                </div>
+                <div class="stock-badge">100</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Gym+Session" alt="Gym Session">
+                <div class="product-content">
+                    <div class="product-name">Gym Session</div>
+                    <div class="price-tag">KES 2,000</div>
+                </div>
+                <div class="stock-badge">40</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Conference+Room" alt="Conference Room">
+                <div class="product-content">
+                    <div class="product-name">Conference Room</div>
+                    <div class="price-tag">KES 10,000</div>
+                </div>
+                <div class="stock-badge">5</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Laundry+Service" alt="Laundry Service">
+                <div class="product-content">
+                    <div class="product-name">Laundry Service</div>
+                    <div class="price-tag">KES 1,000</div>
+                </div>
+                <div class="stock-badge">200</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=City+Tour" alt="City Tour">
+                <div class="product-content">
+                    <div class="product-name">City Tour</div>
+                    <div class="price-tag">KES 6,000</div>
+                </div>
+                <div class="stock-badge">12</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/300x120?text=Bar+Package" alt="Bar Package">
+                <div class="product-content">
+                    <div class="product-name">Bar Package</div>
+                    <div class="price-tag">KES 3,500</div>
+                </div>
+                <div class="stock-badge">25</div>
+                <i class="bi bi-info info-icon" aria-label="Product info"></i>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="order-list">
+                <div class="order-item">
+                    <div class="name">Deluxe Suite</div>
+                    <div class="price">KES 20,000</div>
+                    <div class="details">1 Unit x KES 20,000</div>
+                </div>
+                <div class="order-item">
+                    <div class="name">Breakfast Package</div>
+                    <div class="price">KES 5,000</div>
+                    <div class="details">2 Units x KES 2,500</div>
+                </div>
+            </div>
+            <div class="order-total">
+                <div class="label">Total:</div>
+                <div class="value">KES 25,000</div>
+                <div class="subentry">Taxes: KES 2,000</div>
+            </div>
+        </div>
+
+        <!-- Calculator -->
+        <div class="calculator">
+            <div class="input-row">
+                <input type="text" value="1" aria-label="Quantity input">
+                <div class="mode">Qty</div>
+            </div>
+            <div class="keypad">
+                <button class="customer">
+                    <i class="bi bi-people"></i> Client
+                </button>
+                <button class="pay">Payer</button>
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button class="action">Qté</button>
+                <button>4</button>
+                <button>5</button>
+                <button>6</button>
+                <button class="action">Réduc</button>
+                <button>7</button>
+                <button>8</button>
+                <button>9</button>
+                <button class="action">Prix</button>
+                <button>0</button>
+                <button>,</button>
+                <button><i class="bi bi-backspace"></i></button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
