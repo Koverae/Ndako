@@ -8,692 +8,8 @@
 <meta name="color-scheme" content="light">
 <meta name="supported-color-schemes" content="light">
 
-<style type="text/css">
-    body {
-  margin: 0;
-  padding: 0;
-  background-color: #f6f7f9;
-  font-size: 14px;
-  line-height: 171.4285714286%;
-  mso-line-height-rule: exactly;
-  color: #3A4859;
-  width: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-          font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-}
-@media only screen and (max-width: 560px) {
-  body {
-    font-size: 14px !important;
-  }
-}
 
-body, table, td {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-table:not(.main) {
-  -premailer-cellpadding: 0;
-  -premailer-cellspacing: 0;
-}
-
-.preheader {
-  padding: 0;
-  font-size: 0;
-  display: none;
-  max-height: 0;
-  mso-hide: all;
-  line-height: 0;
-  color: transparent;
-  height: 0;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  visibility: hidden;
-  width: 0;
-}
-
-.main {
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-}
-
-.wrap {
-  width: 100%;
-  max-width: 640px;
-  text-align: left;
-}
-
-.wrap-narrow {
-  max-width: 500px;
-}
-
-.box {
-  background: #ffffff;
-  border-radius: 4px;
-  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  border: 1px solid #dce0e5;
-}
-.box + .box {
-  margin-top: 24px;
-}
-
-.content,
-.content-image-text {
-  padding: 40px 48px;
-}
-@media only screen and (max-width: 560px) {
-  .content,
-  .content-image-text {
-    padding: 24px !important;
-  }
-}
-
-.content-image-text {
-  padding: 24px;
-}
-
-.content-big {
-  padding: 48px;
-}
-
-.content-image {
-  height: 360px;
-  background-position: center;
-  background-size: cover;
-}
-@media only screen and (max-width: 560px) {
-  .content-image {
-    height: 100px !important;
-  }
-}
-
-.content-image-sm {
-  height: 200px;
-}
-
-.content-image-text {
-  background-repeat: repeat;
-  vertical-align: bottom;
-  color: #fff;
-  font-weight: 400;
-}
-@media only screen and (max-width: 560px) {
-  .content-image-text {
-    padding-top: 96px !important;
-  }
-}
-
-
-h1, .h1,
-h2, .h2,
-h3, .h3,
-h4, .h4,
-h5, .h5 {
-  font-weight: 600;
-  margin: 0 0 0.5em;
-  color: #232b42;
-}
-h1 a, .h1 a,
-h2 a, .h2 a,
-h3 a, .h3 a,
-h4 a, .h4 a,
-h5 a, .h5 a {
-  color: inherit;
-}
-
-h1, .h1 {
-  font-size: 28px;
-  line-height: 130%;
-}
-@media only screen and (max-width: 560px) {
-  h1, .h1 {
-    font-size: 24px !important;
-  }
-}
-
-h2, .h2 {
-  font-size: 24px;
-  line-height: 130%;
-}
-@media only screen and (max-width: 560px) {
-  h2, .h2 {
-    font-size: 20px !important;
-  }
-}
-
-h3, .h3 {
-  font-size: 20px;
-  line-height: 130%;
-}
-@media only screen and (max-width: 560px) {
-  h3, .h3 {
-    font-size: 18px !important;
-  }
-}
-
-h4, .h4 {
-  font-size: 16px;
-}
-
-h5, .h5 {
-  font-size: 14px;
-}
-
-hr,
-.hr {
-  border: none;
-  height: 1px;
-  background-color: #dce0e5;
-  margin: 32px 0;
-}
-
-figure {
-  margin: 0;
-}
-
-pre {
-  font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
-  font-size: 12px;
-  white-space: pre-wrap;
-  max-width: 100%;
-  word-break: break-word;
-  overflow: auto;
-  background: #f6f7f9;
-  color: #3A4859;
-  border-radius: 4px;
-  padding: 8px 12px;
-  -moz-tab-size: 3;
-    -o-tab-size: 3;
-       tab-size: 3;
-  margin: 0;
-}
-pre code {
-  color: inherit;
-  background: none;
-  padding: 0;
-  font-size: 12px;
-}
-
-code {
-  color: #3A4859;
-  font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
-  font-weight: 400;
-  font-size: 13px;
-  white-space: pre-wrap;
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-  background: #f6f7f9;
-  word-break: break-word;
-}
-
-.table-pre pre {
-  padding: 0 8px;
-  background: transparent;
-}
-.table-pre td {
-  font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
-  font-size: 12px;
-  background: #f6f7f9;
-  color: #3A4859;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.table-pre .table-pre-line {
-  text-align: right;
-  padding: 0 12px;
-  vertical-align: top;
-  color: #667382;
-  background: #f3f4f7;
-  width: 1%;
-}
-.table-pre .table-pre-line-highlight-red td {
-  background: #fbebeb;
-  color: #d63939;
-}
-.table-pre .table-pre-line-highlight-red td pre {
-  color: #d63939;
-}
-.table-pre .table-pre-line-highlight-green td {
-  background: #eaf7ec;
-  color: #2fb344;
-}
-.table-pre .table-pre-line-highlight-green td pre {
-  color: #2fb344;
-}
-.table-pre tr:first-child td {
-  padding-top: 8px;
-}
-.table-pre tr:last-child td {
-  padding-bottom: 8px;
-}
-
-img {
-  border: 0 none;
-  line-height: 100%;
-  outline: none;
-  text-decoration: none;
-  vertical-align: baseline;
-  font-size: 0;
-}
-
-a {
-  color: #206bc4;
-  text-decoration: none;
-}
-
-
-/*
-Margins, paddings
- */
- .m-0 {
-  margin: 0;
-}
-
-.mt-0,
-.my-0 {
-  margin-top: 0;
-}
-
-.mr-0,
-.mx-0 {
-  margin-right: 0;
-}
-
-.mb-0,
-.my-0 {
-  margin-bottom: 0;
-}
-
-.ml-0,
-.mx-0 {
-  margin-left: 0;
-}
-
-.m-xs {
-  margin: 4px;
-}
-
-.mt-xs,
-.my-xs {
-  margin-top: 4px;
-}
-
-.mr-xs,
-.mx-xs {
-  margin-right: 4px;
-}
-
-.mb-xs,
-.my-xs {
-  margin-bottom: 4px;
-}
-
-.ml-xs,
-.mx-xs {
-  margin-left: 4px;
-}
-
-.m-sm {
-  margin: 8px;
-}
-
-.mt-sm,
-.my-sm {
-  margin-top: 8px;
-}
-
-.mr-sm,
-.mx-sm {
-  margin-right: 8px;
-}
-
-.mb-sm,
-.my-sm {
-  margin-bottom: 8px;
-}
-
-.ml-sm,
-.mx-sm {
-  margin-left: 8px;
-}
-
-.m-md {
-  margin: 16px;
-}
-
-.mt-md,
-.my-md {
-  margin-top: 16px;
-}
-
-.mr-md,
-.mx-md {
-  margin-right: 16px;
-}
-
-.mb-md,
-.my-md {
-  margin-bottom: 16px;
-}
-
-.ml-md,
-.mx-md {
-  margin-left: 16px;
-}
-
-.m-lg {
-  margin: 24px;
-}
-
-.mt-lg,
-.my-lg {
-  margin-top: 24px;
-}
-
-.mr-lg,
-.mx-lg {
-  margin-right: 24px;
-}
-
-.mb-lg,
-.my-lg {
-  margin-bottom: 24px;
-}
-
-.ml-lg,
-.mx-lg {
-  margin-left: 24px;
-}
-
-.m-xl {
-  margin: 48px;
-}
-
-.mt-xl,
-.my-xl {
-  margin-top: 48px;
-}
-
-.mr-xl,
-.mx-xl {
-  margin-right: 48px;
-}
-
-.mb-xl,
-.my-xl {
-  margin-bottom: 48px;
-}
-
-.ml-xl,
-.mx-xl {
-  margin-left: 48px;
-}
-
-.m-xxl {
-  margin: 96px;
-}
-
-.mt-xxl,
-.my-xxl {
-  margin-top: 96px;
-}
-
-.mr-xxl,
-.mx-xxl {
-  margin-right: 96px;
-}
-
-.mb-xxl,
-.my-xxl {
-  margin-bottom: 96px;
-}
-
-.ml-xxl,
-.mx-xxl {
-  margin-left: 96px;
-}
-
-.p-0 {
-  padding: 0;
-}
-
-.pt-0,
-.py-0 {
-  padding-top: 0;
-}
-
-.pr-0,
-.px-0 {
-  padding-right: 0;
-}
-
-.pb-0,
-.py-0 {
-  padding-bottom: 0;
-}
-
-.pl-0,
-.px-0 {
-  padding-left: 0;
-}
-
-.p-xs {
-  padding: 4px;
-}
-
-.pt-xs,
-.py-xs {
-  padding-top: 4px;
-}
-
-.pr-xs,
-.px-xs {
-  padding-right: 4px;
-}
-
-.pb-xs,
-.py-xs {
-  padding-bottom: 4px;
-}
-
-.pl-xs,
-.px-xs {
-  padding-left: 4px;
-}
-
-.p-sm {
-  padding: 8px;
-}
-
-.pt-sm,
-.py-sm {
-  padding-top: 8px;
-}
-
-.pr-sm,
-.px-sm {
-  padding-right: 8px;
-}
-
-.pb-sm,
-.py-sm {
-  padding-bottom: 8px;
-}
-
-.pl-sm,
-.px-sm {
-  padding-left: 8px;
-}
-
-.p-md {
-  padding: 16px;
-}
-
-.pt-md,
-.py-md {
-  padding-top: 16px;
-}
-
-.pr-md,
-.px-md {
-  padding-right: 16px;
-}
-
-.pb-md,
-.py-md {
-  padding-bottom: 16px;
-}
-
-.pl-md,
-.px-md {
-  padding-left: 16px;
-}
-
-.p-lg {
-  padding: 24px;
-}
-
-.pt-lg,
-.py-lg {
-  padding-top: 24px;
-}
-
-.pr-lg,
-.px-lg {
-  padding-right: 24px;
-}
-
-.pb-lg,
-.py-lg {
-  padding-bottom: 24px;
-}
-
-.pl-lg,
-.px-lg {
-  padding-left: 24px;
-}
-
-.p-xl {
-  padding: 48px;
-}
-
-.pt-xl,
-.py-xl {
-  padding-top: 48px;
-}
-
-.pr-xl,
-.px-xl {
-  padding-right: 48px;
-}
-
-.pb-xl,
-.py-xl {
-  padding-bottom: 48px;
-}
-
-.pl-xl,
-.px-xl {
-  padding-left: 48px;
-}
-
-.p-xxl {
-  padding: 96px;
-}
-
-.pt-xxl,
-.py-xxl {
-  padding-top: 96px;
-}
-
-.pr-xxl,
-.px-xxl {
-  padding-right: 96px;
-}
-
-.pb-xxl,
-.py-xxl {
-  padding-bottom: 96px;
-}
-
-.pl-xxl,
-.px-xxl {
-  padding-left: 96px;
-}
-
-
-
-.h-0 {
-  height: 0;
-}
-
-.w-0 {
-  width: 0;
-}
-
-.h-xs {
-  height: 4px;
-}
-
-.w-xs {
-  width: 4px;
-}
-
-.h-sm {
-  height: 8px;
-}
-
-.w-sm {
-  width: 8px;
-}
-
-.h-md {
-  height: 16px;
-}
-
-.w-md {
-  width: 16px;
-}
-
-.h-lg {
-  height: 24px;
-}
-
-.w-lg {
-  width: 24px;
-}
-
-.h-xl {
-  height: 48px;
-}
-
-.w-xl {
-  width: 48px;
-}
-
-.h-xxl {
-  height: 96px;
-}
-
-.w-xxl {
-  width: 96px;
-}
-
-.d-block {
-  display: block;
-}
-
-.table-fixed {
-  table-layout: fixed;
-}
-
+<style data-premailer="ignore">
     @media screen and (max-width: 600px) {
         u+.body {
             width: 100vw !important;
@@ -725,42 +41,456 @@ Margins, paddings
   </style>
 <![endif]-->
 <!--[if !mso]><!-->
-{{-- <link href="https://rsms.me/inter/inter.css" rel="stylesheet" type="text/css" data-premailer="ignore" /> --}}
+<link href="https://rsms.me/inter/inter.css" rel="stylesheet" type="text/css" data-premailer="ignore" />
 <style type="text/css" data-premailer="ignore">
     @import url(https://rsms.me/inter/inter.css);
 </style>
 <!--<![endif]-->
-    {{-- <link href="assets/css/email-theme.css?'.time())}}" rel="stylesheet"/> --}}
+
+<style>
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 100;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Thin.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 100;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-ThinItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 200;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-ExtraLight.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 200;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-ExtraLightItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Light.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 300;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-LightItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 400;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Italic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 500;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-MediumItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 600;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-SemiBoldItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Bold.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 700;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-BoldItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-ExtraBold.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 800;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-ExtraBoldItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 900;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-Black.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter';
+        font-style: italic;
+        font-weight: 900;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-BlackItalic.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter var';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19') format('woff2');
+        font-named-instance: 'Regular';
+    }
+
+    @font-face {
+        font-family: 'Inter var';
+        font-style: italic;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-italic.var.woff2?v=3.19') format('woff2');
+        font-named-instance: 'Italic';
+    }
+
+    @font-face {
+        font-family: 'Inter var experimental';
+        font-style: oblique 0deg 10deg;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter.var.woff2?v=3.19') format('woff2');
+    }
+
+    @font-face {
+        font-family: 'Inter var alt';
+        font-weight: 100 900;
+        font-style: normal;
+        font-named-instance: 'Regular';
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19') format("woff2");
+    }
+
+    @font-face {
+        font-family: 'Inter var alt';
+        font-weight: 100 900;
+        font-style: italic;
+        font-named-instance: 'Italic';
+        font-display: swap;
+        src: url('https://rsms.me/inter/font-files/Inter-italic.var.woff2?v=3.19') format("woff2");
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #f6f7f9;
+        font-size: 14px;
+        line-height: 171.4285714286%;
+        mso-line-height-rule: exactly;
+        color: #3A4859;
+        width: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    body {
+        font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+    }
+
+    img {
+        border: 0 none;
+        line-height: 100%;
+        outline: none;
+        text-decoration: none;
+        vertical-align: baseline;
+        font-size: 0;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .btn:hover {
+        text-decoration: none;
+    }
+
+    .btn.bg-bordered:hover {
+        background-color: #f8fbfd !important;
+    }
+
+    a.bg-blue:hover {
+        background-color: #1e64b7 !important;
+    }
+
+    a.bg-azure:hover {
+        background-color: #3592df !important;
+    }
+
+    a.bg-indigo:hover {
+        background-color: #3458ea !important;
+    }
+
+    a.bg-purple:hover {
+        background-color: #a636c2 !important;
+    }
+
+    a.bg-pink:hover {
+        background-color: #d02a64 !important;
+    }
+
+    a.bg-red:hover {
+        background-color: #d32c2c !important;
+    }
+
+    a.bg-orange:hover {
+        background-color: #e86107 !important;
+    }
+
+    a.bg-yellow:hover {
+        background-color: #e69500 !important;
+    }
+
+    a.bg-lime:hover {
+        background-color: #6baa14 !important;
+    }
+
+    a.bg-green:hover {
+        background-color: #2ca73f !important;
+    }
+
+    a.bg-teal:hover {
+        background-color: #0b986e !important;
+    }
+
+    a.bg-cyan:hover {
+        background-color: #1596aa !important;
+    }
+
+    a.bg-gray:hover {
+        background-color: #5f6b79 !important;
+    }
+
+    a.bg-white:hover {
+        background-color: #f7f7f7 !important;
+    }
+
+    a.bg-secondary:hover {
+        background-color: #e8e9ec !important;
+    }
+
+    .img-hover:hover img {
+        opacity: 0.64;
+    }
+
+    .theme-dark a.bg-secondary:hover {
+        background-color: #354258 !important;
+    }
+
+    .theme-dark .btn.bg-bordered:hover {
+        background-color: #206bc4 !important;
+        color: #fff !important;
+    }
+
+    .theme-dark .btn.bg-bordered:hover .btn-span {
+        color: #fff !important;
+    }
+
+    @media only screen and (max-width: 560px) {
+        body {
+            font-size: 14px !important;
+        }
+
+        .content {
+            padding: 24px !important;
+        }
+
+        .content-image-text {
+            padding: 24px !important;
+        }
+
+        .content-image {
+            height: 100px !important;
+        }
+
+        .content-image-text {
+            padding-top: 96px !important;
+        }
+
+        h1 {
+            font-size: 24px !important;
+        }
+
+        .h1 {
+            font-size: 24px !important;
+        }
+
+        h2 {
+            font-size: 20px !important;
+        }
+
+        .h2 {
+            font-size: 20px !important;
+        }
+
+        h3 {
+            font-size: 18px !important;
+        }
+
+        .h3 {
+            font-size: 18px !important;
+        }
+
+        .col {
+            display: table !important;
+            width: 100% !important;
+        }
+
+        .col-spacer {
+            display: table !important;
+            width: 100% !important;
+        }
+
+        .col-spacer-xs {
+            display: table !important;
+            width: 100% !important;
+        }
+
+        .col-spacer-sm {
+            display: table !important;
+            width: 100% !important;
+        }
+
+        .col-hr {
+            display: table !important;
+            width: 100% !important;
+        }
+
+        .row {
+            display: table !important;
+            width: 100% !important;
+        }
+
+        .col-hr {
+            border: 0 !important;
+            height: 24px !important;
+            width: auto !important;
+            background: transparent !important;
+        }
+
+        .col-spacer {
+            width: 100% !important;
+            height: 24px !important;
+        }
+
+        .col-spacer-sm {
+            height: 16px !important;
+        }
+
+        .col-spacer-xs {
+            height: 8px !important;
+        }
+
+        .chart-cell-spacer {
+            width: 4px !important;
+        }
+
+        .text-mobile-center {
+            text-align: center !important;
+        }
+
+        .d-mobile-none {
+            display: none !important;
+        }
+    }
+</style>
 
 </head>
 
-<body class="bg-body">
+<body class="bg-body" style="font-size: 14px; line-height: 171.4285714286%; mso-line-height-rule: exactly; color: #3A4859; width: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; -webkit-font-feature-settings: &quot;cv02&quot;, &quot;cv03&quot;, &quot;cv04&quot;, &quot;cv11&quot;; font-feature-settings: &quot;cv02&quot;, &quot;cv03&quot;, &quot;cv04&quot;, &quot;cv11&quot;; font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; margin: 0; padding: 0;" bgcolor="#f6f7f9">
     <center>
-        <table class="main bg-body" width="100%" cellspacing="0" cellpadding="0">
+        <table class="main bg-body" width="100%" cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;" bgcolor="#f6f7f9">
             <tr>
-                <td align="center" valign="top">
+                <td align="center" valign="top" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;">
                     <!--[if (gte mso 9)|(IE)]>
                 <table border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td align="center" valign="top" width="640">
               <![endif]-->
-                    <span class="preheader">@yield('preview')</span>
-                    <table class="wrap" cellspacing="0" cellpadding="0">
+                    <span class="preheader" style="font-size: 0; display: none; max-height: 0; mso-hide: all; line-height: 0; color: transparent; height: 0; max-width: 0; opacity: 0; overflow: hidden; visibility: hidden; width: 0; padding: 0;">@yield('preview')</span>
+                    <table class="wrap" cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%; max-width: 640px; text-align: left;">
                         <tr>
-                            <td class="p-sm">
+                            <td class="p-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding: 8px;">
                                 <!-- Header -->
-                                <table cellpadding="0" cellspacing="0">
+                                <table cellpadding="0" cellspacing="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%;">
                                     <tr>
-                                        <td class="py-lg">
-                                            <table cellspacing="0" cellpadding="0">
+                                        <td class="py-lg" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-top: 24px; padding-bottom: 24px;">
+                                            <table cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%;">
                                                 <tr>
-                                                    <td>
+                                                    <td style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;">
                                                         <a href="{{ config('app.url') }}">
                                                             <img src="https://app.ndako.tech/assets/images/logo/logo-black.png"  height="34px" alt="" />
                                                         </a>
                                                     </td>
-                                                    <td class="text-right">
-                                                        <a href="{{ config('app.url') }}" class="text-muted-light">
+                                                    <td class="text-right" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;" align="right">
+                                                        <a href="{{ config('app.url') }}" class="text-muted-light" style="color: #8491a1; text-decoration: none;">
                                                             View online
                                                         </a>
                                                     </td>
@@ -773,101 +503,49 @@ Margins, paddings
 
                                 <!-- Email Body -->
                                 <div class="main-content">
-                                    <table class="box" cellpadding="0" cellspacing="0">
+                                    <table class="box" cellpadding="0" cellspacing="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%; border-radius: 4px; -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); border: 1px solid #dce0e5;" bgcolor="#ffffff">
                                         <tr>
-                                            <td>
-                                                @yield('content')
-                                                {{-- <table cellpadding="0" cellspacing="0">
-                                                    <tr>
-                                                        <td class="pb-0 content" align="center">
-                                                            <table class="icon icon-lg bg-green" cellspacing="0" cellpadding="0">
-                                                                <tr>
-                                                                    <td valign="middle" align="center">
-                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-white-check.png" class=" va-middle" width="40" height="40" alt="check" />
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center content">
-                                                            <p class="h1">We're glad to have you here, Bartek!</p>
-                                                            <p>Thanks for registering and your willingness to try Tabler out. To authenticate your email address, please click on below button.</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="pt-0 text-center content pb-xl">
-                                                            <table cellspacing="0" cellpadding="0">
-                                                                <tr>
-                                                                    <td align="center">
-                                                                        <table cellpadding="0" cellspacing="0" border="0" class="w-auto rounded bg-green">
-                                                                            <tr>
-                                                                                <td align="center" valign="top" class="lh-1">
-                                                                                    <a href="https://tabler.io/emails?utm_source=demo" class="btn bg-green border-green">
-                                                                                        <span class="btn-span">Confirm&nbsp;your&nbsp;email&nbsp;address</span>
-                                                                                    </a>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center content border-top">
-                                                            <p>
-                                                                Yours sincerely,<br>
-                                                                Arden BOUET, CEO at <a href="https://koverae.com/emails?utm_source=email" class="text-default font-weight-bold">Koverae</a>
-                                                            </p>
-                                                            <p>
-                                                                <img src="https://app.ndako.tech/assets/images/email/founder.jpg') }}" class=" avatar" width="72" height="72" alt="Arden BOUET" />
-                                                            </p>
-                                                        </td>
-                                                    </tr>
-                                                </table> --}}
+                                            <td style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;">
+                                                <table cellpadding="0" cellspacing="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%;">
+                                                    @yield('content')
+                                                </table>
                                             </td>
                                         </tr>
                                     </table>
                                 </div>
 
                                 <!-- Footer -->
-                                <table cellspacing="0" cellpadding="0">
+                                <table cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%;">
                                     <tr>
-                                        <td class="py-xl">
-                                            <table class="text-center text-muted" cellspacing="0" cellpadding="0">
+                                        <td class="py-xl" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-top: 48px; padding-bottom: 48px;">
+                                            <table class="text-center text-muted" cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: 100%; color: #667382; text-align: center;">
                                                 <tr>
-                                                    <td align="center" class="pb-md">
-                                                        <table class="w-auto" cellspacing="0" cellpadding="0">
+                                                    <td align="center" class="pb-md" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-bottom: 16px;">
+                                                        <table class="w-auto" cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: auto;">
                                                             <tr>
-                                                                <td class="px-sm">
+                                                                <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
                                                                     <a href="https://tabler.io/emails?utm_source=demo">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-facebook.png" class=" va-middle" width="24" height="24" alt="brand-facebook" />
                                                                     </a>
                                                                 </td>
-                                                                <td class="px-sm">
+                                                                <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
                                                                     <a href="https://tabler.io/emails?utm_source=demo">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-twitter.png" class=" va-middle" width="24" height="24" alt="brand-twitter" />
                                                                     </a>
                                                                 </td>
-                                                                <td class="px-sm">
+                                                                <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
                                                                     <a href="https://tabler.io/emails?utm_source=demo">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-github.png" class=" va-middle" width="24" height="24" alt="brand-github" />
                                                                     </a>
                                                                 </td>
-                                                                <td class="px-sm">
+                                                                <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
                                                                     <a href="https://tabler.io/emails?utm_source=demo">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-youtube.png" class=" va-middle" width="24" height="24" alt="brand-youtube" />
                                                                     </a>
                                                                 </td>
-                                                                <td class="px-sm">
+                                                                <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
                                                                     <a href="https://tabler.io/emails?utm_source=demo">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-pinterest.png" class=" va-middle" width="24" height="24" alt="brand-pinterest" />
-                                                                    </a>
-                                                                </td>
-                                                                <td class="px-sm">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
-                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-instagram.png" class=" va-middle" width="24" height="24" alt="brand-instagram" />
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -875,9 +553,13 @@ Margins, paddings
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="px-lg">
+                                                    <td class="px-lg" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 24px; padding-left: 24px;">
                                                         If you have any questions, feel free to message us at <a href="mailto:support@koverae.com" class="text-muted">support@koverae.com</a>
-                                                        <p></p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="px-lg" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 24px; padding-left: 24px;">
+                                                        Powered by <a href="https://ndako.koverae.com/?utm=emails">Ndako</a>
                                                     </td>
                                                 </tr>
                                             </table>
