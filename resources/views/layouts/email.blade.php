@@ -524,28 +524,28 @@
                                                         <table class="w-auto" cellspacing="0" cellpadding="0" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; border-collapse: collapse; width: auto;">
                                                             <tr>
                                                                 <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
+                                                                    <a href="https://ndako.koverae.com/?utm=email">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-facebook.png" class=" va-middle" width="24" height="24" alt="brand-facebook" />
                                                                     </a>
                                                                 </td>
                                                                 <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
+                                                                    <a href="https://ndako.koverae.com/?utm=email">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-twitter.png" class=" va-middle" width="24" height="24" alt="brand-twitter" />
                                                                     </a>
                                                                 </td>
                                                                 <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
+                                                                    <a href="https://github.com/Koverae">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-github.png" class=" va-middle" width="24" height="24" alt="brand-github" />
                                                                     </a>
                                                                 </td>
                                                                 <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
+                                                                    <a href="https://www.youtube.com/channel/UCLzGs5jeEr3Ks415zM8G8_A">
                                                                         <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-youtube.png" class=" va-middle" width="24" height="24" alt="brand-youtube" />
                                                                     </a>
                                                                 </td>
                                                                 <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
-                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-pinterest.png" class=" va-middle" width="24" height="24" alt="brand-pinterest" />
+                                                                    <a href="https://www.instagram.com/koverae_ndako/">
+                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-instagram.png" class=" va-middle" width="24" height="24" alt="brand-pinterest" />
                                                                     </a>
                                                                 </td>
                                                             </tr>

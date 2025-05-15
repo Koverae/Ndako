@@ -544,13 +544,8 @@
                                                                     </a>
                                                                 </td>
                                                                 <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
-                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-pinterest.png" class=" va-middle" width="24" height="24" alt="brand-pinterest" />
-                                                                    </a>
-                                                                </td>
-                                                                <td class="px-sm" style="font-family: Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; padding-right: 8px; padding-left: 8px;">
-                                                                    <a href="https://tabler.io/emails?utm_source=demo">
-                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-instagram.png" class=" va-middle" width="24" height="24" alt="brand-instagram" />
+                                                                    <a href="https://www.instagram.com/koverae_ndako/">
+                                                                        <img src="https://app.ndako.tech/assets/images/email/icons-gray-brand-instagram.png" class=" va-middle" width="24" height="24" alt="brand-pinterest" />
                                                                     </a>
                                                                 </td>
                                                             </tr>
