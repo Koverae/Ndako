@@ -2,10 +2,10 @@
 
 <!-- Control Panel -->
 @section('control-panel')
-<livewire:properties::navbar.control-panel.property-panel />
+<livewire:frontdesk::navbar.control-panel.overview-panel />
 @endsection
 <!-- Page Content -->
 <section class="w-100">
-    <livewire:properties::table.property-table />
+    <livewire:frontdesk::table.front-desk-table />
 </section>
 <!-- Page Content -->

@@ -71,7 +71,7 @@ class PropertyPanel extends ControlPanel
             // make($key, $label)
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
             // SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
-            SwitchButton::make('map',"switchView('map')", icon: "bi-map"),
+            SwitchButton::make('map',"switchView('map')", "bi-map"),
         ];
     }
 

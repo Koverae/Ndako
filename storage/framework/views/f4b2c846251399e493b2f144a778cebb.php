@@ -6,7 +6,7 @@
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
-[$__name, $__params] = $__split('properties::navbar.control-panel.property-panel', []);
+[$__name, $__params] = $__split('frontdesk::navbar.control-panel.overview-panel', []);
 
 $__html = app('livewire')->mount($__name, $__params, 'lw-3658476813-0', $__slots ?? [], get_defined_vars());
 
@@ -25,7 +25,7 @@ if (isset($__slots)) unset($__slots);
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
-[$__name, $__params] = $__split('properties::table.property-table', []);
+[$__name, $__params] = $__split('frontdesk::table.front-desk-table', []);
 
 $__html = app('livewire')->mount($__name, $__params, 'lw-3658476813-1', $__slots ?? [], get_defined_vars());
 
@@ -38,4 +38,5 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
 </section>
-<!-- Page Content --><?php /**PATH D:\My Laravel Startup\ndako\Modules/FrontDesk\resources/views/livewire/overview.blade.php ENDPATH**/ ?>
+<!-- Page Content -->
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/FrontDesk\resources/views/livewire/overview.blade.php ENDPATH**/ ?>
