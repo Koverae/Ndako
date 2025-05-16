@@ -34,6 +34,9 @@ class Reservation extends Component
         $this->properties = Property::isCompany(current_company()->id)->get() ?? null;
         $this->property = current_property()->id ?? null;
 
+        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
+
         $this->loadData();
 
         $this->monthlyBookings = $this->getMonthlyBookings();
@@ -80,9 +83,11 @@ class Reservation extends Component
         $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->isProperty($this->property)->get();
         $this->guests = Guest::isCompany(current_company()->id)->get();
 
-        $currentStart = Carbon::now()->subDays($this->period);
-        $previousStart = Carbon::now()->subDays($this->period * 2);
-        $now = Carbon::now();
+        $currentStart = Carbon::parse($this->startDate);
+        $endDate = Carbon::parse($this->endDate);
+        // Get the difference in days (as integer)
+        $period = $currentStart->diffInDays($endDate);
+        $previousStart = Carbon::now()->subDays($period * 2);
 
         // Fetch both current and previous period bookings
         $currentBookings = Booking::isCompany(current_company()->id)
@@ -97,7 +102,7 @@ class Reservation extends Component
             // ->where('status', 'confirmed') // Assuming 'status' column exists
 
             ->orderByDesc('total_amount')
-            ->whereBetween('created_at', [$currentStart, $now])
+            ->whereBetween('created_at', [$currentStart, $endDate])
             ->get();
 
         $previousBookings = Booking::isCompany(current_company()->id)

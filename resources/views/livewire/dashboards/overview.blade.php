@@ -5,6 +5,7 @@
         /* Hide scrollbar for Chrome, Safari and Opera */
         body{
             overflow-x: hidden;
+            /* overflow-y: hidden; */
         }
           body::-webkit-scrollbar {
               display: none;
