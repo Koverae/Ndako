@@ -17,10 +17,15 @@ class Room extends Component
     public $period = 7  , $property;
     public $bestSellerRoom, $bestSellerType, $rooms, $roomTypes;
     public $properties, $bestSellerRooms;
+    public $startDate, $endDate;
 
     public function mount(){
         $this->properties = Property::isCompany(current_company()->id)->get();
         $this->property = current_property()->id ?? null;
+
+        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
+
         $this->loadData();
     }
 
@@ -35,8 +40,8 @@ class Room extends Component
         })
         ->with(['bookings' => function ($query) {
             $query->select('id', 'property_unit_id', 'total_amount', DB::raw('DATEDIFF(check_out, check_in) as nights'))
-            ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-            ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()]);
+            ->whereBetween('check_in', [$this->startDate, $this->endDate])
+            ->orWhereBetween('check_out', [$this->startDate, $this->endDate]);
         }])
         ->get()
         ->map(function ($room) {
@@ -60,8 +65,8 @@ class Room extends Component
         })
         ->with(['units.bookings' => function ($query) {
             $query->select('id', 'property_unit_id', DB::raw('DATEDIFF(check_out, check_in) as nights'), 'total_amount')
-            ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-            ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()]);
+            ->whereBetween('check_in', [$this->startDate, $this->endDate])
+            ->orWhereBetween('check_out', [$this->startDate, $this->endDate]);
         }])
         ->get()
         ->map(function ($type) {
@@ -91,7 +96,7 @@ class Room extends Component
                     'property_unit_id',
                     DB::raw('SUM(total_amount) as revenue')
                 )
-                ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
+                ->whereBetween('check_in', [$this->startDate, $this->endDate])
                 ->groupBy('property_unit_id');
             }])
             ->get()
@@ -108,6 +113,27 @@ class Room extends Component
 
     public function updatedPeriod(){
         $this->loadData($this->property);
+    }
+
+    public function updatedStartDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
+    }
+
+    public function updatedEndDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
     }
 
     public function updatedProperty($property){

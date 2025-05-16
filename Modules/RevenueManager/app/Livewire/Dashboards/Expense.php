@@ -23,6 +23,9 @@ class Expense extends Component
         $this->properties = Property::isCompany(current_company()->id)->get();
         $this->property = current_property()->id ?? null;
 
+        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
+
         $this->loadData();
     }
 
@@ -37,7 +40,7 @@ class Expense extends Component
 
         $pendingExpenses = ExpensesModel::isCompany(current_company()->id)
         ->where('status', 'pending')
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->select(
             DB::raw('SUM(amount) as total_spent'),
             // DB::raw('SUM(total_amount - paid_amount) as total_unpaid')
@@ -45,7 +48,7 @@ class Expense extends Component
         ->first();
 
         $expenses = ExpensesModel::isCompany(current_company()->id)
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->select(
             DB::raw('SUM(amount) as total_spent'),
             // DB::raw('SUM(total_amount - paid_amount) as total_unpaid')
@@ -56,7 +59,7 @@ class Expense extends Component
         $this->unpaidAmount = $pendingExpenses->total_spent ?? 0;
 
         $expenseStats = ExpensesModel::isCompany(current_company()->id)
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->with(['property' => function ($query) {
             $query->when($this->property, function ($property){
                 $property->where('property_id', $this->property);
@@ -73,7 +76,7 @@ class Expense extends Component
 
         $this->expenseCategories = ExpenseCategory::isCompany(current_company()->id)
         ->with(['expenses' => function ($query) {
-            $query->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()]);
+            $query->whereBetween('date', [$this->startDate, $this->endDate]);
         }])
         ->get()
         ->map( function ($category) {
@@ -99,7 +102,7 @@ class Expense extends Component
                 $property->where('id', $this->property);
             });
         }])
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->get()
         ->sortByDesc('amount');
 
@@ -109,7 +112,7 @@ class Expense extends Component
             $query->where('property_id', $this->property); // Apply filter if $property is set
         })
         ->with(['expenses' => function ($query) {
-            $query->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()]);
+            $query->whereBetween('date', [$this->startDate, $this->endDate]);
         }])
         ->get()
         ->map(function ($room) {
@@ -135,6 +138,27 @@ class Expense extends Component
 
     public function updatedPeriod(){
         $this->loadData();
+    }
+
+    public function updatedStartDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
+    }
+
+    public function updatedEndDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
     }
     
     public function getMonthlyExpensess(): \Illuminate\Support\Collection

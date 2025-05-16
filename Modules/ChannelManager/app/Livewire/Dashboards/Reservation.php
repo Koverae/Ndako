@@ -267,7 +267,6 @@ class Reservation extends Component
         } else {
             $this->loadData();
         }
-
     }
 
     public function updatedProperty($property){

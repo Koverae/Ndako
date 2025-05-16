@@ -19,14 +19,18 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class Property extends Component
 {
-    public $period = 1, $property;
+    public $period = 7, $property;
     public $occupancyRate, $occupiedNights = 0, $occupiedRooms = 0, $totalNightsAvailable = 0, $revPar = 0, $adr;
     public $bestSellingRooms, $bestSellingRoomTypes;
     public $properties, $propertyTypes, $monthlyOccupancyRates, $revenueByType;
+    public $startDate, $endDate;
 
     public function mount(){
         $this->properties = PropertyProperty::isCompany(current_company()->id)->get();
         $this->propertyTypes = PropertyType::isCompany(current_company()->id)->get();
+
+        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
 
         $this->property = current_property()->id ?? null;
         $this->loadData();
@@ -42,12 +46,15 @@ class Property extends Component
         $propertyId = $this->property; // Property filter (nullable)
 
         // Define the date range (e.g., last 7 days)
-        $startDate = Carbon::now()->subDays($this->period ?? 7)->startOfDay();
-        $endDate = Carbon::now()->endOfDay();
+        $startDate = $this->startDate;
+        $endDate = $this->endDate;
 
-        $currentStart = Carbon::now()->subDays($this->period);
-        $previousStart = Carbon::now()->subDays($this->period * 2);
-        $now = Carbon::now();
+        $currentStart = Carbon::parse($this->startDate);
+        $endDate = Carbon::parse($this->endDate);
+        // Get the difference in days (as integer)
+        $period = $currentStart->diffInDays($endDate);
+        $previousStart = Carbon::now()->subDays($period * 2);
+
 
         // Total number of rooms in the property (or all properties if $propertyId is null)
         $totalRooms = PropertyUnit::isCompany(current_company()->id)
@@ -65,8 +72,8 @@ class Property extends Component
                 ->select('id', 'property_unit_id', 'total_amount',
                     DB::raw('DATEDIFF(check_out, check_in) as nights')
                 )
-                ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-                ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                ->whereBetween('check_in', [$this->startDate, $this->endDate])
+                ->orWhereBetween('check_out', [$this->startDate, $this->endDate]);
             }])
             ->get()
             ->map(function ($room) {
@@ -151,7 +158,7 @@ class Property extends Component
                 DB::raw("SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue")
             )
             // Apply date range filter (period)
-            ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
+            ->whereBetween('check_in', [$this->startDate, $this->endDate])
             ->groupBy('property_unit_id', 'id');
         }])
         ->get()
@@ -195,8 +202,8 @@ class Property extends Component
                 )
 
                 // Apply date range filter (period)
-                ->whereBetween('check_in', [Carbon::now()->subDays($this->period), Carbon::now()])
-                ->orWhereBetween('check_out', [Carbon::now()->subDays($this->period), Carbon::now()])
+                ->whereBetween('check_in', [$this->startDate, $this->endDate])
+                ->orWhereBetween('check_out', [$this->startDate, $this->endDate])
                 ->groupBy('id');
         }])
         ->get()
@@ -228,6 +235,27 @@ class Property extends Component
 
     public function updatedPeriod(){
         $this->loadData();
+    }
+
+    public function updatedStartDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
+    }
+
+    public function updatedEndDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
     }
 
     public function updatedProperty(){

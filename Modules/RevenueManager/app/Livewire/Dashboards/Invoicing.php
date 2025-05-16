@@ -14,13 +14,18 @@ use Modules\ChannelManager\Models\Booking\BookingPayment;
 
 class Invoicing extends Component
 {
-    public $period = 1, $property;
+    public $period = 7, $property;
     public $invoicedAmount, $unpaidAmount, $averageInvoiceAmount, $numberOfInvoices, $dso, $invoices, $payments;
     public $properties, $units, $unitTypes, $mothlyInvoices;
+    public $startDate, $endDate;
 
     public function mount(){
         $this->properties = Property::isCompany(current_company()->id)->get();
         $this->property = current_property()->id ?? null;
+
+        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
+
         $this->loadData();
     }
 
@@ -34,7 +39,7 @@ class Invoicing extends Component
         $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->isProperty($this->property)->get();
 
         $invoices = BookingInvoice::isCompany(current_company()->id)
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->with(['booking' => function ($query) {
                 $query->with(['unit' => function ($subQuery) {
                     $subQuery->when($this->property, function ($property){
@@ -52,7 +57,7 @@ class Invoicing extends Component
         $this->unpaidAmount = $invoices->total_unpaid ?? 0;
 
         $invoiceStats = BookingInvoice::isCompany(current_company()->id)
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->with(['booking' => function ($query) {
                 $query->with(['unit' => function ($subQuery) {
                     $subQuery->when($this->property, function ($property){
@@ -81,7 +86,7 @@ class Invoicing extends Component
         }
 
         $this->invoices = BookingInvoice::isCompany(current_company()->id)
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->with(['booking' => function ($query) {
                 $query->whereHas('unit', function ($query) {
                     $query->when($this->property, fn($q, $id) => $q->isProperty($id));
@@ -91,7 +96,7 @@ class Invoicing extends Component
         ->get();
 
         $this->payments = BookingPayment::isCompany(current_company()->id)
-        ->whereBetween('date', [Carbon::now()->subDays($this->period), Carbon::now()])
+        ->whereBetween('date', [$this->startDate, $this->endDate])
         ->when($this->property, function ($query) {
             $query->with('invoice.booking', function ($query) {
                 $query->where('property_unit_id', $this->property);
@@ -106,6 +111,27 @@ class Invoicing extends Component
 
     public function updatedPeriod(){
         $this->loadData();
+    }
+
+    public function updatedStartDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
+    }
+
+    public function updatedEndDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
     }
     
     public function getMonthlyInvoices(): \Illuminate\Support\Collection

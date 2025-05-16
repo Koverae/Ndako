@@ -3,16 +3,8 @@
     <div class="gap-3 px-3 mb-3 k_control_panel d-flex flex-column gap-lg-1">
         <div class="flex-wrap gap-5 k_control_panel_main d-flex justify-content-between align-items-lg-start flex-grow-1">
             <div class="flex-1 gap-3 d-flex">
-                <select wire:model.live="period" id="" class="w-auto k-input fs-3">
-                    <option value="1">{{ __('Select period') }}</option>
-                    <option value="1">{{ __('Today') }}</option>
-                    <option value="2">{{ __('Yesterday') }}</option>
-                    <option value="7">{{ __('Last 7 days') }}</option>
-                    <option value="30">{{ __('Last 30 days') }}</option>
-                    <option value="90">{{ __('Last 90 days') }}</option>
-                    <option value="180">{{ __('Last 180 days') }}</option>
-                    <option value="365">{{ __('Last 365 days') }}</option>
-                </select>
+                <input type="date" wire:model.live="startDate" class="k-input fs-3" />
+                <input type="date" wire:model.live="endDate" class="k-input fs-3" />
                 {{-- <select wire:model.live="property" id="" class="w-auto k-input fs-3">
                     @foreach($properties as $index => $property)
                     <option value="{{ $property->id }}">{{ $property->name }}</option>
@@ -29,6 +21,11 @@
             <!-- Display panel buttons -->
             <div class="k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
 
+                <!-- Open Dashboard -->
+                <a title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash" data-bs-toggle="offcanvas" href="#dashboardOffcanvas" role="button" aria-controls="offcanvasEnd">
+                    <i class="fas fa-hand-point-right"></i> {{__('Dashboards')}}
+                </a>
+                <!-- Open Dashboard -->
 
                 <!-- Button view -->
                 <button title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash">
@@ -42,6 +39,30 @@
 
     <div class="overflow-hidden k-grid-overlay col-lg-12">
         <div class="container-xl">
+
+            @if (session()->has('message'))
+            <div
+                x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition
+                class="alert alert-success"
+            >
+                {{ session('message') }}
+            </div>
+            @endif
+            
+            @if (session()->has('error'))
+                <div
+                    x-data="{ show: true }"
+                    x-init="setTimeout(() => show = false, 3000)"
+                    x-show="show"
+                    x-transition
+                    class="alert alert-danger"
+                >
+                    {{ session('error') }}
+                </div>
+            @endif
 
             <div class="gap-2 mb-3 row">
 

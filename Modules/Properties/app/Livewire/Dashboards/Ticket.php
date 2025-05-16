@@ -13,8 +13,12 @@ class Ticket extends Component
     public $agent;
     public $period = 1, $ticketsThisDay = 0, $ticketsAssigned = 0, $ongoingTickets = 0, $ticketsClosed = 0, $overdueIssues = 0, $avgCompletionTime = 0;
     public $currentTickets, $ticketsByCategory, $ticketsByRoom;
+    public $startDate, $endDate;
 
     public function mount(){
+
+        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
 
         $this->loadData();
     }
@@ -28,7 +32,7 @@ class Ticket extends Component
         // Filter tickets based on the selected period
         $this->currentTickets = WorkItem::isCompany(current_company()->id)
             ->isTasks()
-            ->whereBetween('created_at', [$currentStart, $now])
+            ->whereBetween('created_at', [$this->startDate, $endDate])
             ->get();
 
         $this->ticketsThisDay = $this->currentTickets->count();
@@ -75,6 +79,27 @@ class Ticket extends Component
 
     public function updatedPeriod(){
         $this->loadData();
+    }
+
+    public function updatedStartDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
+    }
+
+    public function updatedEndDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
     }
     
     public function render()
