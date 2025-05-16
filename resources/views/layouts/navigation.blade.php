@@ -193,7 +193,7 @@
                                 <div class="dropdown-menu-columns">
                                     <!-- Left Side -->
                                     <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('properties.units.lists') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
                                             {{ __('Overview') }}
                                         </a>
                                     </div>

@@ -224,7 +224,7 @@ if (isset($__slots)) unset($__slots);
                                 <div class="dropdown-menu-columns">
                                     <!-- Left Side -->
                                     <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('properties.units.lists')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
                                             <?php echo e(__('Overview')); ?>
 
                                         </a>
