@@ -50,6 +50,30 @@
     <div class="overflow-hidden k-grid-overlay col-lg-12">
         <div class="container-xl">
 
+            @if (session()->has('message'))
+            <div
+                x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition
+                class="alert alert-success"
+            >
+                {{ session('message') }}
+            </div>
+            @endif
+            
+            @if (session()->has('error'))
+                <div
+                    x-data="{ show: true }"
+                    x-init="setTimeout(() => show = false, 3000)"
+                    x-show="show"
+                    x-transition
+                    class="alert alert-danger"
+                >
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="gap-2 mb-3 row">
 
                 <!-- Reservation -->

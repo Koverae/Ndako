@@ -189,10 +189,10 @@ class Reservation extends Component
                 $query->where('property_id', $this->property); // Apply filter if $property is set
             })
             ->withCount(['bookings' => function ($query) {
-                $query->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }]) // Adds bookings_count for the last 7 days
             ->withSum(['bookings' => function ($query) {
-                $query->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }], 'total_amount') // Adds bookings_sum_total_amount for the last 7 days
             ->orderByDesc('bookings_sum_total_amount') // Sort by total revenue
             ->get();
@@ -206,10 +206,10 @@ class Reservation extends Component
                 }]);
             }])
             ->withCount(['bookings' => function ($query) {
-                $query->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }]) // Adds bookings_count for the last 7 days
             ->withSum(['bookings' => function ($query) {
-                $query->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }], 'total_amount') // Adds bookings_sum_total_amount for the last 7 days
             ->orderByDesc('bookings_sum_total_amount') // Sort by total revenue
             ->get();
@@ -221,13 +221,13 @@ class Reservation extends Component
         })
         ->with(['units' => function ($query) {
             $query->with(['bookings' => function ($subQuery) {
-                $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }]) // Include only bookings from the last 7 days
             ->withCount(['bookings' => function ($subQuery) {
-                $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }]) // Count bookings for the last 7 days
             ->withSum(['bookings' => function ($subQuery) {
-                $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
             }], 'total_amount'); // Sum total amount for the last 7 days
         }])
         ->get()
@@ -246,6 +246,28 @@ class Reservation extends Component
 
     public function updatedPeriod($property){
         $this->loadData();
+    }
+
+    public function updatedStartDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
+    }
+
+    public function updatedEndDate($property){
+        
+        if (Carbon::parse($this->startDate)->gt($this->endDate)) {
+            // Start date is after end date
+            session()->flash('error', 'Start date must be before end date.');
+        } else {
+            $this->loadData();
+        }
+
     }
 
     public function updatedProperty($property){
@@ -298,13 +320,13 @@ class Reservation extends Component
                     $query->where('property_id', $this->property);
                 })
                 ->with(['bookings' => function ($subQuery) {
-                    $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }])
                 ->withCount(['bookings' => function ($subQuery) {
-                    $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }])
                 ->withSum(['bookings' => function ($subQuery) {
-                    $subQuery->whereBetween('created_at', [Carbon::now()->subDays($this->period), Carbon::now()]);
+                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }], 'total_amount')
                 ->get()
                 ->map(function ($unit) {
