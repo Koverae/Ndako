@@ -32,7 +32,7 @@ class Ticket extends Component
         // Filter tickets based on the selected period
         $this->currentTickets = WorkItem::isCompany(current_company()->id)
             ->isTasks()
-            ->whereBetween('created_at', [$this->startDate, $endDate])
+            ->whereBetween('created_at', [$this->startDate, $this->endDate])
             ->get();
 
         $this->ticketsThisDay = $this->currentTickets->count();
