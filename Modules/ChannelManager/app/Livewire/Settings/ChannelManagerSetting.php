@@ -49,6 +49,7 @@ class ChannelManagerSetting extends AppSetting
             // Integrations
             Box::make('google-hotels', "Google Hotel Ads", 'has_google_hotel_integration', "Appear directly in Google search results, syncing your availability and pricing to capture potential guests instantly.", 'integration', true, "", null),
             Box::make('website-integration', "Website Integration", 'has_website_integration', "Skip the commissions. Let guests book and pay directly on your website with Ndako.", 'integration', true, "", null),
+            Box::make('google-hotels', "Google Hotel Ads", 'has_google_hotel_integration', "Appear directly in Google search results, syncing your availability and pricing to capture potential guests instantly.", 'integration', true, "", null),
         ];
     }
 

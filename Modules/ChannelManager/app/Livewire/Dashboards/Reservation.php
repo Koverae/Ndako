@@ -249,7 +249,7 @@ class Reservation extends Component
     }
 
     public function updatedStartDate($property){
-        
+
         if (Carbon::parse($this->startDate)->gt($this->endDate)) {
             // Start date is after end date
             session()->flash('error', 'Start date must be before end date.');
@@ -260,7 +260,7 @@ class Reservation extends Component
     }
 
     public function updatedEndDate($property){
-        
+
         if (Carbon::parse($this->startDate)->gt($this->endDate)) {
             // Start date is after end date
             session()->flash('error', 'Start date must be before end date.');

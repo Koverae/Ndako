@@ -45,7 +45,7 @@
             <!-- Unread Notifications -->
             <div class="pt-0 tab-pane fade {{ $filter == 'unread' ? 'show active' : '' }}" id="nav-profile" role="tabpanel" aria-labelledby="nav-unread-tab">
                 <div class="list-group list-group-flush list-group-hoverable">
-                    @forelse($notification->isUnread()->get() as $notification)
+                    @forelse($notifications as $notification)
                         <div class="cursor-pointer list-group-item" wire:key="{{ $notification->id }}">
                             <div class="row align-items-center">
                                 <div class="col text-truncate">

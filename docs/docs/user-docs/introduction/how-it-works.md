@@ -1,12 +1,10 @@
 # How It Works
 
-Ndako simplifies property management into a few intuitive workflows.
-
----
+Ndako simplifies hotel management into a few intuitive workflows.
 
 ## 1. Add Your Property
 
-Start by adding a property: name, address, type (residential, hospitality, commercial).
+Start by adding a property: name, address, type (residential, hospitality).
 
 Each property can contain multiple units or rooms.
 

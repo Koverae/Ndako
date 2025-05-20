@@ -9,6 +9,7 @@
             .wizard-steps {
                 display: flex;
                 gap: 8px;
+                height: 10px;
                 margin-bottom: 1.5rem;
                 overflow-x: auto;
                 scrollbar-width: thin;
@@ -18,7 +19,7 @@
                 flex: 1;
                 min-width: 100px;
                 padding: 12px;
-                height: 24px;
+                height: 4px;
                 background: #e9e9e9;
                 border-radius: 8px;
                 text-align: center;
@@ -49,7 +50,7 @@
             .wizard-steps .step.active:before {
                 background: #fff;
                 color: var(--primary-color);
-            }     
+            }
             .card.active-pick {
                 border: 2px solid var(--primary-color);
             }

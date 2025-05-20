@@ -105,6 +105,20 @@ export default defineConfig({
                 { text: 'Common Questions', link: '/user-docs/faqs/common-questions' },
                 { text: 'Contact Support', link: '/user-docs/faqs/contact-support' }
               ]
+            },
+            // On-Premise
+            {
+              text: 'On-Premise',
+              collapsed: true,
+              items: [
+                { text: 'Requirements', link: '/user-docs/on-premise/requirements' },
+                { text: 'Donwload Ndako', link: '/user-docs/on-premise/contact-support' },
+                { text: 'Installation', link: '/user-docs/on-premise/installation' },
+                { text: 'Getting API Keys', link: '/user-docs/on-premise/contact-support' },
+                { text: 'Setting-Up Your Company', link: '/user-docs/on-premise/contact-support' },
+                { text: 'Update', link: '/user-docs/on-premise/contact-support' },
+                { text: 'Debugging Errors', link: '/user-docs/on-premise/contact-support' }
+              ]
             }
 
           ],

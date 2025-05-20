@@ -42,6 +42,32 @@
     <div class="overflow-hidden k-grid-overlay col-lg-12">
         <div class="container-xl">
 
+            <!--[if BLOCK]><![endif]--><?php if(session()->has('message')): ?>
+            <div
+                x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition
+                class="alert alert-success"
+            >
+                <?php echo e(session('message')); ?>
+
+            </div>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+            
+            <?php if(session()->has('error')): ?>
+                <div
+                    x-data="{ show: true }"
+                    x-init="setTimeout(() => show = false, 3000)"
+                    x-show="show"
+                    x-transition
+                    class="alert alert-danger"
+                >
+                    <?php echo e(session('error')); ?>
+
+                </div>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
             <div class="gap-2 mb-3 row">
 
                 <!-- Invoiced -->

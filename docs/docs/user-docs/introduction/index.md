@@ -26,6 +26,6 @@ Whether you're a landlord, hotel manager, or co-host, Ndako helps you:
 ## Who is it for?
 
 - Property owners and managers  
-- Hospitality operators (hotels, BnBs, lodges)  
-- Landlords and rental agents  
+- Hospitality operators (hotels, hostels, BnBs, lodges)  
 - Co-hosts and property staff
+<!-- - Landlords and rental agents   -->

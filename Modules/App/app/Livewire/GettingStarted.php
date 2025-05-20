@@ -44,7 +44,9 @@ class GettingStarted extends Component
 
         $types = [
             ['id' => 'hotel', 'label' => __('Hotels')],
+            ['id' => 'hostel', 'label' => __('Hostels')],
             ['id' => 'motel', 'label' => __('Motels')],
+            ['id' => 'bnb', 'label' => __('BnBs ')],
             ['id' => 'serviced-apartment', 'label' => __('Serviced Apartments & Vacation Rentals')],
             ['id' => 'guesthouse', 'label' => __('Guesthouses & Lodges')],
         ];

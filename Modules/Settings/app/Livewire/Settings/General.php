@@ -227,6 +227,7 @@ class General extends AppSetting
         $setting = $this->setting;
 
         $setting->update([
+            'default_currency_id' => $this->default_currency,
             'has_customer_account' => $this->has_customer_account,
             'has_default_access_right' => $this->has_default_access_right,
             'has_paystack' => $this->has_paystack,
