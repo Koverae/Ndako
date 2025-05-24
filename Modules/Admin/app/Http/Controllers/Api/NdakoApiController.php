@@ -9,6 +9,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -30,7 +31,7 @@ class NdakoApiController extends Controller
         // Validate the incoming request data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email',
             'company' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
         ]);
@@ -43,57 +44,55 @@ class NdakoApiController extends Controller
             ], 422);
         }
 
-        // Create a new user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => Hash::make("Ndako")
-        ]);
+        // Check if user already exists
+        $user = User::where('email', $request->email)->first();
 
-        $team = Team::create([
-            'user_id' => $user->id
-        ]);
+        if (!$user) {
+            // Create new user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => Hash::make("Ndako")
+            ]);
 
-        // Generate a unique APP key
-        $appKey = 'ndako_' . Str::random(32);
+            // Create associated team
+            $team = Team::create([
+                'user_id' => $user->id
+            ]);
+        }
 
-        // Create Ndako APP key record
-        $ndakoAppKey = NdakoAppKey::create([
-            'user_id' => $user->id,
-            'app_key' => $appKey,
-        ]);
+        // Check if app key already exists
+        $ndakoAppKey = NdakoAppKey::where('user_id', $user->id)->first();
 
-        // Send email with APP key and user information
-        try {
+        if (!$ndakoAppKey) {
+            $appKey = 'ndako_' . Str::random(32);
 
-            // Send email
-            Mail::to($user->email)->send(new NdakoAppKeyMail($user, $appKey));
-            
-        } catch (Exception $e) {
-            // Log the error (in a real app, use Laravel's logging)
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to send email, but account created',
+            $ndakoAppKey = NdakoAppKey::create([
                 'user_id' => $user->id,
                 'app_key' => $appKey,
-            ], 500);
+            ]);
+
+            // Send email with APP key and user info
+            try {
+                Mail::to($user->email)->send(new NdakoAppKeyMail($user, $appKey));
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to send email, but user/app key exists or was created',
+                    'user_id' => $user->id,
+                    'app_key' => $ndakoAppKey->app_key,
+                ], 500);
+            }
         }
 
-        // Get the zip file path from config
-        $filePath = config('app.ndako_zip_path', 'private/ndako-on-premise.zip');
-
-        // Check if the file exists
-        if (!Storage::exists($filePath)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Zip file not found',
-            ], 404);
-        }
-
-        // Return the file as a download response
-        return Storage::download($filePath, 'ndako-on-premise-v1.zip');
-
+        // Return success response
+        return response()->json([
+            'status' => 'success',
+            'message' => '🎉 Success! Your account is verified and the Ndako App Key has been securely delivered to your email.',
+            'user_id' => $user->id,
+            'app_key' => $ndakoAppKey->app_key,
+        ], 200);
     }
 
 
@@ -119,17 +118,22 @@ class NdakoApiController extends Controller
         }
 
         // Get the zip file path from config
-        $filePath = config('app.ndako_zip_path');
+        $relativePath = config('app.ndako_zip_path', 'private/ndako-on-premise.zip');
+        $absolutePath = storage_path('app/' . $relativePath);
+
+        // Log the path for debugging
+        Log::info('Attempting to access zip file at: ' . $absolutePath);
 
         // Check if the file exists
-        if (!Storage::exists($filePath)) {
+        if (!file_exists($absolutePath)) {
+            Log::error('Zip file not found at: ' . $absolutePath);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Zip file not found',
+                'message' => 'Zip file not found at: ' . $relativePath,
             ], 404);
         }
 
-        // Return the file as a download response
-        return Storage::download($filePath, 'ndako-on-premise-v1.zip');
+        // Return the zip file as a download response
+        return response()->download($absolutePath, 'ndako-on-premise-v1.zip');
     }
 }
