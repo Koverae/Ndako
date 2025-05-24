@@ -56,9 +56,9 @@ return [
     
     'url' => env('APP_URL', 'http://localhost'),
 
-    'download_url' => env('DOWNLOAD_URL', 'https://ndako.tech/download'),
-    
-    'ndako_zip_path' => env('NDAKO_ZIP_PATH', 'private/ndako-on-premise-v1.zip'),
+    'download_url' => env('DOWNLOAD_URL', 'https://app.ndako.tech/download'),
+
+    'ndako_zip_path' => env('NDAKO_ZIP_PATH', 'private/ndako-on-premise.zip'),
 
     /*
     |--------------------------------------------------------------------------

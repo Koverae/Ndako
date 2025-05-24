@@ -34,7 +34,7 @@ class NdakoAppKeyMail extends Mailable
                     ->with([
                         'user' => $this->user,
                         'appKey' => $this->appKey,
-                        'downloadUrl' => 'https://ndako.tech/download',
+                        'downloadUrl' => 'https://app.ndako.tech/api/download',
                     ]);
     }
 }

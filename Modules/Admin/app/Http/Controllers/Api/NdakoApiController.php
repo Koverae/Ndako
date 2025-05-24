@@ -8,6 +8,7 @@ use App\Models\Team\Team;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +23,7 @@ class NdakoApiController extends Controller
      * Handle the form submission to create a user, generate an APP key, and send an email.
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
     {
@@ -46,8 +47,8 @@ class NdakoApiController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'company' => $request->company,
             'phone' => $request->phone,
+            'password' => Hash::make("Ndako")
         ]);
 
         $team = Team::create([
@@ -68,6 +69,7 @@ class NdakoApiController extends Controller
 
             // Send email
             Mail::to($user->email)->send(new NdakoAppKeyMail($user, $appKey));
+            
         } catch (Exception $e) {
             // Log the error (in a real app, use Laravel's logging)
             return response()->json([
@@ -78,20 +80,28 @@ class NdakoApiController extends Controller
             ], 500);
         }
 
-        // Return success response
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User registered, APP key generated, and email sent',
-            'user_id' => $user->id,
-            'app_key' => $appKey,
-        ], 201);
+        // Get the zip file path from config
+        $filePath = config('app.ndako_zip_path', 'private/ndako-on-premise.zip');
+
+        // Check if the file exists
+        if (!Storage::exists($filePath)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Zip file not found',
+            ], 404);
+        }
+
+        // Return the file as a download response
+        return Storage::download($filePath, 'ndako-on-premise-v1.zip');
+
     }
 
+
     /**
-     * Handle the download of the Ndako on-premise zip file.
-     * Validates the APP key and serves the file.
+     * Handle fallback downloads using the APP key.
      *
      * @param Request $request
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function download(Request $request)
     {
@@ -120,6 +130,6 @@ class NdakoApiController extends Controller
         }
 
         // Return the file as a download response
-        return Storage::download($filePath, 'ndako-on-premise.zip');
+        return Storage::download($filePath, 'ndako-on-premise-v1.zip');
     }
 }

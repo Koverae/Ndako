@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         // Kredit
-        Schema::create('ndako_app_key', function (Blueprint $table) {
+        Schema::create('ndako_app_keys', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('company_id')->nullable(); // KE, TZ, UG, RW, ET
-            $table->string('app_key')->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->text('app_key')->nullable();
             $table->timestamps();
         });
 
