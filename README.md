@@ -1,66 +1,74 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://ndako.koverae.com" target="_blank"><img src="https://ndako.koverae.com/assets/images/ndako.png" height="100" alt="Ndako Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+
+
+# Ndako
+
+<p>
+<a href="https://docs.ndako.tech/v1/user-docs/introduction/"><img src="https://img.shields.io/badge/master-docs-875A7B.svg?style=flat&colorA=#0E6163" alt="Tech Doc"></a>
+<a href="https://docs.ndako.tech/v1/user-docs/introduction/"><img src="https://img.shields.io/badge/master-help-875A7B.svg?style=flat&colorA=#0E6163" alt="Help"></a>
+<a href="https://github.com/Kovere/ndako-on-premise"><img src="https://img.shields.io/badge/master-license-875A7B.svg?style=flat&colorA=#0E6163" alt="License"></a>
 </p>
 
-## About Laravel
+Welcome to Ndako your all-in-one hotel and hospitality management platform designed to make running your business smooth, efficient, and stress-free.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Whether you manage a cozy guesthouse, a bustling BnB, or a full-scale hotel, Ndako brings you powerful tools to handle everything from bookings and billing to inventory and reporting all wrapped in a beautiful, easy-to-use interface.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- 🛏️ Room & Reservation Management  
+- 👥 Staff & Shift Scheduling  
+- 💰 Invoicing, Payments & Accounting  
+- 📦 Inventory & Procurement  
+- 📊 Dashboards & Reports  
+- 🔗 Modular, API-Ready Architecture  
+- 🌍 Multilingual and Localized  
+- 💱 Multi-Currency Support
+- 🧩 Built on Laravel & Bootstrap
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🌍 Why Ndako?
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Ndako is more than just software, it’s a **movement** to empower local hospitality businesses with powerful, accessible, and extensible tools.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Whether you're running a lodge in Nairobi, a guesthouse in Goma, or a beach resort in Lamu, Ndako helps you manage and grow.
 
-## Laravel Sponsors
+## 📚 Documentation
+Ready to get Ndako up and running?
+Full setup, usage, and development documentation is available at:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+👉🏿 [Ndako User Guide](https://docs.ndako.tech/v1/user-docs/introduction/)
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🛠️ Built With
 
-## Contributing
+| Tech | Description |
+|------|-------------|
+| Laravel | Backend framework |
+| Livewire | Reactive UI components |
+| MySQL | Relational DB |
+| Bootstrap | Responsive styling |
+| Composer/NPM | Dependency management |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+## 🌟 Join Our Community
+Ndako thrives on community. Join us, build modules, suggest improvements, or just say hi.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- [Contributing Guide](CONTRIBUTING.md)
+- [Join our discussions](https://github.com/Koverae/ndako-on-premise/discussions)
+- [Feature requests & bugs](https://github.com/Koverae/ndako-on-premise/issues)
 
-## Security Vulnerabilities
+This project exists thanks to all the people who contribute
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   [Koverae Technologies](https://github.com/Koverae)
+-   [Arden BOUET](https://github.com/arden28)
+-   [All Contributors](../../contributors)
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🔐 Licensing & Support
+
+Ndako Community Edition is released under the [GNU AGPL v3 License](LICENSE.md).  
+Commercial and SaaS versions are separately licensed, [Learn more](https://ndako.koverae.com).
+
+Need help or want to reach out? Email us at ndako@koverae.com.
+
