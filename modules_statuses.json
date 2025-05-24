@@ -5,5 +5,6 @@
     "ChannelManager": true,
     "RevenueManager": true,
     "FrontDesk": true,
-    "Contact": true
+    "Contact": true,
+    "Admin": true
 }

@@ -137,9 +137,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg d-none d-lg-block">
-            <img src="<?php echo e(asset('assets/images/illustrations/kwame-bot/kwame-6.svg')); ?>" height="300" class="mx-auto d-block" alt="">
-        </div>
     </div>
   </div>
 </div>

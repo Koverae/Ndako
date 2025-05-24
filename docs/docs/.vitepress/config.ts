@@ -2,10 +2,10 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: '/ndako',
+  base: '/',
   title: "Ndako Documentation",
   description: "Ndako Documentation website",
-//   lastUpdated: true,
+  lastUpdated: true,
   head: [
     // ['link', { rel: 'icon', href: 'https://github.com/bavix/laravel-wallet/assets/5111255/f48a8e79-8a9d-469a-b056-b3d04835992d' }]
   ],
@@ -16,11 +16,20 @@ export default defineConfig({
         provider: 'local',
     },
 
-    logo: '/logo.png',
+    logo: '/logo-doc.png',
     nav: [
 
       { text: 'Home', link: '/' },
-      { text: 'Guide', link: '/user-docs/introduction' },
+      { text: 'Guide', link: '/v1/user-docs/introduction' },
+      {
+        text: 'v1',
+        items: [
+          {
+            text: 'v1',
+            link: '/v1/user-docs/introduction'
+          }
+        ]
+      },
     ],
 
     sidebar: [
@@ -30,16 +39,15 @@ export default defineConfig({
             // Get Started
             { text: "Get Started",
                 items: [
-                    { text: "What's Ndako?", link: '/user-docs/introduction/'},
-                    { text: 'How It Works', link: '/user-docs/introduction/how-it-works' },
-                    { text: 'Creating Your Account', link: '/user-docs/introduction/create-account' },
-                    { text: 'Dashboard Overview', link: '/user-docs/introduction/dashboard-overview' },
+                    { text: "What's Ndako?", link: '/v1/user-docs/introduction/'},
+                    { text: 'How It Works', link: '/v1/user-docs/introduction/how-it-works' },
+                    { text: 'Creating Your Account', link: '/v1/user-docs/introduction/create-account' },
+                    { text: 'Dashboard Overview', link: '/v1/user-docs/introduction/dashboard-overview' },
                     { text: 'Ndako Essentials',
                         items: [
-                            { text: 'Activities', link: '/guide/introduction/essential/activities' },
-                            { text: 'Search, filter, and group records', link: '/guide/introduction/essential/search-others' },
-                            { text: 'Export and import data', link: '/guide/introduction/essential/export-import' },
-                            { text: 'In-app purchases (IAP)', link: '/guide/introduction/essential/iap' },
+                            { text: 'Search, filter, and group records', link: '/v1/user-docs/introduction/essential/search-others' },
+                            { text: 'Export and import data', link: '/v1/user-docs/introduction/essential/export-import' },
+                            // { text: 'In-app purchases (IAP)', link: '/v1/user-docs/introduction/essential/iap' },
                         ],
                         collapsed: true,
                     },
@@ -51,9 +59,9 @@ export default defineConfig({
             text: 'Property Management',
                 collapsed: true,
                 items: [
-                    { text: 'Add a Property', link: '/user-docs/property-management/add-property' },
-                    { text: 'Units and Rooms', link: '/user-docs/property-management/units-rooms' },
-                    { text: 'Property Settings', link: '/user-docs/property-management/property-settings' }
+                    { text: 'Add a Property', link: '/v1/user-docs/property-management/add-property' },
+                    { text: 'Units and Rooms', link: '/v1/user-docs/property-management/units-rooms' },
+                    { text: 'Property Settings', link: '/v1/user-docs/property-management/property-settings' }
                 ]
             },
             // Guests & Tenants
@@ -61,9 +69,9 @@ export default defineConfig({
             text: 'Guests & Tenants',
                 collapsed: true,
                 items: [
-                    { text: 'Check-in / Check-out', link: '/user-docs/guest-tenant/check-in-out' },
-                    { text: 'Communication Tools', link: '/user-docs/guest-tenant/communication' },
-                    { text: 'Guest Portal', link: '/user-docs/guest-tenant/guest-portal' }
+                    { text: 'Check-in / Check-out', link: '/v1/user-docs/guest-tenant/check-in-out' },
+                    { text: 'Communication Tools', link: '/v1/user-docs/guest-tenant/communication' },
+                    // { text: 'Guest Portal', link: '/v1/user-docs/guest-tenant/guest-portal' }
                 ]
             },
             // Reservations & Bookings
@@ -71,10 +79,10 @@ export default defineConfig({
               text: 'Reservations & Bookings',
               collapsed: true,
               items: [
-                { text: 'Create a Booking', link: '/user-docs/reservations/create-booking' },
-                { text: 'Calendar View', link: '/user-docs/reservations/calendar-view' },
-                { text: 'Booking Policies', link: '/user-docs/reservations/policies' },
-                { text: 'Booking Settings', link: '/user-docs/reservations/booking-settings' }
+                { text: 'Create a Booking', link: '/v1/user-docs/reservations/create-booking' },
+                { text: 'Calendar View', link: '/v1/user-docs/reservations/calendar-view' },
+                { text: 'Booking Policies', link: '/v1/user-docs/reservations/policies' },
+                { text: 'Booking Settings', link: '/v1/user-docs/reservations/booking-settings' }
               ]
             },
             // Financials
@@ -82,9 +90,9 @@ export default defineConfig({
               text: 'Financials',
               collapsed: true,
               items: [
-                { text: 'Payments & Invoices', link: '/user-docs/financials/payments-invoices' },
-                { text: 'Track Expenses', link: '/user-docs/financials/track-expenses' },
-                { text: 'Basic Reports', link: '/user-docs/financials/reports' }
+                { text: 'Payments & Invoices', link: '/v1/user-docs/financials/payments-invoices' },
+                { text: 'Track Expenses', link: '/v1/user-docs/financials/track-expenses' },
+                { text: 'Basic Reports', link: '/v1/user-docs/financials/reports' }
               ]
             },
             // Account Settings
@@ -92,9 +100,9 @@ export default defineConfig({
               text: 'Account Settings',
               collapsed: true,
               items: [
-                { text: 'Profile & Security', link: '/user-docs/settings/profile-security' },
-                { text: 'Notifications', link: '/user-docs/settings/notifications' },
-                { text: 'Team & Permissions', link: '/user-docs/settings/team-permissions' }
+                { text: 'Profile & Security', link: '/v1/user-docs/settings/profile-security' },
+                { text: 'Notifications', link: '/v1/user-docs/settings/notifications' },
+                { text: 'Team & Permissions', link: '/v1/user-docs/settings/team-permissions' }
               ]
             },
             // FAQs & Help
@@ -102,8 +110,8 @@ export default defineConfig({
               text: 'FAQs & Help',
               collapsed: true,
               items: [
-                { text: 'Common Questions', link: '/user-docs/faqs/common-questions' },
-                { text: 'Contact Support', link: '/user-docs/faqs/contact-support' }
+                { text: 'Common Questions', link: '/v1/user-docs/faqs/common-questions' },
+                { text: 'Contact Support', link: '/v1/user-docs/faqs/contact-support' }
               ]
             },
             // On-Premise
@@ -111,13 +119,11 @@ export default defineConfig({
               text: 'On-Premise',
               collapsed: true,
               items: [
-                { text: 'Requirements', link: '/user-docs/on-premise/requirements' },
-                { text: 'Donwload Ndako', link: '/user-docs/on-premise/contact-support' },
-                { text: 'Installation', link: '/user-docs/on-premise/installation' },
-                { text: 'Getting API Keys', link: '/user-docs/on-premise/contact-support' },
-                { text: 'Setting-Up Your Company', link: '/user-docs/on-premise/contact-support' },
-                { text: 'Update', link: '/user-docs/on-premise/contact-support' },
-                { text: 'Debugging Errors', link: '/user-docs/on-premise/contact-support' }
+                { text: 'Requirements', link: '/v1/user-docs/on-premise/requirements' },
+                { text: 'Donwload Ndako', link: '/v1/user-docs/on-premise/download' },
+                { text: 'Installation', link: '/v1/user-docs/on-premise/installation' },
+                { text: 'Update', link: '/v1/user-docs/on-premise/update' },
+                { text: 'Debugging Errors', link: '/v1/user-docs/on-premise/debug-error' }
               ]
             }
 

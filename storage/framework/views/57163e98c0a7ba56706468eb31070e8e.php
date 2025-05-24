@@ -46,7 +46,7 @@
             <!-- Unread Notifications -->
             <div class="pt-0 tab-pane fade <?php echo e($filter == 'unread' ? 'show active' : ''); ?>" id="nav-profile" role="tabpanel" aria-labelledby="nav-unread-tab">
                 <div class="list-group list-group-flush list-group-hoverable">
-                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $notification->isUnread()->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <div class="cursor-pointer list-group-item" wire:key="<?php echo e($notification->id); ?>">
                             <div class="row align-items-center">
                                 <div class="col text-truncate">
