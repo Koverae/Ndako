@@ -71,6 +71,7 @@ class ImportFile extends Component
             'mod_guests' => "guests.lists",
             'mod_expenses' => "expenses.lists",
             'mod_bookings' => "bookings.lists",
+            'mod_payments' => "bookings.payments.lists",
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -210,7 +211,7 @@ class ImportFile extends Component
 
     public function downloadTemplate()
     {
-        $filePath = storage_path("app/public/imports/{$this->modelSlug}.xlsx");
+        $filePath = public_path("files/imports/{$this->modelSlug}.xlsx");
 
         if (file_exists($filePath)) {
             return response()->download($filePath);

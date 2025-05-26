@@ -62,7 +62,7 @@ class AddExpenseModal extends ModalComponent
             'company_id' => $expense->company_id,
             'type' => 'expense.created',
             'data' => [
-                'message' => "A new expense of ". format_currency($expense->amount). " has been made.",
+                'message' => "A new expense of ". format_currency($expense->amount). " has been made by {$expense->agent->name}.",
                 'expense_id' => $expense->id,
             ],
         ]);
@@ -70,6 +70,8 @@ class AddExpenseModal extends ModalComponent
         event(new NotificationEvent($notification));
 
         $this->dispatch('closeModal');
+
+        $this->redirect(route("expenses.lists"), true);
 
     }
 

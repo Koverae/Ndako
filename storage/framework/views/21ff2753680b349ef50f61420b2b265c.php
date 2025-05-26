@@ -5,7 +5,7 @@
         <span class="btn-close" wire:click="$dispatch('closeModal')"></span>
       </div>
       <div class="modal-body">
-        
+
         <!--[if BLOCK]><![endif]--><?php if(session()->has('message')): ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <div class="alert-body">
@@ -52,7 +52,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                     <?php
                         $hideClass = in_array($booking->status, ['canceled', 'completed']) ? 'd-none' : '';
                     ?>
-                    <button class=" rounded-0 <?php echo e($hideClass); ?>" type="button" wire:click="cancelBooking" wire:target="cancelBooking"  id="top-button">
+                    <button class=" rounded-0 <?php echo e($hideClass); ?>" type="button" wire:click="cancelBooking" wire:confirm="<?php echo e(__("Are you sure you want to cancel this booking #$booking->reference?")); ?>" wire:target="cancelBooking"  id="top-button">
                         <span>
                             <?php echo e(__('Cancel')); ?> <span wire:loading wire:target="cancelBooking"> ...</span>
                         </span>
@@ -214,7 +214,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
             //     }
             // }, 1000);
         });
-    </script>    
+    </script>
         <?php
         $__output = ob_get_clean();
 

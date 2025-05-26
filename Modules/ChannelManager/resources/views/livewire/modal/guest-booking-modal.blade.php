@@ -5,7 +5,7 @@
         <span class="btn-close" wire:click="$dispatch('closeModal')"></span>
       </div>
       <div class="modal-body">
-        
+
         @if (session()->has('message'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <div class="alert-body">
@@ -45,7 +45,7 @@
                     @php
                         $hideClass = in_array($booking->status, ['canceled', 'completed']) ? 'd-none' : '';
                     @endphp
-                    <button class=" rounded-0 {{ $hideClass }}" type="button" wire:click="cancelBooking" wire:target="cancelBooking"  id="top-button">
+                    <button class=" rounded-0 {{ $hideClass }}" type="button" wire:click="cancelBooking" wire:confirm="{{ __("Are you sure you want to cancel this booking #$booking->reference?") }}" wire:target="cancelBooking"  id="top-button">
                         <span>
                             {{__('Cancel')}} <span wire:loading wire:target="cancelBooking"> ...</span>
                         </span>
@@ -165,7 +165,7 @@
             //     }
             // }, 1000);
         });
-    </script>    
+    </script>
     @endscript
 
 </div>
