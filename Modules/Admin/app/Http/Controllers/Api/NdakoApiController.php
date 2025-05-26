@@ -136,4 +136,62 @@ class NdakoApiController extends Controller
         // Return the zip file as a download response
         return response()->download($absolutePath, 'ndako-on-premise-v1.zip');
     }
+
+    /**
+     * Verify a Ndako App Key and return user information.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkNdakoApp(Request $request)
+    {
+        // Validate the APP key
+        $validator = Validator::make($request->all(), [
+            'app_key' => 'required|string|exists:ndako_app_keys,app_key',
+        ]);
+
+        if ($validator->fails()) {
+            Log::warning('Invalid APP key verification attempt: ' . json_encode($request->all()));
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or missing APP key',
+                'errors' => $validator->errors(),
+            ], 401);
+        }
+
+        // Find the APP key record with its associated user
+        $ndakoAppKey = NdakoAppKey::where('app_key', $request->app_key)
+            ->with('user')
+            ->first();
+
+        // Check if the APP key is active
+        if ($ndakoAppKey->status !== 'active') {
+            Log::warning('Inactive APP key attempted: ' . $request->app_key);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'APP key is inactive',
+            ], 403);
+        }
+
+        // Log successful verification
+        Log::info('APP key verified successfully: ' . $request->app_key . ' for user ID ' . $ndakoAppKey->user_id);
+
+        // Return success response with user details
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Ndako App Key verified successfully',
+            'data' => [
+                'app_key' => $ndakoAppKey->app_key,
+                'status' => $ndakoAppKey->status,
+                'user' => [
+                    'id' => $ndakoAppKey->user->id,
+                    'name' => $ndakoAppKey->user->name,
+                    'email' => $ndakoAppKey->user->email,
+                    'company' => $ndakoAppKey->user->company,
+                    'phone' => $ndakoAppKey->user->phone,
+                ],
+            ],
+        ], 200);
+    }
+    
 }

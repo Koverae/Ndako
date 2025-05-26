@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\App\Traits\Files\HasImportLogic;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\Settings\Models\Localization\Country;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Guest extends Model
 {
@@ -66,6 +67,18 @@ class Guest extends Model
 
     public function country() {
         return $this->belongsTo(Country::class, 'country_id', 'id');
+    }
+
+    /**
+     * Get the formatted location for display or OpenStreetMap queries.
+     *
+     * @return Attribute
+     */
+    protected function formattedLocation(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->city . ', ' . $this->country->common_name
+        );
     }
 
     // Import Logic

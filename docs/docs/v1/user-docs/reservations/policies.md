@@ -42,6 +42,6 @@ Set how far in advance guests can make a booking.
 3. **Save Changes**  
    Once you've configured your policies, save your changes to apply them to future bookings.
 
-For more on managing bookings, see [Create a Booking]( /user-docs/reservations/create-booking).
+For more on managing bookings, see [Create a Booking]( /v1/user-docs/reservations/create-booking).
 
 ---

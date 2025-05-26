@@ -4,7 +4,7 @@ namespace Modules\Admin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Admin\Database\Factories\NdakoAppKeyFactory;
+use App\Models\User;
 
 class NdakoAppKey extends Model
 {
@@ -16,11 +16,15 @@ class NdakoAppKey extends Model
     protected $fillable = [
         'user_id',
         'company_id',
-        'app_key'
+        'app_key',
+        'status'
     ];
 
-    // protected static function newFactory(): NdakoAppKeyFactory
-    // {
-    //     // return NdakoAppKeyFactory::new();
-    // }
+    /**
+     * Get the user that owns the APP key.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

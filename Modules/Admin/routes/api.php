@@ -16,5 +16,6 @@ use Modules\Admin\Http\Controllers\Api\NdakoApiController;
 */
 
 
-Route::post('/register', [NdakoApiController::class, 'register']);
-Route::get('/download', [NdakoApiController::class, 'download']);
+Route::post('/register', [NdakoApiController::class, 'register'])->middleware('throttle:60,1');
+Route::get('/download', [NdakoApiController::class, 'download'])->middleware('throttle:60,1');
+Route::post('/check-ndako-app', [NdakoApiController::class, 'checkNdakoApp'])->middleware('throttle:60,1');

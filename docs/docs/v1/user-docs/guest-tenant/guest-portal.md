@@ -80,6 +80,6 @@ For any questions or support, please visit the help section or contact our custo
 
 ### 📚 Related Articles
 
-- [Check-in / Check-out]( /user-docs/guest-tenant/check-in-out)
-- [Communication Tools]( /user-docs/guest-tenant/communication)
-- [Booking Settings]( /user-docs/reservations/booking-settings)
+- [Check-in / Check-out]( /v1/user-docs/guest-tenant/check-in-out)
+- [Communication Tools]( /v1/user-docs/guest-tenant/communication)
+- [Booking Settings]( /v1/user-docs/reservations/booking-settings)

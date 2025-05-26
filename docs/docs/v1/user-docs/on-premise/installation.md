@@ -80,7 +80,7 @@ If you placed the Ndako files in a subdirectory called blog, for example, you sh
 If you have manually filled the `.env` file, you will be redirected directly to the login page, bypassing the installation page.
 
 #### Launching the Installer
-Enter http://your-domain/ndako-directory or http://localhost:8000 (on local) in your favorite browser.
+Enter http://your-domain/ndako-directory in your favorite browser.
 <br>
 This will launch the installation wizard. The installation wizard takes you through the following steps.
 

@@ -31,7 +31,7 @@ This method is ideal when you want to create a booking step by step.
 Watch a demo of how to create a booking via the wizard.  
 [Watch Video](/path/to/video-demo-wizard.mp4)
 
-For more on payment settings, see [Booking Settings]( /user-docs/reservations/booking-settings).
+For more on payment settings, see [Booking Settings](/v1/user-docs/reservations/booking-settings).
 
 ---
 
@@ -57,7 +57,7 @@ This method allows you to select a date range directly from the calendar view an
 4. **Booking Confirmation**  
    After the payment is processed, the booking is confirmed, and both you and the guest will receive notifications.
 
-For more on managing your calendar, see [Calendar View]( /user-docs/reservations/calendar-view).
+For more on managing your calendar, see [Calendar View](/v1/user-docs/reservations/calendar-view).
 
 ---
 

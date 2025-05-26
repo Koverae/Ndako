@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('company_id')->nullable();
             $table->text('app_key')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active')
             $table->timestamps();
         });
 

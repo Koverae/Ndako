@@ -40,7 +40,7 @@ abstract class Table extends Component
     public $perPage = 20, $page = 1, $sortBy = '', $sortDirection = 'asc', $ids = [], $headerText = "Users";
     public bool $hasSubData = false;
     public array $selected = [], $filters = [], $groupBy = [];
-    
+
 
     public function render()
     {
@@ -180,5 +180,5 @@ abstract class Table extends Component
     }
 
     // Calendar View
-    
+
 }

@@ -28,6 +28,6 @@ The Calendar View in Ndako gives you a visual overview of your bookings and avai
 
 You can create new bookings directly from the calendar view by selecting the desired date and room.
 
-For more on creating a booking, see [Create a Booking]( /user-docs/reservations/create-booking).
+For more on creating a booking, see [Create a Booking]( /v1/user-docs/reservations/create-booking).
 
 ---

@@ -82,6 +82,6 @@ For more help, please visit the support section or contact our customer service 
 
 ### 📚 Related Articles
 
-- [Check-in / Check-out]( /user-docs/guest-tenant/check-in-out)
-- [Guest Portal]( /user-docs/guest-tenant/guest-portal)
+- [Check-in / Check-out]( /v1/user-docs/guest-tenant/check-in-out)
+- [Guest Portal]( /v1/user-docs/guest-tenant/guest-portal)
 <!-- - [Booking Settings]( /user-docs/guest-tenant/booking-settings) -->

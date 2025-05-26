@@ -107,4 +107,4 @@ For any questions or additional help, please refer to the support page or contac
 
 <!-- - [Booking Settings]( /user-docs/guest-tenant/booking-settings) -->
 <!-- - [Unit Status Management]( /user-docs/guest-tenant/unit-status) -->
-- [Guest Communication Tools]( /user-docs/guest-tenant/communication)
+- [Guest Communication Tools]( /v1/user-docs/guest-tenant/communication)

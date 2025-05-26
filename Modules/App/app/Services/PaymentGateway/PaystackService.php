@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Koverae\KoveraeBilling\Models\Transaction;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
@@ -129,7 +130,7 @@ class PaystackService
         $invoice = BookingInvoice::find($result->data->metadata->invoiceId);
         // Process the payment and update records within a database transaction
         DB::transaction(function () use ($invoice, $result) {
-            
+
             // Store payment record
             $journal = Journal::isCompany(current_company()->id)->isType($result->data->metadata->method)->first();
             $payment = BookingPayment::create([
