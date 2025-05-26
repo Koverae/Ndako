@@ -2,9 +2,12 @@
 
 namespace Modules\ChannelManager\Livewire\Modal;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use LivewireUI\Modal\ModalComponent;
 use Livewire\WithFileUploads;
+use Modules\App\Events\NotificationEvent;
+use Modules\App\Models\Notification\Notification;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
 use Modules\RevenueManager\Models\Accounting\Journal;
@@ -75,6 +78,20 @@ class AddInvoicePaymentModal extends ModalComponent
             'paid_amount' => ($paidAmount),
             'due_amount' => ($due_amount),
         ]);
+
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $payment->company_id,
+            'type' => 'payment.created',
+            'data' => [
+                'message' => "New payment received of ".format_currency($payment->amount)." for invoice #{$payment->invoice->reference}",
+                'booking_id' => $payment->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
 
         $this->closeModal();
     }

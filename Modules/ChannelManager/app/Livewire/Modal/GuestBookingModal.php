@@ -2,11 +2,14 @@
 
 namespace Modules\ChannelManager\Livewire\Modal;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
 use LivewireUI\Modal\ModalComponent;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Livewire\WithFileUploads;
+use Modules\App\Events\NotificationEvent;
+use Modules\App\Models\Notification\Notification;
 use Modules\App\Services\GuestCommunicationService;
 use Modules\App\Services\PaymentGateway\PaystackService;
 use Modules\ChannelManager\Models\Booking\Booking;
@@ -140,6 +143,19 @@ class GuestBookingModal extends ModalComponent
         // Send success message
 
         session()->flash('success', 'Your payment has been successfully processed!');
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $payment->company_id,
+            'type' => 'payment.created',
+            'data' => [
+                'message' => "New payment received of ".format_currency($payment->amount)." for invoice #{$payment->invoice->reference}",
+                'booking_id' => $payment->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
     }
 
     #[On('paymentCompleted')]

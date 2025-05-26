@@ -26,15 +26,15 @@ class NotificationBell extends Component
     {
         $query = Notification::where('user_id', Auth::user()->id)->latest();
 
-        if ($this->filter === 'unread') {
-            $query->whereNull('read_at');
-        } elseif ($this->filter === 'read') {
-            $query->whereNotNull('read_at');
-        }
+        // if ($this->filter === 'unread') {
+        //     $query->whereNull('read_at');
+        // } elseif ($this->filter === 'read') {
+        //     $query->whereNotNull('read_at');
+        // }
 
-        $this->notifications = $query->take(20)->get();
-        $this->unreads = $query->take(20)->get();
-        $this->notifications = $query->take(20)->get();
+        $this->notifications = Notification::where('user_id', Auth::user()->id)->latest()->take(20)->get();
+        $this->reads = Notification::where('user_id', Auth::user()->id)->latest()->whereNotNull('read_at')->take(20)->get();
+        $this->unreads = Notification::where('user_id', Auth::user()->id)->latest()->whereNull('read_at')->take(20)->get();
         $this->unreadCount = Notification::where('user_id', Auth::user()->id)
             ->whereNull('read_at')
             ->count();
@@ -46,10 +46,12 @@ class NotificationBell extends Component
         $this->loadNotifications();
     }
 
-    public function markAsRead($notificationId)
+    public function markAsRead($notificationId, $filter = "all")
     {
         $notification = Notification::findOrFail($notificationId);
         $notification->markAsRead();
+        $this->filter = $filter;
+
         $this->loadNotifications();
     }
 

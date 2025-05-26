@@ -1,4 +1,4 @@
-<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationOffcanvas" aria-labelledby="offcanvasEndLabel">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationOffcanvas" aria-labelledby="offcanvasEndLabel" wire:ignore.self>
     <div class="offcanvas-header">
       <h1 class="offcanvas-title h1" id="offcanvasEndLabel"><?php echo e(__('Notifications')); ?></h1>
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -46,18 +46,29 @@
             <!-- Unread Notifications -->
             <div class="pt-0 tab-pane fade <?php echo e($filter == 'unread' ? 'show active' : ''); ?>" id="nav-profile" role="tabpanel" aria-labelledby="nav-unread-tab">
                 <div class="list-group list-group-flush list-group-hoverable">
-                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                        <div class="cursor-pointer list-group-item" wire:key="<?php echo e($notification->id); ?>">
+                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $unreads; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <div
+                            class="cursor-pointer list-group-item"
+                            x-data="{ visible: true }"
+                            x-show="visible"
+                            x-transition
+                            wire:key="<?php echo e($notification->id); ?>"
+                        >
                             <div class="row align-items-center">
                                 <div class="col text-truncate">
                                     <a href="#" class="text-body d-block"><?php echo e($notification->data['title'] ?? ''); ?></a>
-                                    <div class="d-block text-muted text-truncate mt-n1">
+                                    <div class="d-block text-muted text-truncate mt-n1" title="<?php echo e($notification->data['message']); ?>">
                                         <?php echo e($notification->data['message']); ?>
 
                                     </div>
                                     <div class="mt-2 d-flex justify-content-between">
                                         <small class="text-gray-500"><?php echo e($notification->created_at->diffForHumans()); ?></small>
-                                        <button class="text-end" wire:click="markAsRead('<?php echo e($notification->id); ?>')">Mark as Read</button>
+                                        <button
+                                            @click="visible = false; $wire.markAsRead('<?php echo e($notification->id); ?>', '<?php echo e($filter); ?>')"
+                                            class="text-end"
+                                        >
+                                            Mark as Read
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -74,10 +85,11 @@
                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
             </div>
+
             <!-- Read Notifications -->
             <div class="pt-0 tab-pane fade <?php echo e($filter == 'read' ? 'show active' : ''); ?>" id="nav-contact" role="tabpanel" aria-labelledby="nav-read-tab">
                 <div class="list-group list-group-flush list-group-hoverable">
-                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $notification->isRead()->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $reads; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <div class="cursor-pointer list-group-item" wire:key="<?php echo e($notification->id); ?>">
                             <div class="row align-items-center">
                                 <div class="col text-truncate">
@@ -107,4 +119,5 @@
         </div>
 
     </div>
-</div><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/notification-bell.blade.php ENDPATH**/ ?>
+</div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/notification-bell.blade.php ENDPATH**/ ?>
