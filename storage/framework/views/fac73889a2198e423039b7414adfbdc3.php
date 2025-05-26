@@ -1,5 +1,4 @@
 <div>
-
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -21,9 +20,8 @@
               </div>
 
             <!-- Map -->
-            <div id="map" style="height: 600px;"></div>
             
-            
+            <iframe class="p-0 col-12 col-md-12 col-lg-10" height="700" src="https://www.openstreetmap.org/export/embed.html?bbox=30.673828125000004%2C-4.7078283752183046%2C42.93457031250001%2C2.141834969768584&amp;layer=mapnik&amp;marker=-1.2852925793638545%2C36.80419921875" style="border: 1px solid black"></iframe><br/>
         </div>
     </div>
     <!--[if BLOCK]><![endif]--><?php if($this->data()->count() == 0): ?>
@@ -33,60 +31,5 @@
         <p class="empty-subtitle"><?php echo e($this->emptyText()); ?></p>
     </div>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-
-<script>
-document.addEventListener('livewire:load', function () {
-    // Initialize Leaflet map
-    var map = L.map('map').setView([0, 0], 2); // Default to world view
-
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 18,
-    }).addTo(map);
-
-    // Properties from Livewire
-    var properties = <?php echo json_encode($dataView, 15, 512) ?>;
-
-    // Function to geocode city/country and add marker
-    async function addPropertyMarker(property) {
-        try {
-            // Use Nominatim API for geocoding
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(property.location)}&format=json&limit=1`, {
-                headers: {
-                    'User-Agent': 'YourAppName/1.0 (your.email@example.com)' // Required by Nominatim
-                }
-            });
-            const data = await response.json();
-
-            if (data.length > 0) {
-                const { lat, lon } = data[0];
-                L.marker([lat, lon])
-                    .addTo(map)
-                    .bindPopup(`<b>${property.name}</b><br>${property.location}`)
-                    .openPopup();
-
-                // Adjust map bounds to include all markers
-                map.fitBounds(map.getBounds().extend([lat, lon]));
-            }
-        } catch (error) {
-            console.error('Geocoding error for:', property.location, error);
-        }
-    }
-
-    // Add markers for all properties
-    properties.forEach(property => addPropertyMarker(property));
-
-    // Ensure Livewire re-renders update the map
-    Livewire.on('refreshMap', () => {
-        map.eachLayer(layer => {
-            if (layer instanceof L.Marker) {
-                map.removeLayer(layer);
-            }
-        });
-        properties.forEach(property => addPropertyMarker(property));
-    });
-});
-</script>
 </div>
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/map.blade.php ENDPATH**/ ?>
