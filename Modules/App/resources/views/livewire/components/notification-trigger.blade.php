@@ -5,7 +5,6 @@
             <span class="text-white badge font-weight-bold" style="background-color: #017E84;" x-bind:class="{ 'animate-pulse': hasNew }">{{ $unreadCount }}</span>
         @endif
     </a>
-</div>
 
 <script>
     document.addEventListener('livewire:initialized', () => {
@@ -17,3 +16,5 @@
         });
     });
 </script>
+</div>
+

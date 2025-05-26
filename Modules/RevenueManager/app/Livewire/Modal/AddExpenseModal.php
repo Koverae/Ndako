@@ -2,7 +2,10 @@
 
 namespace Modules\RevenueManager\Livewire\Modal;
 
+use Illuminate\Support\Facades\Auth;
 use LivewireUI\Modal\ModalComponent;
+use Modules\App\Events\NotificationEvent;
+use Modules\App\Models\Notification\Notification;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\RevenueManager\Models\Expenses\Expense;
 use Modules\RevenueManager\Models\Expenses\ExpenseCategory;
@@ -52,6 +55,19 @@ class AddExpenseModal extends ModalComponent
             'note' => $this->note,
         ]);
         $expense->save();
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $expense->company_id,
+            'type' => 'expense.created',
+            'data' => [
+                'message' => "A new expense of ". format_currency($expense->amount). " has been made.",
+                'expense_id' => $expense->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
 
         $this->dispatch('closeModal');
 

@@ -10,6 +10,8 @@ use Modules\RevenueManager\Services\Pricing\RateService;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Modules\App\Events\NotificationEvent;
+use Modules\App\Models\Notification\Notification;
 use Modules\App\Services\PaymentGateway\PaystackService;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
@@ -133,6 +135,20 @@ class BookingService
         // 4️⃣ Ensure room is in the right status before check-in
         if (!in_array($booking->unit->status, ['expected-arrival', 'reserved'])) {
             session()->flash('error', "The assigned unit " . $booking->unit->name . " is not available for check-in.");
+
+            // Send Notification
+            $notification = Notification::create([
+                'user_id' => Auth::user()->id,
+                'company_id' => $booking->company_id,
+                'type' => 'booking.checkin.occupied',
+                'data' => [
+                    'message' => "The assigned unit " . $booking->unit->name . " is not available for check-in.",
+                    'booking_id' => $booking->id,
+                ],
+            ]);
+
+            event(new NotificationEvent($notification));
+
             return;
         }
 
@@ -146,6 +162,19 @@ class BookingService
 
         // 6️⃣ Success message
         session()->flash('success', 'Guest successfully checked in.');
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $booking->company_id,
+            'type' => 'booking.checkin',
+            'data' => [
+                'message' => "{$booking->guest->name} successfully checked in room #{$booking->unit->name}!",
+                'booking_id' => $booking->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
 
         return $booking;
     }
@@ -201,9 +230,36 @@ class BookingService
             // Set success message
             session()->flash('success', 'Guest has successfully checked out.');
 
+            // Send Notification
+            $notification = Notification::create([
+                'user_id' => Auth::user()->id,
+                'company_id' => $booking->company_id,
+                'type' => 'booking.checkout',
+                'data' => [
+                    'message' => "Guest from room {$booking->unit->name} has successfully checked out",
+                    'booking_id' => $booking->id,
+                ],
+            ]);
+
+            event(new NotificationEvent($notification));
+
             // ✅ Add late check-out charge message if applicable
             if ($lateCheckOutCharge > 0) {
                 session()->flash('info', 'Late check-out fee of ' . format_currency($lateCheckOutCharge) . ' applied.');
+
+                // Send Notification
+                $notification = Notification::create([
+                    'user_id' => Auth::user()->id,
+                    'company_id' => $booking->company_id,
+                    'type' => 'booking.checkout',
+                    'data' => [
+                        'message' => "Late check-out fee of ". format_currency($lateCheckOutCharge)." applied.",
+                        'booking_id' => $booking->id,
+                    ],
+                ]);
+
+                event(new NotificationEvent($notification));
+
             }
 
         }
@@ -312,6 +368,19 @@ class BookingService
         ]);
 
         session()->flash("success", "The booking #{$booking->reference} dates have been updated!");
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $booking->company_id,
+            'type' => 'booking.updated',
+            'data' => [
+                'message' => "The booking #{$booking->reference} dates have been updated!",
+                'booking_id' => $booking->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
     }
 
     /**
@@ -371,6 +440,19 @@ class BookingService
         : "Booking #{$booking->reference} has been canceled. No refund is applicable.";
 
         session()->flash('success', $message);
+
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => Auth::user()->id,
+            'company_id' => $booking->company_id,
+            'type' => 'booking.cancelled',
+            'data' => [
+                'message' => $message,
+                'booking_id' => $booking->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
 
     }
 
