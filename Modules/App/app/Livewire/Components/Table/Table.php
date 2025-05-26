@@ -31,7 +31,8 @@ abstract class Table extends Component
             'component' => 'map',
         ],
         'calendar' => [
-            'view' => 'app::livewire.components.table.template.calendar',
+            'view' => 'app::livewire.components.table.table',
+            // 'view' => 'app::livewire.components.table.template.calendar',
             'component' => 'calendar',
         ],
     ];

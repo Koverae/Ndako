@@ -19,8 +19,8 @@
               </div>
 
             <!-- Map -->
-            <x-maps-leaflet :centerPoint="['lat' => 52.16, 'long' => 5]"></x-maps-leaflet>
-            {{-- <iframe class="p-0 col-12 col-md-12 col-lg-10" height="700" src="https://www.openstreetmap.org/export/embed.html?bbox=30.673828125000004%2C-4.7078283752183046%2C42.93457031250001%2C2.141834969768584&amp;layer=mapnik&amp;marker=-1.2852925793638545%2C36.80419921875" style="border: 1px solid black"></iframe><br/> --}}
+            {{-- <x-maps-leaflet :centerPoint="['lat' => 52.16, 'long' => 5]"></x-maps-leaflet> --}}
+            <iframe class="p-0 col-12 col-md-12 col-lg-10" height="700" src="https://www.openstreetmap.org/export/embed.html?bbox=30.673828125000004%2C-4.7078283752183046%2C42.93457031250001%2C2.141834969768584&amp;layer=mapnik&amp;marker=-1.2852925793638545%2C36.80419921875" style="border: 1px solid black"></iframe><br/>
         </div>
     </div>
     @if($this->data()->count() == 0)
