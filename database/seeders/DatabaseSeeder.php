@@ -22,6 +22,6 @@ class DatabaseSeeder extends Seeder
             PlanTableSeeder::class,
             SuperUserSeeder::class
         ]);
-        // User::factory()->count(10)->create();
+        
     }
 }

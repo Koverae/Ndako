@@ -9,6 +9,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Team\Team;
 use App\Models\Company\Company;
 use App\Models\User;
+use Koverae\KoveraeBilling\Models\Plan;
 use Modules\App\Handlers\AppManagerHandler;
 use Modules\Properties\Handlers\PropertiesAppHandler;
 use Modules\ChannelManager\Handlers\ChannelManagerAppHandler;
@@ -25,6 +26,7 @@ class SuperUserSeeder extends Seeder
         $appManager = new AppManagerHandler;
         $appManager->configure();
 
+
         // $user = User::factory()->create([
         //     'name' => 'Arden BOUET',
         //     'email' => 'laudbouetoumoussa@gmail.com',
@@ -32,6 +34,7 @@ class SuperUserSeeder extends Seeder
         //     'password' => Hash::make('koverae'),
         // ]);
         // $user->save();
+
 
     }
 }
