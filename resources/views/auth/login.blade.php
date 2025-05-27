@@ -35,7 +35,7 @@
                         <div class="mb-2">
                             <label class="form-label" for="password">
                             Password
-                            @if (Route::has('password.request'))
+                            @if (Route::has('password.request') && env('APP_DISTRIBUTION') === "production")
                             <span class="form-label-description">
                                 <a href="{{ route('password.request') }}">I forgot password</a>
                             </span>
@@ -62,6 +62,7 @@
                         </div>
                     </form>
                 </div>
+                @if(env('APP_DISTRIBUTION') === "production")
                 <div class="hr-text">or</div>
                 <div class="p-3 card-body">
                     <div class="row">
@@ -78,6 +79,31 @@
                         </div>
                     @endif
                 </div>
+                @endif
+
+                @if(env('APP_DISTRIBUTION') === "demo")
+                <div class="hr-text">Demo accounts</div>
+                <div class="p-3 card-body">
+                    <div class="row">
+                        @php
+                            $demoUsers = [
+                                ['name' => 'Arden BOUET - Manager', 'email' => 'ardenbouet@mambaresorts.com', 'password' => 'ndako'],
+                                ['name' => 'Brian Mwangi - Receptionist', 'email' => 'brianmwagi@mambaresorts.com', 'password' => 'ndako'],
+                                ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'password' => 'ndako'],
+                            ];
+                        @endphp
+                        @foreach($demoUsers as $user)
+                        <div class="mb-2 col-12">
+                            <button type="button" class="btn btn-outline-primary w-100 demo-user"
+                                data-email="{{ $user['email'] }}"
+                                data-password="{{ $user['password'] }}">
+                                {{ $user['name'] }}
+                            </button>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
                 </div>
             </div>
         </div>
@@ -97,6 +123,14 @@
                 $('#login').prepend('<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
                 $('#login').unbind('submit').submit();
             });;
+        });
+    });
+</script>
+<script>
+    document.querySelectorAll('.demo-user').forEach(button => {
+        button.addEventListener('click', function () {
+            document.getElementById('email').value = this.dataset.email;
+            document.getElementById('password').value = this.dataset.password;
         });
     });
 </script>

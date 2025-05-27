@@ -71,7 +71,7 @@
                         <div class="mb-2">
                             <label class="form-label" for="password">
                             Password
-                            <?php if(Route::has('password.request')): ?>
+                            <?php if(Route::has('password.request') && env('APP_DISTRIBUTION') === "production"): ?>
                             <span class="form-label-description">
                                 <a href="<?php echo e(route('password.request')); ?>">I forgot password</a>
                             </span>
@@ -117,6 +117,7 @@
                         </div>
                     </form>
                 </div>
+                <?php if(env('APP_DISTRIBUTION') === "production"): ?>
                 <div class="hr-text">or</div>
                 <div class="p-3 card-body">
                     <div class="row">
@@ -134,6 +135,32 @@
                         </div>
                     <?php endif; ?>
                 </div>
+                <?php endif; ?>
+
+                <?php if(env('APP_DISTRIBUTION') === "demo"): ?>
+                <div class="hr-text">Demo accounts</div>
+                <div class="p-3 card-body">
+                    <div class="row">
+                        <?php
+                            $demoUsers = [
+                                ['name' => 'Arden BOUET - Manager', 'email' => 'ardenbouet@mambaresorts.com', 'password' => 'ndako'],
+                                ['name' => 'Brian Mwangi - Receptionist', 'email' => 'brianmwagi@mambaresorts.com', 'password' => 'ndako'],
+                                ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'password' => 'ndako'],
+                            ];
+                        ?>
+                        <?php $__currentLoopData = $demoUsers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="mb-2 col-12">
+                            <button type="button" class="btn btn-outline-primary w-100 demo-user"
+                                data-email="<?php echo e($user['email']); ?>"
+                                data-password="<?php echo e($user['password']); ?>">
+                                <?php echo e($user['name']); ?>
+
+                            </button>
+                        </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -153,6 +180,14 @@
                 $('#login').prepend('<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
                 $('#login').unbind('submit').submit();
             });;
+        });
+    });
+</script>
+<script>
+    document.querySelectorAll('.demo-user').forEach(button => {
+        button.addEventListener('click', function () {
+            document.getElementById('email').value = this.dataset.email;
+            document.getElementById('password').value = this.dataset.password;
         });
     });
 </script>
