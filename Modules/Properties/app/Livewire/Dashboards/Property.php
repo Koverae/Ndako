@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class Property extends Component
 {
-    public $period = 7, $property;
+    public $period = 1, $property;
     public $occupancyRate, $occupiedNights = 0, $occupiedRooms = 0, $totalNightsAvailable = 0, $revPar = 0, $adr;
     public $bestSellingRooms, $bestSellingRoomTypes;
     public $properties, $propertyTypes, $monthlyOccupancyRates, $revenueByType;
@@ -29,8 +29,8 @@ class Property extends Component
         $this->properties = PropertyProperty::isCompany(current_company()->id)->get();
         $this->propertyTypes = PropertyType::isCompany(current_company()->id)->get();
 
-        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
-        $this->endDate = Carbon::today()->format('Y-m-d');
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
 
         $this->property = current_property()->id ?? null;
         $this->loadData();

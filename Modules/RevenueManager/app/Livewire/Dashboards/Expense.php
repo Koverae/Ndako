@@ -14,7 +14,7 @@ use Modules\RevenueManager\Models\Expenses\ExpenseCategory;
 
 class Expense extends Component
 {
-    public $period = 7, $property;
+    public $period = 1, $property;
     public $spentAmount = 0, $unpaidAmount = 0, $averageSpentAmount = 0, $numberOfExpenses = 0;
     public $properties, $units, $unitTypes, $monthlyExpenses, $bestCategory, $expenses, $expenseCategories, $rooms, $expenseByCategory;
     public $startDate, $endDate;
@@ -23,8 +23,8 @@ class Expense extends Component
         $this->properties = Property::isCompany(current_company()->id)->get();
         $this->property = current_property()->id ?? null;
 
-        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
-        $this->endDate = Carbon::today()->format('Y-m-d');
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
 
         $this->loadData();
     }

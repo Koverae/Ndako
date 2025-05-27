@@ -14,7 +14,7 @@ use Modules\Properties\Models\Property\PropertyUnitType;
 class Room extends Component
 {
 
-    public $period = 7  , $property;
+    public $period = 1, $property;
     public $bestSellerRoom, $bestSellerType, $rooms, $roomTypes;
     public $properties, $bestSellerRooms;
     public $startDate, $endDate;
@@ -23,8 +23,8 @@ class Room extends Component
         $this->properties = Property::isCompany(current_company()->id)->get();
         $this->property = current_property()->id ?? null;
 
-        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
-        $this->endDate = Carbon::today()->format('Y-m-d');
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
 
         $this->loadData();
     }

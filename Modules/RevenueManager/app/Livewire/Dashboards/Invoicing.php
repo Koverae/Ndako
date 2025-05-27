@@ -14,7 +14,7 @@ use Modules\ChannelManager\Models\Booking\BookingPayment;
 
 class Invoicing extends Component
 {
-    public $period = 7, $property;
+    public $period = 1, $property;
     public $invoicedAmount, $unpaidAmount, $averageInvoiceAmount, $numberOfInvoices, $dso, $invoices, $payments;
     public $properties, $units, $unitTypes, $mothlyInvoices;
     public $startDate, $endDate;
@@ -23,8 +23,8 @@ class Invoicing extends Component
         $this->properties = Property::isCompany(current_company()->id)->get();
         $this->property = current_property()->id ?? null;
 
-        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
-        $this->endDate = Carbon::today()->format('Y-m-d');
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
 
         $this->loadData();
     }

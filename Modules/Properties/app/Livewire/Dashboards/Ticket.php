@@ -11,14 +11,14 @@ use Modules\Settings\Models\WorkItem;
 class Ticket extends Component
 {
     public $agent;
-    public $period = 7, $ticketsThisDay = 0, $ticketsAssigned = 0, $ongoingTickets = 0, $ticketsClosed = 0, $overdueIssues = 0, $avgCompletionTime = 0;
+    public $period = 1, $ticketsThisDay = 0, $ticketsAssigned = 0, $ongoingTickets = 0, $ticketsClosed = 0, $overdueIssues = 0, $avgCompletionTime = 0;
     public $currentTickets, $ticketsByCategory, $ticketsByRoom;
     public $startDate, $endDate;
 
     public function mount(){
 
-        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
-        $this->endDate = Carbon::today()->format('Y-m-d');
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
 
         $this->loadData();
     }

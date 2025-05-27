@@ -20,7 +20,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 class Reservation extends Component
 {
 
-    public $period = 7, $property, $type, $room, $guest, $source = 'direct-booking';
+    public $period = 1, $property, $type, $room, $guest, $source = 'direct-booking';
     public $bookings, $canceledBookings, $bookingGrowth = 0, $revenue = 0, $revenueGrowth = 0, $avgRevenue = 0, $avgRevenueGrowth = 0, $cancellationRate = 0;
     public $cancellationRateChange = 0, $bookingRateChange = 0, $revenueChange = 0, $averageRevenueChange = 0;
     public $rooms, $guestBooks, $roomTypes, $monthlyBookings;
@@ -34,8 +34,8 @@ class Reservation extends Component
         $this->properties = Property::isCompany(current_company()->id)->get() ?? null;
         $this->property = current_property()->id ?? null;
 
-        $this->startDate = Carbon::today()->subDays($this->period)->format('Y-m-d');
-        $this->endDate = Carbon::today()->format('Y-m-d');
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
 
         $this->loadData();
 
