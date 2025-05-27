@@ -46,9 +46,6 @@ class GuestPanel extends ControlPanel
     {
         return [
             ActionDropdown::make('export', 'Export', 'exportSelected', false, "fas fa-download"),
-            // ActionDropdown::make('archive', 'Archive', 'archive', false, "fas fa-archive"),
-            // ActionDropdown::make('unarchive', 'Unarchive', 'unarchive', false, "fas fa-inbox"),
-            // ActionDropdown::make('duplicate', 'Duplicate', 'duplicateItems', false, "fas fa-copy"),
             ActionDropdown::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
         ];
     }

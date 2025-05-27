@@ -4,6 +4,7 @@ namespace Modules\Settings\Livewire\Navbar\ControlPanel;
 
 use Illuminate\Support\Facades\Route;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
+use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
 use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
 
@@ -23,10 +24,10 @@ class UserPanel extends ControlPanel
         ];
 
         $this->new = route('settings.users.create');
+        $this->showIndicators = true;
+        $this->isForm = $isForm;
         if($user){
-            $this->showIndicators = true;
             $this->user = $user;
-            $this->isForm = true;
             $this->currentPage = $user->name;
         }else{
             $this->currentPage = "Users";
@@ -39,23 +40,26 @@ class UserPanel extends ControlPanel
             // make($key, $label)
             SwitchButton::make('lists',"switchView('lists')", "bi-list-task"),
             SwitchButton::make('kanban',"switchView('kanban')", "bi-kanban"),
-            SwitchButton::make('map',"switchView('map')", icon: "bi-map"),
-            // SwitchButton::make('delivery_lead_time',"Delais de livraison", ''),
+            // SwitchButton::make('map',"switchView('map')", icon: "bi-map"),
         ];
     }
 
-    public function actionButtons() : array
+
+    public function actionButtons(): array
     {
         return [
-            ActionButton::make('archive', '<i class="bi bi-inboxes"></i> '.__('Archive'), 'archiveUser()'),
-            ActionButton::make('duplicate', __('<i class="fa-regular fa-copy"></i> Duplicate'), 'duplicateUser()'),
-            ActionButton::make('delete', '<i class="bi bi-trash"></i> '.__('Delete'), 'deleteQT()', true),
-            ActionButton::make('change-password', __('Change Password'), "changePasswordUser()", false, 'sent'),
-            ActionButton::make('disable-2fa', __('Disable two-factor authentification'), "disable2Fa()", false, 'sent'),
-            // Add more buttons as needed
+            ActionButton::make('export', 'Export All', 'exportAll', false, "fas fa-download"),
+            ActionButton::make('import', 'Import Records', 'importRecords', false, "fas fa-upload"),
         ];
     }
 
+    public function actionDropdowns(): array
+    {
+        return [
+            ActionDropdown::make('export', 'Export', 'exportSelected', false, "fas fa-download"),
+            ActionDropdown::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
+        ];
+    }
     public function archiveUser(){
         $this->dispatch('archive-user');
     }

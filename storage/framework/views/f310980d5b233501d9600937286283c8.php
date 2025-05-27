@@ -54,7 +54,7 @@ unset($__defined_vars); ?>
         <select wire:model.live="<?php echo e($value->model); ?>" id="<?php echo e($value->model); ?>" class="k-input" <?php echo e($value->disabled ? 'disabled' : ''); ?> <?php echo e($this->blocked ? 'disabled' : ''); ?>>
             <option value=""></option>
             <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $value->data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <option value="<?php echo e($val); ?>"><?php echo e($text); ?></option>
+                <option value="<?php echo e($val); ?>"><?php echo e(inverseSlug($text)); ?></option>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
         </select>
         <!--[if BLOCK]><![endif]--><?php $__errorArgs = [$value->model];

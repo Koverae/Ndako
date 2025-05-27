@@ -22,7 +22,7 @@
         <select wire:model.live="{{ $value->model }}" id="{{ $value->model }}" class="k-input" {{ $value->disabled ? 'disabled' : '' }} {{ $this->blocked ? 'disabled' : '' }}>
             <option value=""></option>
             @foreach($value->data as $val => $text)
-                <option value="{{ $val }}">{{ $text }}</option>
+                <option value="{{ $val }}">{{ inverseSlug($text) }}</option>
             @endforeach
         </select>
         @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror
