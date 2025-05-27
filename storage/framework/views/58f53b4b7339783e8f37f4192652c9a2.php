@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Payment Confirmation</title>
+    <title><?php echo $__env->yieldContent("title"); ?> | Ndako</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         /* PDF Styles for Hospitality Templates */
@@ -165,7 +165,7 @@ body {
     padding: 3mm;
     border-radius: 4px;
     font-size: 11pt;
-    font-weight: 600;
+    /* font-weight: 600; */
     text-align: right;
     margin-top: 4mm;
 }
@@ -277,7 +277,7 @@ body {
                 <p>Email: <?php echo e(current_company()->email ?? 'ndako@koverae.com'); ?></p>
             </div>
         </div>
-        
+
         <?php echo $__env->yieldContent('content'); ?>
 
         <!-- Footer -->
@@ -289,4 +289,4 @@ body {
     </div>
 </body>
 </html>
-    <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/layouts/pdf.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/layouts/pdf.blade.php ENDPATH**/ ?>

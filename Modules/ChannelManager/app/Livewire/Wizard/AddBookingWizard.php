@@ -176,9 +176,8 @@ class AddBookingWizard extends SimpleWizard
             return;
         }
 
-        $this->availableRooms = PropertyUnit::where('capacity', '>=', $this->people)
-            ->where('status', 'vacant') // Step 1: Get rooms that fit the number of people
-                ->orWhere('status', 'vacant-clean')
+        $this->availableRooms = PropertyUnit::where('capacity', '>=', $this->people)// Step 1: Get rooms that fit the number of people
+            ->whereIn('status', ['vacant', 'vacant-clean']) // Only consider rooms that are technically vacant
                     ->whereDoesntHave('bookings', function ($query) { // Step 2: Exclude rooms that are already booked in the given date range
                         $query->where('check_in', '<=', $this->endDate)  // Check if check-in date is before or on the selected end date
                                 ->where('check_out', '>=', $this->startDate);  // Check if check-out date is after or on the selected start date
@@ -346,6 +345,7 @@ class AddBookingWizard extends SimpleWizard
 
         $contentReplace = [
             $booking->guest->name ?? 'Arden BOUET',
+            $booking->reference,
             current_property()->name,
             // format_currency($booking->amount ?? 0),
             Carbon::parse($booking->check_in)->format('d M Y'),
@@ -353,20 +353,36 @@ class AddBookingWizard extends SimpleWizard
             format_currency($booking->total_amount ?? 0),
             current_company()->name
         ];
+
+        $checkIn = Carbon::parse($booking->check_in);
+        $checkOut = Carbon::parse($booking->check_out);
+        $nights = $checkIn->diffInDays($checkOut);
+
         $data = [
-            'total_amount' => format_currency($booking->amount ?? 0),
+            'total_amount' => format_currency($booking->total_amount ?? 0),
+            'paid_amount' => format_currency($booking->paid_amount ?? 0),
             'reference' => $booking->reference,
             'booking_reference' => $booking->reference,
             'date' => $booking->date,
             'check_in' => $booking->check_in,
             'check_out' => $booking->check_out,
-            'room_type' => $booking->unit->unitType->name,
+            'room' => $booking->unit->name ." ~ ". $booking->unit->unitType->name,
             'guest_count' => $booking->unit->unitType->capacity,
+            'nights' => $nights
             // 'company_phone' => '+254 123 456 789',
         ];
 
+        $view = "app::emails.booking-confirmation";
+
         // Send Payment Receipt Email
-        $this->guestCommunicationService->initiateTemplate(1, $model, $subjectReplace, $contentReplace, $data);
+        $this->guestCommunicationService->initiateTemplate(
+            1,
+            $model,
+            $subjectReplace,
+            $contentReplace,
+            $data,
+            $view
+        );
     }
 
 }

@@ -104,7 +104,7 @@ class GuestCommunicationService{
                 'subject' => 'Booking Confirmed: Ref {reference} at {property_name}',
                 'subjectSearch' => ['{reference}', '{property_name}'],
                 'content' => "Hi {guest_name},<br>Your booking {reference} at {property_name} from {check_in} to {check_out} is confirmed.<br>Total Amount: <b>{total_amount}</b>.<br>We look forward to hosting you!<br><br>--{company_name} Team",
-                'contentSearch' => ['{guest_name}', '{property_name}', '{check_in}', '{check_out}', '{total_amount}', '{company_name}'],
+                'contentSearch' => ['{guest_name}', '{reference}', '{property_name}', '{check_in}', '{check_out}', '{total_amount}', '{company_name}'],
                 'recipientEmails' => 'laudbouetoumoussa@gmail.com',
             ],
             [
@@ -325,6 +325,8 @@ class GuestCommunicationService{
             // Prepare data for PDF
             $pdfData = array_merge([
                 'guest_name' => $contact->name ?? 'Arden BOUET',
+                'guest_email' => $contact->email ?? 'laudbouetoumoussa@koverae.com',
+                'guest_phone' => $contact->phone ?? '+254745908726',
                 'company_name' => current_company()->name ?? 'Mamba Resorts',
                 // 'date' => ,
             ], $data);

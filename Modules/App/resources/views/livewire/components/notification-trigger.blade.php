@@ -1,4 +1,4 @@
-<div class="nav-item dropdown d-none d-md-flex me-3" x-data="{ hasNew: @entangle('hasNewNotification') }">
+<div class="nav-item dropdown d-md-flex me-3" x-data="{ hasNew: @entangle('hasNewNotification') }">
     <a class="px-0 nav-link" data-bs-toggle="offcanvas" href="#notificationOffcanvas" role="button" aria-controls="notificationOffcanvas">
         <i class="bi bi-bell" style="font-size: 16px;"></i>
         @if($unreadCount > 0)

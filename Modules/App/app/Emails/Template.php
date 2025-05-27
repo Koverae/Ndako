@@ -46,11 +46,11 @@ public function envelope(): Envelope
     public function build(): self
     {
         $email = $this->view('app::emails.template');
-    
+
         if ($this->attachment) {
             $email->attach($this->attachment); // Full path or stream
         }
-    
+
         return $email;
     }
 }

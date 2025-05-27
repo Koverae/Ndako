@@ -173,7 +173,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('payment_method');
             $table->enum('type', ['debit', 'credit'])->default('credit');
-            $table->enum('status', ['posted', 'pending'])->default('pending');
+            $table->enum('status', ['posted', 'pending'])->default('posted');
             $table->text('note')->nullable();
 
             $table->timestamps();

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Payment Confirmation</title>
+    <title>@yield("title") | Ndako</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         /* PDF Styles for Hospitality Templates */
@@ -165,7 +165,7 @@ body {
     padding: 3mm;
     border-radius: 4px;
     font-size: 11pt;
-    font-weight: 600;
+    /* font-weight: 600; */
     text-align: right;
     margin-top: 4mm;
 }
@@ -277,7 +277,7 @@ body {
                 <p>Email: {{ current_company()->email ?? 'ndako@koverae.com' }}</p>
             </div>
         </div>
-        
+
         @yield('content')
 
         <!-- Footer -->
@@ -289,4 +289,3 @@ body {
     </div>
 </body>
 </html>
-    
