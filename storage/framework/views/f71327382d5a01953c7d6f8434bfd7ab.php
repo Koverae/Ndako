@@ -49,23 +49,19 @@ if (isset($__slots)) unset($__slots);
                         <span class="avatar avatar-sm" style="background-image: url(<?php echo e(Storage::url('avatars/' . auth()->user()->avatar)); ?>)"></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="https://docs.koverae.com/ndako" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
-                        <a href="https://docs.koverae.com/ndako/faqs/contact-support" class="dropdown-item kover-navlink divider">Support</a>
-                        <a href="#" class="dropdown-item kover-navlink">Dark Mode</a>
-                        <hr class="dropdown-divider">
+                        <a href="https://docs.ndako.tech/v1/user-docs/introduction/" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
+                        <a href="https://docs.ndako.tech/v1/user-docs/faqs/contact-support.html" target="_blank" class="dropdown-item kover-navlink divider">Support</a>
+                        
                         <a href="<?php echo e(route('settings.users.show', ['user' => auth()->user()->id])); ?>" class="dropdown-item kover-navlink">My Profile</a>
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_kover_subscription')): ?>
                         <a href="<?php echo e(route('settings.general') . '#subs'); ?>" class="dropdown-item kover-navlink">My Subscription</a>
-                        <?php endif; ?>
-                        <hr class="dropdown-divider">
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('install_pwa')): ?>
-                        <a href="#" class="dropdown-item kover-navlink">Install the App</a>
                         <?php endif; ?>
                         <!-- Authentication -->
                         <form method="POST" action="<?php echo e(route('logout')); ?>">
                             <?php echo csrf_field(); ?>
                             <span  onclick="event.preventDefault(); this.closest('form').submit();" class="cursor-pointer kover-navlink dropdown-item">
-                                Log Out
+                                <?php echo e(__('Log Out')); ?>
+
                             </span>
                         </form>
                         <!-- Authentication End -->

@@ -34,23 +34,18 @@
                         <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="https://docs.ndako.tech" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
-                        <a href="https://docs.ndako.tech/faqs/contact-support" class="dropdown-item kover-navlink divider">Support</a>
-                        <a href="#" class="dropdown-item kover-navlink">Dark Mode</a>
-                        <hr class="dropdown-divider">
+                        <a href="https://docs.ndako.tech/v1/user-docs/introduction/" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
+                        <a href="https://docs.ndako.tech/v1/user-docs/faqs/contact-support.html" target="_blank" class="dropdown-item kover-navlink divider">Support</a>
+                        {{-- <a href="#" class="dropdown-item kover-navlink">Dark Mode</a> --}}
                         <a href="{{ route('settings.users.show', ['user' => auth()->user()->id]) }}" class="dropdown-item kover-navlink">My Profile</a>
                         @can('manage_kover_subscription')
                         <a href="{{ route('settings.general') . '#subs' }}" class="dropdown-item kover-navlink">My Subscription</a>
-                        @endcan
-                        <hr class="dropdown-divider">
-                        @can('install_pwa')
-                        <a href="#" class="dropdown-item kover-navlink">Install the App</a>
                         @endcan
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout')}}">
                             @csrf
                             <span  onclick="event.preventDefault(); this.closest('form').submit();" class="cursor-pointer kover-navlink dropdown-item">
-                                Log Out
+                                {{__('Log Out')}}
                             </span>
                         </form>
                         <!-- Authentication End -->

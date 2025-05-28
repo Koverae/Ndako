@@ -125,8 +125,8 @@ class General extends AppSetting
             Box::make('recaptcha', __('reCAPTCHA'), 'has_recaptcha', __('Protect your forms from spam and abuse.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             Box::make('geolocation', __('Geolocation'), 'has_geo_localization', __('Geolocate your partners and customers.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
             Box::make('paystack', __('Paystack'), 'has_paystack', __('Seamlessly accept and manage payments with Paystack integration, ensuring secure and hassle-free transactions for your business.'), 'integrations', true, "https://www.ndako.koverae.com/docs"),
-                Box::make('send-sms', __('SmS Sending'), 'company', __('Send SmS texts and WhatsApp messages to your guests or tenants.'), 'integrations', false, "https://www.koverae.com/docs"),
-                Box::make('koverae-iap', __('Koverae IAP'), 'company', __('View your IAP Services and recharge your Kredit balance.'), 'integrations', false, "https://www.koverae.com/docs"),
+            // Box::make('send-sms', __('SmS Sending'), 'company', __('Send SmS texts and WhatsApp messages to your guests or tenants.'), 'integrations', false, "https://www.koverae.com/docs"),
+            // Box::make('koverae-iap', __('Koverae IAP'), 'company', __('View your IAP Services and recharge your Kredit balance.'), 'integrations', false, "https://www.koverae.com/docs"),
             // Booking Settings
             Box::make('online-payment', "Online Payment", 'has_online_payment', "Request a payment to confirm booking, in full (100%) or partial.", 'booking-settings', true, "https://ndako.koverae", null),
             Box::make('lock-confirm-booking', "Lock Confirmed Booking", 'has_lock_confirmed_booking', "No longer edit booking once confirmed", 'booking-settings', true, "", null),
