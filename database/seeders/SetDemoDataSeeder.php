@@ -20,28 +20,21 @@ class SetDemoDataSeeder extends Seeder
     public function run(): void
     {
         $demoUsers = [
-            ['name' => 'Arden BOUET - Manager', 'email' => 'ardenbouet@mambaresorts.com', 'phone' => '+254745908945', 'role' => 'manager'],
+            // ['name' => 'Arden BOUET - Manager', 'email' => 'ardenbouet@mambaresorts.com', 'phone' => '+254745908945', 'role' => 'manager'],
             ['name' => 'Brian Mwangi - Receptionist', 'email' => 'brianmwagi@mambaresorts.com', 'phone' => '+254755938945', 'role' => 'front-desk'],
             ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'phone' => '+254732878945', 'role' => 'Maintenance Staff'],
         ];
 
-        foreach($demoUsers as $demoUser){
-            $demoU = User::create([
-                'company_id' => 1,
-                'current_company_id' => 1,
-                'name' => $demoUser['name'],
-                'email' => $demoUser['email'],
-                'phone' => $demoUser['phone'],
-                'password' => Hash::make("ndako"),
-                'email_verified_at' => now(),
-                'phone_verified_at' => now(),
-            ]);
-            $demoU->save();
+        $user = User::factory()->create([
+            'name' => 'Arden BOUET',
+            'email' => 'ardenbouet@mambaresorts.com',
+            'phone' => '+254745908945',
+            'password' => Hash::make('ndako'),
+            'email_verified_at' => now(),
+            'phone_verified_at' => now(),
+        ]);
+        $user->save();
 
-            $demoU->assignRole($demoUser['role']);
-        }
-
-        $user = User::find(1);
         $team = Team::create([
             'user_id' => $user->id
         ]);
@@ -87,7 +80,24 @@ class SetDemoDataSeeder extends Seeder
             // 'language_id' => $this->language
         ]);
         $user->save();
+        $user->assignRole('manager');
 
-        $user->givePermissionTo('manage_kover_subscription');
+        // $user->givePermissionTo('manage_kover_subscription');
+
+        foreach($demoUsers as $demoUser){
+            $demoU = User::create([
+                'company_id' => 1,
+                'current_company_id' => 1,
+                'name' => $demoUser['name'],
+                'email' => $demoUser['email'],
+                'phone' => $demoUser['phone'],
+                'password' => Hash::make("ndako"),
+                'email_verified_at' => now(),
+                'phone_verified_at' => now(),
+            ]);
+            $demoU->save();
+
+            $demoU->assignRole($demoUser['role']);
+        }
     }
 }
