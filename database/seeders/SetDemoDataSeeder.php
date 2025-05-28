@@ -24,7 +24,7 @@ class SetDemoDataSeeder extends Seeder
             ['name' => 'Brian Mwangi - Receptionist', 'email' => 'brianmwagi@mambaresorts.com', 'phone' => '+254755938945', 'role' => 'front-desk'],
             ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'phone' => '+254732878945', 'role' => 'Maintenance Staff'],
         ];
-        
+
         foreach($demoUsers as $demoUser){
             $demoU = User::create([
                 'company_id' => 1,
@@ -37,7 +37,7 @@ class SetDemoDataSeeder extends Seeder
                 'phone_verified_at' => now(),
             ]);
             $demoU->save();
-            
+
             $demoU->assignRole($demoUser['role']);
         }
 
@@ -68,8 +68,14 @@ class SetDemoDataSeeder extends Seeder
             'size' => 32,
             'primary_interest' => 'manage_my_business',
             'default_currency_id' => 12,
+            'is_onboarded' => true
         ]);
         $company->save();
+
+        $user->update([
+            'company_id' => $company->id,
+            'current_company_id' => $company->id,
+        ]);
 
         // Install Modules
         $appManager = new AppManagerHandler;
