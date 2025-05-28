@@ -22,7 +22,7 @@ class SetDemoDataSeeder extends Seeder
         $demoUsers = [
             // ['name' => 'Arden BOUET - Manager', 'email' => 'ardenbouet@mambaresorts.com', 'phone' => '+254745908945', 'role' => 'manager'],
             ['name' => 'Brian Mwangi - Receptionist', 'email' => 'brianmwagi@mambaresorts.com', 'phone' => '+254755938945', 'role' => 'front-desk'],
-            ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'phone' => '+254732878945', 'role' => 'Maintenance Staff'],
+            ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'phone' => '+254732878945', 'role' => 'maintenance-staff'],
         ];
 
         $user = User::factory()->create([
