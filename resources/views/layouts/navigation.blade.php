@@ -34,8 +34,8 @@
                         <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="https://docs.koverae.com/ndako" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
-                        <a href="https://docs.koverae.com/ndako/faqs/contact-support" class="dropdown-item kover-navlink divider">Support</a>
+                        <a href="https://docs.ndako.tech" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
+                        <a href="https://docs.ndako.tech/faqs/contact-support" class="dropdown-item kover-navlink divider">Support</a>
                         <a href="#" class="dropdown-item kover-navlink">Dark Mode</a>
                         <hr class="dropdown-divider">
                         <a href="{{ route('settings.users.show', ['user' => auth()->user()->id]) }}" class="dropdown-item kover-navlink">My Profile</a>
