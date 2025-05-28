@@ -111,7 +111,7 @@ class PropertySetting extends AppSetting
             Block::make('pricing', __('Pricing & Discounts')),
             Block::make('booking-settings', 'Booking Settings'),
             Block::make('housekeeping', 'Housekeeping & Maintenance'),
-            Block::make('guest-experience', 'Resident and Guest Experience'),
+            // Block::make('guest-experience', 'Resident and Guest Experience'),
             // Add more buttons as needed
         ];
     }
