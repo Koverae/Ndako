@@ -46,7 +46,7 @@
                 {{ session('message') }}
             </div>
             @endif
-            
+
             @if (session()->has('error'))
                 <div
                     x-data="{ show: true }"
@@ -68,8 +68,8 @@
                             <h3 class="h3">{{ __('Best Seller') }}</h3>
                         </div>
                         <div class="text-center">
-                            <h3 class="mb-0 h3" style="font-size: 40px;">{{ $bestSellerRoom['room_name'] }}</h3><br>
-                            <span class="text-muted">{{ $bestSellerRoom['total_nights'] }} {{ __('nights booked') }}</span>
+                            <h3 class="mb-0 h3" style="font-size: 40px;">{{ $bestSellerRoom['room_name'] ?? 'N/A' }}</h3><br>
+                            <span class="text-muted">{{ $bestSellerRoom['total_nights'] ?? 0 }} {{ __('nights booked') }}</span>
                         </div>
                     </div>
                 </div>
@@ -82,8 +82,8 @@
                             <h3 class="h3">{{ __('Best Type') }}</h3>
                         </div>
                         <div class="text-center">
-                            <h3 class="mb-0 h3" style="font-size: 40px;">{{ $bestSellerType['type_name'] }}</h3><br>
-                            <span class="text-muted">{{ $bestSellerType['total_nights'] }} {{ __('nights booked') }}</span>
+                            <h3 class="mb-0 h3" style="font-size: 40px;">{{ $bestSellerType['type_name'] ?? 'N/A' }}</h3><br>
+                            <span class="text-muted">{{ $bestSellerType['total_nights'] ?? 0 }} {{ __('nights booked') }}</span>
                         </div>
                     </div>
                 </div>
@@ -215,7 +215,7 @@
                         }
                     },
                     title: {
-                        text: "Best Seller Rooms (Last 7 Days)",
+                        text: "Best Seller Rooms (Last {{ $period }} Days)",
                         align: 'center',
                     },
                     colors: ['#017E84'],

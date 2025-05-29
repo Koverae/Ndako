@@ -41,6 +41,7 @@ class ImportFile extends Component
             'mod_guests' => "Guests",
             'mod_expenses' => "Expenses",
             'mod_bookings' => "Bookings",
+            'mod_payments' => "Payments",
             // Add more here
             default => abort(404, 'Invalid model'),
         };
@@ -55,6 +56,7 @@ class ImportFile extends Component
             'mod_guests' => \Modules\ChannelManager\Models\Guest\Guest::class,
             'mod_expenses' => \Modules\RevenueManager\Models\Expenses\Expense::class,
             'mod_bookings' => \Modules\ChannelManager\Models\Booking\Booking::class,
+            'mod_payments' => \Modules\ChannelManager\Models\Booking\BookingPayment::class,
             // Add more here
             default => abort(404, 'Invalid model'),
         };

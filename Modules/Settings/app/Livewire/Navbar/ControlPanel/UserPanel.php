@@ -60,6 +60,7 @@ class UserPanel extends ControlPanel
             ActionDropdown::make('delete', 'Delete', 'deleteSelectedItems', false, "fas fa-trash", true, "Do you really want to delete the selected items?"),
         ];
     }
+
     public function archiveUser(){
         $this->dispatch('archive-user');
     }
