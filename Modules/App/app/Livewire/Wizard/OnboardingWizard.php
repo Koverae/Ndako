@@ -35,7 +35,7 @@ class OnboardingWizard extends SimpleWizard
     public $unitName, $unitFloor, $numberUnits = 1, $capacity = 1, $unitType, $unitSize = 0, $unitDesc, $unitPrice = 0, $prices = 1, $priceRate, $unitRate = 0;
 
     public $memberName, $memberEmail, $memberRole;
-    public string $videoUrl = 'https://www.youtube.com/embed/bX6wcb4vjQ4?si=oQ0tuJs8byLy__6P&mute=1';
+    public string $videoUrl = '';
 
     public array $propertyTypes = [], $countries = [], $selectedAmenity = [], $propertyFloors = [], $propertyUnits = [], $leaseTerms = [], $unitFeatures = [], $units = [], $unitTypes = [], $unitPrices = [], $teamMembers = [], $roles = [];
 

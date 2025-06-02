@@ -519,7 +519,7 @@
     <nav class="bg-white navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <img src="/public/assets/images/logo/logo-black.png" alt="Ndako Logo">
+                <img src="<?php echo e(asset('assets/images/logo/logo-black.png')); ?>" alt="Ndako Logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -562,7 +562,8 @@
 
     <!-- Main Content -->
     <main class="main">
-        @yield("content")
+        <?php echo $__env->yieldContent("content"); ?>
     </main>
 </body>
 </html>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/layouts/master.blade.php ENDPATH**/ ?>
