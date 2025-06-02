@@ -175,7 +175,7 @@
                 <!-- Note and total part -->
                 <div class="k_group row align-items-start mt-md-0">
 
-                    <div class="k_inner_group col-lg-9">
+                    {{-- <div class="k_inner_group col-lg-9">
                         <div class="flex-grow-0 k_cell flex-sm-grow-0">
                             <div class="note-editable" id="note_1">
                                 <textarea wire:model="term" id="term" style="width: 75%; padding-left: 5px; padding-top:10px;" id="" cols="30" rows="5" class="k-input textearea" placeholder="Termes & conditions">
@@ -183,7 +183,7 @@
                                 </textarea>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     @if($this->nights >= 1)
                     <div class="overflow-y-auto k_inner_group k_subtotal_footer col-lg-3 right h-100">
                         <!-- Taxes -->

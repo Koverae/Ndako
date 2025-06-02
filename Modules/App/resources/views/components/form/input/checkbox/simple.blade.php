@@ -16,8 +16,8 @@
     </div>
     <!-- Input Form -->
     <div class="p-0 k_cell k_wrap_input flex-grow-1">
-        <div class="d-inline-block">
-            <input type="{{ $value->type }}" wire:model.blur="{{ $value->model }}" class="form-check-input koverae-checkbox" id="{{ $value->model }}">
+        <div class="k-checkbox form-check d-inline-block">
+            <input type="checkbox" class="form-check-input" wire:model="{{ $value->model }}" class="form-check-input" style="" id="{{ $value->model }}">
         </div>
         @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror
     </div>

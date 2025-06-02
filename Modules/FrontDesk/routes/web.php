@@ -18,7 +18,7 @@ use Modules\FrontDesk\Livewire\Overview;
 
 Route::middleware('identify-kover')->group( function () {
     Route::resource('frontdesk', FrontDeskController::class)->names('frontdesk');
-    Route::get('/pos/overview', Overview::class)->name('pos.overview');
+    // Route::get('/pos/overview', Overview::class)->name('pos.overview');
     Route::prefix("pos/ui")->group(function() {
         Route::get('/', Home::class)->name('pos.ui');
     });
