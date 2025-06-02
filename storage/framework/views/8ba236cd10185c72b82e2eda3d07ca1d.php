@@ -66,7 +66,7 @@ unset($__defined_vars); ?>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
             </div>
             <div class="gap-2 d-flex">
-                <a href="#" class="mt-2 btn btn-primary"><?php echo e(__('Open Session')); ?></a>
+                <a href="<?php echo e(route('pos.ui', $id)); ?>" target="_blank" class="mt-2 btn btn-primary"><?php echo e(__('Open Session')); ?></a>
             </div>
         </div>
     </div>

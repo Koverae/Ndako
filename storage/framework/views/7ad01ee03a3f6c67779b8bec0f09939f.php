@@ -49,4 +49,5 @@ unset($__defined_vars); ?>
             </div>
         </div>
     </a>
-</div><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/table/card/simple.blade.php ENDPATH**/ ?>
+</div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/table/card/simple.blade.php ENDPATH**/ ?>

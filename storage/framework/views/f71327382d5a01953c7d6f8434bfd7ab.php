@@ -224,6 +224,33 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Overview')); ?>
 
                                         </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('product-categories.lists')); ?>">
+                                            <?php echo e(__('Product Categories')); ?>
+
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                            <?php echo e(__('Products')); ?>
+
+                                        </a>
+                                    </div>
+                                    <!-- Right Side -->
+                                    <div class="dropdown-menu-column">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                            <?php echo e(__('Orders')); ?>
+
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                            <?php echo e(__('Sessions')); ?>
+
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                            <?php echo e(__('Payments')); ?>
+
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                            <?php echo e(__('Guests')); ?>
+
+                                        </a>
                                     </div>
                                 </div>
                             </div>

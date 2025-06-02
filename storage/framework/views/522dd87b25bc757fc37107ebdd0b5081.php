@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php echo e(asset('assets/images/logo/favicon.ico')); ?>">
-    <title><?php echo e(current_company()->name); ?> - <?php echo $__env->yieldContent('title'); ?></title>
+    <title><?php echo $__env->yieldContent('title'); ?></title>
 
     <!-- CSS -->
     <link href="<?php echo e(asset('assets/css/koverae.css?'.time())); ?>" rel="stylesheet"/>
+    <link href="<?php echo e(asset('assets/css/pos.css?'.time())); ?>" rel="stylesheet"/>
     <link href="<?php echo e(asset('assets/css/koverae-flags.min.css?'.time())); ?>" rel="stylesheet"/>
-    
     <!-- CSS -->
 
     <!-- Bootstrap Icons -->

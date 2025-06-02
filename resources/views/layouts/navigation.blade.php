@@ -191,6 +191,27 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
                                             {{ __('Overview') }}
                                         </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('product-categories.lists') }}">
+                                            {{ __('Product Categories') }}
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                            {{ __('Products') }}
+                                        </a>
+                                    </div>
+                                    <!-- Right Side -->
+                                    <div class="dropdown-menu-column">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                            {{ __('Orders') }}
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                            {{ __('Sessions') }}
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                            {{ __('Payments') }}
+                                        </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                            {{ __('Guests') }}
+                                        </a>
                                     </div>
                                 </div>
                             </div>
