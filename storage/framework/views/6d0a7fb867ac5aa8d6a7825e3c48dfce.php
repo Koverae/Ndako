@@ -13,7 +13,7 @@
                 <!-- Categories -->
                 <div class="category_section_buttons">
                     <div class="d-flex w-100">
-                        <span class="category_button home">
+                        <span class="category_button cursor-pointer home <?php echo e($selectedCategoryId == null ? 'selected' : ''); ?>" wire:click="selectCategory('')">
                             <i class="bi bi-house-fill"></i>
                         </span>
                         <div class="cursor-pointer d-flex w-100 section_buttons">
@@ -24,7 +24,7 @@
                                 Food
                             </span>
                             <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productCategoryOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <span class="gap-2 category_button">
+                            <span class="gap-2 category_button <?php echo e($selectedCategoryId == $category->id ? 'selected' : ''); ?>" wire:click="selectCategory('<?php echo e($category->id); ?>')">
                                 <?php echo e($category->name); ?>
 
                             </span>
@@ -41,10 +41,10 @@
                         <div class="product-information-tag">
                             <i class="bi bi-info" aria-label="Product info"></i>
                         </div>
-                        <div class="badge badge-info"><?php echo e($product->qty); ?></div>
-                        <img src="<?php echo e($product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/user.png')); ?>" alt="<?php echo e($product->image_path); ?>" class="card-img-top" alt="Deluxe Suite">
+                        <div class="badge badge-info"><?php echo e($product->product_quantity); ?></div>
+                        <img src="<?php echo e($product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png')); ?>" alt="<?php echo e($product->product_name); ?>" class="card-img-top" alt="Deluxe Suite">
                         <div class="product-content">
-                            <div class="product-name"><?php echo e($product->name); ?></div>
+                            <div class="product-name"><?php echo e($product->product_name); ?></div>
                             <div class="price-tag"><?php echo e(format_currency(($product->product_price))); ?></div>
                         </div>
                     </article>

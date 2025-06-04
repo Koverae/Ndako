@@ -73,7 +73,7 @@
         @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror
         @else
 
-        <input type="{{ $value->type }}" style="margin-left: 5px;" wire:model="{{ $value->model }}" wire:change="calculatePrice" class="p-0 k-input" placeholder="{{ $value->placeholder }}" id="date_0" {{ $value->disabled ? 'disabled' : '' }} {{ $this->blocked ? 'disabled' : '' }}>
+        <input type="{{ $value->type }}" style="margin-left: 5px;" wire:model="{{ $value->model }}" class="p-0 k-input" placeholder="{{ $value->placeholder }}" id="date_0" {{ $value->disabled ? 'disabled' : '' }} {{ $this->blocked ? 'disabled' : '' }}>
         @error($value->model) <span class="text-danger">{{ $message }}</span> @enderror
         @endif
 

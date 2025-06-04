@@ -113,6 +113,12 @@ label {
     border-color: #045054;
 }
 
+.category_button.selected{
+    background-color: #045054;
+    color: #fff;
+    border-color: #045054;
+}
+
 .category_button i {
     font-size: 18px;
 }

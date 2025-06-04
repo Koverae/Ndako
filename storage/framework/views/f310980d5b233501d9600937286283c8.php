@@ -118,7 +118,7 @@ endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
         <?php else: ?>
 
-        <input type="<?php echo e($value->type); ?>" style="margin-left: 5px;" wire:model="<?php echo e($value->model); ?>" wire:change="calculatePrice" class="p-0 k-input" placeholder="<?php echo e($value->placeholder); ?>" id="date_0" <?php echo e($value->disabled ? 'disabled' : ''); ?> <?php echo e($this->blocked ? 'disabled' : ''); ?>>
+        <input type="<?php echo e($value->type); ?>" style="margin-left: 5px;" wire:model="<?php echo e($value->model); ?>" class="p-0 k-input" placeholder="<?php echo e($value->placeholder); ?>" id="date_0" <?php echo e($value->disabled ? 'disabled' : ''); ?> <?php echo e($this->blocked ? 'disabled' : ''); ?>>
         <!--[if BLOCK]><![endif]--><?php $__errorArgs = [$value->model];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
