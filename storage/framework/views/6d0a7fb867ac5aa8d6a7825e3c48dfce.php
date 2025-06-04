@@ -132,12 +132,15 @@
                         <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
                             <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
                                 <button class="btn btn-light rounded-0 fw-bolder" id="pay">
-                                    Pay <?php echo e($calculatorInput); ?> <?php echo e($calculatorMode); ?>
-
+                                    Pay
                                 </button>
                             </div>
                             
                             <div x-data="calculatorComponent(window.Livewire.find('<?php echo e($_instance->getId()); ?>'))"
+                                x-init="
+                                    window.addEventListener('keydown', (e) => {
+                                        press(e.key);
+                                    });"
                                 class="flex-wrap w-75 d-flex"
                             >
                                 <template x-for="key in keys" :key="key.label + key.value">
@@ -204,7 +207,7 @@ function calculatorComponent($wire) {
             { label: '÷', value: '/', style: 'background-color: #F5D976;' },
             { label: '0', value: '0' },
             { label: '.', value: '.', style: 'background-color: #F5D7CB;' },
-            { label: '', value: 'backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
+            { label: '', value: 'Backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
         ],
         press(value) {
             if (['qty', 'discount', 'price'].includes(value)) {
@@ -212,15 +215,41 @@ function calculatorComponent($wire) {
                 return;
             }
 
-            if (value === 'backspace') {
-                this.input = this.input.slice(0, -1);
-            } else {
-                this.input += value;
+            // Handle mapped keys
+            switch (value) {
+                case 'q':
+                    $wire.selectCalculatorMode('qty');
+                    return;
+                case 'p':
+                    $wire.selectCalculatorMode('price');
+                    return;
+                case 'd':
+                    $wire.selectCalculatorMode('discount');
+                    return;
+                case '/':
+                    this.input += '/';
+                    break;
+                case 'Backspace':
+                    this.input = this.input.slice(0, -1);
+                    break;
+                case 'Enter':
+                    // Placeholder for calculation or submission logic
+                    console.log('Enter pressed');
+                    break;
+                default:
+                    if (/^[0-9]$/.test(value) || value === '.') {
+                        this.input += value;
+                    } else {
+                        return; // Ignore unknown keys
+                    }
             }
 
             // Optional: send to Livewire if needed
             $wire.set('calculatorInput', this.input);
-        }
+            $wire.applyCalculatorInput(); // ← Realtime update on each key press
+
+        },
+        
     };
 }
 </script>
