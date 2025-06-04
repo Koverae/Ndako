@@ -17,12 +17,6 @@
                             <i class="bi bi-house-fill"></i>
                         </span>
                         <div class="cursor-pointer d-flex w-100 section_buttons">
-                            <span class="gap-2 category_button">
-                                <span><?php echo e(__('Drinks')); ?></span>
-                            </span>
-                            <span class="gap-2 category_button">
-                                Food
-                            </span>
                             <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productCategoryOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <span class="gap-2 category_button <?php echo e($selectedCategoryId == $category->id ? 'selected' : ''); ?>" wire:click="selectCategory('<?php echo e($category->id); ?>')">
                                 <?php echo e($category->name); ?>
@@ -35,47 +29,22 @@
 
                 <!-- Product List -->
                 <div class="gap-2 p-3 product-list row row-cols-2 row-cols-md-3 row-cols-lg-4">
-
                     <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <article class="product">
+                    <article class="product cursor-pointer" wire:click="addToCart('<?php echo e($product->id); ?>')">
                         <div class="product-information-tag">
                             <i class="bi bi-info" aria-label="Product info"></i>
                         </div>
-                        <div class="badge badge-info"><?php echo e($product->product_quantity); ?></div>
-                        <img src="<?php echo e($product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png')); ?>" alt="<?php echo e($product->product_name); ?>" class="card-img-top" alt="Deluxe Suite">
+                        <div class="badge badge-info"><i class="fas fa-infinity"></i></div>
+                        <img src="<?php echo e($product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png')); ?>" 
+                            alt="<?php echo e($product->product_name); ?>" class="card-img-top" alt="Product">
                         <div class="product-content">
                             <div class="product-name"><?php echo e($product->product_name); ?></div>
-                            <div class="price-tag"><?php echo e(format_currency(($product->product_price))); ?></div>
+                            <div class="price-tag"><?php echo e(format_currency($product->product_price)); ?></div>
                         </div>
                     </article>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-                    
-                    <article class="product">
-                        <div class="product-information-tag">
-                            <i class="bi bi-info" aria-label="Product info"></i>
-                        </div>
-                        <div class="badge badge-info">20</div>
-                        <img src="<?php echo e(asset('assets/images/default/cappucino.jpg')); ?>" class="card-img-top" alt="Deluxe Suite">
-                        <div class="product-content">
-                            <div class="product-name">Cappucino</div>
-                            <div class="price-tag">KSh 420</div>
-                        </div>
-                    </article>
-
-                    <article class="product">
-                        <div class="product-information-tag">
-                            <i class="bi bi-info" aria-label="Product info"></i>
-                        </div>
-                        <div class="badge badge-info">20</div>
-                        <img src="<?php echo e(asset('assets/images/default/bubble-tea.jpg')); ?>" class="card-img-top" alt="Deluxe Suite">
-                        <div class="product-content">
-                            <div class="product-name">Bubble Tea</div>
-                            <div class="price-tag">KSh 620</div>
-                        </div>
-                    </article>
-                    
-
                 </div>
+
             </section>
 
             <!-- Checkout Section -->
@@ -83,49 +52,49 @@
                 <div class="border-0 shadow-sm card">
                     <div class="card-body" id="cart-body">
                         <div class="overflow-y-auto order-container-bg-view flex-grow-1 d-flex flex-column text-start">
-                            <ul>
-                                <li class="p-2 cursor-pointer orderline lh-sm selected">
-                                    <div class="d-flex">
-                                        <div class="product-name w-75 d-inline-block flex-grow-1 fw-bolder pe-1 text-truncate">
-                                            <span class="text-wrap">Cheese Burger</span>
+                            
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <ul wire:click="selectProduct('<?php echo e($item['id']); ?>')">
+                                <li class="p-2 cursor-pointer orderline lh-s  <?php echo e($selectedProductId == $item['id'] ? 'selected' : ''); ?>">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="product-name w-75 fw-bolder pe-1 text-truncate">
+                                            <?php echo e($item['name']); ?>
+
                                         </div>
-                                        <div class="product-price w-25 d-inline-block text-end price fw-bolder">
-                                            KSh 25,000
-                                        </div>
-                                    </div>
-                                    <ul>
-                                        <li class="price-per-unit">
-                                            <em class="qty fst-normal fw-bolder me-1">2 </em> units x KSh 10,000
-                                        </li>
-                                        <li class="price-per-unit text-muted">
-                                            15% discount
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="p-2 cursor-pointer orderline lh-sm">
-                                    <div class="d-flex">
-                                        <div class="product-name w-75 d-inline-block flex-grow-1 fw-bolder pe-1 text-truncate">
-                                            <span class="text-wrap">Chapati</span>
-                                        </div>
-                                        <div class="product-price w-25 d-inline-block text-end price fw-bolder">
-                                            KSh 15.00
+                                        <div class="product-price w-25 text-end fw-bolder">
+                                            <?php echo e(format_currency(($item['unit_price'] * $item['quantity']) )); ?>
+
                                         </div>
                                     </div>
                                     <ul>
                                         <li class="price-per-unit">
-                                            <em class="qty fst-normal fw-bolder me-1">5 </em> units x KSh 75.00
+                                            <em class="qty fst-normal fw-bolder me-1"><?php echo e($item['quantity']); ?></em>
+                                            unit(s) x <?php echo e(format_currency($item['unit_price'])); ?>
+
                                         </li>
+                                        <!--[if BLOCK]><![endif]--><?php if($item['discount'] > 0): ?>
                                         <li class="price-per-unit text-muted">
-                                            15% discount
+                                            <?php echo e($item['discount']); ?>% discount
                                         </li>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     </ul>
                                 </li>
                             </ul>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <div class="empty-cart d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted">
+                                <i class="bi bi-cart-fill rotate-45" style="font-size: 60px; color: #898989;"></i>
+                                <br>
+                                <h3>
+                                    <?php echo e(__('No items in cart.')); ?>
+
+                                </h3>
+                            </div>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                         <div class="px-3 py-2 order-summary w-100 bg-100 text-end fw-bolder fs-2 lh-sm">
-                            Total: <span class="total">KSh 20,000</span>
+                            Total: <span class="total"><?php echo e(format_currency($cartTotal)); ?></span>
                             <div class="text-muted subentry">
-                                Taxes: <span class="tax">(+) KSh 540</span>
+                                Taxes: <span class="tax">(+) <?php echo e(format_currency($cartTax)); ?></span>
                             </div>
                         </div>
                         <div class="flex-wrap control_buttons d-flex bg-300 border-bottom">
@@ -224,11 +193,11 @@
                 <div class="fixed-bar">
                     <button wire:click="changeTab('pay')" class="text-white btn-switch_pane rounded-0 fw-bolder review-button" id="pay-order">
                         <span class="fs-1 d-block">Pay</span>
-                        <span>KSh 20,000</span>
+                        <span><?php echo e(format_currency($cartTotal)); ?></span>
                     </button>
                     <button wire:click="changeTab('cart')" class="text-black btn-switch_pane rounded-0 fw-bolder review-button">
                         <span class="fs-1 d-block">Cart</span>
-                        <span>2 items</span>
+                        <span><?php echo e(count($cart)); ?> items</span>
                     </button>
                 </div>
             </section>
