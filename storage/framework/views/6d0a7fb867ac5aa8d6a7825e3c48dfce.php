@@ -127,63 +127,43 @@
                             </button>
 
                         </div>
+
+                        <!-- Calculator -->
                         <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
                             <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
                                 <button class="btn btn-light rounded-0 fw-bolder" id="pay">
-                                    Pay
+                                    Pay <?php echo e($calculatorInput); ?> <?php echo e($calculatorMode); ?>
+
                                 </button>
                             </div>
-                            <div class="flex-wrap w-75 d-flex">
-                                <button class="k_price_list_button btn btn-light rounded-0 fw-bolder">
-                                    1
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    2
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    3
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder selected">
-                                    Qty
-                                </button>
-                                <button class="k_price_list_button btn btn-light rounded-0 fw-bolder">
-                                    4
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    5
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    6
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    <i class="bi bi-percent"></i> Disc
-                                </button>
-                                <button class="k_price_list_button btn btn-light rounded-0 fw-bolder">
-                                    7
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    8
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    9
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    Price
-                                </button>
-                                <button class="k_price_list_button btn btn-light rounded-0 fw-bolder" style="background-color: #F5D976;">
-                                    ÷
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder">
-                                    0
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder" style="background-color: #F5D7CB;">
-                                    .
-                                </button>
-                                <button class="btn btn-light rounded-0 fw-bolder" style="background-color: #FAA0A0;">
-                                    <i class="bi bi-backspace"></i>
-                                </button>
+                            
+                            <div x-data="calculatorComponent(window.Livewire.find('<?php echo e($_instance->getId()); ?>'))"
+                                class="flex-wrap w-75 d-flex"
+                            >
+                                <template x-for="key in keys" :key="key.label + key.value">
+                                    <button 
+                                        type="button"
+                                        @click="press(key.value)"
+                                        :class="[
+                                            'btn',
+                                            'rounded-0',
+                                            'fw-bolder',
+                                            key.class,
+                                            key.mode && $wire.calculatorMode === key.value ? 'selected' : ''
+                                        ]"
+                                        :style="key.style"
+                                    >
+                                        <template x-if="key.icon">
+                                            <i :class="key.icon"></i>
+                                        </template>
+                                        <template x-if="!key.icon">
+                                            <span x-text="key.label"></span>
+                                        </template>
+                                    </button>
+                                </template>
                             </div>
                         </div>
+                        <!-- Calculator -->
                     </div>
                 </div>
             </section>
@@ -203,4 +183,45 @@
             </section>
         </div>
     </main>
+
+<script>
+function calculatorComponent($wire) {
+    return {
+        input: '',
+        keys: [
+            { label: '1', value: '1' },
+            { label: '2', value: '2' },
+            { label: '3', value: '3' },
+            { label: 'Qty', value: 'qty', class: 'btn-light', mode: true },
+            { label: '4', value: '4' },
+            { label: '5', value: '5' },
+            { label: '6', value: '6' },
+            { label: 'Disc', value: 'discount', icon: 'bi bi-percent', class: 'btn-light', mode: true },
+            { label: '7', value: '7' },
+            { label: '8', value: '8' },
+            { label: '9', value: '9' },
+            { label: 'Price', value: 'price', class: 'btn-light', mode: true },
+            { label: '÷', value: '/', style: 'background-color: #F5D976;' },
+            { label: '0', value: '0' },
+            { label: '.', value: '.', style: 'background-color: #F5D7CB;' },
+            { label: '', value: 'backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
+        ],
+        press(value) {
+            if (['qty', 'discount', 'price'].includes(value)) {
+                $wire.selectCalculatorMode(value); // Now $wire is defined
+                return;
+            }
+
+            if (value === 'backspace') {
+                this.input = this.input.slice(0, -1);
+            } else {
+                this.input += value;
+            }
+
+            // Optional: send to Livewire if needed
+            $wire.set('calculatorInput', this.input);
+        }
+    };
+}
+</script>
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/livewire/interface/home.blade.php ENDPATH**/ ?>

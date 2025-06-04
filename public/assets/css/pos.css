@@ -340,6 +340,10 @@ label {
     background-color: #F5D976 !important;
 }
 
+.calculator-divider{
+    background-color: #F5D976;
+}
+
 /* =========================
    Fixed Bar
 ========================= */
