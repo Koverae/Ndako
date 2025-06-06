@@ -197,6 +197,9 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('products.lists') }}">
                                             {{ __('Products') }}
                                         </a>
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('products.lists') }}">
+                                            {{ __('Floor Plans') }}
+                                        </a>
                                     </div>
                                     <!-- Right Side -->
                                     <div class="dropdown-menu-column">

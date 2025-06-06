@@ -85,29 +85,31 @@ class Room extends Component
         $this->bestSellerType = $this->roomTypes ->first(); // Get the top room type
 
         // Fetch Best Selling Rooms within the period
-        $this->bestSellerRooms = PropertyUnit::isCompany(current_company()->id)->isProperty($this->property)
-            ->with(['bookings' => function($query) {
-                $query->with(['unit' => function ($subQuery) {
-                    $subQuery->when($this->property, function ($query) {
-                        $query->where('property_id', $this->property); // Apply filter if $property is set
-                    });
-                }])
-                ->select(
-                    'property_unit_id',
-                    DB::raw('SUM(total_amount) as revenue')
-                )
-                ->whereBetween('check_in', [$this->startDate, $this->endDate])
-                ->groupBy('property_unit_id');
+        $this->bestSellerRooms = PropertyUnit::isCompany(current_company()->id)
+            ->when($this->property, function ($query) {
+                $query->isProperty($this->property);
+            })
+            ->with(['bookings' => function ($query) {
+                $query->whereYear('check_in', Carbon::now()->year)
+                    ->whereIn('status', ['confirmed', 'completed', 'canceled'])
+                    ->select(
+                        'property_unit_id',
+                        DB::raw('SUM(CASE WHEN status IN ("confirmed", "completed") THEN total_amount ELSE 0 END) as revenue'),
+                        DB::raw('SUM(CASE WHEN status = "canceled" THEN total_amount ELSE 0 END) as canceled_revenue')
+                    )
+                    ->groupBy('property_unit_id');
             }])
             ->get()
             ->map(function ($room) {
+                // Sum revenue from bookings (should be one record per property_unit_id because of grouping)
                 $revenue = $room->bookings->sum('revenue');
                 return [
-                    'room_name' => 'Room '.$room->name,
+                    'room_name' => 'Room ' . $room->name,
                     'revenue' => $revenue,
                 ];
             })
-            ->sortByDesc('revenue');  // Sort by revenue descending
+            ->sortByDesc('revenue')
+            ->values(); // reindex collection after sorting
 
     }
 

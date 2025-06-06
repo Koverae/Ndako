@@ -30,9 +30,27 @@ label {
     cursor: pointer;
 }
 
+
+/******************
+** Navbar Section
+******************/
+.nav-item .nav-link{
+    padding: 6px 12px 6px 6px;
+    height: 49px;
+}
+
+.nav-item .nav-link.selected{
+    background-color: #E7E9ED;
+}
+
+.nav-item .nav-link .nav-link-title{
+    font-size: 17px;
+    font-weight: 510;
+}
+
 .main {
-    max-width: 1400px;
-    margin: 0 auto;
+    /* max-width: 1400px; */
+    /* margin: 0 auto; */
 }
 
 /* =========================
@@ -200,7 +218,8 @@ label {
    Order Section
 ========================= */
 .order-container-bg-view {
-    height: 170px;
+    height: auto;
+    max-height: 170px;
     background-color: #fff;
     overflow-y: auto;
 }
@@ -378,3 +397,187 @@ label {
     background-color: #03565b;
 }
 
+/******************
+** Payment Section
+******************/
+
+.payment-container {
+    height: 82vh;
+    overflow: hidden;
+}
+
+/* Header / Total Amount Display */
+.top-content {
+    font-size: 38px;
+    line-height: 42px;
+    font-weight: 700;
+    text-align: center;
+    height: 75px;
+    padding: 16px 0;
+    border-bottom: 1px solid #D8DADD;
+}
+
+/* Payment Confirmed */
+.payment-confirmed .actions {
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.actions h1 {
+    font-size: 28px;
+    line-height: 32px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* Print Button */
+.btn-print {
+    font-size: 18.5px;
+    line-height: 20px;
+    font-weight: 600;
+    text-align: center;
+    background-color: #D8DADD;
+    height: 60px;
+    padding: 16px 12px;
+}
+
+/* Receipt Container */
+.pos-receipt-container {
+    background-color: #E7E9ED;
+    height: 100%;
+    max-height: 500px;
+    height: auto;
+    overflow-y: auto;
+}
+
+/* Receipt */
+.pos-receipt-logo {
+    height: 45px;
+    padding: 3px 0;
+}
+
+.company-info {
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.company-info .receipt-number {
+    font-weight: 500;
+    padding: 5px 0;
+}
+
+/* Print View */
+@media print {
+    @page {
+        margin: 0.2cm;
+    }
+
+    .page-wrapper,
+    .page-body,
+    .payment-container,
+    .payment-confirmed,
+    .receipt-block,
+    .pos-receipt {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100% !important;
+        width: 100%;
+    }
+
+    .pos-receipt-container {
+        background-color: #fff !important;
+    }
+
+    .pos-receipt .order-container-bg-view {
+        overflow-y: hidden !important;
+    }
+}
+
+
+.table-navbar{
+  font-size: 18px;
+  line-height: 18px;
+  text-decoration: none solid rgb(55, 65, 81);
+  word-spacing: 0px;
+  background-color: #ffffff;
+  height: auto;
+  min-height: 38px;
+  width: auto;
+  border-bottom: 1px solid #dad8dd;
+  min-width: auto;
+  min-height: auto;
+}
+.table-navbar .table-navbar-main {
+  font-size: 17px;
+  line-height: 21px;
+  height: 66px;
+  max-height: 134px;
+  width: auto;
+  min-width: auto;
+  margin: 4px 8px 8px 8px;
+}
+
+.table-navbar .table-navbar-main .table-navbar-left {
+  /* height: 34px; */
+  width: 402px;
+  min-height: auto;
+  min-width: 200px;
+}
+
+.table-navbar-actions{
+  font-size: 15px;
+  /* height: auto; */
+  width: auto;
+  min-width: 383px;
+  max-width: auto;
+  border: 1px solid #dad8dd;
+}
+
+.table-navbar-buttons .k_switch_view {
+    height: auto;
+    width: 35px;
+    background-color: #FFF;
+    color: black;
+    border: 1px solid #dad8dd;
+    margin: 0 0 0 1px;
+    padding: 12px;
+    min-height: auto;
+    min-width: auto;
+}
+.table-navbar-buttons .k_switch_view:hover,
+.table-navbar-buttons .k_switch_view.active{
+    background-color: #E6F2F3;
+}
+
+.table-container .table-section{
+    background-color: #D8DADD;
+}
+
+.table-container .table-section .floor{
+    height:130px;
+    width: 145px;
+}
+
+.table-container .table-section .floor-table{
+    display: flex;
+    border: 3px solid #EBBF6D;
+    margin: 0 0 16px 0;
+    height: 120px;
+    width: 130px;
+}
+
+.table-container .table-section .floor-table:hover{
+    transform: scale(1.03);
+}
+
+.table-container .table-section .floor-table .info{
+    background-color: #AFB1B3;
+}
+
+.table-container .table-section .floor-table .info.active{
+    background-color: #EBBF6D;
+}
+
+.table-container .table-section .floor-table .info .label{
+
+}

@@ -98,10 +98,10 @@
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Best Seller By Revenue') }}
+                            {{ __('Monthly Best Seller By Revenue') }}
                         </div>
                     </div>
-                    <div id="best-seller-rooms-chart" wire:ignore></div>
+                    <div id="best-seller-rooms-chart"></div>
 
                 </div>
                 <!-- Best Seller By Revenue End -->
@@ -215,7 +215,7 @@
                         }
                     },
                     title: {
-                        text: "Best Seller Rooms (Last {{ $period }} Days)",
+                        text: "Best Seller Rooms",
                         align: 'center',
                     },
                     colors: ['#017E84'],

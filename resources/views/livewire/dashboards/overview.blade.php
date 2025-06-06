@@ -84,6 +84,22 @@
                 </ul>
                 @endcan
 
+                @can('view_financial_reports')
+                <header class="pt-3 form-label font-weight-bold text-uppercase"> <b>{{ __('Restaurants') }}</b></header>
+                <ul class="mb-4" style="margin-left: 10px;">
+                    <a  href="{{ route('dashboard', ['dash' => 'orders']) }}" wire:navigate>
+                        <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="{{ $dash == 'orders' ? 'background-color: #E6F2F3 ;' : '' }} ">
+                                {{ __('Orders') }}
+                        </li>
+                    </a>
+                    <a  href="{{ route('dashboard', ['dash' => 'products']) }}" wire:navigate>
+                        <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="{{ $dash == 'products' ? 'background-color: #E6F2F3 ;' : '' }} ">
+                                {{ __('Products') }}
+                        </li>
+                    </a>
+                </ul>
+                @endcan
+
             </form>
           </div>
           <!-- Apps List -->
