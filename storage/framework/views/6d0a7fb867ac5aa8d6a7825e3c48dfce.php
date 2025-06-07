@@ -223,7 +223,7 @@
                                 <i class="bi bi-stickies"></i> <span>Note</span>
                             </button>
 
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
+                            <button wire:click="cancelOrder" wire:confirm="<?php echo e(__('Are you sure to reset the cart?')); ?>" class="gap-2 btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="reset-cart">
                                 <i class="fas fa-trash"></i> <span>Cancel Order</span>
                             </button>
                             <button class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
@@ -296,7 +296,7 @@
             <div class="payment-confirmed">
                 <div class="row">
                     <div class="top-content d-print-none">
-                        <h1><?php echo e(format_currency(7490)); ?></h1>
+                        <h1><?php echo e(format_currency($order->total_amount ?? 0)); ?></h1>
                     </div>
 
                     <!-- Actions -->
@@ -366,24 +366,26 @@
                                 <!-- Order list -->
                                 <div class="overflow-y-auto mt-2 order-container-bg-view flex-grow-1 d-flex flex-column text-start">
                                     <ul>
-                                        <li class="p-2 cursor-pointer orderline lh-sm">
-                                            <div class="d-flex">
-                                                <div class="w-75 d-flex gap-2 pe-1 text-truncate">
-                                                    <span class="qty fw-bolder">1</span>
-                                                    <span class="name">Chapati</span>
-                                                </div>
-                                                <div class="product-price w-50 text-end"><?php echo e(format_currency(2700)); ?></div>
-                                            </div>
-                                        </li>
-                                        <li class="p-2 cursor-pointer orderline lh-sm">
-                                            <div class="d-flex">
-                                                <div class="w-75 d-flex gap-2 pe-1 text-truncate">
-                                                    <span class="qty fw-bolder">1</span>
-                                                    <span class="name">Bubble Tea</span>
-                                                </div>
-                                                <div class="product-price w-50 text-end"><?php echo e(format_currency(2700)); ?></div>
-                                            </div>
-                                        </li>
+                                        <!--[if BLOCK]><![endif]--><?php if($order): ?>
+                                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $order->details; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                <li class="p-2 cursor-pointer orderline lh-sm">
+                                                    <div class="d-flex">
+                                                        <div class="w-75 d-flex gap-2 pe-1 text-truncate">
+                                                            <span class="qty fw-bolder"><?php echo e($item->quantity); ?></span>
+                                                            <span class="name"><?php echo e($item->product->product_name ?? 'Unknown'); ?></span>
+                                                        </div>
+                                                        <div class="product-price w-50 text-end">
+                                                            <?php echo e(format_currency(($item->unit_price * $item->quantity) * (1 - $item->product_discount_amount / 100))); ?>
+
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                <li class="p-2 text-muted"><?php echo e(__('No items in order.')); ?></li>
+                                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                        <?php else: ?>
+                                            <li class="p-2 text-muted"><?php echo e(__('No active order.')); ?></li>
+                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     </ul>
                                 </div>
 
@@ -396,29 +398,30 @@
                                         <li class="p-2 cursor-pointer orderline lh-sm">
                                             <div class="d-flex">
                                                 <div class="w-75 pe-1 text-truncate"><?php echo e(__('Subtotal')); ?></div>
-                                                <div class=" w-50 text-end"><?php echo e(format_currency(4900)); ?></div>
+                                                <div class="w-50 text-end"><?php echo e(format_currency($order->total_amount ?? 0)); ?></div>
                                             </div>
                                         </li>
                                         <li class="p-2 cursor-pointer orderline lh-sm">
                                             <div class="d-flex">
-                                                <div class="w-75 pe-1 text-truncate"><?php echo e(__('VAT 16%')); ?></div>
-                                                <div class=" w-50 text-end"><?php echo e(format_currency(2400)); ?></div>
+                                                <div class="w-75 pe-1 text-truncate"><?php echo e(__('VAT')); ?> <?php echo e(config('pos.tax_rate', 0.16) * 100); ?>%</div>
+                                                <div class="w-50 text-end"><?php echo e(format_currency($cartTax)); ?></div>
                                             </div>
                                         </li>
                                         <li class="p-2 cursor-pointer orderline lh-sm">
                                             <div class="d-flex">
                                                 <div class="w-75 pe-1 text-truncate fw-bold"><?php echo e(__('Total')); ?></div>
-                                                <div class=" w-50 text-end fw-bold"><?php echo e(format_currency(7490)); ?></div>
+                                                <div class="w-50 text-end fw-bold"><?php echo e(format_currency($order->total_amount ?? 0 + $cartTax)); ?></div>
                                             </div>
                                         </li>
                                         <li class="p-2 cursor-pointer orderline lh-sm">
                                             <div class="d-flex">
-                                                <div class="w-75 pe-1 text-truncate"><?php echo e(__('Paiement')); ?></div>
-                                                <div class=" w-50 text-end"><?php echo e(format_currency(7490)); ?></div>
+                                                <div class="w-75 pe-1 text-truncate"><?php echo e(__('Payment')); ?></div>
+                                                <div class="w-50 text-end"><?php echo e(format_currency($order->total_amount ?? 0 + $cartTax)); ?></div>
                                             </div>
                                             <ul>
-                                                <li class="price-per-unit mt-1" style="padding-left: 3px;">Cash: <?php echo e(format_currency(7490)); ?></li>
-                                                <li class="price-per-unit mt-1" style="padding-left: 3px;">Card: <?php echo e(format_currency(7490)); ?></li>
+                                                <!-- Placeholder for payment methods; extend as needed -->
+                                                <li class="price-per-unit mt-1" style="padding-left: 3px;">Cash: <?php echo e(format_currency($order->total_amount ?? 0 + $cartTax)); ?></li>
+                                                <li class="price-per-unit mt-1" style="padding-left: 3px;">Card: <?php echo e(format_currency(0)); ?></li>
                                             </ul>
                                         </li>
                                     </ul>
@@ -499,8 +502,15 @@
                                 <div class="label top-50 start-50 fw-bolder position-absolute fs-3 translate-middle">
                                     <?php echo e($table->table_name); ?>
 
+                                    <br>
+                                    <small><?php echo e(inverseSlug($table->status)); ?></small>
                                 </div>
                             </div>
+                            <!--[if BLOCK]><![endif]--><?php if($table->status == 'occupied'): ?>
+                            <button wire:click="releaseTable('<?php echo e($table->id); ?>')" class="btn btn-danger btn-sm position-absolute bottom-0 end-0 m-1">
+                                Release
+                            </button>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
                     </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
@@ -510,32 +520,76 @@
         <!-- Tables -->
 
         <!-- Orders -->
-        <div class="order-container bg-white <?php echo e($interface == 'orders' ? '' : 'd-none'); ?>" style="height: 100vh;">
-            <div class="p-3">
-                <h2>Order History</h2>
-                <div class="overflow-y-auto">
-                    <table class="table">
-                        <thead>
+
+        <!-- Orders -->
+        <div class="order-container overflow-y-auto bg-white <?php echo e($interface == 'orders' ? '' : 'd-none'); ?>" style="height: 100vh;">
+            <div class="p-4">
+                <h2 class="text-2xl font-bold mb-4"><?php echo e(__('Order History')); ?></h2>
+                <div class="mb-4 flex flex-wrap gap-4">
+                    <div class="w-full md:w-1/4">
+                        <label class="block text-sm font-medium text-gray-700"><?php echo e(__('Status')); ?></label>
+                        <select wire:model.live="orderStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            <option value=""><?php echo e(__('All')); ?></option>
+                            <option value="ongoing"><?php echo e(__('Ongoing')); ?></option>
+                            <option value="completed"><?php echo e(__('Completed')); ?></option>
+                            <option value="refunded"><?php echo e(__('Refunded')); ?></option>
+                        </select>
+                    </div>
+                    <div class="w-full md:w-1/4">
+                        <label class="block text-sm font-medium text-gray-700"><?php echo e(__('Payment Status')); ?></label>
+                        <select wire:model.live="paymentStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            <option value=""><?php echo e(__('All')); ?></option>
+                            <option value="unpaid"><?php echo e(__('Unpaid')); ?></option>
+                            <option value="paid"><?php echo e(__('Paid')); ?></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto ">
+                    <table class="w-100 bg-white border border-gray-200 rounded-lg shadow-sm">
+                        <thead class="bg-gray-100">
                             <tr>
-                                <th>Order ID</th>
-                                <th>Table</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Order ID')); ?></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Table')); ?></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Customer')); ?></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Total')); ?></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Status')); ?></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Payment')); ?></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Actions')); ?></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <tr>
-                                <td><?php echo e($order->receipt_number); ?></td>
-                                <td><?php echo e($order->table?->table_name ?? 'Direct Sale'); ?></td>
-                                <td><?php echo e(format_currency($order->total + $order->tax)); ?></td>
-                                <td><?php echo e($order->status); ?></td>
-                                <td>
-                                    <button wire:click="refundOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm">Refund</button>
+                        <tbody class="divide-y divide-gray-200">
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm"><?php echo e($order->receipt_number); ?></td>
+                                <td class="px-4 py-3 text-sm"><?php echo e($order->table->table_name ?? 'Direct Sale'); ?></td>
+                                <td class="px-4 py-3 text-sm"><?php echo e($order->guest->name ?? 'No Guest'); ?></td>
+                                <td class="px-4 py-3 text-sm"><?php echo e(format_currency($order->total_amount + ($order->tax_amount ?? 0))); ?></td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full">
+                                        <?php echo e(ucfirst($order->status)); ?>
+
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->payment_status == 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'); ?>">
+                                        <?php echo e(ucfirst($order->payment_status)); ?>
+
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm flex gap-2">
+                                    <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
+                                    <button wire:click="selectOrder('<?php echo e($order->id); ?>')" class="btn btn-primary btn-sm"><?php echo e(__('Select')); ?></button>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                    <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded'): ?>
+                                    <button wire:click="refundOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm"><?php echo e(__('Refund')); ?></button>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                 </td>
                             </tr>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr>
+                                <td colspan="7" class="px-4 py-3 text-sm text-gray-500 text-center"><?php echo e(__('No orders found.')); ?></td>
+                            </tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
                 </div>
