@@ -75,8 +75,8 @@
                                     </a>
                                 </li>
 
-                                <li class="nav-item cursor-pointer <?php echo e($interface == 'orders' ? 'selected' : ''); ?>" data-turbolinks>
-                                    <a class="nav-link kover-navlink" wire:click="switchInterface('orders')" style="margin-right: 5px;">
+                                <li class="nav-item cursor-pointer" data-turbolinks>
+                                    <a class="nav-link kover-navlink <?php echo e($interface == 'orders' ? 'selected' : ''); ?>" wire:click="switchInterface('orders')" style="margin-right: 5px;">
                                     <span class="nav-link-title">
                                         <?php echo e(__('Orders')); ?>
 
@@ -109,7 +109,7 @@
             <section class="container-fluid <?php echo e($tab == 'cart' ? 'd-none d-lg-block' : ''); ?> col-lg-7 col-md-12" style="height: 100vh;" id="product-box">
                 <!-- Search Bar -->
                 <div class="search-bar">
-                    <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products">
+                    <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products" wire:model.live="searchQuery">
                     <i class="bi bi-search search-icon"></i>
                 </div>
 
@@ -147,6 +147,7 @@
                     </article>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </div>
+                
 
             </section>
 
@@ -507,6 +508,40 @@
                 </div>
         </div>
         <!-- Tables -->
+
+        <!-- Orders -->
+        <div class="order-container bg-white <?php echo e($interface == 'orders' ? '' : 'd-none'); ?>" style="height: 100vh;">
+            <div class="p-3">
+                <h2>Order History</h2>
+                <div class="overflow-y-auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Table</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <tr>
+                                <td><?php echo e($order->receipt_number); ?></td>
+                                <td><?php echo e($order->table?->table_name ?? 'Direct Sale'); ?></td>
+                                <td><?php echo e(format_currency($order->total + $order->tax)); ?></td>
+                                <td><?php echo e($order->status); ?></td>
+                                <td>
+                                    <button wire:click="refundOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm">Refund</button>
+                                </td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Orders -->
     </main>
 
 <script>
