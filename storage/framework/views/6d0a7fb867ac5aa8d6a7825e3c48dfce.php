@@ -322,7 +322,7 @@
                             </button>
 
                             <div class="gap-1 mt-3 validation_buttons d-print-none d-none d-lg-flex w-100">
-                                <a href="#" class="text-center text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50 text-decoration-none">
+                                <a wire:click="newOrder" class="text-center cursor-pointer text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50 text-decoration-none">
                                     <span class="fs-1 d-block"><?php echo e(__('New Order')); ?></span>
                                 </a>
                                 <button class="text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50">
@@ -332,10 +332,10 @@
 
                             <!-- Mobile View -->
                             <div class="gap-1 mt-3 validation_buttons d-print-none d-flex d-lg-none fixed-bottom w-100">
-                                <a href="#" class="text-center text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50 text-decoration-none">
+                                <a wire:click="newOrder" class="text-center cursor-pointer text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50 text-decoration-none">
                                     <span class="fs-1 d-block"><?php echo e(__('New Order')); ?></span>
                                 </a>
-                                <button class="text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50">
+                                <button wire:click="switchInterface('orders')" class="text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50">
                                     <span class="mb-1 fs-1 d-block"><?php echo e(__('Orders')); ?></span>
                                 </button>
                             </div>
@@ -443,7 +443,7 @@
                                 <!-- Order Meta -->
                                 <div class="pos-receipt-order-data d-flex mt-2 text-center fs-5 flex-column align-items-center">
                                     <p><?php echo e(__('Powered by ')); ?> <a href="https://ndako.koverae.com" target="_blank" class="fw-bold">Ndako</a></p>
-                                    <div>04-06-2025 16:45:02</div>
+                                    <div><?php echo e(\Carbon\Carbon::parse($order->date ?? now())->format('d-m-y H:i')); ?></div>
                                 </div>
                             </div>
                         </div>
@@ -460,7 +460,7 @@
                     <div class="gap-5 table-navbar-main p-2 d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
                         <!-- Breadcrumbs -->
                         <div class="gap-1 table-navbar-left d-flex align-items-center order-0">
-                            <button class="new-order btn btn-primary fs-3 btn-lg lh-lg">
+                            <button wire:click="newOrder" class="new-order btn btn-primary fs-3 btn-lg lh-lg">
                                 <i class="bi bi-plus fs-3"></i> <span class="d-none d-lg-flex">New Order</span>
                             </button>
                         </div>
@@ -528,7 +528,7 @@
                 <div class="mb-4 flex flex-wrap gap-4">
                     <div class="w-full md:w-1/4">
                         <label class="block text-sm font-medium text-gray-700"><?php echo e(__('Status')); ?></label>
-                        <select wire:model.live="orderStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                        <select wire:model="orderStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="ongoing"><?php echo e(__('Ongoing')); ?></option>
                             <option value="completed"><?php echo e(__('Completed')); ?></option>
@@ -537,7 +537,7 @@
                     </div>
                     <div class="w-full md:w-1/4">
                         <label class="block text-sm font-medium text-gray-700"><?php echo e(__('Payment Status')); ?></label>
-                        <select wire:model.live="paymentStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                        <select wire:model="paymentStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="unpaid"><?php echo e(__('Unpaid')); ?></option>
                             <option value="paid"><?php echo e(__('Paid')); ?></option>
@@ -579,6 +579,7 @@
                                 <td class="px-4 py-3 text-sm flex gap-2">
                                     <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
                                     <button wire:click="selectOrder('<?php echo e($order->id); ?>')" class="btn btn-primary btn-sm"><?php echo e(__('Select')); ?></button>
+                                    <button wire:click="deleteOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm"><?php echo e(__('Delete')); ?></button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded'): ?>
                                     <button wire:click="refundOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm"><?php echo e(__('Refund')); ?></button>
