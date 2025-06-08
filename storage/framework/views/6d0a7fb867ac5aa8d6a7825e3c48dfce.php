@@ -209,8 +209,13 @@
                             <button class="gap-2 btn btn-light rounded-0 fw-bolder">
                                 <i class="fas fa-sync-alt"></i> <span>Refund</span>
                             </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder preset">
-                                <i class="fas fa-utensils"></i> <span>Eat In</span>
+                            <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.service-type-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder preset">
+                                <!--[if BLOCK]><![endif]--><?php if($selectedService): ?>
+                                <i class="<?php echo e($selectedService['icon']); ?>"></i> <span><?php echo e($selectedService['label']); ?></span>
+                                <?php else: ?>
+                                <?php echo e(__('Service Type')); ?>
+
+                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                             </button>
 
                             <button class="gap-3 btn btn-light rounded-0 fw-bolder" wire:click="switchInterface('tables')" style="background-color: #B7EDBE;">
@@ -226,8 +231,11 @@
                             <button wire:click="cancelOrder" wire:confirm="<?php echo e(__('Are you sure to reset the cart?')); ?>" class="gap-2 btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="reset-cart">
                                 <i class="fas fa-trash"></i> <span>Cancel Order</span>
                             </button>
+                            <?php
+                                $customer = $this->guest ? Str::limit($this->guest->name, 10) : __('Guest');
+                            ?>
                             <button onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
-                                <i class="fas fa-user"></i> <span><?php echo e($this->guest ? Str::limit($this->guest->name, 10) : __('Guest')); ?></span>
+                                <i class="fas fa-user"></i> <span><?php echo e($customer); ?></span>
                             </button>
 
                         </div>
