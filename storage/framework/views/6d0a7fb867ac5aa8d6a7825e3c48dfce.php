@@ -226,8 +226,8 @@
                             <button wire:click="cancelOrder" wire:confirm="<?php echo e(__('Are you sure to reset the cart?')); ?>" class="gap-2 btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="reset-cart">
                                 <i class="fas fa-trash"></i> <span>Cancel Order</span>
                             </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
-                                <i class="fas fa-user"></i> <span>Guest</span>
+                            <button onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
+                                <i class="fas fa-user"></i> <span><?php echo e($this->guest ? Str::limit($this->guest->name, 10) : __('Guest')); ?></span>
                             </button>
 
                         </div>
@@ -325,7 +325,7 @@
                                 <a wire:click="newOrder" class="text-center cursor-pointer text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50 text-decoration-none">
                                     <span class="fs-1 d-block"><?php echo e(__('New Order')); ?></span>
                                 </a>
-                                <button class="text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50">
+                                <button wire:click="switchInterface('orders')" class="text-white p-3 rounded m-1 btn-switch_pane btn-primary fw-bolder review-button w-50">
                                     <span class="mb-1 fs-1 d-block"><?php echo e(__('Orders')); ?></span>
                                 </button>
                             </div>
@@ -577,8 +577,14 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm flex gap-2">
+                                    <?php
+                                        $cartData = session("pos_cart_{$pos->id}");
+                                    ?>
+
+                                    <!--[if BLOCK]><![endif]--><?php if($order->status === 'ongoing' && ($cartData['active_order_id'] ?? null) != $order->id): ?>
+                                        <button wire:click="selectOrder('<?php echo e($order->id); ?>')" class="btn btn-primary btn-sm"><?php echo e(__('Select')); ?></button>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
-                                    <button wire:click="selectOrder('<?php echo e($order->id); ?>')" class="btn btn-primary btn-sm"><?php echo e(__('Select')); ?></button>
                                     <button wire:click="deleteOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm"><?php echo e(__('Delete')); ?></button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded'): ?>
