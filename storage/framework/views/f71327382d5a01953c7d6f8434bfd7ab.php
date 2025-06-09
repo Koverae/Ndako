@@ -243,7 +243,7 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Orders')); ?>
 
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos-sessions.lists')); ?>">
                                             <?php echo e(__('Sessions')); ?>
 
                                         </a>
