@@ -9,7 +9,7 @@
         <div class="p-2 card-body">
             <div class="d-flex justify-content-between align-items-center">
                 <a class="text-decoration-none flex-grow-1" wire:navigate href="{{ $this->showRoute($id) }}">
-                    <h5 class="m-0 mb-2 card-title"> {{ $model[$value->title] }} Y</h5>
+                    <h5 class="m-0 mb-2 card-title"> {{ $model[$value->title] }}</h5>
                 </a>
                 <div class="dropdown ms-2">
                     <a href="#" class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">

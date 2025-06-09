@@ -1,7 +1,69 @@
 
     <?php $__env->startSection('title', $pos->name); ?>
+    <?php $__env->startSection('styles'); ?>
+    <style>
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce {
+                    animation: bounce 2s infinite;
+        }
+        .bg-gradient-indigo-purple {
+            background: linear-gradient(to right, #4f46e5, #6b21a8); /* Indigo 600 to Purple 700 */
+        }
+    </style>
+    <?php $__env->stopSection(); ?>
 
-    <main class="main">
+    <main class="main relative" x-data="{ isLocked: <?php if ((object) ('isLocked') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('isLocked'->value()); ?>')<?php echo e('isLocked'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('isLocked'); ?>')<?php endif; ?>, timer: null }" x-init="
+    // Initialize inactivity timer
+    let lastActivity = Date.now();
+    const TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
+
+    const resetTimer = () => {
+        lastActivity = Date.now();
+        isLocked = false;
+    };
+
+    const checkInactivity = () => {
+        if (Date.now() - lastActivity > TIMEOUT) {
+            isLocked = true;
+            $wire.set('isLocked', true);
+        }
+    };
+
+    // Event listeners for activity
+    ['mousemove', 'mousedown', 'keypress', 'touchstart'].forEach(event =>
+        document.addEventListener(event, resetTimer)
+    );
+
+    // Start checking for inactivity
+    timer = setInterval(checkInactivity, 1000);
+
+    // Listen for reset event from Livewire
+    window.Livewire.on('reset-inactivity-timer', resetTimer);
+">
+        <!-- Lock Screen -->
+        <div x-show="isLocked" style="z-index: 99999;" class="fixed inset-0 flex items-center justify-center bg-body-secondary bg-opacity-75 backdrop-blur animate-fade-in">
+            <div class="text-center p-6 rounded-lg shadow-2xl bg-white bg-opacity-10 backdrop-blur-lg max-w-md w-full mx-4">
+                <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="mx-auto mb-6 w-32 animate-pulse">
+                <h2 class="text-3xl font-bold text-black mb-4"><?php echo e(__('POS Locked')); ?></h2>
+                <p class="text-lg text-gray-200 mb-6"><?php echo e(__('Click below to resume selling.')); ?></p>
+                <button wire:click="unlock" class="btn btn-primary text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-600 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 animate-bounce">
+                    <?php echo e(__('Continue Selling')); ?>
+
+                </button>
+            </div>
+        </div>
+
         <!-- Navbar -->
         <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky">
             <div class="container-fluid">
@@ -533,19 +595,21 @@
         <div class="order-container overflow-y-auto bg-white <?php echo e($interface == 'orders' ? '' : 'd-none'); ?>" style="height: 100vh;">
             <div class="p-4">
                 <h2 class="text-2xl font-bold mb-4"><?php echo e(__('Order History')); ?></h2>
-                <div class="mb-4 flex flex-wrap gap-4">
-                    <div class="w-full md:w-1/4">
-                        <label class="block text-sm font-medium text-gray-700"><?php echo e(__('Status')); ?></label>
-                        <select wire:model="orderStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+
+                <!-- Filters -->
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="w-full md:w-1/3">
+                        <label class="text-sm font-medium text-gray-600"><?php echo e(__('Status')); ?></label>
+                        <select wire:model="orderStatusFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="ongoing"><?php echo e(__('Ongoing')); ?></option>
                             <option value="completed"><?php echo e(__('Completed')); ?></option>
                             <option value="refunded"><?php echo e(__('Refunded')); ?></option>
                         </select>
                     </div>
-                    <div class="w-full md:w-1/4">
-                        <label class="block text-sm font-medium text-gray-700"><?php echo e(__('Payment Status')); ?></label>
-                        <select wire:model="paymentStatusFilter" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                    <div class="w-full md:w-1/3">
+                        <label class="text-sm font-medium text-gray-600"><?php echo e(__('Payment Status')); ?></label>
+                        <select wire:model="paymentStatusFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="unpaid"><?php echo e(__('Unpaid')); ?></option>
                             <option value="paid"><?php echo e(__('Paid')); ?></option>
@@ -686,4 +750,5 @@ function calculatorComponent($wire) {
     };
 }
 </script>
+
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/livewire/interface/home.blade.php ENDPATH**/ ?>
