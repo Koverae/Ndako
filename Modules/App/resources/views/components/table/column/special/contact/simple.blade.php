@@ -7,6 +7,6 @@
 @endphp
 <div>
     @if($contact)
-    {{ $contact->name ?? '' }}
+    {{ $contact->name ?? '/' }}
     @endif
 </div>

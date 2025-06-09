@@ -203,7 +203,7 @@
                                     </div>
                                     <!-- Right Side -->
                                     <div class="dropdown-menu-column">
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('orders.lists') }}">
                                             {{ __('Orders') }}
                                         </a>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
