@@ -366,8 +366,8 @@
                                     <span>Tel: <?php echo e(current_company()->phone); ?></span>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <div>-------------------------</div>
-                                    <div><?php echo e(__('Guest')); ?>: Brian Mwangi</div>
-                                    <div>Served by: Arden BOUET</div>
+                                    <div><?php echo e(__('Guest')); ?>: <?php echo e($order->guest->name ?? 'Unknown'); ?></div>
+                                    <div>Served by: <?php echo e($order->cashier->name ?? 'Unknown'); ?></div>
                                     <div class="receipt-number"><span class="fs-3">GHJKSSHSJJKJS</span></div>
                                 </div>
 
