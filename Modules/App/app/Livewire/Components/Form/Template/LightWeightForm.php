@@ -3,8 +3,10 @@
 namespace Modules\App\Livewire\Components\Form\Template;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Modules\Pos\Models\Floor\Table;
 
 abstract class LightWeightForm extends Component
 {
@@ -19,6 +21,8 @@ abstract class LightWeightForm extends Component
     public $endDate = ''; // Booking end date
     public $totalAmount = 0;
     public $dueAmount = 0;
+    public $addingRowFor = null;
+    public $newRow = [];
 
 
     public function render()
@@ -61,5 +65,22 @@ abstract class LightWeightForm extends Component
 
     public function columns() : array{
         return [];
+    }
+
+    // Form Table
+    public function addRow($tableKey)
+    {
+        return '';
+    }
+
+    public function cancelAddRow()
+    {
+        $this->addingRowFor = null;
+        $this->newRow = [];
+    }
+
+    public function saveRow($tableKey)
+    {
+        return '';
     }
 }

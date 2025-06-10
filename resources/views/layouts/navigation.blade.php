@@ -197,7 +197,7 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('products.lists') }}">
                                             {{ __('Products') }}
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('products.lists') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos-floors.lists') }}">
                                             {{ __('Floor Plans') }}
                                         </a>
                                     </div>

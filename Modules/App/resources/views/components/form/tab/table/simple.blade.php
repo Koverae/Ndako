@@ -44,6 +44,41 @@
             </tr>
             @endforeach
             @endif
+
+            {{-- New row (temporary) --}}
+            @if($this->addingRowFor === $value->key)
+                <tr>
+                    @foreach($this->columns() as $column)
+                        @if($column->table === $value->key)
+                            <td>
+                                @if($column->type === 'select')
+                                    <select wire:model.defer="newRow.{{ $column->key }}" class="form-control form-control-sm">
+                                        <option value="">-- Select {{ $column->label }} --</option>
+                                        @foreach($column->options as $option)
+                                            <option value="{{ $option }}">{{ inverseSlug($option) }}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input
+                                        type="{{ $column->type ?? 'text' }}"
+                                        wire:model.defer="newRow.{{ $column->key }}"
+                                        class="form-control form-control-sm"
+                                    />
+                                @endif
+                            </td>
+                        @endif
+                    @endforeach
+                    <td class="d-flex gap-2">
+                        <button wire:click.prevent="saveRow('{{ $value->key }}')" class="btn btn-sm btn-success">
+                            <i class="bi bi-check-circle"></i> Save
+                        </button>
+                        <button wire:click.prevent="cancelAddRow()" class="btn btn-sm btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                    </td>
+                </tr>
+            @endif
+
             <tr class="k_field_list_row">
                 @foreach($this->columns() as $column)
                     @if($column->table === $value->key)
@@ -62,7 +97,7 @@
             </tr>
             <span class="k_field_list_row w-100">
                 <td class="k_field_list">
-                    <span wire:click.prevent="add()" class=" cursor-pointer" style="color: #017E84;" href="avoid:js">
+                    <span wire:click.prevent="addRow('{{ $value->key }}')" class=" cursor-pointer" style="color: #017E84;" href="avoid:js">
                         <i class="bi bi-plus-circle"></i> Add a line
                     </span>
                 </td>
@@ -78,6 +113,7 @@
             </span>
 
         </tbody>
+        
     </table>
     {{-- @if($value->data->count() == 0)
     <div class="bg-white empty k_nocontent_help">

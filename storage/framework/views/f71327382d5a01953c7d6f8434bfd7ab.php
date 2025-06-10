@@ -232,7 +232,7 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Products')); ?>
 
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('products.lists')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos-floors.lists')); ?>">
                                             <?php echo e(__('Floor Plans')); ?>
 
                                         </a>

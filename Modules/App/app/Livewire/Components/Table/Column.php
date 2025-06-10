@@ -15,6 +15,8 @@ class Column
 
     public $table;
     public $model;
+    public string $type = 'text';
+    public array $options = [];
 
     public function __construct($key, $label, $table = null, $model = null)
     {
@@ -33,6 +35,18 @@ class Column
     {
         $this->component = $component;
 
+        return $this;
+    }
+
+    public function type(string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function options(array $options): self
+    {
+        $this->options = $options;
         return $this;
     }
 
