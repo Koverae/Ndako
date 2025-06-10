@@ -231,4 +231,5 @@ class UnitForm extends LightWeightForm
         $unit->save();
         return $this->redirect(route('properties.units.show', ['unit' => $unit->id]), navigate: true);
     }
+
 }

@@ -56,6 +56,19 @@ unset($__defined_vars); ?>
                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->columns(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <!--[if BLOCK]><![endif]--><?php if($column->table === $value->key): ?>
                     <td class="k_field_list">
+
+                        <!--[if BLOCK]><![endif]--><?php if($this->editRowId === $model['id'] && $this->editingRowFor === $value->key): ?>
+                            
+                            <!--[if BLOCK]><![endif]--><?php if($column->type === 'select'): ?>
+                                <select wire:model.defer="editRow.<?php echo e($column->key); ?>" class="form-control">
+                                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $column->options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($option); ?>"><?php echo e(inverseSlug($option)); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                                </select>
+                            <?php else: ?>
+                                <input type="text" wire:model.defer="editRow.<?php echo e($column->key); ?>" class="form-control" />
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        <?php else: ?>
                         <?php if (isset($component)) { $__componentOriginal511d4862ff04963c3c16115c05a86a9d = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal511d4862ff04963c3c16115c05a86a9d = $attributes; } ?>
 <?php $component = Illuminate\View\DynamicComponent::resolve(['component' => $column->component] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -76,16 +89,22 @@ unset($__defined_vars); ?>
 <?php $component = $__componentOriginal511d4862ff04963c3c16115c05a86a9d; ?>
 <?php unset($__componentOriginal511d4862ff04963c3c16115c05a86a9d); ?>
 <?php endif; ?>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                     </td>
                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 <td class="k_field_list d-flex gap-2">
-                    <span wire:click.prevent="delete($model->id)" class="cursor-pointer" style="color: #017E84;" href="avoid:js">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </span>
-                    <span wire:click.prevent="delete($model->id)" class="cursor-pointer" style="color: #017E84;" href="avoid:js">
-                        <i class="bi bi-trash"></i> Remove
-                    </span>
+                    <!--[if BLOCK]><![endif]--><?php if($this->editRowId === $model['id'] && $this->editingRowFor === $value->key): ?>
+                        <button wire:click.prevent="updateRow('<?php echo e($value->key); ?>')" class="btn btn-sm btn-success">Save</button>
+                        <button wire:click.prevent="cancelEdit" class="btn btn-sm btn-secondary">Cancel</button>
+                    <?php else: ?>
+                        <span wire:click.prevent="edit('<?php echo e($value->key); ?>', <?php echo e($model['id']); ?>)" class="cursor-pointer text-primary">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </span>
+                        <span wire:click.prevent="delete('<?php echo e($value->key); ?>', <?php echo e($model['id']); ?>)" class="cursor-pointer text-danger">
+                            <i class="bi bi-trash"></i> Remove
+                        </span>
+                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </td>
             </tr>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
@@ -159,7 +178,7 @@ unset($__defined_vars); ?>
             </span>
 
         </tbody>
-        
+
     </table>
     
 </div>

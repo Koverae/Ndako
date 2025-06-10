@@ -24,22 +24,41 @@
                 @foreach($this->columns() as $column)
                     @if($column->table === $value->key)
                     <td class="k_field_list">
+
+                        @if($this->editRowId === $model['id'] && $this->editingRowFor === $value->key)
+                            {{-- Editable field --}}
+                            @if($column->type === 'select')
+                                <select wire:model.defer="editRow.{{ $column->key }}" class="form-control">
+                                    @foreach($column->options as $option)
+                                        <option value="{{ $option }}">{{ inverseSlug($option) }}</option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <input type="text" wire:model.defer="editRow.{{ $column->key }}" class="form-control" />
+                            @endif
+                        @else
                         <x-dynamic-component
                             :component="$column->component"
                             :value="$model[$column->key]"
                             :id="$model->id"
                         >
                         </x-dynamic-component>
+                        @endif
                     </td>
                     @endif
                 @endforeach
                 <td class="k_field_list d-flex gap-2">
-                    <span wire:click.prevent="delete($model->id)" class="cursor-pointer" style="color: #017E84;" href="avoid:js">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </span>
-                    <span wire:click.prevent="delete($model->id)" class="cursor-pointer" style="color: #017E84;" href="avoid:js">
-                        <i class="bi bi-trash"></i> Remove
-                    </span>
+                    @if($this->editRowId === $model['id'] && $this->editingRowFor === $value->key)
+                        <button wire:click.prevent="updateRow('{{ $value->key }}')" class="btn btn-sm btn-success">Save</button>
+                        <button wire:click.prevent="cancelEdit" class="btn btn-sm btn-secondary">Cancel</button>
+                    @else
+                        <span wire:click.prevent="edit('{{ $value->key }}', {{ $model['id'] }})" class="cursor-pointer text-primary">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </span>
+                        <span wire:click.prevent="delete('{{ $value->key }}', {{ $model['id'] }})" class="cursor-pointer text-danger">
+                            <i class="bi bi-trash"></i> Remove
+                        </span>
+                    @endif
                 </td>
             </tr>
             @endforeach
@@ -113,7 +132,7 @@
             </span>
 
         </tbody>
-        
+
     </table>
     {{-- @if($value->data->count() == 0)
     <div class="bg-white empty k_nocontent_help">

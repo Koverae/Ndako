@@ -263,4 +263,18 @@ class PropertyForm extends LightWeightForm
         return $this->redirect(route('properties.show', ['property' => $property->id]), navigate: true);
     }
 
+    public function addRow($tableKey)
+    {
+        $this->addingRowFor = $tableKey;
+
+        // Default fields for each table type
+        if ($tableKey === 'floors') {
+            $this->newRow = [
+                'name' => '',
+                'description' => '',
+                'status' => '',
+            ];
+        }
+    }
+
 }
