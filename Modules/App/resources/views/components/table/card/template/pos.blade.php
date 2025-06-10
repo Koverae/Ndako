@@ -16,10 +16,10 @@
                         <i class="bi bi-gear fs-3"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a wire:navigate href="#" class="dropdown-item">
+                        <a wire:navigate href="{{ route('orders.lists') }}" class="dropdown-item">
                             {{ __('Orders') }}
                         </a>
-                        <a wire:navigate href="#" class="dropdown-item">
+                        <a wire:navigate href="{{route('pos-sessions.lists')}}" class="dropdown-item">
                             {{ __('Sessions') }}
                         </a>
                     </div>

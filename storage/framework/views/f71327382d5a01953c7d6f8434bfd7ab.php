@@ -247,11 +247,11 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Sessions')); ?>
 
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('order-payments.lists')); ?>">
                                             <?php echo e(__('Payments')); ?>
 
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos.overview')); ?>">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
                                             <?php echo e(__('Guests')); ?>
 
                                         </a>

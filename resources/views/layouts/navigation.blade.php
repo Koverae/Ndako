@@ -209,10 +209,10 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos-sessions.lists') }}">
                                             {{ __('Sessions') }}
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('order-payments.lists') }}">
                                             {{ __('Payments') }}
                                         </a>
-                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
+                                        <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
                                             {{ __('Guests') }}
                                         </a>
                                     </div>
