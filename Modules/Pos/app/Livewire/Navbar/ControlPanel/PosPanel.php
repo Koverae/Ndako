@@ -14,13 +14,12 @@ class PosPanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
-        $this->new = route('properties.create');
+        $this->new = route('pos.create');
 
         $this->filterTypes = [
             'status' => [
                 'active' => 'active',
                 'inactive' => 'inactive',
-                'under-maintenance' => 'under-maintenance',
             ],
         ];
         if($isForm){

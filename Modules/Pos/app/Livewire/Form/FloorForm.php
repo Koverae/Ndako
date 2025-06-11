@@ -29,6 +29,7 @@ class FloorForm extends LightWeightForm
 
     protected $rules = [
         'name' => 'required|string|max:60',
+        'pos' => 'integer|required|exists:pos,id',
         'multiple_employee' => 'boolean|required',
         'is_restaurant' => 'boolean|required',
     ];

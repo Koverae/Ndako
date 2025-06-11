@@ -17,6 +17,7 @@ use Modules\Settings\Handlers\SettingsAppHandler;
 use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Models\Language\Language;
 use Illuminate\Support\Facades\Http;
+use Modules\Pos\Handlers\PosAppHandler;
 use Modules\Settings\Models\Localization\Country;
 
 class AppManagerHandler extends AppHandler
@@ -55,6 +56,7 @@ class AppManagerHandler extends AppHandler
             new ChannelManagerAppHandler(),
             new RevenueManagerAppHandler(),
             new FiscalLocalizationHandler(),
+            new PosAppHandler(),
             // new FrontDeskAppHandler(),
             // new DashboardsAppHandler(),
             // Add other module handlers as needed
