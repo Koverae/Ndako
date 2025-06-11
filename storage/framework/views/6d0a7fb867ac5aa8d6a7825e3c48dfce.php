@@ -305,7 +305,7 @@
                         <!-- Calculator -->
                         <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
                             <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
-                                <button wire:click="processPayment" class="btn btn-light rounded-0 fw-bolder" id="pay">
+                                <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.payment-modal', arguments: { order: <?php echo e($order->id ?? null); ?> } })" class="btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="pay">
                                     <?php echo e(__('Payment')); ?>
 
                                 </button>

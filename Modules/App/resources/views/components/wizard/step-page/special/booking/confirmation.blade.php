@@ -113,7 +113,7 @@
         </div>
         @endif
     </div>
-    
+
     @script
     <script>
         $wire.on('openPaystackPopup', url => {
@@ -130,6 +130,6 @@
             //     }
             // }, 1000);
         });
-    </script>    
+    </script>
     @endscript
 </div>
