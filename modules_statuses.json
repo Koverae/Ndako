@@ -6,5 +6,6 @@
     "RevenueManager": true,
     "FrontDesk": true,
     "Contact": true,
-    "Admin": true
+    "Admin": true,
+    "Pos": true
 }
