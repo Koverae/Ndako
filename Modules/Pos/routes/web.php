@@ -72,7 +72,6 @@ Route::middleware('identify-kover')->group(function () {
     // Sessions
     Route::prefix('sessions')->name('pos-sessions.')->group(function () {
         Route::get('/lists', PosSessionLists::class)->name('lists');
-        // Route::get('/{session}', PosSessionShow::class)->name('show');
     });
 
     // Payments
