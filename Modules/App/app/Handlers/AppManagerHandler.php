@@ -103,7 +103,7 @@ class AppManagerHandler extends AppHandler
     private function createCountries(){
 
         $response = Http::timeout(30)->withoutVerifying()->retry(3, 100)
-        ->get('https://restcountries.com/v3.1/all?fields=name,flags,cca2,currencies,startOfWeek,maps,idd,capital,region,subregion,languages');
+        ->get('https://restcountries.com/v3.1/all?fields=name,flags,cca2,currencies,startOfWeek,maps,idd,capital,region,subregion');
 
         if (!$response->successful()) {
             Log::error('Failed to fetch countries: ' . $response->body());
@@ -128,7 +128,7 @@ class AppManagerHandler extends AppHandler
                 'capital'        => isset($country['capital'][0]) ? $country['capital'][0] : null,
                 'region'         => $country['region'] ?? null,
                 'subregion'      => $country['subregion'] ?? null,
-                'languages'      => isset($country['languages']) ? implode(', ', array_values($country['languages'])) : null,
+                // 'languages'      => isset($country['languages']) ? implode(', ', array_values($country['languages'])) : null,
             ]);
         }
     }

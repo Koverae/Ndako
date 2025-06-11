@@ -86,8 +86,7 @@ class PaystackService
                 'amount' => $amount,
                 'callback_url' => route('paystack.callback'),// Redirect after payment
                 'metadata' => $extraData
-            ],
-            'verify' => false, // 🚨 Insecure: disables SSL certificate verification
+            ]
         ]);
 
         $result = json_decode($response->getBody());
