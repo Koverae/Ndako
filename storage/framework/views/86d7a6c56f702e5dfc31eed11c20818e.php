@@ -7,14 +7,51 @@
 
         <form wire:submit.prevent="open">
             <div class="modal-body p-0">
+                <!-- Payment Method Overview -->
+                <div class="payment-methods-overview p-3">
+
+                    <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                        <span class="fs-3 fw-bold"><?php echo e(__('Cash')); ?></span>
+                        <span class="fs-3"><?php echo e(format_currency(126700)); ?></span>
+                    </div>
+                    <div class="pl-2">
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted"><?php echo e(__('Opening')); ?></span>
+                            <span class="fs-4 text-muted"><?php echo e(format_currency($session->starting_balance ?? 0)); ?></span>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted"><i class="fas fa-caret-right"></i> <?php echo e(__('Cash In/Out')); ?></span>
+                            <span class="fs-4 text-muted"><?php echo e(format_currency(126700)); ?></span>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted"><?php echo e(__('Counted')); ?></span>
+                            <span class="fs-4 text-muted"><?php echo e(format_currency($closing_cash)); ?></span>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted"><?php echo e(__('Difference')); ?></span>
+                            <span class="fs-4 text-muted"><?php echo e(format_currency(126700)); ?></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                        <span class="fs-3 fw-bold"><?php echo e(__('Card')); ?></span>
+                        <span class="fs-3"><?php echo e(format_currency(126700)); ?></span>
+                    </div>
+
+                    <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                        <span class="fs-3 fw-bold"><?php echo e(__('Paystack')); ?></span>
+                        <span class="fs-3"><?php echo e(format_currency(126700)); ?></span>
+                    </div>
+
+                </div>
                 <div class="p-3">
                     <div class="mb-1">
-                        <label for="opening_cash" class="form-label fw-bold"><?php echo e(__('Opening Cash')); ?></label>
+                        <label for="closing_cash" class="form-label fw-bold"><?php echo e(__('Opening Cash')); ?></label>
                         <div class="input-group">
                             <span class="input-group-text"><?php echo e(settings()->currency->symbol ?? '$'); ?></span>
-                            <input type="number" min="0" step="0.01" wire:model.defer="opening_cash" id="opening_cash" class="form-control" placeholder="0.00" required>
+                            <input type="number" min="0" step="0.01" wire:model.live="closing_cash" id="closing_cash" class="form-control" placeholder="0.00" required>
                         </div>
-                        <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['opening_cash'];
+                        <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['closing_cash'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -24,9 +61,9 @@ endif;
 unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                     </div>
                     <div class="mb-2">
-                        <label for="opening_note" class="form-label fw-bold"><?php echo e(__('Opening Note')); ?></label>
-                        <textarea wire:model.defer="opening_note" id="opening_note" class="form-control" rows="3" placeholder="<?php echo e(__('Add a note (optional)')); ?>"></textarea>
-                        <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['opening_note'];
+                        <label for="closing_note" class="form-label fw-bold"><?php echo e(__('Opening Note')); ?></label>
+                        <textarea wire:model.defer="closing_note" id="closing_note" class="form-control" rows="3" placeholder="<?php echo e(__('Add a note (optional)')); ?>"></textarea>
+                        <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['closing_note'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }

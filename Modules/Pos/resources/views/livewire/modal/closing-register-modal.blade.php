@@ -8,27 +8,55 @@
         <form wire:submit.prevent="open">
             <div class="modal-body p-0">
                 <!-- Payment Method Overview -->
-                <div class="payment-methods-overview">
+                <div class="payment-methods-overview p-3">
 
                     <div class="d-flex flex-row justify-content-between text-truncate mb-1">
-                        <span>{{ __('Balance') }}</span>
-                        <span>{{ format_currency(126700) }}</span>
+                        <span class="fs-3 fw-bold">{{ __('Cash') }}</span>
+                        <span class="fs-3">{{ format_currency($totalCash) }}</span>
                     </div>
-                    
+                    <div class="pl-2">
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted">{{ __('Opening') }}</span>
+                            <span class="fs-4 text-muted">{{ format_currency($session->starting_balance ?? 0) }}</span>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted"><i class="fas fa-caret-right"></i> {{ __('Cash In/Out') }}</span>
+                            <span class="fs-4 text-muted">{{ format_currency(126700) }}</span>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted">{{ __('Counted') }}</span>
+                            <span class="fs-4 text-muted">{{ format_currency($closing_cash) }}</span>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                            <span class="fs-4 text-muted">{{ __('Difference') }}</span>
+                            <span class="fs-4 text-muted">{{ format_currency(126700) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                        <span class="fs-3 fw-bold">{{ __('Card') }}</span>
+                        <span class="fs-3">{{ format_currency(126700) }}</span>
+                    </div>
+
+                    <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                        <span class="fs-3 fw-bold">{{ __('Paystack') }}</span>
+                        <span class="fs-3">{{ format_currency(126700) }}</span>
+                    </div>
+
                 </div>
                 <div class="p-3">
                     <div class="mb-1">
-                        <label for="opening_cash" class="form-label fw-bold">{{ __('Opening Cash') }}</label>
+                        <label for="closing_cash" class="form-label fw-bold">{{ __('Opening Cash') }}</label>
                         <div class="input-group">
                             <span class="input-group-text">{{ settings()->currency->symbol ?? '$' }}</span>
-                            <input type="number" min="0" step="0.01" wire:model.defer="opening_cash" id="opening_cash" class="form-control" placeholder="0.00" required>
+                            <input type="number" min="0" step="0.01" wire:model.live="closing_cash" id="closing_cash" class="form-control" placeholder="0.00" required>
                         </div>
-                        @error('opening_cash') <span class="text-danger small">{{ $message }}</span> @enderror
+                        @error('closing_cash') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
                     <div class="mb-2">
-                        <label for="opening_note" class="form-label fw-bold">{{ __('Opening Note') }}</label>
-                        <textarea wire:model.defer="opening_note" id="opening_note" class="form-control" rows="3" placeholder="{{ __('Add a note (optional)') }}"></textarea>
-                        @error('opening_note') <span class="text-danger small">{{ $message }}</span> @enderror
+                        <label for="closing_note" class="form-label fw-bold">{{ __('Opening Note') }}</label>
+                        <textarea wire:model.defer="closing_note" id="closing_note" class="form-control" rows="3" placeholder="{{ __('Add a note (optional)') }}"></textarea>
+                        @error('closing_note') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>

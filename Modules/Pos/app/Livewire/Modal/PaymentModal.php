@@ -62,14 +62,6 @@ class PaymentModal extends ModalComponent
             session()->flash('error', 'Payment failed!');
         }
 
-        // $this->handlePayment([
-        //     'order_id' => $this->order->id,
-        //     'payment_method' => 'paystack',
-        //     'reference' => $reference,
-        //     'amount' => $responseData['data']['amount'] / 100, // Convert to actual amount
-        //     'method' => 'paystack',
-        //     'source' => 'pos',
-        // ]);
         $this->dispatch('posOrderPaymentCompleted', [
             'orderId' => $this->order->id,
             'reference' => $reference,

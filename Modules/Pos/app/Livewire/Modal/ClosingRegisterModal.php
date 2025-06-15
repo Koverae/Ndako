@@ -15,8 +15,8 @@ class ClosingRegisterModal extends ModalComponent
 {
     public Pos $pos;
     public PosSession $session;
-    public $opening_cash = 0;
-    public $opening_note = '';
+    public $closing_cash = 0, $totalCash = 0;
+    public $closing_note = '';
     
     public function mount(Pos $pos, PosSession $session)
     {
@@ -25,6 +25,8 @@ class ClosingRegisterModal extends ModalComponent
         if (!$this->pos) {
             abort(404, 'POS or session not found');
         }
+
+        $this->totalCash = $this->session->starting_balance + $this->session->orders()->where('status', 'receipt')->payments()->where('payment_method', 'cash')->sum('closing_cash');
     }
 
     public function render()
