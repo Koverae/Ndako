@@ -79,6 +79,10 @@ class PosOrder extends Model
         return $this->hasMany(PosOrderDetail::class, 'pos_order_id', 'id');
     }
 
+    public function payments() {
+        return $this->hasMany(PosOrderPayment::class, 'pos_order_id', 'id');
+    }
+
     // Get Pos
     public function cashier() {
         return $this->belongsTo(User::class, 'cashier_id', 'id');

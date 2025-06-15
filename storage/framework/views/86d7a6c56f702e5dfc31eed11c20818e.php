@@ -12,7 +12,7 @@
 
                     <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                         <span class="fs-3 fw-bold"><?php echo e(__('Cash')); ?></span>
-                        <span class="fs-3"><?php echo e(format_currency(126700)); ?></span>
+                        <span class="fs-3"><?php echo e(format_currency($totalCash)); ?></span>
                     </div>
                     <div class="pl-2">
                         <div class="d-flex flex-row justify-content-between text-truncate mb-1">

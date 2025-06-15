@@ -26,7 +26,18 @@ class ClosingRegisterModal extends ModalComponent
             abort(404, 'POS or session not found');
         }
 
-        $this->totalCash = $this->session->starting_balance + $this->session->orders()->where('status', 'receipt')->payments()->where('payment_method', 'cash')->sum('closing_cash');
+        $cashPayments = $this->session->orders()
+            ->where('status', 'receipt')
+            ->with(['payments' => function ($query) {
+                $query->where('payment_method', 'cash');
+            }])
+            ->get()
+            ->flatMap(function ($order) {
+                return $order->payments;
+            })
+            ->sum('amount');
+
+        $this->totalCash = $this->session->starting_balance + $cashPayments;
     }
 
     public function render()
