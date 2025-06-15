@@ -883,8 +883,8 @@ class Home extends Component
             'pos_order_id'   => $this->order->id,
             'pos_session_id' => $this->order->pos_session_id ?? null,
             'guest_id'       => $this->order->guest_id ?? null,
-            // 'payment_method' => $data['method'],
-            'amount'         => $data['amount'],
+            'payment_method' => $data['method'],
+            'amount'         => $data['amount'] ?? 'cash',
             'date'           => now(),
             'transaction_id' => $data['reference'] ?? Str::random(16),
             'label'          => 'Payment Received for Order #' . $this->order->receipt_number,
@@ -916,7 +916,8 @@ class Home extends Component
     }
 
     public function closeRegister(){
-        $this->isLocked = true;
+        // $this->isLocked = true;
+        $this->dispatch('openModal', component: 'pos::modal.closing-register-modal', arguments: ['pos' => $this->pos, 'session' => $this->pos->active_session_id]);
     }
 
     public function openRegister(){

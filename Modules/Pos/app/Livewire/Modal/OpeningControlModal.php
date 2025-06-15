@@ -51,7 +51,7 @@ class OpeningControlModal extends ModalComponent
         }
 
         // Persist the session ID in the user's session for this POS
-        session()->put("pos_session_id_{$this->pos->id}", $session->id,);
+        session()->put("pos_session_id_{$this->pos->id}", $session->id);
 
         // Mark the POS as open
         $this->pos->update([

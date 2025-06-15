@@ -63,6 +63,7 @@
             transition: 0.3s;
             opacity: 0;
             animation: fadeIn 2s ease-out forwards;
+            cursor: pointer;
         }
         .button:hover {
             background: #005A5F;
