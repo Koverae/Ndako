@@ -28,4 +28,9 @@ class Product extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
+    }
+
 }

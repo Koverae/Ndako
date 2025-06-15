@@ -153,6 +153,10 @@ class Company extends Model
     public function countries(){
         return Country::all()->sortBy('common_name');
     }
+    
+    public function country() {
+        return $this->belongsTo(Country::class, 'country_id', 'id');
+    }
 
     /**
      * Get amenities for the company.

@@ -43,6 +43,7 @@ class OpeningControlModal extends ModalComponent
         } else {
             // Create a new session for this POS
             $session = $this->pos->sessions()->create([
+                'company_id' => $this->pos->company_id,
                 'status' => 'active',
                 'starting_balance' => $this->opening_cash,
                 'start_date' => now(),
