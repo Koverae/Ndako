@@ -29,7 +29,7 @@
                         </div>
                         <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                             <span class="fs-4 text-muted"><?php echo e(__('Difference')); ?></span>
-                            <span class="fs-4 text-muted"><?php echo e(format_currency(126700)); ?></span>
+                            <span class="fs-4 text-muted"><?php echo e(format_currency($differenceCash)); ?></span>
                         </div>
                     </div>
 

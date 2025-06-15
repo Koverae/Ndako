@@ -29,7 +29,7 @@
                         </div>
                         <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                             <span class="fs-4 text-muted">{{ __('Difference') }}</span>
-                            <span class="fs-4 text-muted">{{ format_currency(126700) }}</span>
+                            <span class="fs-4 text-muted">{{ format_currency($differenceCash) }}</span>
                         </div>
                     </div>
 

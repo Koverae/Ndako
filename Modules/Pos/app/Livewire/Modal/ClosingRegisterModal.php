@@ -15,7 +15,7 @@ class ClosingRegisterModal extends ModalComponent
 {
     public Pos $pos;
     public PosSession $session;
-    public $closing_cash = 0, $totalCash = 0;
+    public $closing_cash = 0, $totalCash = 0, $differenceCash = 0;
     public $closing_note = '';
     
     public function mount(Pos $pos, PosSession $session)
@@ -38,6 +38,11 @@ class ClosingRegisterModal extends ModalComponent
             ->sum('amount');
 
         $this->totalCash = $this->session->starting_balance + $cashPayments;
+    }
+
+    public function updatedClosingCash($value)
+    {
+        $this->differenceCash = $this->totalCash - $value;
     }
 
     public function render()
