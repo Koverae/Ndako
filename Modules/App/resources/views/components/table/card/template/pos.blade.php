@@ -11,6 +11,13 @@
                 <a class="text-decoration-none flex-grow-1" wire:navigate href="{{ $this->showRoute($id) }}">
                     <h5 class="m-0 mb-2 card-title"> {{ $model[$value->title] }}</h5>
                 </a>
+
+                <span class="badge bg-info text-white">{{ __('Opening Control') }}</span>
+                {{-- @if($model[$value->is_open])
+                @else
+                    <span class="badge bg-secondary">{{ __('Closed') }}</span>
+                @endif --}}
+
                 <div class="dropdown ms-2">
                     <a href="#" class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-gear fs-3"></i>
@@ -26,11 +33,17 @@
                 </div>
             </div>
 
-            <div class="d-flex flex-column text-truncate">
-                @foreach($this->data as $data)
-                    <span class="mb-1 cursor-pointer text-truncate w-100">{{ $model[$data] }}</span>
-                @endforeach
+            <!-- Displaying POS details -->
+            <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                <span>{{ __('Close') }}</span>
+                <span>06/15/2025</span>
             </div>
+
+            <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                <span>{{ __('Balance') }}</span>
+                <span>{{ format_currency(126700) }}</span>
+            </div>
+
             <div class="gap-2 d-flex">
                 <a href="{{ route('pos.ui', $id) }}" target="_blank" class="mt-2 btn btn-primary">{{ __('Open Session') }}</a>
             </div>

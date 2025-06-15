@@ -43,6 +43,10 @@ unset($__defined_vars); ?>
                 <a class="text-decoration-none flex-grow-1" wire:navigate href="<?php echo e($this->showRoute($id)); ?>">
                     <h5 class="m-0 mb-2 card-title"> <?php echo e($model[$value->title]); ?></h5>
                 </a>
+
+                <span class="badge bg-info text-white"><?php echo e(__('Opening Control')); ?></span>
+                
+
                 <div class="dropdown ms-2">
                     <a href="#" class="btn-action text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-gear fs-3"></i>
@@ -60,11 +64,17 @@ unset($__defined_vars); ?>
                 </div>
             </div>
 
-            <div class="d-flex flex-column text-truncate">
-                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $this->data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <span class="mb-1 cursor-pointer text-truncate w-100"><?php echo e($model[$data]); ?></span>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+            <!-- Displaying POS details -->
+            <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                <span><?php echo e(__('Close')); ?></span>
+                <span>06/15/2025</span>
             </div>
+
+            <div class="d-flex flex-row justify-content-between text-truncate mb-1">
+                <span><?php echo e(__('Balance')); ?></span>
+                <span><?php echo e(format_currency(126700)); ?></span>
+            </div>
+
             <div class="gap-2 d-flex">
                 <a href="<?php echo e(route('pos.ui', $id)); ?>" target="_blank" class="mt-2 btn btn-primary"><?php echo e(__('Open Session')); ?></a>
             </div>

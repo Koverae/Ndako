@@ -23,10 +23,17 @@ class PaystackController extends Controller
 
     public function initiate(Request $request)
     {
+        $payload = [
+            'name' => $request->name,
+            'email' => $request->email ?? 'laudbouet@gmail.com',
+            'amount' => $request->amount * 100, // Convert to kobo
+        ];
         $this->paystackService->initializePayment(
-            $request->name,
-            $request->email,
-            $request->amount
+            $payload,
+            [
+                'source' => $request->source ?? 'pos',
+                'company_id' => Auth::user()->company_id ?? null,
+            ]
         );
     }
 
@@ -39,7 +46,8 @@ class PaystackController extends Controller
     public function handle(Request $request)
     {
         $paystackService = new PaystackService();
-        return $paystackService->handle($request);
+        return $paystackService->handleWebhook($request);
     }
+
 
 }

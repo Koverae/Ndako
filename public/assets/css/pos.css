@@ -581,3 +581,12 @@ label {
 .table-container .table-section .floor-table .info .label{
 
 }
+
+.pos-burger-menu-items .pos-customer-screen{
+    background-color: #D8DADD;
+    border: 1px solid #D8DADD;
+}
+
+.pos-burger-menu-items .pos-customer-screen:hover{
+    border: 1px solid #D8DADD;
+}

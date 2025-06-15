@@ -1,0 +1,579 @@
+
+            $order = PosOrder::find($responseData['data']['metadata']['orderId']);
+            if (!$order) {
+                session()->flash('error', 'Order not found.');
+                return;
+            }
+            DB::transaction(function () use ($order, $responseData) {
+                $journal = Journal::isCompany(current_company()->id)
+                    ->isType($responseData['data']['metadata']['method'])
+                    ->first();
+
+                $payment = PosOrderPayment::create([
+                    'company_id'         => current_company()->id,
+                    'booking_invoice_id' => $order->id,
+                    'transaction_id'     => $responseData->reference,
+                    'journal_id'         => $journal->id,
+                    'payment_method'     => $responseData['data']['channel'],
+                    'amount'             => $responseData['data']['amount'] / 100, // Convert from kobo to currency
+                    'date'               => now(),
+                    'note'               => 'Payment Received for Order #' . $order->reference,
+                    'type'               => 'credit',
+                ]);
+
+                $due = $order->due_amount - $payment->amount;
+                $status = $due === $order->total_amount ? 'unpaid' : ($due > 0 ? 'partial' : 'paid');
+
+                $order->update([
+                    'payment_status' => $status,
+                    'paid_amount'    => $order->paid_amount + $payment->amount,
+                    'due_amount'     => $due,
+                ]);
+
+                $order->booking->update([
+                    'payment_status' => $status,
+                    'paid_amount'    => $order->paid_amount + $payment->amount,
+                    'due_amount'     => $due,
+                ]);
+
+                $payment->update(['due_amount' => $due]);
+            });
+
+            session()->flash('success', 'Payment successful!');
+
+            $this->dispatch('closeModal');
+            $this->dispatch('PosPaymentCompleted', [
+                'orderId' => $order->id,
+                'amount' => $responseData['data']['amount'] / 100, // Convert from kobo to currency
+                'reference' => $responseData['data']['reference'],
+            ]);
+
+
+
+<?php
+
+namespace Modules\App\Services\PaymentGateway;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use GuzzleHttp\Client;
+use Modules\ChannelManager\Models\Booking\BookingInvoice;
+use Modules\ChannelManager\Models\Booking\BookingPayment;
+use Modules\RevenueManager\Models\Accounting\Journal;
+use Koverae\KoveraeBilling\Models\Transaction;
+use Koverae\KoveraeBilling\Models\PlanSubscription;
+
+class PaystackService
+{
+    protected string $secretKey;
+    protected string $baseUrl;
+
+    public function __construct()
+    {
+        $this->secretKey = settings()->paystack_secret_key;
+        $this->baseUrl = settings()->paystack_base_url;
+    }
+
+    /**
+     * Initialize a Paystack payment session.
+     *
+     * @param array $payload ['name', 'email', 'amount', 'callback_url']
+     * @param array $metadata Additional metadata like ['booking_id' => ..., 'source' => 'pos']
+     * @return object|null Paystack API response object
+     */
+    public function initializePayment(array $payload, array $metadata = []): ?object
+    {
+        $client = new Client();
+
+        $payload['amount'] = $payload['amount'] * 100; // Convert to kobo
+
+        $response = $client->post("{$this->baseUrl}/transaction/initialize", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->secretKey,
+                'Content-Type'  => 'application/json',
+            ],
+            'json' => array_merge($payload, ['metadata' => $metadata]),
+        ]);
+
+        $result = json_decode($response->getBody());
+
+        if ($result->status) {
+            return $result;
+        }
+
+        Log::error('Paystack payment initialization failed.', ['response' => $result]);
+        return null;
+    }
+
+    /**
+     * Verify a Paystack transaction by reference.
+     *
+     * @param string $reference
+     * @return object|null
+     */
+    public function verifyTransaction(string $reference): ?object
+    {
+        $client = new Client();
+
+        $response = $client->get("{$this->baseUrl}/transaction/verify/{$reference}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->secretKey,
+            ]
+        ]);
+
+        $result = json_decode($response->getBody());
+
+        if (!$result->status || $result->data->status !== 'success') {
+            Log::warning("Transaction verification failed.", ['reference' => $reference, 'response' => $result]);
+            return null;
+        }
+
+        return $result->data;
+    }
+
+    /**
+     * Callback after Paystack payment. Handles Booking or POS based on metadata.
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
+    public function handleCallback(Request $request)
+    {
+        $reference = $request->query('reference');
+        $data = $this->verifyTransaction($reference);
+
+        if (!$data) {
+            session()->flash('error', "Payment verification failed. Ref: {$reference}");
+            return view('app::paystack.callback', ['data' => null]);
+        }
+
+        $source = $data->metadata->source ?? 'booking';
+
+        return $source === 'pos'
+            ? $this->processPOSPayment($data)
+            : $this->processBookingPayment($data);
+    }
+
+    /**
+     * Process payment for a Booking.
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processBookingPayment(object $data)
+    {
+        $invoice = BookingInvoice::find($data->metadata->invoice_id);
+
+        DB::transaction(function () use ($invoice, $data) {
+            $journal = Journal::isCompany(current_company()->id)
+                ->isType($data->metadata->method)
+                ->first();
+
+            $payment = BookingPayment::create([
+                'company_id'         => current_company()->id,
+                'booking_invoice_id' => $invoice->id,
+                'transaction_id'     => $data->reference,
+                'journal_id'         => $journal->id,
+                'payment_method'     => $data->channel,
+                'amount'             => $data->amount / 100,
+                'date'               => now(),
+                'note'               => 'Payment Received for Invoice #' . $invoice->reference,
+                'type'               => 'credit',
+            ]);
+
+            $due = $invoice->due_amount - $payment->amount;
+            $status = $due === $invoice->total_amount ? 'unpaid' : ($due > 0 ? 'partial' : 'paid');
+
+            $invoice->update([
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
+            ]);
+
+            $invoice->booking->update([
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
+            ]);
+
+            $payment->update(['due_amount' => $due]);
+        });
+
+        session()->flash('success', "Payment successful! Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
+    }
+
+    /**
+     * Placeholder for POS Payment Processing
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processPOSPayment(object $data)
+    {
+        // You can implement POS-specific logic here
+        // For example: Create POSPayment, assign to register/session, etc.
+
+        session()->flash('success', "POS payment completed successfully. Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
+    }
+
+    /**
+     * Handle Paystack webhook events.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function handleWebhook(Request $request)
+    {
+        $signature = $request->header('X-Paystack-Signature');
+
+        if (!$signature || $signature !== hash_hmac('sha512', $request->getContent(), $this->secretKey)) {
+            return response()->json(['message' => 'Invalid signature'], 400);
+        }
+
+        $payload = $request->all();
+        Log::info('Paystack Webhook:', $payload);
+
+        if ($payload['event'] === 'charge.success') {
+            $reference = $payload['data']['reference'];
+            $transaction = Transaction::where('reference', $reference)->first();
+
+            if ($transaction) {
+                $transaction->update([
+                    'status'        => $payload['data']['status'],
+                    'processed_at'  => now(),
+                ]);
+            }
+
+            $teamId = $payload['data']['metadata']['team_id'] ?? null;
+            if ($teamId) {
+                $subscription = PlanSubscription::where('subscriber_id', $teamId)->first();
+                if ($subscription) {
+                    $subscription->update([
+                        'starts_at' => now(),
+                        'ends_at'   => calculateEndDate($subscription->invoice_interval),
+                    ]);
+                }
+            }
+
+            return response()->json(['message' => 'Webhook processed successfully']);
+        }
+
+        return response()->json(['message' => 'Event not handled'], 400);
+    }
+}
+
+
+
+
+<?php
+
+namespace Modules\App\Services\PaymentGateway;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Str;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
+use Modules\ChannelManager\Models\Booking\BookingInvoice;
+use Modules\ChannelManager\Models\Booking\BookingPayment;
+use Modules\RevenueManager\Models\Accounting\Journal;
+use Koverae\KoveraeBilling\Models\Transaction;
+use Koverae\KoveraeBilling\Models\PlanSubscription;
+use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\Pos\Models\Order\PosOrder;
+
+class PaystackService
+{
+    protected string $secretKey;
+    protected string $baseUrl;
+
+    public function __construct()
+    {
+        $this->secretKey = settings()->paystack_secret_key;
+        $this->baseUrl = settings()->paystack_base_url;
+    }
+
+    /**
+     * Initialize a Paystack payment session.
+     *
+     * @param array $payload ['name', 'email', 'amount', 'callback_url']
+     * @param array $metadata Additional metadata like ['booking_id' => ..., 'source' => 'pos']
+     * @return object|null Paystack API response object
+     */
+    public function initializePayment(array $payload, array $metadata = []): ?object
+    {
+        $client = new Client();
+
+        $payload['amount'] = $payload['amount'] * 100; // Convert to kobo
+
+        $response = $client->post("{$this->baseUrl}/transaction/initialize", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->secretKey,
+                'Content-Type'  => 'application/json',
+            ],
+            'json' => array_merge($payload, ['metadata' => $metadata]),
+        ]);
+
+        $result = json_decode($response->getBody());
+
+        if ($result->status) {
+            return $result;
+        }
+
+        Log::error('Paystack payment initialization failed.', ['response' => $result]);
+        return null;
+    }
+
+    /**
+     * Verify a Paystack transaction by reference.
+     *
+     * @param string $reference
+     * @return object|null
+     */
+    public function verifyTransaction(string $reference): ?object
+    {
+        $client = new Client();
+
+        $response = $client->get("{$this->baseUrl}/transaction/verify/{$reference}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->secretKey,
+            ]
+        ]);
+
+        $result = json_decode($response->getBody());
+
+        if (!$result->status || $result->data->status !== 'success') {
+            Log::warning("Transaction verification failed.", ['reference' => $reference, 'response' => $result]);
+            return null;
+        }
+
+        return $result->data;
+    }
+
+    public function verifyTransactionPOS(string $reference): ?array
+    {
+        $key = config('services.paystack.secret'); // Or from settings
+        $response = Http::withToken($key)->get("https://api.paystack.co/transaction/verify/{$reference}");
+        $data = $response->json();
+
+        return ($data['status'] && $data['data']['status'] === 'success') ? $data['data'] : null;
+    }
+
+    /**
+     * Callback after Paystack payment. Handles Booking or POS based on metadata.
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
+    public function handleCallback(Request $request)
+    {
+        $reference = $request->query('reference');
+        $data = $this->verifyTransaction($reference);
+
+        if (!$data) {
+            session()->flash('error', "Payment verification failed. Ref: {$reference}");
+            return view('app::paystack.callback', ['data' => null]);
+        }
+
+        $source = $data->metadata->source ?? 'booking';
+
+        return $source === 'pos'
+            ? $this->processPOSPayment($data)
+            : $this->processBookingPayment($data);
+    }
+
+    /**
+     * Process payment for a Booking.
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processBookingPayment(object $data)
+    {
+        $invoice = BookingInvoice::find($data->metadata->invoice_id);
+
+        DB::transaction(function () use ($invoice, $data) {
+            $journal = Journal::isCompany(current_company()->id)
+                ->isType($data->metadata->method)
+                ->first();
+
+            $payment = BookingPayment::create([
+                'company_id'         => current_company()->id,
+                'booking_invoice_id' => $invoice->id,
+                'transaction_id'     => $data->reference,
+                'journal_id'         => $journal->id,
+                'payment_method'     => $data->channel,
+                'amount'             => $data->amount / 100,
+                'date'               => now(),
+                'note'               => 'Payment Received for Invoice #' . $invoice->reference,
+                'type'               => 'credit',
+            ]);
+
+            $due = $invoice->due_amount - $payment->amount;
+            $status = $due === $invoice->total_amount ? 'unpaid' : ($due > 0 ? 'partial' : 'paid');
+
+            $invoice->update([
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
+            ]);
+
+            $invoice->booking->update([
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
+            ]);
+
+            $payment->update(['due_amount' => $due]);
+        });
+
+        session()->flash('success', "Payment successful! Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
+    }
+
+    /**
+     * Placeholder for POS Payment Processing
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processPOSPayment(object $data)
+    {
+        // You can implement POS-specific logic here
+        // For example: Create POSPayment, assign to register/session, etc.
+
+        session()->flash('success', "POS payment completed successfully. Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
+    }
+
+
+    /**
+     * Handle incoming Paystack webhook events.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function handleWebhook(Request $request)
+    {
+        // Step 1: Verify the Paystack signature
+        $signature = $request->header('X-Paystack-Signature');
+        $payload   = $request->getContent();
+
+        if (!$signature || $signature !== hash_hmac('sha512', $payload, $this->secretKey)) {
+            return Response::json(['message' => 'Invalid signature'], 400);
+        }
+
+        // Step 2: Decode payload and log it
+        $data = json_decode($payload, true);
+        Log::info('Received Paystack Webhook:', $data);
+
+        // Step 3: Handle only successful charges for now
+        if ($data['event'] !== 'charge.success') {
+            return Response::json(['message' => 'Unhandled event'], 400);
+        }
+
+        // Step 4: Find the transaction using the reference
+        $reference   = $data['data']['reference'] ?? null;
+        $transaction = $reference
+            ? Transaction::where('reference', $reference)->first()
+            : null;
+
+        if (!$transaction) {
+            Log::warning("Transaction with reference {$reference} not found.");
+            return Response::json(['message' => 'Transaction not found'], 404);
+        }
+
+        // Step 5: Update transaction status
+        $transaction->update([
+            'status'       => $data['data']['status'],
+            'processed_at' => now(),
+        ]);
+
+        // Step 6: Determine the source of payment (booking, pos, subscription, etc.)
+        $type = $data['data']['metadata']['source'] ?? null;
+
+        switch ($type) {
+            case 'booking':
+                $this->handleBooking($data['data']);
+                break;
+
+            case 'pos':
+                $this->handlePOS($data['data']);
+                break;
+
+            case 'subscription':
+                $this->handleSubscription($data['data']);
+                break;
+
+            default:
+                Log::warning("Unhandled payment type: {$type}");
+        }
+
+        return Response::json(['message' => 'Webhook processed successfully']);
+    }
+
+    /**
+     * Handle booking-related payment logic.
+     */
+    protected function handleBooking(array $payload): void
+    {
+        $bookingId = $payload['metadata']['booking_id'] ?? null;
+
+        if ($bookingId) {
+            // Example logic: mark booking as paid
+            $booking = Booking::find($bookingId);
+            if ($booking) {
+                $booking->update([
+                    'status' => 'confirmed',
+                    'paid_at' => now(),
+                ]);
+                Log::info("Booking {$bookingId} marked as paid.");
+            }
+        }
+    }
+
+    /**
+     * Handle POS-related payment logic.
+     */
+    protected function handlePOS(array $payload): void
+    {
+        $orderId = $payload['metadata']['order_id'] ?? null;
+
+        if ($orderId) {
+            // Example: confirm POS order
+            $order = PosOrder::find($orderId);
+            if ($order) {
+                $order->update([
+                    'status' => 'paid',
+                ]);
+                Log::info("POS order {$orderId} marked as paid.");
+            }
+        }
+    }
+
+    /**
+     * Handle subscription-related payment logic.
+     */
+    protected function handleSubscription(array $payload): void
+    {
+        $teamId = $payload['metadata']['team_id'] ?? null;
+
+        if ($teamId) {
+            $subscription = PlanSubscription::where('subscriber_id', $teamId)->first();
+            if ($subscription) {
+                $subscription->update([
+                    'starts_at' => now(),
+                    'ends_at'   => calculateEndDate($subscription->invoice_interval),
+                ]);
+                Log::info("Subscription for team {$teamId} updated.");
+            }
+        }
+    }
+
+}

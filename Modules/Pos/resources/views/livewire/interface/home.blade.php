@@ -94,16 +94,26 @@
                             <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
                                 <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <a href="https://docs.koverae.com/ndako" target="__blank" class="dropdown-item kover-navlink">Documentation</a>
-                                <!-- Authentication -->
-                                <form method="POST" action="{{ route('logout')}}">
-                                    @csrf
-                                    <span  onclick="event.preventDefault(); this.closest('form').submit();" class="cursor-pointer kover-navlink dropdown-item">
-                                        Log Out
+                            <div class="dropdown-menu p-0 pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
+                                <div class="border-bottom p-2 mb-2 pb-3">
+                                    <span class="btn pos-customer-screen btn-lg w-100 text-center">
+                                        <i class=" fas fa-desktop"></i>
                                     </span>
-                                </form>
-                                <!-- Authentication End -->
+                                </div>
+                                <div class="menu-items p-2 rounded">
+                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                        {{ __('Swith to Dark Mode') }}
+                                    </span>
+                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                        {{ __('Cash In/Out') }}
+                                    </span>
+                                    <span wire:click="goToBackend" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                        {{ __('Backend') }}
+                                    </span>
+                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                        {{ __('Close Register') }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <!-- User's Avatar End -->
@@ -368,8 +378,8 @@
                                 <i class="bi bi-check-circle mb-2" style="font-size: 35px;"></i>
                                 <span style="font-weight: 900;" class="fs-2 ">{{ __('Payment Successful') }}</span>
                                 <div class="d-flex mt-2 justify-content-center align-items-center gap-2 fw-bolder">
-                                    <span>{{ format_currency(7490) }}</span>
-                                    <span class="edit-order-payment badge bg-success text-white rounded pt-1">
+                                    <span>{{ format_currency($order->total_amount ?? 0) }}</span>
+                                    <span class="edit-order-payment cursor-pointer badge bg-success text-white rounded pt-1">
                                         {{ __('Edit Payment') }}
                                     </span>
                                 </div>

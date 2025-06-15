@@ -63,6 +63,7 @@
             transition: 0.3s;
             opacity: 0;
             animation: fadeIn 2s ease-out forwards;
+            cursor: pointer;
         }
         .button:hover {
             background: #005A5F;
@@ -83,7 +84,7 @@
     @livewireScripts
 </head>
 <body>
-    
+
     <div class="container">
         <div id="icon" class="icon">⏳</div>
         <div id="message" class="message">Processing Payment...</div>
@@ -104,6 +105,10 @@
         let closeButton = document.getElementById("close-btn");
 
         if (window.opener && window.opener.Livewire) {
+
+            // Store the reference in localStorage so the opener can read it
+            localStorage.setItem('paystack_payment_reference', reference);
+
             if (status === 'success' || status === 'completed') {
                 iconElement.innerHTML = "✅";
                 iconElement.classList.add("success");
@@ -124,7 +129,9 @@
 
             // Wait 3 seconds, then refresh the parent tab and close the popup
             setTimeout(() => {
-                window.opener.location.reload();
+                // window.opener.location.reload();
+            // Store the reference in localStorage so the opener can read it
+            localStorage.setItem('paystack_payment_reference', reference);
                 window.close();
             }, status === 'success' ? 3000 : 6000); // 3s for success, 5s for failure
         }

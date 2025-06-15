@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Koverae\KoveraeBilling\Models\Transaction;
+use Livewire\Livewire;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
 use Modules\ChannelManager\Models\Booking\BookingPayment;
 use Modules\RevenueManager\Models\Accounting\Journal;
@@ -127,60 +128,84 @@ class PaystackService
             return view('app::paystack.callback', ['data' => $result->data]);
         }
 
-        $invoice = BookingInvoice::find($result->data->metadata->invoiceId);
-        // Process the payment and update records within a database transaction
-        DB::transaction(function () use ($invoice, $result) {
+        if (!$result->data) {
+            session()->flash('error', "Payment verification failed. Ref: {$reference}");
+            return view('app::paystack.callback', ['data' => null]);
+        }
 
-            // Store payment record
-            $journal = Journal::isCompany(current_company()->id)->isType($result->data->metadata->method)->first();
+        $source = $result->data->metadata->source ?? 'booking';
+
+        return $source === 'pos'
+            ? $this->processPOSPayment($result->data)
+            : $this->processBookingPayment($result->data);
+
+    }
+
+    /**
+     * Process payment for a Booking.
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processBookingPayment(object $data)
+    {
+        $invoice = BookingInvoice::find($data->metadata->invoice_id);
+
+        DB::transaction(function () use ($invoice, $data) {
+            $journal = Journal::isCompany(current_company()->id)
+                ->isType($data->metadata->method)
+                ->first();
+
             $payment = BookingPayment::create([
-                'company_id' => current_company()->id,
+                'company_id'         => current_company()->id,
                 'booking_invoice_id' => $invoice->id,
-                'transaction_id' => $result->data->reference,
-                'journal_id' => $journal->id,
-                'payment_method' => $result->data->channel,
-                // 'payment_method' => $result->data->metadata->method,
-                'amount' => $result->data->amount / 100,
-                'date' => now(),
-                'note' => 'Payment Received for Invoice #'. $invoice->reference,
-                'type' => 'credit',
+                'transaction_id'     => $data->reference,
+                'journal_id'         => $journal->id,
+                'payment_method'     => $data->channel,
+                'amount'             => $data->amount / 100,
+                'date'               => now(),
+                'note'               => 'Payment Received for Invoice #' . $invoice->reference,
+                'type'               => 'credit',
             ]);
-            $payment->save();
 
-            // Process the after payment
-
-            $due_amount = $invoice->due_amount - $payment->amount;
-
-            if ($due_amount == $invoice->total_amount) {
-                $payment_status = 'unpaid';
-            } elseif ($due_amount > 0) {
-                $payment_status = 'partial';
-            } else {
-                $payment_status = 'paid';
-            }
-            $paidAmount = $invoice->paid_amount + $payment->amount;
+            $due = $invoice->due_amount - $payment->amount;
+            $status = $due === $invoice->total_amount ? 'unpaid' : ($due > 0 ? 'partial' : 'paid');
 
             $invoice->update([
-                'payment_status' => $payment_status,
-                'paid_amount' => ($paidAmount),
-                'due_amount' => ($due_amount),
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
             ]);
 
             $invoice->booking->update([
-                'payment_status' => $payment_status,
-                'paid_amount' => ($paidAmount),
-                'due_amount' => ($due_amount),
-            ]);
-            // Update Payment due amount
-            $payment->update([
-                'due_amount' => ($due_amount)
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
             ]);
 
+            $payment->update(['due_amount' => $due]);
         });
 
-        // Return the success view with payment details
-        session()->flash('success', "Your payment was received successfully! Your reference is: {$reference}");
-        return view('app::paystack.callback', ['data' => $result->data]);
+        session()->flash('success', "Payment successful! Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
+    }
+
+    /**
+     * Placeholder for POS Payment Processing
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processPOSPayment(object $data)
+    {
+        // You can implement POS-specific logic here
+        // For example: Create POSPayment, assign to register/session, etc.
+
+        // Livewire::dispatch('poPaymentCompleted', $data);
+        session(['paystack_payment_reference' => $data->reference]);
+        Log::info('Payment successful', ['reference' => $data->reference]);
+        session()->flash('success', "POS payment completed successfully. Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
     }
 
     /**

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->boolean('has_printer_connection')->default(false);
             $table->string('private_key');
             $table->enum('status', ['active', 'inactive', 'closed', 'on_break'])->default('inactive');
-            $table->boolean('is_restaurant')->default(false);
+            $table->boolean('is_restaurant')->default(true);
+            $table->boolean('is_locked')->default(false);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
 
@@ -205,6 +206,7 @@ return new class extends Migration
             $table->unsignedBigInteger('guest_id')->nullable();
             $table->date('date')->nullable();
             $table->string('reference')->nullable();
+            $table->string('transaction_id')->nullable();
             $table->string('label')->nullable();
             $table->unsignedBigInteger('payment_method_id')->nullable();
             $table->decimal('amount', $precision = 12, $scale = 2)->default(0);

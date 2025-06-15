@@ -17,6 +17,8 @@ use Modules\Pos\Models\Floor\FloorPlan;
 use Modules\Pos\Models\Floor\Table;
 use Modules\Pos\Models\Order\PosOrder;
 use Modules\Pos\Models\Order\PosOrderDetail;
+use Modules\Pos\Models\Order\PosOrderPayment;
+use Modules\RevenueManager\Models\Accounting\Journal;
 
 class Home extends Component
 {
@@ -42,7 +44,7 @@ class Home extends Component
     public $calculatorInput = 0;
     public string $searchQuery = '', $customerSearch = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
-    public bool $isLocked = false; // New property for lock state
+    public bool $isLocked = true; // New property for lock state
 
     public function mount(Pos $pos)
     {
@@ -310,6 +312,7 @@ class Home extends Component
         $this->recalculateTotals();
         $this->order->update([
             'total_amount' => $this->cartTotal,
+            'due_amount' => $this->cartTotal,
             // 'tax_amount' => $this->cartTax,
         ]);
         $this->saveCartToSession();
@@ -340,6 +343,7 @@ class Home extends Component
                 $this->recalculateTotals();
                 $this->order->update([
                     'total_amount' => $this->cartTotal,
+                    'due_amount' => $this->cartTotal,
                     // 'tax_amount' => $this->amountTax,
                 ]);
             }
@@ -382,6 +386,7 @@ class Home extends Component
             $this->recalculateTotals();
             $this->order->update([
                 'total_amount' => $this->cartTotal,
+                'due_amount' => $this->cartTotal,
                 // 'tax_amount' => $this->cartTax,
             ]);
             $this->saveCartToSession();
@@ -656,41 +661,41 @@ class Home extends Component
         $this->recalculateTotals();
         $this->order->update([
             'total_amount' => $this->cartTotal,
+            'due_amount' => $this->cartTotal,
             // 'tax_amount' => $this->cartTax,
         ]);
         $this->saveCartToSession();
     }
 
     #[On('processPayment')]
-    public function processPayment()
+    public function processPayment($orderId)
     {
         $this->dispatch('openModal', component: 'pos::modal.payment-modal', order: $this->order->id);
     }
 
-    #[On('fallback-payment')]
-    public function fallbackPayment($status){
-        if (empty($this->cart) || !$this->order) {
-            LivewireAlert::title('Cart is empty!')
-                ->text('Please add items to the cart.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-            return;
-        }
+    #[On('posOrderPaymentCompleted')]
+    public function PosPaymentCompleted($data){
+        $this->order = PosOrder::find($data['orderId']) ?? null;
 
-        $this->order->update([
-            'status' => 'receipt',
-            'total_amount' => $this->cartTotal,
-            // 'tax_amount' => $this->cartTax,
-        ]);
-
-        // Decrease product stock
-        // foreach ($this->cart as $item) {
-        //     $product = Product::find($item['id']);
-        //     $product->decrement('quantity', $item['quantity']);
+        // if (empty($this->cart) || !$this->order) {
+        //     LivewireAlert::title('Cart is empty!')
+        //         ->text('Please add items to the cart.')
+        //         ->error()
+        //         ->position('top-end')
+        //         ->timer(4000)
+        //         ->toast()
+        //         ->show();
+        //     return;
         // }
+
+        $this->handlePayment([
+            'orderId' => $this->order->id,
+            'payment_method' => 'paystack',
+            'reference' => $data['reference'],
+            'amount' => $data['amount'], // Convert to actual amount
+            'method' => $data['method'] ?? 'paystack',
+            // 'source' => 'pos',
+        ]);
 
         $this->resetCart();
         $this->interface = 'payment';
@@ -835,6 +840,7 @@ class Home extends Component
                 'table_id' => $this->selectedTable?->id,
                 'customer_id' => $this->selectedCustomerId,
                 'total_amount' => $this->cartTotal,
+                'due_amount' => $this->cartTotal,
                 // 'tax_amount' => $this->cartTax,
                 'status' => 'ongoing',
                 'receipt_number' => 'ORD-' . uniqid(),
@@ -857,6 +863,52 @@ class Home extends Component
                 'service_type' => $this->selectedService['key']
             ]);
         }
+    }
+
+
+    public function handlePayment($data)
+    {
+        if (!isset($data['orderId'])) {
+            session()->flash('error', 'Invalid order ID.');
+            return;
+        }
+
+        $payment = PosOrderPayment::create([
+            'company_id'     => current_company()->id,
+            'pos_id'         => $this->order->pos_id,
+            'pos_order_id'   => $this->order->id,
+            'pos_session_id' => $this->order->pos_session_id ?? null,
+            'guest_id'       => $this->order->guest_id ?? null,
+            // 'payment_method' => $data['method'],
+            'amount'         => $data['amount'],
+            'date'           => now(),
+            'transaction_id' => $data['reference'] ?? Str::random(16),
+            'label'          => 'Payment Received for Order #' . $this->order->receipt_number,
+        ]);
+
+        $dueAmount = $this->order->due_amount - $payment->amount;
+
+        $paymentStatus = match (true) {
+            $dueAmount == $this->order->total_amount => 'unpaid',
+            $dueAmount > 0 => 'partial',
+            default => 'paid',
+        };
+
+        $paidAmount = $this->order->paid_amount + $payment->amount;
+
+        $this->order->update([
+            'status' => 'receipt',
+            'payment_method' => $data['method'],
+            'payment_status' => $paymentStatus,
+            'paid_amount'    => $paidAmount,
+            'due_amount'     => $dueAmount,
+        ]);
+
+    }
+
+    // Navbar and footer are handled by the layout
+    public function goToBackend(){
+        return $this->redirect(route('pos.overview'), true);
     }
 
     public function render()
