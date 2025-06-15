@@ -44,7 +44,7 @@ class Home extends Component
     public $calculatorInput = 0;
     public string $searchQuery = '', $customerSearch = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
-    public bool $isLocked = false; // New property for lock state
+    public bool $isLocked = true; // New property for lock state
 
     public function mount(Pos $pos)
     {

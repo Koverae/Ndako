@@ -53,46 +53,81 @@
 ">
         <!-- Lock Screen -->
         <div x-show="isLocked" style="z-index: 99999;" class="fixed inset-0 flex items-center justify-center bg-body-secondary bg-opacity-75 backdrop-blur animate-fade-in">
-            <div class="relative flex flex-col items-center justify-center w-full h-full">
+            <div class="relative flex flex-col items-center justify-center w-full h-full bg-white">
                 <!-- Top Bar: Date/Time (left) and Logo (right) -->
-                <div class="absolute top-0 left-0 right-0 flex justify-between items-center w-100 px-6 py-4">
-                    <!-- Date & Time -->
-                    <div class="text-lg font-semibold text-black bg-white bg-opacity-60 rounded px-4 py-2" id="lockscreen-datetime">
-                        <!-- Will be filled by JS -->
-                    </div>
-                    <!-- Logo -->
+                <div class="position-absolute top-0 start-0 end-0 d-flex justify-content-between align-items-center px-4 py-4" style="width: 100%;">
+                    <!-- Date & Time (Left) -->
                     <div>
-                        <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="w-50 h-auto">
+                        <div id="lockscreen-datetime"
+                            class="d-flex justify-between align-items-center bg-opacity-75 rounded-3 px-4 py-3"
+                            style="backdrop-filter: blur(6px); letter-spacing: 0.02em; font-family: 'Segoe UI', sans-serif; min-width: 280px;">
+
+                            <div class="time fs-1 fw-bold text-dark d-flex align-items-center">
+                                <i class="bi bi-clock me-2 fs-4 text-secondary"></i>
+                                <span id="lockscreen-time" class="fs-1"></span>
+                            </div>
+
+                            <div class="date text-end ps-3">
+                                <div id="lockscreen-weekday" class="fw-semibold text-dark small"></div>
+                                <div id="lockscreen-full-date" class="text-muted small"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Logo (Right) -->
+                    <div>
+                        <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo"
+                            class="" style="height: 60px;" />
                     </div>
                 </div>
 
-                <!-- Center Card: Continue Selling -->
-                <div class="flex flex-col items-center justify-center w-full h-full">
-                    <div class="mx-auto bg-white bg-opacity-90 rounded-3xl shadow-2xl p-10 max-w-md w-full flex flex-col items-center">
-                        
-                    </div>
-                </div>
+                <!-- Full screen center card: Continue Selling -->
+                <div class="flex-grow d-flex justify-content-center align-items-center w-100">
+                    <button wire:click="unlock"
+                        class="p-5 text-dark fw-semibold fs-2 border-1 bg-white bg-opacity-90 cursor-pointer align-items-center gap-2"
+                        style="transition: box-shadow 0.2s; height: 200px; border-radius: 10px;">
+                        <i class="fas fa-shopping-basket" style="font-size: 45px;"></i>
+                        <div>
+                            <?php echo e(__('Continue Selling')); ?>
 
+                        </div>
+                    </button>
+                </div>
                 <!-- Bottom Bar: Backend Button -->
-                <div class="absolute bottom-0 left-0 right-0 flex justify-center items-center w-full pb-8">
-                    <button wire:click="goToBackend" class="btn btn-outline-dark px-6 py-2 rounded-full font-semibold text-lg shadow hover:bg-gray-200 transition">
+                <div class="position-absolute bottom-0 start-0 end-0 d-flex justify-content-center align-items-center w-100 pb-4">
+                    <button wire:click="goToBackend" class="btn btn-outline-dark px-5 py-2 rounded-pill fw-semibold fs-4 shadow-sm">
                         <i class="bi bi-gear me-2"></i> <?php echo e(__('Backend')); ?>
 
                     </button>
                 </div>
             </div>
-
             <script>
-                // Realtime date and time for lockscreen
                 function updateLockscreenDateTime() {
-                    const el = document.getElementById('lockscreen-datetime');
-                    if (!el) return;
+                    const timeEl = document.getElementById('lockscreen-time');
+                    const weekdayEl = document.getElementById('lockscreen-weekday');
+                    const fullDateEl = document.getElementById('lockscreen-full-date');
+
                     const now = new Date();
-                    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-                    const dateStr = now.toLocaleDateString(undefined, options);
-                    const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    el.textContent = `${dateStr} — ${timeStr}`;
+
+                    const timeStr = now.toLocaleTimeString(undefined, {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    const weekday = now.toLocaleDateString(undefined, {
+                        weekday: 'short'
+                    });
+
+                    const fullDate = now.toLocaleDateString(undefined, {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+
+                    timeEl.textContent = timeStr;
+                    weekdayEl.textContent = weekday;
+                    fullDateEl.textContent = fullDate;
                 }
+
                 document.addEventListener('DOMContentLoaded', () => {
                     updateLockscreenDateTime();
                     setInterval(updateLockscreenDateTime, 1000);
