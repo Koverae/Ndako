@@ -67,4 +67,9 @@ class PosTable extends Table
             Card::make('name', "name", "", $this->data)->component('app::table.card.template.pos'),
         ];
     }
+
+    public function openSession($id)
+    {
+        return $this->redirect(route('pos.ui', $id), true);
+    }
 }

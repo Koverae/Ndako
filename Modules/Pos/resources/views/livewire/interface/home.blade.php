@@ -53,15 +53,60 @@
 ">
         <!-- Lock Screen -->
         <div x-show="isLocked" style="z-index: 99999;" class="fixed inset-0 flex items-center justify-center bg-body-secondary bg-opacity-75 backdrop-blur animate-fade-in">
-            <div class="text-center p-6 rounded-lg shadow-2xl bg-white bg-opacity-10 backdrop-blur-lg max-w-md w-full mx-4">
-                <img src="{{ asset('assets/images/logo/ndako.png') }}" alt="Ndako Logo" class="mx-auto mb-6 w-32 animate-pulse">
-                <h2 class="text-3xl font-bold text-black mb-4">{{ __('POS Locked') }}</h2>
-                <p class="text-lg text-gray-200 mb-6">{{ __('Click below to resume selling.') }}</p>
-                <button wire:click="unlock" class="btn btn-primary text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-600 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 animate-bounce">
-                    {{ __('Continue Selling') }}
-                </button>
+            <div class="relative flex flex-col items-center justify-center w-full h-full">
+                <!-- Top Bar: Date/Time (left) and Logo (right) -->
+                <div class="absolute top-0 left-0 right-0 flex justify-between items-center w-full px-8 py-6" style="width: 100%;">
+                    <!-- Date & Time (Left) -->
+                    <div class="flex items-center">
+                        <div id="lockscreen-datetime"
+                            class="flex items-center gap-2 text-xl font-bold text-gray-900 bg-white bg-opacity-80 rounded-2xl shadow px-6 py-3 border border-gray-200"
+                            style="backdrop-filter: blur(4px); min-width: 260px; letter-spacing: 0.03em;">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                    <!-- Logo (Right) -->
+
+                    <div class="flex items-center">
+                        <img src="{{ asset('assets/images/logo/ndako.png') }}" alt="Ndako Logo"
+                            class="h-14 w-auto drop-shadow-lg rounded-xl bg-white bg-opacity-70 p-2" />
+                    </div>
+                </div>     <!-- Center Card: Continue Selling -->
+                <div class="flex flex-col items-center justify-center w-full h-full">
+                    <div class="mx-auto bg-white bg-opacity-90 rounded-3xl shadow-2xl p-10 max-w-md w-full flex flex-col items-center">
+                        {{-- <h2 class="text-3xl font-bold text-black mb-2">{{ __('POS Locked') }}</h2>
+                        <p class="text-lg text-gray-700 mb-6">{{ __('Click below to resume selling.') }}</p>
+                        <button wire:click="unlock" class="btn btn-primary text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-green-600 shadow-lg">
+                            {{ __('Continue Selling') }}
+                        </button> --}}
+                    </div>
+                </div>
+
+                <!-- Bottom Bar: Backend Button -->
+                <div class="absolute bottom-0 left-0 right-0 flex justify-center items-center w-full pb-8">
+                    <button wire:click="goToBackend" class="btn btn-outline-dark px-6 py-2 rounded-full font-semibold text-lg shadow hover:bg-gray-200 transition">
+                        <i class="bi bi-gear me-2"></i> {{ __('Backend') }}
+                    </button>
+                </div>
             </div>
+
+            <script>
+                // Realtime date and time for lockscreen
+                function updateLockscreenDateTime() {
+                    const el = document.getElementById('lockscreen-datetime');
+                    if (!el) return;
+                    const now = new Date();
+                    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                    const dateStr = now.toLocaleDateString(undefined, options);
+                    const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    el.textContent = `${dateStr} — ${timeStr}`;
+                }
+                document.addEventListener('DOMContentLoaded', () => {
+                    updateLockscreenDateTime();
+                    setInterval(updateLockscreenDateTime, 1000);
+                });
+            </script>
         </div>
+        <!-- Lock Screen -->
 
         <!-- Navbar -->
         <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky">
@@ -110,7 +155,7 @@
                                     <span wire:click="goToBackend" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
                                         {{ __('Backend') }}
                                     </span>
-                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                    <span wire:click="closeRegister" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
                                         {{ __('Close Register') }}
                                     </span>
                                 </div>

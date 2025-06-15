@@ -76,7 +76,7 @@ unset($__defined_vars); ?>
             </div>
 
             <div class="gap-2 d-flex">
-                <a href="<?php echo e(route('pos.ui', $id)); ?>" target="_blank" class="mt-2 btn btn-primary"><?php echo e(__('Open Session')); ?></a>
+                <a wire:click="openSession('<?php echo e($id); ?>')" class="mt-2 btn btn-primary cursor-pointer"><?php echo e(__('Open Session')); ?></a>
             </div>
         </div>
     </div>

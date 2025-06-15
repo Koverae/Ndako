@@ -44,7 +44,7 @@ class Home extends Component
     public $calculatorInput = 0;
     public string $searchQuery = '', $customerSearch = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
-    public bool $isLocked = true; // New property for lock state
+    public bool $isLocked = false; // New property for lock state
 
     public function mount(Pos $pos)
     {
@@ -909,6 +909,10 @@ class Home extends Component
     // Navbar and footer are handled by the layout
     public function goToBackend(){
         return $this->redirect(route('pos.overview'), true);
+    }
+
+    public function closeRegister(){
+        $this->isLocked = true;
     }
 
     public function render()

@@ -45,7 +45,7 @@
             </div>
 
             <div class="gap-2 d-flex">
-                <a href="{{ route('pos.ui', $id) }}" target="_blank" class="mt-2 btn btn-primary">{{ __('Open Session') }}</a>
+                <a wire:click="openSession('{{ $id }}')" class="mt-2 btn btn-primary cursor-pointer">{{ __('Open Session') }}</a>
             </div>
         </div>
     </div>
