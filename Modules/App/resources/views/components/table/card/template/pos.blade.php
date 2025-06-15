@@ -45,7 +45,9 @@
             </div>
 
             <div class="gap-2 d-flex">
-                <a wire:click="openSession('{{ $id }}')" class="mt-2 btn btn-primary cursor-pointer">{{ __('Open Session') }}</a>
+                <a wire:click="openSession('{{ $id }}')" class="mt-2 btn btn-primary cursor-pointer">
+                    {{ session()->get("pos_session_id_{$id}") ? __('Continue Session') : __('Open Register') }}
+                </a>
             </div>
         </div>
     </div>

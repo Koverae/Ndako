@@ -76,7 +76,10 @@ unset($__defined_vars); ?>
             </div>
 
             <div class="gap-2 d-flex">
-                <a wire:click="openSession('<?php echo e($id); ?>')" class="mt-2 btn btn-primary cursor-pointer"><?php echo e(__('Open Session')); ?></a>
+                <a wire:click="openSession('<?php echo e($id); ?>')" class="mt-2 btn btn-primary cursor-pointer">
+                    <?php echo e(session()->get("pos_session_id_{$id}") ? __('Continue Session') : __('Open Register')); ?>
+
+                </a>
             </div>
         </div>
     </div>

@@ -44,12 +44,15 @@ class Home extends Component
     public $calculatorInput = 0;
     public string $searchQuery = '', $customerSearch = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
-    public bool $isLocked = true; // New property for lock state
+    public bool $isLocked = false; // New property for lock state
 
     public function mount(Pos $pos)
     {
         $this->pos = $pos;
-        // Load cart and table from session
+        if(!$this->pos->active_session_id) {
+            $this->isLocked = true; // Lock POS if no active session
+        }
+
         // Load session data with default structure
         $sessionKey = "pos_cart_{$this->pos->id}";
         $sessionData = session()->get($sessionKey, ['cart' => [], 'table_id' => null, 'active_order_id' => null]);
@@ -835,6 +838,7 @@ class Home extends Component
         if (!$this->order) {
             $this->order = PosOrder::create([
                 'pos_id' => $this->pos->id,
+                'pos_session_id' => session("pos_session_id_{$this->pos->id}") ?? null,
                 'company_id' => current_company()->id,
                 'cashier_id' => Auth::id(),
                 'table_id' => $this->selectedTable?->id,
@@ -913,6 +917,26 @@ class Home extends Component
 
     public function closeRegister(){
         $this->isLocked = true;
+    }
+
+    public function openRegister(){
+        // $this->isLocked = false;
+        $this->dispatch('openModal', component: 'pos::modal.opening-control-modal', arguments: ['pos' => $this->pos]);
+    }
+
+    #[On('posOpened')]
+    public function posOpened($data)
+    {
+        // $this->dispatch('alert', type: 'success', message: "POS {$this->pos->name} is now open.");
+        $this->isLocked = false;
+        $this->dispatch('reset-inactivity-timer'); // Reset inactivity timer
+        LivewireAlert::title("POS {$this->pos->name} is now open.")
+            ->text("POS {$this->pos->name} is now open. You can start processing orders.")
+            ->success()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
     }
 
     public function render()

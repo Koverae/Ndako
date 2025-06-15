@@ -82,12 +82,12 @@
 
                 <!-- Full screen center card: Continue Selling -->
                 <div class="flex-grow d-flex justify-content-center align-items-center w-100">
-                    <button wire:click="unlock"
+                    <button wire:click="openRegister"
                         class="p-5 text-dark fw-semibold fs-2 border-1 bg-white bg-opacity-90 cursor-pointer align-items-center gap-2"
                         style="transition: box-shadow 0.2s; height: 200px; border-radius: 10px;">
                         <i class="fas fa-shopping-basket" style="font-size: 45px;"></i>
                         <div>
-                            <?php echo e(__('Continue Selling')); ?>
+                            <?php echo e(__('Open Register')); ?>
 
                         </div>
                     </button>

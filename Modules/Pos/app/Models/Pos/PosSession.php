@@ -12,7 +12,19 @@ class PosSession extends Model
 {
     use HasFactory;
 
-
+    protected $fillable = [
+        'company_id',
+        'pos_id',
+        'reference',
+        'status',
+        'starting_balance',
+        'closing_balance',
+        'start_date',
+        'closing_date',
+        'open_by_id',
+        'close_by_id',
+        'unique_token',
+    ];
     protected static function boot()
     {
         parent::boot();
