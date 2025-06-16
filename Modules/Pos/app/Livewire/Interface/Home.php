@@ -49,7 +49,11 @@ class Home extends Component
     public function mount(Pos $pos)
     {
         $this->pos = $pos;
-        if(!$this->pos->active_session_id) {
+        // if(!$this->pos->active_session_id) {
+        //     $this->isLocked = true; // Lock POS if no active session
+        // }
+
+        if(!session()->has("pos_session_id_{$this->pos->id}" || !$this->pos->active_session_id)) {
             $this->isLocked = true; // Lock POS if no active session
         }
 
@@ -925,6 +929,33 @@ class Home extends Component
         $this->dispatch('openModal', component: 'pos::modal.opening-control-modal', arguments: ['pos' => $this->pos]);
     }
 
+    public function continueSelling()
+    {
+        // This method can be used to continue selling after a session is opened
+        $existingSession = $this->pos->sessions()->isPosActive()->first();
+        if ($existingSession) {
+            session()->put("pos_session_id_{$this->pos->id}", $existingSession->id);
+        } else {
+            LivewireAlert::title('No active session found!')
+                ->text('Please open a session to continue selling.')
+                ->error()
+                ->position('top-end')
+                ->timer(4000)
+                ->toast()
+                ->show();
+            return;
+        }
+        $this->isLocked = false;
+        $this->dispatch('reset-inactivity-timer'); // Reset inactivity timer
+        LivewireAlert::title("POS {$this->pos->name} is now open.")
+            ->text("POS {$this->pos->name} is now open. You can start processing orders.")
+            ->success()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+    }
+
     #[On('posOpened')]
     public function posOpened($data)
     {
@@ -939,6 +970,7 @@ class Home extends Component
             ->toast()
             ->show();
     }
+
 
     public function render()
     {

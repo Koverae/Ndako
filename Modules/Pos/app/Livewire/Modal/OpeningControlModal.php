@@ -15,7 +15,7 @@ class OpeningControlModal extends ModalComponent
     public Pos $pos;
     public $opening_cash = 0;
     public $opening_note = '';
-    
+
     public function mount(Pos $pos)
     {
         $this->pos = $pos;
@@ -25,7 +25,7 @@ class OpeningControlModal extends ModalComponent
     {
         $this->closeModal();
     }
-    
+
     public function open()
     {
         $this->validate([
@@ -35,7 +35,7 @@ class OpeningControlModal extends ModalComponent
         ]);
 
         // Check if there is already an active session for this POS
-        $existingSession = $this->pos->sessions()->where('status', 'active')->first();
+        $existingSession = $this->pos->sessions()->isPosActive()->first();
 
         if ($existingSession) {
             // Use the existing active session

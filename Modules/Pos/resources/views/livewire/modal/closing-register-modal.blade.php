@@ -33,7 +33,7 @@
                         </div>
                         <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                             <span class="fs-4 text-muted">{{ __('Difference') }}</span>
-                            <span class="fs-4 
+                            <span class="fs-4
                                 @if(is_null($differenceCash))
                                     text-muted
                                 @elseif($differenceCash > 0)
@@ -48,7 +48,7 @@
                                 <span>+</span>
                                 @elseif($differenceCash < 0)
                                 <span>-</span>
-                               @endif 
+                               @endif
                                {{ format_currency($differenceCash) }}
                             </span>
                         </div>
@@ -86,7 +86,7 @@
                     <button type="submit" class="btn btn-primary fs-3">{{ __('Close Register') }}</button>
                     <button type="button" class="btn btn-secondary fs-3" wire:click="$dispatch('closeModal')">{{ __('Discard') }}</button>
                 </div>
-                <button type="button" class="btn btn-secondary fs-3" wire:click="showDailySales" wire:loading.attr="disabled">i.fas {{ __('Daily Sales') }}</button>
+                <button type="button" class="btn btn-secondary fs-3 gap-3 d-flex" wire:click="showDailySales" wire:loading.attr="disabled"><i class="fas fa-download"></i> {{ __('Daily Sales') }}</button>
             </div>
         </form>
         {{-- <div wire:loading wire:target="open" class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.7); z-index: 10;">

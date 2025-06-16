@@ -49,6 +49,12 @@ class PosSession extends Model
         return $query->where('pos_id', $pos_id);
     }
 
+    public function scopeIsPosActive(Builder $query)
+    {
+        return $query->where('id', $this->pos->active_session_id)
+                     ->where('status', 'active');
+    }
+
     public function scopeIsOpened(Builder $query)
     {
         return $query->where('status', 'active');

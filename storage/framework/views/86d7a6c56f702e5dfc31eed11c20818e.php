@@ -33,7 +33,7 @@
                         </div>
                         <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                             <span class="fs-4 text-muted"><?php echo e(__('Difference')); ?></span>
-                            <span class="fs-4 
+                            <span class="fs-4
                                 <?php if(is_null($differenceCash)): ?>
                                     text-muted
                                 <?php elseif($differenceCash > 0): ?>
@@ -48,7 +48,7 @@
                                 <span>+</span>
                                 <?php elseif($differenceCash < 0): ?>
                                 <span>-</span>
-                               <?php endif; ?><!--[if ENDBLOCK]><![endif]--> 
+                               <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                <?php echo e(format_currency($differenceCash)); ?>
 
                             </span>
@@ -101,7 +101,7 @@ unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                     <button type="submit" class="btn btn-primary fs-3"><?php echo e(__('Close Register')); ?></button>
                     <button type="button" class="btn btn-secondary fs-3" wire:click="$dispatch('closeModal')"><?php echo e(__('Discard')); ?></button>
                 </div>
-                <button type="button" class="btn btn-secondary fs-3" wire:click="showDailySales" wire:loading.attr="disabled">i.fas <?php echo e(__('Daily Sales')); ?></button>
+                <button type="button" class="btn btn-secondary fs-3 gap-3 d-flex" wire:click="showDailySales" wire:loading.attr="disabled"><i class="fas fa-download"></i> <?php echo e(__('Daily Sales')); ?></button>
             </div>
         </form>
         

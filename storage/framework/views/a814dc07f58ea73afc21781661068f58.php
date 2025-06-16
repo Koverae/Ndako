@@ -53,7 +53,7 @@
                             <option value="">Select</option>
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
-                            <option value="mobile">Mobile Money</option>
+                            <option value="mobile-money">Mobile Money</option>
                         </select>
                     </div>
 
