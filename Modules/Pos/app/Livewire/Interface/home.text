@@ -45,18 +45,24 @@ class Home extends Component
     public $calculatorInput = 0;
     public string $searchQuery = '', $customerSearch = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
-    public bool $isLocked = false;
+    public bool $isLocked = false; // New property for lock state
 
     public function mount(Pos $pos)
     {
         $this->pos = $pos;
+        // if(!$this->pos->active_session_id) {
+        //     $this->isLocked = true; // Lock POS if no active session
+        // }
+
         if(!session()->has("pos_session_id_{$this->pos->id}") || !$this->pos->active_session_id) {
-            $this->isLocked = true;
+            $this->isLocked = true; // Lock POS if no active session
         }
 
+        // Load session data with default structure
         $sessionKey = "pos_cart_{$this->pos->id}";
         $sessionData = session()->get($sessionKey, ['cart' => [], 'table_id' => null, 'active_order_id' => null]);
 
+        // Handle legacy or invalid session data
         if (!is_array($sessionData) || !isset($sessionData['cart']) || !array_key_exists('table_id', $sessionData) || !array_key_exists('active_order_id', $sessionData)) {
             $cart = is_array($sessionData) && !array_key_exists('cart', $sessionData) ? $sessionData : [];
             $sessionData = ['cart' => $cart, 'table_id' => null, 'active_order_id' => null];
@@ -80,11 +86,17 @@ class Home extends Component
         $this->loadActiveOrder();
     }
 
+    /**
+     * Change the active tab.
+     */
     public function changeTab(string $tab): void
     {
         $this->tab = $tab;
     }
 
+    /**
+     * Change the active interface.
+     */
     public function changeInterface(string $interface): void
     {
         $this->interface = $interface;
@@ -93,16 +105,27 @@ class Home extends Component
         }
     }
 
+    /**
+     * Change the active floorPlan.
+     */
     public function changeFloorPlan($floorPlan): void
     {
         $this->selectedPlanId = $floorPlan;
     }
 
+    /**
+     * Select product category and load related products.
+     */
     public function selectCategory($categoryId): void
     {
         $this->selectedCategoryId = $categoryId ?: null;
         $this->loadProducts();
     }
+
+    /**
+     * Select table and load or create order.
+     */
+
 
     public function selectTable($tableId): void
     {
@@ -146,17 +169,23 @@ class Home extends Component
             ->show();
     }
 
+    /**
+     * Select product on checkout.
+     */
     public function selectProduct($productId): void
     {
+        // Deselect if the same product is clicked
         if ($this->selectedProductId == $productId) {
             $this->selectedProductId = null;
             $this->calculatorInput = '';
             return;
         }
 
+        // Select new product
         $this->calculatorInput = '';
         $this->selectedProductId = $productId;
 
+        // Set calculator input if product exists in cart
         $item = $this->cart[$productId] ?? null;
 
         if ($item) {
@@ -222,6 +251,10 @@ class Home extends Component
         }
     }
 
+
+    /**
+     * Save cart and table to session.
+     */
     protected function saveCartToSession(): void
     {
         session()->put("pos_cart_{$this->pos->id}", [
@@ -236,14 +269,18 @@ class Home extends Component
         $product = Product::find($productId);
         if (!$product) {
             LivewireAlert::title('Product not found!')
-                ->text('Product selected does not exist')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            ->text('Product selected does not exist')
+            ->error()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
             return;
         }
+        // if ($product->quantity <= 0) {
+        //     $this->dispatch('alert', type: 'error', message: 'Product out of stock.');
+        //     return;
+        // }
 
         if (!$this->order) {
             $this->createOrder();
@@ -256,7 +293,7 @@ class Home extends Component
                 ->update([
                     'quantity' => $this->cart[$productId]['quantity'],
                     'sub_total' => $this->cart[$productId]['quantity'] * $this->cart[$productId]['unit_price'],
-                ]);
+                    ]);
         } else {
             $this->cart[$productId] = [
                 'id' => $product->id,
@@ -284,6 +321,7 @@ class Home extends Component
         $this->order->update([
             'total_amount' => $this->cartTotal,
             'due_amount' => $this->cartTotal,
+            // 'tax_amount' => $this->cartTax,
         ]);
         $this->saveCartToSession();
 
@@ -296,6 +334,9 @@ class Home extends Component
             ->show();
     }
 
+    /**
+     * Remove product from cart.
+     */
     public function removeFromCart($productId): void
     {
         if (isset($this->cart[$productId])) {
@@ -311,6 +352,7 @@ class Home extends Component
                 $this->order->update([
                     'total_amount' => $this->cartTotal,
                     'due_amount' => $this->cartTotal,
+                    // 'tax_amount' => $this->amountTax,
                 ]);
             }
             $this->saveCartToSession();
@@ -324,28 +366,46 @@ class Home extends Component
         }
     }
 
+    /**
+     * Update product quantity.
+     */
     public function updateQuantity($productId, $quantity): void
     {
         if (isset($this->cart[$productId])) {
             $quantity = max(1, (int) $quantity);
             $product = Product::find($productId);
+            // if ($quantity > $product->quantity) {
+            //     LivewireAlert::title('Stock limit exceeded!')
+            //         ->text('Cannot set quantity beyond available stock.')
+            //         ->error()
+            //         ->position('top-end')
+            //         ->timer(4000)
+            //         ->toast()
+            //         ->show();
+            //     return;
+            // }
 
             $this->cart[$productId]['quantity'] = $quantity;
             PosOrderDetail::where('pos_order_id', $this->order->id)
                 ->where('product_id', $productId)
                 ->update([
                     'quantity' => $quantity
-                ]);
+                    ]);
             $this->recalculateTotals();
             $this->order->update([
                 'total_amount' => $this->cartTotal,
                 'due_amount' => $this->cartTotal,
+                // 'tax_amount' => $this->cartTax,
             ]);
             $this->saveCartToSession();
         }
     }
 
+    /**
+     * Cancel the cart and delete order if exists.
+     */
     public function cancelOrder(){
+
         if ($this->order) {
             $this->order->details()->delete();
             $this->order->delete();
@@ -355,8 +415,17 @@ class Home extends Component
         $this->interface = 'tables';
     }
 
+    /**
+     * Reset the cart and delete order if exists.
+     */
     public function resetCart(): void
     {
+        // if ($this->order) {
+        //     $this->order->details()->delete();
+        //     $this->order->delete();
+        //     $this->order = null;
+        // }
+
         $this->cart = [];
         $this->selectedTable = null;
         $this->selectedCustomerId = null;
@@ -372,6 +441,9 @@ class Home extends Component
             ->show();
     }
 
+    /**
+     * Calculate total cart value.
+     */
     public function getTotalProperty(): float
     {
         return collect($this->cart)->sum(fn($item) => $item['unit_price'] * $item['quantity']);
@@ -379,26 +451,35 @@ class Home extends Component
 
     public function getTaxProperty(): float
     {
-        return $this->cartTotal * 0.16;
+        return $this->cartTotal * 0.16; // Assuming 16% VAT or configurable rate
     }
 
     protected function recalculateTotals(): void
     {
         $this->cartTotal = $this->getTotalProperty();
-        $this->cartTax = $this->getTaxProperty();
+        $this->cartTax = $this->getTaxProperty(); // adjust rate as needed
     }
 
+    /**
+     * Load product categories for current company.
+     */
     protected function loadFloors(): void
     {
         $this->floorPlanOptions = FloorPlan::isCompany(current_company()->id)->get();
         $this->selectedPlanId = $this->floorPlanOptions->first()->id ?? null;
     }
 
+    /**
+     * Load product categories for current company.
+     */
     protected function loadCategories(): void
     {
         $this->productCategoryOptions = ProductCategory::isCompany(current_company()->id)->get();
     }
 
+    /**
+     * Load products based on selected category or all products.
+     */
     public function updatedSearchQuery($value): void
     {
         $this->loadProducts();
@@ -439,6 +520,7 @@ class Home extends Component
 
     public function createCustomer(): void
     {
+        // Implement customer creation logic
         $this->dispatch('alert', type: 'success', message: 'Customer created.');
     }
 
@@ -475,6 +557,9 @@ class Home extends Component
             ->show();
     }
 
+    /**
+     * Select calculator mode
+     */
     public function selectCalculatorMode(string $mode): void
     {
         $this->calculatorMode = $mode;
@@ -525,11 +610,21 @@ class Home extends Component
             case 'qty':
                 $quantity = (int) $value;
                 if ($quantity < 1) {
-                    $this->removeFromCart($this->selectedProductId);
+                    $this->removeFromCart($this->selectedProductId); // Reuse removeFromCart to handle both cart and order detail deletion
                     $this->selectedProductId = null;
                     $this->calculatorInput = '';
                 } else {
                     $product = Product::find($this->selectedProductId);
+                    // if ($quantity > $product->quantity) {
+                    //     LivewireAlert::title('Stock limit exceeded!')
+                    //         ->text('Cannot set quantity beyond available stock.')
+                    //         ->error()
+                    //         ->position('top-end')
+                    //         ->timer(4000)
+                    //         ->toast()
+                    //         ->show();
+                    //     return;
+                    // }
                     $this->cart[$this->selectedProductId]['quantity'] = $quantity;
                     $price = $this->cart[$this->selectedProductId]['unit_price'];
                     PosOrderDetail::where('pos_order_id', $this->order->id)
@@ -537,7 +632,7 @@ class Home extends Component
                         ->update([
                             'quantity' => $quantity,
                             'sub_total' => $quantity * $price,
-                        ]);
+                            ]);
                 }
                 break;
             case 'price':
@@ -546,10 +641,10 @@ class Home extends Component
                 $quantity = $this->cart[$this->selectedProductId]['quantity'];
                 PosOrderDetail::where('pos_order_id', $this->order->id)
                     ->where('product_id', $this->selectedProductId)
-                    ->update([
-                        'unit_price' => $price,
-                        'sub_total' => $quantity * $price,
-                    ]);
+                        ->update([
+                            'unit_price' => $price,
+                            'sub_total' => $quantity * $price,
+                            ]);
                 break;
             case 'discount':
                 $discount = max(0, (float) $value);
@@ -575,6 +670,7 @@ class Home extends Component
         $this->order->update([
             'total_amount' => $this->cartTotal,
             'due_amount' => $this->cartTotal,
+            // 'tax_amount' => $this->cartTax,
         ]);
         $this->saveCartToSession();
     }
@@ -593,7 +689,7 @@ class Home extends Component
             return;
         }
 
-        $this->selectedProductId = null;
+        $this->selectedProductId = null; // Deselect any product
         $this->dispatch('openModal', component: 'pos::modal.payment-modal', order: $this->order->id);
     }
 
@@ -601,12 +697,24 @@ class Home extends Component
     public function PosPaymentCompleted($data){
         $this->order = PosOrder::find($data['orderId']) ?? null;
 
+        // if (empty($this->cart) || !$this->order) {
+        //     LivewireAlert::title('Cart is empty!')
+        //         ->text('Please add items to the cart.')
+        //         ->error()
+        //         ->position('top-end')
+        //         ->timer(4000)
+        //         ->toast()
+        //         ->show();
+        //     return;
+        // }
+
         $this->handlePayment([
             'orderId' => $this->order->id,
             'payment_method' => 'paystack',
             'reference' => $data['reference'],
-            'amount' => $data['amount'],
+            'amount' => $data['amount'], // Convert to actual amount
             'method' => $data['method'] ?? 'paystack',
+            // 'source' => 'pos',
         ]);
 
         $this->resetCart();
@@ -634,7 +742,7 @@ class Home extends Component
     public function unlock(): void
     {
         $this->isLocked = false;
-        $this->dispatch('reset-inactivity-timer');
+        $this->dispatch('reset-inactivity-timer'); // Emit event to reset timer
         LivewireAlert::title('Unlocked!')
             ->text('POS is now active.')
             ->success()
@@ -647,6 +755,13 @@ class Home extends Component
     public function newOrder(): void
     {
         $this->resetCart();
+
+        // if ($this->order) {
+        //     $this->order->details()->delete();
+        //     $this->order->delete();
+        //     $this->order = null;
+        // }
+
         $this->interface = 'tables';
         $this->selectedTable = null;
         $this->selectedCustomerId = null;
@@ -696,6 +811,9 @@ class Home extends Component
         $this->loadOrders();
     }
 
+    /**
+     * Load active order for the selected table or direct sale.
+     */
     protected function loadActiveOrder(): void
     {
         $this->order = PosOrder::where('pos_id', $this->pos->id)
@@ -710,6 +828,9 @@ class Home extends Component
         }
     }
 
+    /**
+     * Sync cart with order details.
+     */
     protected function syncCartWithOrder(): void
     {
         $this->cart = [];
@@ -726,6 +847,9 @@ class Home extends Component
         $this->saveCartToSession();
     }
 
+    /**
+     * Create or update order when adding to cart.
+     */
     protected function createOrder(): void
     {
         if (!$this->order) {
@@ -738,8 +862,10 @@ class Home extends Component
                 'customer_id' => $this->selectedCustomerId,
                 'total_amount' => $this->cartTotal,
                 'due_amount' => $this->cartTotal,
+                // 'tax_amount' => $this->cartTax,
                 'status' => 'ongoing',
                 'receipt_number' => 'ORD-' . uniqid(),
+                // 'invoice_code' => strtoupper(Str::random(5)),
                 'date' => now(),
                 'service_type' => $this->selectedService['key'] ?? 'eat-in'
             ]);
@@ -759,6 +885,7 @@ class Home extends Component
             ]);
         }
     }
+
 
     public function handlePayment($data)
     {
@@ -797,22 +924,27 @@ class Home extends Component
             'paid_amount'    => $paidAmount,
             'due_amount'     => $dueAmount,
         ]);
+
     }
 
+    // Navbar and footer are handled by the layout
     public function goToBackend(){
         return $this->redirect(route('pos.overview'), true);
     }
 
     public function closeRegister(){
+        // $this->isLocked = true;
         $this->dispatch('openModal', component: 'pos::modal.closing-register-modal', arguments: ['pos' => $this->pos, 'session' => $this->pos->active_session_id]);
     }
 
     public function openRegister(){
+        // $this->isLocked = false;
         $this->dispatch('openModal', component: 'pos::modal.opening-control-modal', arguments: ['pos' => $this->pos]);
     }
 
     public function continueSelling()
     {
+        // This method can be used to continue selling after a session is opened
         $sessionID = $this->pos->active_session_id;
         $existingSession = PosSession::find($sessionID);
         if ($existingSession) {
@@ -828,7 +960,7 @@ class Home extends Component
             return;
         }
         $this->isLocked = false;
-        $this->dispatch('reset-inactivity-timer');
+        $this->dispatch('reset-inactivity-timer'); // Reset inactivity timer
         LivewireAlert::title("POS {$this->pos->name} is now open.")
             ->text("POS {$this->pos->name} is now open. You can start processing orders.")
             ->success()
@@ -841,8 +973,9 @@ class Home extends Component
     #[On('posOpened')]
     public function posOpened($data)
     {
+        // $this->dispatch('alert', type: 'success', message: "POS {$this->pos->name} is now open.");
         $this->isLocked = false;
-        $this->dispatch('reset-inactivity-timer');
+        $this->dispatch('reset-inactivity-timer'); // Reset inactivity timer
         LivewireAlert::title("POS {$this->pos->name} is now open.")
             ->text("POS {$this->pos->name} is now open. You can start processing orders.")
             ->success()
@@ -852,10 +985,11 @@ class Home extends Component
             ->show();
     }
 
+    #[On('posClosed')]
     public function posClosed($data)
     {
         $this->isLocked = true;
-        $this->dispatch('reset-inactivity-timer');
+        $this->dispatch('reset-inactivity-timer'); // Reset inactivity timer
         LivewireAlert::title("POS {$this->pos->name} is now closed.")
             ->text("POS {$this->pos->name} is now closed. You can no longer process orders.")
             ->success()
@@ -864,63 +998,6 @@ class Home extends Component
             ->toast()
             ->show();
 
-    }
-
-    #[On('posClosed')]
-    public function closePos($dat)
-    {
-        // Check for ongoing orders
-        $ongoingOrders = PosOrder::where('pos_id', $this->pos->id)
-            ->where('company_id', current_company()->id)
-            ->where('status', 'ongoing')
-            ->count();
-
-        // if ($ongoingOrders > 0) {
-        //     LivewireAlert::title('Cannot close POS!')
-        //         ->text('There are ongoing orders. Please complete or cancel all orders before closing the POS.')
-        //         ->error()
-        //         ->position('top-end')
-        //         ->timer(4000)
-        //         ->toast()
-        //         ->show();
-        //     return;
-        // }
-
-        // Get the active session
-        $session = PosSession::find($this->pos->active_session_id);
-        if (!$session) {
-            LivewireAlert::title('No active session!')
-                ->text('No active session found for this POS.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-            return;
-        }
-
-            // Clear session data
-            session()->forget("pos_cart_{$this->pos->id}");
-            session()->forget("pos_session_id_{$this->pos->id}");
-
-            // Update POS to remove active session
-            $this->pos->update([
-                'active_session_id' => null,
-                'status' => 'inactive'
-            ]);
-
-            // Reset component state
-            $this->resetCart();
-            $this->isLocked = true;
-
-        LivewireAlert::title('POS closed successfully!')
-            ->text("POS {$this->pos->name} has been closed.")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-        // Redirect to POS overview
         return $this->redirect(route('pos.overview'), true);
     }
 

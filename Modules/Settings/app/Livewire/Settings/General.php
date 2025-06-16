@@ -111,7 +111,7 @@ class General extends AppSetting
             Box::make('invite_users', __('Invite Users'), 'invitation', ' ', 'users', false)->component('app::blocks.boxes.user.invite-user'),
             Box::make('active_users', $this->users->count() .' Active Users', 'invitation', null, 'users', false, "https://www.ndako.koverae.com/docs", " bi-people-fill"),
             // Enterprise
-            Box::make('current-company', current_company()->name, 'companny', current_company()->country, 'companies', false, null, " bi-building"),
+            Box::make('current-company', current_company()->name, 'companny', current_company()->country->common_name, 'companies', false, null, " bi-building"),
             // Box::make('document-layout', __('Document layout'), 'companny', __("Choose the layout of your documents"), 'companies', false, null, " bi-files"),
             // Box::make('email-template', __('E-mail templates'), 'companny', __("Customize the look and feel of automated emails"), 'companies', false, null, " bi-envelope"),
             Box::make('main-currency', "Main Currency", 'default_currency', "Main currency of your company", 'companies', false, "", null),

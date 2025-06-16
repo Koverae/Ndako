@@ -4,6 +4,10 @@
     'id'
 ])
 
+@php
+    $pos = \Modules\Pos\Models\Pos\Pos::find($id);
+@endphp
+
 <div class="mb-1 col-md-6" style="border-left: 4px solid #0E6163">
     <div class="card">
         <div class="p-2 card-body">
@@ -36,12 +40,19 @@
             <!-- Displaying POS details -->
             <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                 <span>{{ __('Close') }}</span>
-                <span>06/15/2025</span>
+                @php
+                    $lastSession = $pos->sessions()
+                        ->where('status', '<>', 'cancelled')
+                        ->latest()
+                        ->first();
+                @endphp
+
+                <span>{{ $lastSession ? \Carbon\Carbon::parse($lastSession->closing_date)->format('m/d/Y') : 'N/A' }}</span>
             </div>
 
             <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                 <span>{{ __('Balance') }}</span>
-                <span>{{ format_currency(126700) }}</span>
+                <span>{{ format_currency($lastSession->closing_balance ?? 0) }}</span>
             </div>
 
             <div class="gap-2 d-flex">

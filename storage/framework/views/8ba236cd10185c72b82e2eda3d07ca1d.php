@@ -36,6 +36,10 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
+<?php
+    $pos = \Modules\Pos\Models\Pos\Pos::find($id);
+?>
+
 <div class="mb-1 col-md-6" style="border-left: 4px solid #0E6163">
     <div class="card">
         <div class="p-2 card-body">
@@ -67,12 +71,19 @@ unset($__defined_vars); ?>
             <!-- Displaying POS details -->
             <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                 <span><?php echo e(__('Close')); ?></span>
-                <span>06/15/2025</span>
+                <?php
+                    $lastSession = $pos->sessions()
+                        ->where('status', '<>', 'cancelled')
+                        ->latest()
+                        ->first();
+                ?>
+
+                <span><?php echo e($lastSession ? \Carbon\Carbon::parse($lastSession->closing_date)->format('m/d/Y') : 'N/A'); ?></span>
             </div>
 
             <div class="d-flex flex-row justify-content-between text-truncate mb-1">
                 <span><?php echo e(__('Balance')); ?></span>
-                <span><?php echo e(format_currency(126700)); ?></span>
+                <span><?php echo e(format_currency($lastSession->closing_balance ?? 0)); ?></span>
             </div>
 
             <div class="gap-2 d-flex">

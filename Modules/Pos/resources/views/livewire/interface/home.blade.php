@@ -82,16 +82,17 @@
 
                 <!-- Full screen center card: Continue Selling -->
                 <div class="flex-grow d-flex justify-content-center align-items-center w-100">
-                    <button wire:click="{{ session()->has("pos_session_id_{$this->pos->id}") ? 'continueSelling' : 'openRegister' }}"
+                    <button wire:click="{{ (session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'continueSelling' : 'openRegister' }}"
                         class="p-5 text-dark fw-semibold fs-2 border-1 bg-white bg-opacity-90 cursor-pointer align-items-center gap-2"
                         style="transition: box-shadow 0.2s; height: 200px; border-radius: 10px;">
                         <i class="fas fa-shopping-basket" style="font-size: 45px;"></i>
                         <div>
-                            @if(session()->has("pos_session_id_{$id}"))
-                                {{ __('Continue Session') }}
-                            @else
-                                {{ __('Open Register') }}
-                            @endif     </div>
+                            @php
+                                $label = (session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'Continue Selling' : 'Open Register';
+                            @endphp
+
+                            {{ $label }}
+                        </div>
                     </button>
                 </div>
                 <!-- Bottom Bar: Backend Button -->

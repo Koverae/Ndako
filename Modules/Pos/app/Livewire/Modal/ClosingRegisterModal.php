@@ -18,7 +18,7 @@ class ClosingRegisterModal extends ModalComponent
     public PosSession $session;
     public $closing_cash = 0, $totalCash = 0, $totalPaymentCash = 0, $differenceCash = 0, $cashInOut = 0, $totalCard = 0, $totalPaystack = 0;
     public $closing_note = '';
-    
+
     public function mount(Pos $pos, PosSession $session)
     {
         $this->pos = $pos;
@@ -64,7 +64,7 @@ class ClosingRegisterModal extends ModalComponent
             })
             ->sum('amount');
         $this->totalPaystack = $paystackPayments;
-        
+
         $this->differenceCash = (float) $this->closing_cash - $this->totalCash;
 
     }
@@ -93,6 +93,28 @@ class ClosingRegisterModal extends ModalComponent
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
         }, "Daily Sales Report.pdf");
+    }
+
+    public function closeRegister(){
+        $this->validate([
+            'closing_cash' => 'required|numeric|min:0',
+            'closing_note' => 'nullable|string|max:255',
+        ]);
+
+        // Update the session with closing details
+        $this->session->update([
+            'closing_balance' => $this->closing_cash,
+            'closing_date' => now(),
+            'status' => 'closed',
+        ]);
+
+        $this->dispatch('posClosed', [
+            'pos' => $this->pos,
+            'session' => $this->session,
+        ]);
+
+        // Close the modal
+        $this->closeModal();
     }
 
     public function render()

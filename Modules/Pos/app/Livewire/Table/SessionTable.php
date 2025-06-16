@@ -62,9 +62,9 @@ class SessionTable extends Table
             Column::make('reference', __('Reference')),
             Column::make('pos_id', 'Restaurant')->component('app::table.column.special.pos.restaurant'),
             Column::make('start_date', 'Start Date')->component('app::table.column.special.date.basic'),
-            Column::make('starting_balance', 'Total Amount')->component('app::table.column.special.price'),
+            Column::make('starting_balance', 'Starting Balance')->component('app::table.column.special.price'),
             Column::make('closing_date', 'Closing Date')->component('app::table.column.special.date.basic'),
-            Column::make('closing_balance', 'Total Amount')->component('app::table.column.special.price'),
+            Column::make('closing_balance', 'Closing Balance')->component('app::table.column.special.price'),
         ];
     }
 

@@ -5,7 +5,7 @@
             <span class="fw-bolder fs-4">{{ $session->orders()->count() ?? 0 }} {{ __('orders') }}: {{ format_currency($session->orders()->sum('total_amount') ?? 0) }}</span>
         </div>
 
-        <form wire:submit.prevent="open">
+        <form wire:submit.prevent="closeRegister">
             <div class="modal-body p-0">
                 <!-- Payment Method Overview -->
                 <div class="payment-methods-overview cursor-pointer p-3">
@@ -89,7 +89,7 @@
                 <button type="button" class="btn btn-secondary fs-3 gap-3 d-flex" wire:click="showDailySales" wire:loading.attr="disabled"><i class="fas fa-download"></i> {{ __('Daily Sales') }}</button>
             </div>
         </form>
-        {{-- <div wire:loading wire:target="open" class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.7); z-index: 10;">
+        {{-- <div wire:loading wire:target="closeRegister" class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.7); z-index: 10;">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">{{ __('Loading...') }}</span>
             </div>

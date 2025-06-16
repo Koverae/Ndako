@@ -5,7 +5,7 @@
             <span class="fw-bolder fs-4"><?php echo e($session->orders()->count() ?? 0); ?> <?php echo e(__('orders')); ?>: <?php echo e(format_currency($session->orders()->sum('total_amount') ?? 0)); ?></span>
         </div>
 
-        <form wire:submit.prevent="open">
+        <form wire:submit.prevent="closeRegister">
             <div class="modal-body p-0">
                 <!-- Payment Method Overview -->
                 <div class="payment-methods-overview cursor-pointer p-3">
