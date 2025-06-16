@@ -18,6 +18,7 @@ use Modules\Properties\Models\Property\Feature;
 use Modules\Settings\Models\Language\Language;
 use Modules\Settings\Models\Localization\Country;
 use Illuminate\Support\Str;
+use Modules\Pos\Models\Pos\Pos;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Spatie\Permission\Models\Role;
@@ -188,6 +189,14 @@ class Company extends Model
     public function features()
     {
         return $this->hasMany(Feature::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get features for the company.
+     */
+    public function restaurants()
+    {
+        return $this->hasMany(Pos::class, 'company_id', 'id');
     }
 
 }

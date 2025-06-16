@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\FrontDesk\Livewire\Settings;
+namespace Modules\Pos\Livewire\Settings;
 
 use Modules\App\Livewire\Components\Settings\AppSetting;
 use Modules\App\Livewire\Components\Settings\Block;
@@ -10,35 +10,35 @@ use Modules\App\Livewire\Components\Settings\BoxInput;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Modules\FrontDesk\Models\Desk\DeskSetting;
-use Modules\FrontDesk\Models\Desk\FrontDesk;
+use Modules\Pos\Models\Pos\Pos;
+use Modules\Pos\Models\Pos\PosSetting as PosPosSetting;
 use Modules\RevenueManager\Models\Accounting\Journal;
 
-class FrontDeskSetting extends AppSetting
+class PosSetting extends AppSetting
 {
-    public $front, $setting;
-    public bool $activeDesk = true, $has_automatically_validate_order, $has_maximum_difference_at_closing, $has_stripe_payment_terminal, $has_paytm_payment_terminal, $show_property_images, $show_category_images, $has_price_control;
+    public $pos, $setting;
+    public bool $activeDesk = true, $has_automatically_validate_order, $has_maximum_difference_at_closing = false, $has_stripe_payment_terminal, $has_paytm_payment_terminal, $show_property_images, $show_category_images, $has_price_control;
     public $maximum_difference_at_closing;
-    public array $frontDesks = [], $paymentMethods = [], $deskPaymentMethods = [], $saleJournals = [], $invoiceJournals = [], $unitPrice = [];
+    public array $restaurants = [], $paymentMethods = [], $deskPaymentMethods = [], $saleJournals = [], $invoiceJournals = [], $unitPrice = [];
 
-    public function mount(FrontDesk $front, $setting){
-        $this->front = $front;
-        $this->setting = $setting;
-        $setting = DeskSetting::isDesk($front->id)->first();
-        $this->has_automatically_validate_order = $setting->has_automatically_validate_order;
-        $this->has_maximum_difference_at_closing = $setting->has_maximum_difference_at_closing;
-        $this->has_stripe_payment_terminal = $setting->has_stripe_payment_terminal;
-        $this->has_paytm_payment_terminal = $setting->has_paytm_payment_terminal;
-        $this->show_property_images = $setting->show_property_images;
-        $this->show_category_images = $setting->show_category_images;
-        $this->has_price_control = $setting->has_price_control;
+    public function mount($pos = null, $setting = null){
+        $this->pos = current_company()->restaurants()->first();
+        $this->setting = $this->pos->setting;
+        $setting = $this->setting;
+        // $this->has_automatically_validate_order = $setting->has_automatically_validate_order;
+        // $this->has_maximum_difference_at_closing = $setting->has_maximum_difference_at_closing;
+        // $this->has_stripe_payment_terminal = $setting->has_stripe_payment_terminal;
+        // $this->has_paytm_payment_terminal = $setting->has_paytm_payment_terminal;
+        // $this->show_property_images = $setting->show_property_images;
+        // $this->show_category_images = $setting->show_category_images;
+        // $this->has_price_control = $setting->has_price_control;
         // $this->setting = $setting->setting;
 
 
 
-        $this->frontDesks = toSelectOptions(FrontDesk::isCompany(current_company()->id)->get(), 'id', 'name');
+        $this->restaurants = toSelectOptions(Pos::isCompany(current_company()->id)->get(), 'id', 'name');
         $paymentMethods = [
-            ['id' => 'cash', 'label' => $this->front->setting],
+            ['id' => 'cash', 'label' => $this->pos->setting],
             ['id' => 'card', 'label' => 'Card'],
             ['id' => 'm-pesa', 'label' => 'M-Pesa'],
         ];
@@ -122,7 +122,7 @@ class FrontDeskSetting extends AppSetting
     public function save(){
         // $this->validate();
 
-        $setting = DeskSetting::isDesk($this->front->id)->first();
+        $setting = PosPosSetting::isDesk($this->pos->id)->first();
         $setting->update([
             'has_automatically_validate_order' => $this->has_automatically_validate_order,
             'has_maximum_difference_at_closing' => $this->has_maximum_difference_at_closing,

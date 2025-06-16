@@ -26,4 +26,10 @@ class PosSetting extends Model
     public function pos() {
         return $this->belongsTo(Pos::class, 'pos_id', 'id');
     }
+    
+    // Get Pos
+    public function settings() {
+        return $this->hasOne(PosSetting::class, 'pos_id', 'id');
+    }
+
 }

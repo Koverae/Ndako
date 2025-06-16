@@ -50,6 +50,19 @@
             </div>
             <!-- Channel Manager End -->
 
+            <!-- Restaurant -->
+            <div class="cursor-pointer tab {{ $this->view == 'restaurant' ? 'selected' : '' }}" wire:click="changePanel('restaurant')">
+                <!-- App Icon -->
+                <div class="icon d-none d-md-block">
+                    <img src="{{ asset('assets/images/apps/restaurant.png')}}" alt="">
+                </div>
+                <!-- App Name -->
+                <span class="app_name">
+                    Restaurant
+                </span>
+            </div>
+            <!-- Restaurant End -->
+
         </div>
 
         <!-- Right Sidebar -->
@@ -60,6 +73,8 @@
             <livewire:properties::settings.property-setting :setting="settings()" />
             @elseif($view == 'channel-manager')
             <livewire:channelmanager::settings.channel-manager-setting :setting="settings()" />
+            @elseif($view == 'restaurant')
+            <livewire:pos::settings.pos-setting />
             @endif
         </div>
     </div>

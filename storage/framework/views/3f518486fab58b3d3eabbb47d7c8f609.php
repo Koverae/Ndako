@@ -65,6 +65,19 @@ if (isset($__slots)) unset($__slots);
             </div>
             <!-- Channel Manager End -->
 
+            <!-- Restaurant -->
+            <div class="cursor-pointer tab <?php echo e($this->view == 'restaurant' ? 'selected' : ''); ?>" wire:click="changePanel('restaurant')">
+                <!-- App Icon -->
+                <div class="icon d-none d-md-block">
+                    <img src="<?php echo e(asset('assets/images/apps/restaurant.png')); ?>" alt="">
+                </div>
+                <!-- App Name -->
+                <span class="app_name">
+                    Restaurant
+                </span>
+            </div>
+            <!-- Restaurant End -->
+
         </div>
 
         <!-- Right Sidebar -->
@@ -111,6 +124,23 @@ $__split = function ($name, $params = []) {
 [$__name, $__params] = $__split('channelmanager::settings.channel-manager-setting', ['setting' => settings()]);
 
 $__html = app('livewire')->mount($__name, $__params, 'lw-80489791-3', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+            <?php elseif($view == 'restaurant'): ?>
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('pos::settings.pos-setting', []);
+
+$__html = app('livewire')->mount($__name, $__params, 'lw-80489791-4', $__slots ?? [], get_defined_vars());
 
 echo $__html;
 
