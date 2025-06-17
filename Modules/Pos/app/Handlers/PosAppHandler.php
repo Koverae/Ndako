@@ -6,6 +6,7 @@ use Modules\App\Handlers\AppHandler;
 use Modules\ChannelManager\Models\Channel\Channel;
 use Modules\Pos\Models\Pos\Pos;
 use Modules\Pos\Models\Pos\PosSetting;
+use Modules\RevenueManager\Models\Accounting\Journal;
 
 class PosAppHandler extends AppHandler{
 
@@ -39,6 +40,11 @@ class PosAppHandler extends AppHandler{
             'company_id' => $pos->company_id,
             'pos_id' => $pos->id,
         ]);
+
+        // Set Payment Methods
+        $paymentMethods = Journal::whereNotIn('type', ['miscellaneous', 'sale', 'purchase', 'paystack'])->isCompany(current_company()->id)->get();
+        $pos->setting->payment_methods = $paymentMethods->pluck('id')->toArray();
+        $pos->setting->save();
     }
 
 }

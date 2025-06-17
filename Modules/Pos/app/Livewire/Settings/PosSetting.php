@@ -10,6 +10,7 @@ use Modules\App\Livewire\Components\Settings\BoxInput;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Attributes\On;
 use Modules\Pos\Models\Pos\Pos;
 use Modules\Pos\Models\Pos\PosSetting as PosPosSetting;
@@ -18,23 +19,24 @@ use Modules\RevenueManager\Models\Accounting\Journal;
 class PosSetting extends AppSetting
 {
     public $pos, $setting;
-    public bool $activeDesk = true, $has_automatically_validate_order, $has_maximum_difference_at_closing = false, $has_stripe_payment_terminal, $has_paytm_payment_terminal, $show_property_images, $show_category_images, $has_price_control;
-    public $maximum_difference_at_closing, $selectedPaymentMethod;
-    public array $restaurants = [], $paymentMethods = [], $deskPaymentMethods = [], $saleJournals = [], $invoiceJournals = [], $unitPrice = [];
+    public bool $activeDesk = true, $has_automatically_validate_order, $has_maximum_difference_at_closing = false, $has_stripe_payment_terminal, $has_paytm_payment_terminal, $show_product_images, $show_category_images, $has_price_control, $has_employee_login = false;
+    public $maximum_difference_at_closing = 0, $selectedPaymentMethod, $product_prices='tax-included';
+    public array $restaurants = [], $paymentMethods = [], $deskPaymentMethods = [], $saleJournals = [], $invoiceJournals = [], $productPrice = [];
 
     public function mount($pos = null, $setting = null){
         $this->pos = current_company()->restaurants()->first();
         $setting = $this->pos->setting;
         $this->setting = $setting;
         $this->deskPaymentMethods = $setting->payment_methods ?? [];
-        // $this->has_automatically_validate_order = $setting->has_automatically_validate_order;
-        // $this->has_maximum_difference_at_closing = $setting->has_maximum_difference_at_closing;
-        // $this->has_stripe_payment_terminal = $setting->has_stripe_payment_terminal;
-        // $this->has_paytm_payment_terminal = $setting->has_paytm_payment_terminal;
-        // $this->show_property_images = $setting->show_property_images;
-        // $this->show_category_images = $setting->show_category_images;
-        // $this->has_price_control = $setting->has_price_control;
-        // $this->maximum_difference_at_closing = $setting->maximum_difference_at_closing;
+        $this->has_automatically_validate_order = $setting->has_automatically_validate_order;
+        $this->has_maximum_difference_at_closing = $setting->has_maximum_difference_at_closing;
+        $this->has_stripe_payment_terminal = $setting->has_stripe_payment_terminal;
+        $this->has_paytm_payment_terminal = $setting->has_paytm_payment_terminal;
+        $this->show_product_images = $setting->show_product_images;
+        $this->show_category_images = $setting->show_category_images;
+        $this->has_price_control = $setting->has_price_control;
+        $this->maximum_difference_at_closing = $setting->maximum_difference_at_closing;
+        $this->product_prices = $setting->product_prices;
         // $this->activeDesk = $setting->active_desk;
 
 
@@ -42,21 +44,15 @@ class PosSetting extends AppSetting
         $this->restaurants = toSelectOptions(Pos::isCompany(current_company()->id)->get(), 'id', 'name');
         $paymentMethods = Journal::whereNotIn('type', ['miscellaneous', 'sale', 'purchase'])->isCompany(current_company()->id)->get();
         $this->paymentMethods = toSelectOptions($paymentMethods, 'id', 'name');
-        // $deskPaymentMethods = [
-        //     ['id' => 'cash', 'label' => 'Cash'],
-        //     ['id' => 'card', 'label' => 'Card'],
-        //     ['id' => 'm-pesa', 'label' => 'M-Pesa'],
-        // ];
-        // $this->deskPaymentMethods = toSelectOptions($deskPaymentMethods, 'id', 'label');
 
         $this->saleJournals = toSelectOptions(Journal::isType('sale')->isCompany(current_company()->id)->get(), 'id', 'name');
         $this->invoiceJournals = toSelectOptions(Journal::isType('sale')->isCompany(current_company()->id)->get(), 'id', 'name');
 
-        $unitPrice = [
-            ['id' => 'included', 'label' => 'Tax-included Price'],
-            ['id' => 'excluded', 'label' => 'Tax-excluded Price'],
+        $productPrice = [
+            ['id' => 'tax-included', 'label' => 'Tax Included Price'],
+            ['id' => 'tax-excluded', 'label' => 'Tax Excluded Price'],
         ];
-        $this->unitPrice = toSelectOptions($unitPrice, 'id', 'label');
+        $this->productPrice = toSelectOptions($productPrice, 'id', 'label');
 
     }
 
@@ -66,8 +62,8 @@ class PosSetting extends AppSetting
             Block::make('front-desk', __('Front Desk'))->component('app::blocks.templates.pos-header'),
             Block::make('payments', __('Payments')),
             Block::make('interface', __('Front Desk Interface')),
-            Block::make('accounting', __('Accounting')),
-            Block::make('sales', __('Sales')),
+            // Block::make('accounting', __('Accounting')),
+            // Block::make('sales', __('Sales')),
             Block::make('pricing', __('Pricing')),
         ];
     }
@@ -87,7 +83,7 @@ class PosSetting extends AppSetting
             Box::make('desk-pod', "Desk Pods", '', "Sales are reported to the following desk pod.", 'sales', false, "", null, "A Desk Pod is a small, agile team or unit operating at the front desk. Each pod has defined roles, responsibilities, and performance metrics, designed to ensure smooth operations and enable clear tracking of productivity."),
             // Pricing
             Box::make('price-control', "Price Control", 'has_price_control', "Restrict price modification to managers.", 'pricing', true, "", null, "Only users with Manager access rights for Front Desk app can modify the room/unit prices on orders."),
-            Box::make('room-price', "Room/Unit Prices", '', "Room/Unit prices on receipts", 'pricing', false, "", null),
+            Box::make('room-price', "Product Prices", '', "Product prices on receipts", 'pricing', false, "", null),
         ];
     }
 
@@ -96,13 +92,13 @@ class PosSetting extends AppSetting
         return [
             BoxInput::make('payment-method', "", 'tag', 'selectedPaymentMethod', 'payments', '', false, ['options' => $this->paymentMethods, 'data' => $this->deskPaymentMethods, 'action' => 'addPaymentMethod', 'delete' => 'removePaymentMethod'])->component('app::blocks.boxes.input.tag.journal-payment'),
 
-            BoxInput::make('maximum-difference', "", 'price', 'maximum_difference', 'maximum-difference', '', false, [], $this->has_maximum_difference_at_closing)->component('app::blocks.boxes.input.depends'),
-            BoxInput::make('hide-image', "Show room/unit images", 'tag', 'show_property_images', 'hide-pictures', '', false, [])->component('app::blocks.boxes.input.checkbox.simple'),
-            BoxInput::make('hide-image', "Show room/unit images", 'tag', 'show_category_images', 'hide-pictures', '', false, [])->component('app::blocks.boxes.input.checkbox.simple'),
+            BoxInput::make('maximum-difference', "", 'price', 'maximum_difference_at_closing', 'maximum-difference', '', false, [], $this->has_maximum_difference_at_closing)->component('app::blocks.boxes.input.depends'),
+            BoxInput::make('hide-image', "Show products images", 'tag', 'show_product_images', 'hide-pictures', '', false, [])->component('app::blocks.boxes.input.checkbox.simple'),
+            BoxInput::make('hide-image', "Show categories images", 'tag', 'show_category_images', 'hide-pictures', '', false, [])->component('app::blocks.boxes.input.checkbox.simple'),
             BoxInput::make('default-order-journal', "Orders", 'select', 'order_journal_id', 'default-journal', '', false, $this->saleJournals),
             BoxInput::make('default-invoice-journal', "Invoices", 'select', 'invoice_journal_id', 'default-journal', '', false, $this->invoiceJournals),
             BoxInput::make('desk-pods', "", 'select', 'payment_method', 'desk-pod', '', false, $this->invoiceJournals),
-            BoxInput::make('unit-price', "", 'select', 'unit_price_receipt', 'room-price', '', false, $this->unitPrice),
+            BoxInput::make('unit-price', "", 'select', 'product_prices', 'room-price', '', false, $this->productPrice),
         ];
     }
 
@@ -178,23 +174,31 @@ class PosSetting extends AppSetting
     public function save(){
         // $this->validate();
 
-        $setting = PosPosSetting::isDesk($this->pos->id)->first();
+        $setting = PosPosSetting::isPos($this->pos->id)->first();
         $setting->update([
             'has_automatically_validate_order' => $this->has_automatically_validate_order,
             'has_maximum_difference_at_closing' => $this->has_maximum_difference_at_closing,
+            'maximum_difference_at_closing' => $this->maximum_difference_at_closing,
             'has_stripe_payment_terminal' => $this->has_stripe_payment_terminal,
             'has_paytm_payment_terminal' => $this->has_paytm_payment_terminal,
-            'show_property_images' => $this->show_property_images,
+            'show_product_images' => $this->show_product_images,
             'show_category_images' => $this->show_category_images,
             'has_price_control' => $this->has_price_control,
+            'has_employee_login' => $this->has_employee_login,
         ]);
         $setting->save();
 
 
-        cache()->forget('settings');
-
         // notify()->success('Updates saved!');
         $this->dispatch('undo-change');
+
+        LivewireAlert::title('Updates saved!')
+        ->text('Your updates have been saved.')
+        ->success()
+        ->position('top-end')
+        ->timer(4000)
+        ->toast()
+        ->show();
     }
 
     public function updated(){

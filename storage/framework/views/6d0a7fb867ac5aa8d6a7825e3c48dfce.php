@@ -3,23 +3,7 @@
     <?php $__env->startSection('styles'); ?>
     <style>
         /* Custom animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .animate-bounce {
-                    animation: bounce 2s infinite;
-        }
-        .bg-gradient-indigo-purple {
-            background: linear-gradient(to right, #4f46e5, #6b21a8); /* Indigo 600 to Purple 700 */
-        }
+
     </style>
     <?php $__env->stopSection(); ?>
 
@@ -141,120 +125,90 @@
         <!-- Lock Screen -->
 
         <!-- Navbar -->
-        <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky">
+        <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky dark:bg-gray-800">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-
-                <!-- Logo -->
                 <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
                     <a href="">
-                        <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="navbar-brand-image">
+                        <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="navbar-brand-image normal">
+                        <img src="<?php echo e(asset('assets/images/logo/ndako-white.png')); ?>" alt="Ndako Logo" class="navbar-brand-image dark">
                     </a>
                 </h1>
-                <!-- Logo End -->
-
-                <!-- Navbar Buttons -->
                 <div class="flex-row navbar-nav order-md-last">
                     <div class="d-md-flex d-flex">
-                        <!-- Translate -->
                         <div class="nav-item dropdown d-md-flex me-3">
-                            <a href="#" class="px-0 nav-link" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                            <a href="#" class="px-0 nav-link text-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-toggle="tooltip" data-bs-placement="bottom">
                                 <i class="bi bi-translate" style="font-size: 16px;"></i>
                             </a>
                         </div>
-                        <!-- Translate End -->
-
-                        <!-- User's Avatar -->
                         <div class="nav-item dropdown">
                             <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
                                 <span class="avatar avatar-sm" style="background-image: url(<?php echo e(Storage::url('avatars/' . auth()->user()->avatar)); ?>)"></span>
                             </a>
-                            <div class="dropdown-menu p-0 pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
+                            <div class="dropdown-menu dark-menu p-0 pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
                                 <div class="border-bottom p-2 mb-2 pb-3">
-                                    <span class="btn pos-customer-screen btn-lg w-100 text-center">
-                                        <i class=" fas fa-desktop"></i>
+                                    <span class="btn pos-customer-screen btn-lg w-100 text-center dark:bg-gray-700 dark:text-gray-200">
+                                        <i class="fas fa-desktop"></i>
                                     </span>
                                 </div>
                                 <div class="menu-items p-2 rounded">
-                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
-                                        <?php echo e(__('Swith to Dark Mode')); ?>
-
+                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1 toggle-theme">
+                                        <span class="theme-label"><?php echo e(__('Switch to Dark Mode')); ?></span>
                                     </span>
-                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                    <span class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1 dark:text-gray-200">
                                         <?php echo e(__('Cash In/Out')); ?>
 
                                     </span>
-                                    <span wire:click="goToBackend" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                    <span wire:click="goToBackend" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1 dark:text-gray-200">
                                         <?php echo e(__('Backend')); ?>
 
                                     </span>
-                                    <span wire:click="closeRegister" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1">
+                                    <span wire:click="closeRegister" class="dropdown-item cursor-pointer fs-4 kover-navlink rounded-1 dark:text-gray-200">
                                         <?php echo e(__('Close Register')); ?>
 
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        <!-- User's Avatar End -->
                     </div>
                 </div>
-                <!-- Navbar Buttons End -->
-
-                <!-- Navbar Menu -->
                 <div class="collapse navbar-collapse" id="navbar-menu">
                     <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
                         <ul class="navbar-nav">
-                            <!-- Navbar Menu -->
                             <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
-
                                 <li class="nav-item cursor-pointer" data-turbolinks>
-                                    <a class="nav-link kover-navlink  <?php echo e($interface == 'tables' ? 'selected' : ''); ?>" wire:click="switchInterface('tables')" style="margin-right: 5px;">
-                                    <span class="nav-link-title">
-                                        <?php echo e(__('Tables')); ?>
-
-                                    </span>
+                                    <a class="nav-link kover-navlink <?php echo e($interface == 'tables' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('tables')" style="margin-right: 5px;">
+                                        <span class="nav-link-title"><?php echo e(__('Tables')); ?></span>
                                     </a>
                                 </li>
-
                                 <li class="nav-item cursor-pointer" data-turbolinks>
-                                    <a class="nav-link kover-navlink <?php echo e($interface == 'register' ? 'selected' : ''); ?>" wire:click="switchInterface('register')" style="margin-right: 5px;">
-                                    <span class="nav-link-title">
-                                        <?php echo e(__('Register')); ?>
-
-                                    </span>
+                                    <a class="nav-link kover-navlink <?php echo e($interface == 'register' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('register')" style="margin-right: 5px;">
+                                        <span class="nav-link-title"><?php echo e(__('Register')); ?></span>
                                     </a>
                                 </li>
-
                                 <li class="nav-item cursor-pointer" data-turbolinks>
-                                    <a class="nav-link kover-navlink <?php echo e($interface == 'orders' ? 'selected' : ''); ?>" wire:click="switchInterface('orders')" style="margin-right: 5px;">
-                                    <span class="nav-link-title">
-                                        <?php echo e(__('Orders')); ?>
-
-                                    </span>
+                                    <a class="nav-link kover-navlink <?php echo e($interface == 'orders' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('orders')" style="margin-right: 5px;">
+                                        <span class="nav-link-title"><?php echo e(__('Orders')); ?></span>
                                     </a>
                                 </li>
-
                                 <!--[if BLOCK]><![endif]--><?php if($selectedTable): ?>
                                 <li class="nav-item" data-turbolinks>
-                                    <span class="badge rounded-pill bg-info text-white fs-4 cursor-pointer fw-bolder text-truncate">
+                                    <span class="badge rounded-pill bg-info text-white fs-4 cursor-pointer fw-bolder text-truncate dark:bg-blue-700">
                                         <?php echo e($selectedTable->table_name ?? __('Direct Sale')); ?>
 
                                     </span>
                                 </li>
                                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-
                             </div>
-                            <!-- Navbar Menu -->
                         </ul>
                     </div>
                 </div>
-                <!-- Navbar Menu End -->
-
             </div>
-
         </nav>
+
+
         <!-- Regiter -->
         <div class="row <?php echo e($interface == 'register' ? '' : 'd-none'); ?>">
             <!-- Product Section -->
@@ -614,68 +568,53 @@
         <!-- Payment -->
 
         <!-- Tables -->
-        <div class="table-container bg-white <?php echo e($interface == 'tables' ? '' : 'd-none'); ?>" style="height: 100vh;">
-                <!-- Control Panel -->
-                <div class="gap-3 px-3 table-navbar d-flex flex-column gap-lg-1 d-print-none">
-                    <div class="gap-5 table-navbar-main p-2 d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
-                        <!-- Breadcrumbs -->
-                        <div class="gap-1 table-navbar-left d-flex align-items-center order-0">
-                            <button wire:click="newOrder" class="new-order btn btn-primary fs-3 btn-lg lh-lg">
-                                <i class="bi bi-plus fs-3"></i> <span class="d-none d-lg-flex">New Order</span>
-                            </button>
-                        </div>
+        <div class="table-container bg-white <?php echo e($interface == 'tables' ? '' : 'd-none'); ?> dark:bg-gray-800" style="height: 100vh;">
+            <div class="gap-3 px-3 table-navbar d-flex flex-column gap-lg-1 d-print-none">
+                <div class="gap-5 table-navbar-main p-2 d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
+                    <div class="gap-1 table-navbar-left d-flex align-items-center order-0">
+                        <button wire:click="newOrder" class="new-order btn btn-primary fs-3 btn-lg lh-lg dark:bg-indigo-600">
+                            <i class="bi bi-plus fs-3"></i> <span class="d-none d-lg-flex">New Order</span>
+                        </button>
+                    </div>
+                    <div id="actions" class="order-2 gap-2 d-inline-flex rounded-2 table-navbar-actions d-flex align-items-center justify-content-between order-lg-1">
+                        <div class="gap-3 d-flex align-items-center">
+                            <div class="table-navbar-buttons align-items-center">
+                                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <span wire:click="changeFloorPlan('<?php echo e($plan->id); ?>')" class="w-auto gap-1 k_switch_view fs-3 d-lg-inline-block btn btn-secondary <?php echo e($plan->id == $selectedPlanId ? 'active' : ''); ?> k-list dark:bg-gray-800 dark:text-gray-200">
+                                    <?php echo e($plan->name); ?>
 
-                        <div id="actions" class="order-2 gap-2 d-inline-flex rounded-2 table-navbar-actions d-flex align-items-center justify-content-between order-lg-1 ">
-
-                            <div class="gap-3 d-flex align-items-center">
-                                <div class="table-navbar-buttons align-items-center">
-
-                                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <span wire:click="changeFloorPlan('<?php echo e($plan->id); ?>')" class="w-auto gap-1 k_switch_view fs-3 d-lg-inline-block btn btn-secondary <?php echo e($plan->id == $selectedPlanId ? 'active' : ''); ?> k-list">
-                                        <?php echo e($plan->name); ?>
-
-                                    </span>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-
-                                    <!-- Action Buttons -->
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex-wrap order-3 align-items-end table-navbar-left d-flex flex-md-wrap align-items-center justify-content-end gap-l-1 gap-xl-5 order-lg-2 flex-grow-1">
-                            <!-- Display panel buttons -->
-                            <div class="table-navbar-buttons d-print-none d-xl-inline-flex btn-group">
-                                <!-- Button view -->
-                                    
-
+                                </span>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="table-section row overflow-y-auto p-5 h-100">
-
-                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions->where('id', $selectedPlanId)->first()->tables; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $table): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="floor col-md-3">
-                        <div class="floor-table p-0 rounded flex-column cursor-pointer justify-content-between position-absolute">
-                            <div wire:click="selectTable('<?php echo e($table->id); ?>')" class="info <?php echo e($selectedTable?->id == $table->id ? 'active' : ''); ?> w-100 h-100 overflow-hidden ">
-                                <div class="label top-50 start-50 fw-bolder position-absolute fs-3 translate-middle">
-                                    <?php echo e($table->table_name); ?>
-
-                                    <br>
-                                    <small><?php echo e(inverseSlug($table->status)); ?></small>
-                                </div>
-                            </div>
-                            <!--[if BLOCK]><![endif]--><?php if($table->status == 'occupied'): ?>
-                            <button wire:click="releaseTable('<?php echo e($table->id); ?>')" class="btn btn-danger btn-sm position-absolute bottom-0 end-0 m-1">
-                                Release
-                            </button>
-                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                    <div class="flex-wrap order-3 align-items-end table-navbar-left d-flex flex-md-wrap align-items-center justify-content-end gap-l-1 gap-xl-5 order-lg-2 flex-grow-1">
+                        <div class="table-navbar-buttons d-print-none d-xl-inline-flex btn-group">
                         </div>
                     </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-
                 </div>
+            </div>
+            <div class="table-section  row overflow-y-auto p-5 h-100 ">
+                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions->where('id', $selectedPlanId)->first()->tables; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $table): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <div class="floor col-md-3">
+                    <div class="floor-table p-0 rounded flex-column cursor-pointer justify-content-between position-absolute dark:bg-gray-700">
+                        <div wire:click="selectTable('<?php echo e($table->id); ?>')" class="info table-info <?php echo e($selectedTable?->id == $table->id ? 'active' : ''); ?> w-100 h-100 overflow-hidden dark:text-gray-200">
+                            <div class="label top-50 start-50 fw-bolder position-absolute fs-3 translate-middle">
+                                <?php echo e($table->table_name); ?>
+
+                                <br>
+                                <small><?php echo e(inverseSlug($table->status)); ?></small>
+                            </div>
+                        </div>
+                        <!--[if BLOCK]><![endif]--><?php if($table->status == 'occupied'): ?>
+                        <button wire:click="releaseTable('<?php echo e($table->id); ?>')" class="btn btn-danger btn-sm position-absolute bottom-0 end-0 m-1 dark:bg-red-800 dark:border-red-800">
+                            Release
+                        </button>
+                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                    </div>
+                </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+            </div>
         </div>
         <!-- Tables -->
 
@@ -768,77 +707,110 @@
     </main>
 
 <script>
-function calculatorComponent($wire) {
-    return {
-        input: '',
-        keys: [
-            { label: '1', value: '1' },
-            { label: '2', value: '2' },
-            { label: '3', value: '3' },
-            { label: 'Qty', value: 'qty', class: 'btn-light', mode: true },
-            { label: '4', value: '4' },
-            { label: '5', value: '5' },
-            { label: '6', value: '6' },
-            { label: 'Disc', value: 'discount', icon: 'bi bi-percent', class: 'btn-light', mode: true },
-            { label: '7', value: '7' },
-            { label: '8', value: '8' },
-            { label: '9', value: '9' },
-            { label: 'Price', value: 'price', class: 'btn-light', mode: true },
-            { label: '÷', value: '/', style: 'background-color: #F5D976;' },
-            { label: '0', value: '0' },
-            { label: '.', value: '.', style: 'background-color: #F5D7CB;' },
-            { label: '', value: 'Backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
-        ],
+    function calculatorComponent($wire) {
+        return {
+            input: '',
+            keys: [
+                { label: '1', value: '1' },
+                { label: '2', value: '2' },
+                { label: '3', value: '3' },
+                { label: 'Qty', value: 'qty', class: 'btn-light', mode: true },
+                { label: '4', value: '4' },
+                { label: '5', value: '5' },
+                { label: '6', value: '6' },
+                { label: 'Disc', value: 'discount', icon: 'bi bi-percent', class: 'btn-light', mode: true },
+                { label: '7', value: '7' },
+                { label: '8', value: '8' },
+                { label: '9', value: '9' },
+                { label: 'Price', value: 'price', class: 'btn-light', mode: true },
+                { label: '÷', value: '/', style: 'background-color: #F5D976;' },
+                { label: '0', value: '0' },
+                { label: '.', value: '.', style: 'background-color: #F5D7CB;' },
+                { label: '', value: 'Backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
+            ],
 
-        press(value) {
+            press(value) {
 
-            // Prevent any action if no product is selected
-            if (!$wire.selectedProductId) {
-                return;
-            }
-
-            if (['qty', 'discount', 'price'].includes(value)) {
-                $wire.selectCalculatorMode(value); // Now $wire is defined
-                return;
-            }
-
-            // Handle mapped keys
-            switch (value) {
-                case 'q':
-                    $wire.selectCalculatorMode('qty');
+                // Prevent any action if no product is selected
+                if (!$wire.selectedProductId) {
                     return;
-                case 'p':
-                    $wire.selectCalculatorMode('price');
+                }
+
+                if (['qty', 'discount', 'price'].includes(value)) {
+                    $wire.selectCalculatorMode(value); // Now $wire is defined
                     return;
-                case 'd':
-                    $wire.selectCalculatorMode('discount');
-                    return;
-                case '/':
-                    this.input += '/';
-                    break;
-                case 'Backspace':
-                    this.input = this.input.slice(0, -1);
-                    break;
-                case 'Enter':
-                    // Placeholder for calculation or submission logic
-                    console.log('Enter pressed');
-                    break;
-                default:
-                    if (/^[0-9]$/.test(value) || value === '.') {
-                        this.input += value;
-                    } else {
-                        return; // Ignore unknown keys
-                    }
+                }
+
+                // Handle mapped keys
+                switch (value) {
+                    case 'q':
+                        $wire.selectCalculatorMode('qty');
+                        return;
+                    case 'p':
+                        $wire.selectCalculatorMode('price');
+                        return;
+                    case 'd':
+                        $wire.selectCalculatorMode('discount');
+                        return;
+                    case '/':
+                        this.input += '/';
+                        break;
+                    case 'Backspace':
+                        this.input = this.input.slice(0, -1);
+                        break;
+                    case 'Enter':
+                        // Placeholder for calculation or submission logic
+                        console.log('Enter pressed');
+                        break;
+                    default:
+                        if (/^[0-9]$/.test(value) || value === '.') {
+                            this.input += value;
+                        } else {
+                            return; // Ignore unknown keys
+                        }
+                }
+
+                // Optional: send to Livewire if needed
+                $wire.set('calculatorInput', this.input);
+                $wire.applyCalculatorInput(); // ← Realtime update on each key press
+
+            },
+
+        };
+    }
+// Dark Mode Handling
+    (function () {
+        const html = document.documentElement;
+        const toggleButton = document.querySelector('.toggle-theme');
+        const themeLabel = toggleButton.querySelector('.theme-label');
+
+        // Initialize theme: check localStorage, then system preference, default to light
+        let currentTheme = localStorage.getItem('theme');
+        if (!currentTheme) {
+            currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+        }
+        html.setAttribute('data-theme', currentTheme);
+        themeLabel.textContent = currentTheme === 'dark' ? '<?php echo e(__('Switch to Light Mode')); ?>' : '<?php echo e(__('Switch to Dark Mode')); ?>';
+
+        // Toggle theme on button click
+        toggleButton.addEventListener('click', function () {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            themeLabel.textContent = currentTheme === 'dark' ? '<?php echo e(__('Switch to Light Mode')); ?>' : '<?php echo e(__('Switch to Dark Mode')); ?>';
+        });
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) { // Only apply if user hasn't set a preference
+                currentTheme = e.matches ? 'dark' : 'light';
+                html.setAttribute('data-theme', currentTheme);
+                themeLabel.textContent = currentTheme === 'dark' ? '<?php echo e(__('Switch to Light Mode')); ?>' : '<?php echo e(__('Switch to Dark Mode')); ?>';
             }
+        });
+    })();
 
-            // Optional: send to Livewire if needed
-            $wire.set('calculatorInput', this.input);
-            $wire.applyCalculatorInput(); // ← Realtime update on each key press
-
-        },
-
-    };
-}
 </script>
 
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/livewire/interface/home.blade.php ENDPATH**/ ?>

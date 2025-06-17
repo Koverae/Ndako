@@ -34,8 +34,9 @@ class OpeningControlModal extends ModalComponent
             // 'opening_date' => 'required|date',
         ]);
 
+        $posId = $this->pos->id;
         // Check if there is already an active session for this POS
-        $existingSession = $this->pos->sessions()->isPosActive()->first();
+        $existingSession = $this->pos->sessions()->isPosActive($posId)->first();
 
         if ($existingSession) {
             // Use the existing active session

@@ -49,7 +49,7 @@ unset($__defined_vars); ?>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
     </select>
     <i class="cursor-pointer bi bi-arrow-right-short fw-bold"></i>
-    
+
     <?php elseif($value->type == 'tag'): ?>
     <select wire:model="<?php echo e($value->model); ?>" id="<?php echo e($value->model); ?>" class="k-input w-75">
         <option value=""></option>
@@ -58,7 +58,7 @@ unset($__defined_vars); ?>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
     </select>
     <i class="cursor-pointer bi bi-arrow-right-short fw-bold"></i>
-    
+
     <span class="mt-3 d-block">
         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $data['data']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <a class="cursor-pointer badge rounded-pill k_web_settings_users">
@@ -77,20 +77,21 @@ unset($__defined_vars); ?>
 
     <?php elseif($value->type == 'price'): ?>
     <div class="mt-3 ps-3">
-        <!--[if BLOCK]><![endif]--><?php if($this->setting->default_currency_position == 'prefix'): ?>
-        <span><?php echo e($this->setting->currency->symbol); ?></span>
+        <!--[if BLOCK]><![endif]--><?php if(settings()->default_currency_position == 'prefix'): ?>
+        <span><?php echo e(settings()->currency->symbol); ?></span>
         <input type="text" class="k-input">
         <?php else: ?>
         <input type="text" class="k-input">
-        <span><?php echo e($this->setting->currency->symbol); ?></span>
+        <span><?php echo e(settings()->currency->symbol); ?></span>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
     </div>
-    
+
     <?php else: ?>
     <input type="<?php echo e($value->type); ?>" wire:model="<?php echo e($value->model); ?>" class="w-auto k-input" placeholder="<?php echo e($value->placeholder); ?>" id="<?php echo e($value->model); ?>">
     <i class="cursor-pointer bi bi-arrow-right-short fw-bold"></i>
     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-    
+
     
 </div>
-<?php endif; ?><!--[if ENDBLOCK]><![endif]--><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/blocks/boxes/input/depends.blade.php ENDPATH**/ ?>
+<?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/blocks/boxes/input/depends.blade.php ENDPATH**/ ?>
