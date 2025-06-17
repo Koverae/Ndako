@@ -12,6 +12,10 @@ class PosSetting extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'payment_methods' => 'array',
+    ];
+
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
@@ -26,7 +30,7 @@ class PosSetting extends Model
     public function pos() {
         return $this->belongsTo(Pos::class, 'pos_id', 'id');
     }
-    
+
     // Get Pos
     public function settings() {
         return $this->hasOne(PosSetting::class, 'pos_id', 'id');

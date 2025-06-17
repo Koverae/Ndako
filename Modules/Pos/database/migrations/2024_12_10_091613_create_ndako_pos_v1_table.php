@@ -39,6 +39,7 @@ return new class extends Migration
             $table->boolean('is_restaurant_bar')->default(false);
             // Mobile self-order & Kiosk
             $table->enum('self_ordering', ['disable', 'qr_menu', 'qr_menu_ordering', 'kiosk'])->default('qr_menu');
+            $table->json('payment_methods')->nullable();
             // If self-order is qr_menu, qr_menu_ordering or kiosk
             $table->unsignedBigInteger('default_language_id')->nullable();
             $table->unsignedBigInteger('available_language_id')->nullable();

@@ -36,7 +36,7 @@ unset($__defined_vars); ?>
 
 <div class="setting_block">
     <div class="gap-5 p-3 app_settings_header d-md-flex d-block">
-        <h3>Restaurant</h3>
+        <h3><?php echo e(__('Restaurant')); ?></h3>
         <!-- Box Input -->
         <div class="gap-4 d-flex">
             <select id="Fiscal Localization" class="k-input">
@@ -45,15 +45,16 @@ unset($__defined_vars); ?>
                 <option value="<?php echo e($value); ?>" <?php echo e($this->pos->id == $value ? 'selected' : ''); ?>><?php echo e($text); ?></option>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
             </select>
-            <span class="cursor-pointer text-primary font-weight-bold" style="font-weight: 600;"><i class="bi bi-plus-circle"></i> New Front Desk</span>
+            <a href="<?php echo e(route('pos.create')); ?>" class="cursor-pointer text-primary font-weight-bold" style="font-weight: 600;"><i class="bi bi-plus-circle"></i> New Restaurant</a>
         </div>
         <!-- Box Input End -->
     </div>
+    <!--[if BLOCK]><![endif]--><?php if($this->pos->activeSession): ?>
     <div class="mt-2 alert alert-warning">
         A session is currently opened for this Front Desk. Some settings can only be changed after the session is closed.
         <span class="cursor-pointer text-primary" style="font-weight: 600;" wire:click="closeSession">Click here to close session</span>
     </div>
-    
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 </div>
 
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/components/blocks/templates/pos-header.blade.php ENDPATH**/ ?>

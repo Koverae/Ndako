@@ -82,7 +82,7 @@ unset($__defined_vars); ?>
             </div>
 
             <div class="d-flex flex-row justify-content-between text-truncate mb-1">
-                <span><?php echo e(__('Balance')); ?></span>
+                <span><?php echo e(__('Closing Balance')); ?></span>
                 <span><?php echo e(format_currency($lastSession->closing_balance ?? 0)); ?></span>
             </div>
 

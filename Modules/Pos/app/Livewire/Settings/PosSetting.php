@@ -9,6 +9,7 @@ use Modules\App\Livewire\Components\Settings\BoxAction;
 use Modules\App\Livewire\Components\Settings\BoxInput;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Modules\Pos\Models\Pos\Pos;
 use Modules\Pos\Models\Pos\PosSetting as PosPosSetting;
@@ -18,13 +19,14 @@ class PosSetting extends AppSetting
 {
     public $pos, $setting;
     public bool $activeDesk = true, $has_automatically_validate_order, $has_maximum_difference_at_closing = false, $has_stripe_payment_terminal, $has_paytm_payment_terminal, $show_property_images, $show_category_images, $has_price_control;
-    public $maximum_difference_at_closing;
+    public $maximum_difference_at_closing, $selectedPaymentMethod;
     public array $restaurants = [], $paymentMethods = [], $deskPaymentMethods = [], $saleJournals = [], $invoiceJournals = [], $unitPrice = [];
 
     public function mount($pos = null, $setting = null){
         $this->pos = current_company()->restaurants()->first();
-        $this->setting = $this->pos->setting;
-        $setting = $this->setting;
+        $setting = $this->pos->setting;
+        $this->setting = $setting;
+        $this->deskPaymentMethods = $setting->payment_methods ?? [];
         // $this->has_automatically_validate_order = $setting->has_automatically_validate_order;
         // $this->has_maximum_difference_at_closing = $setting->has_maximum_difference_at_closing;
         // $this->has_stripe_payment_terminal = $setting->has_stripe_payment_terminal;
@@ -32,23 +34,20 @@ class PosSetting extends AppSetting
         // $this->show_property_images = $setting->show_property_images;
         // $this->show_category_images = $setting->show_category_images;
         // $this->has_price_control = $setting->has_price_control;
-        // $this->setting = $setting->setting;
+        // $this->maximum_difference_at_closing = $setting->maximum_difference_at_closing;
+        // $this->activeDesk = $setting->active_desk;
 
 
 
         $this->restaurants = toSelectOptions(Pos::isCompany(current_company()->id)->get(), 'id', 'name');
-        $paymentMethods = [
-            ['id' => 'cash', 'label' => $this->pos->setting],
-            ['id' => 'card', 'label' => 'Card'],
-            ['id' => 'm-pesa', 'label' => 'M-Pesa'],
-        ];
-        $this->paymentMethods = toSelectOptions($paymentMethods, 'id', 'label');
-        $deskPaymentMethods = [
-            ['id' => 'cash', 'label' => 'Cash'],
-            ['id' => 'card', 'label' => 'Card'],
-            ['id' => 'm-pesa', 'label' => 'M-Pesa'],
-        ];
-        $this->deskPaymentMethods = toSelectOptions($deskPaymentMethods, 'id', 'label');
+        $paymentMethods = Journal::whereNotIn('type', ['miscellaneous', 'sale', 'purchase'])->isCompany(current_company()->id)->get();
+        $this->paymentMethods = toSelectOptions($paymentMethods, 'id', 'name');
+        // $deskPaymentMethods = [
+        //     ['id' => 'cash', 'label' => 'Cash'],
+        //     ['id' => 'card', 'label' => 'Card'],
+        //     ['id' => 'm-pesa', 'label' => 'M-Pesa'],
+        // ];
+        // $this->deskPaymentMethods = toSelectOptions($deskPaymentMethods, 'id', 'label');
 
         $this->saleJournals = toSelectOptions(Journal::isType('sale')->isCompany(current_company()->id)->get(), 'id', 'name');
         $this->invoiceJournals = toSelectOptions(Journal::isType('sale')->isCompany(current_company()->id)->get(), 'id', 'name');
@@ -95,7 +94,8 @@ class PosSetting extends AppSetting
     public function inputs() : array
     {
         return [
-            BoxInput::make('payment-method', "", 'tag', 'payment_method', 'payments', '', false, ['options' => $this->paymentMethods, 'data' => $this->deskPaymentMethods]),
+            BoxInput::make('payment-method', "", 'tag', 'selectedPaymentMethod', 'payments', '', false, ['options' => $this->paymentMethods, 'data' => $this->deskPaymentMethods, 'action' => 'addPaymentMethod', 'delete' => 'removePaymentMethod'])->component('app::blocks.boxes.input.tag.journal-payment'),
+
             BoxInput::make('maximum-difference', "", 'price', 'maximum_difference', 'maximum-difference', '', false, [], $this->has_maximum_difference_at_closing)->component('app::blocks.boxes.input.depends'),
             BoxInput::make('hide-image', "Show room/unit images", 'tag', 'show_property_images', 'hide-pictures', '', false, [])->component('app::blocks.boxes.input.checkbox.simple'),
             BoxInput::make('hide-image', "Show room/unit images", 'tag', 'show_category_images', 'hide-pictures', '', false, [])->component('app::blocks.boxes.input.checkbox.simple'),
@@ -116,6 +116,62 @@ class PosSetting extends AppSetting
 
     public function closeSession(){
         $this->activeDesk = false;
+    }
+
+    public function addPaymentMethod()
+    {
+        $this->validate([
+            'selectedPaymentMethod' => 'required|exists:journals,id',
+        ]);
+
+        if (is_null($this->setting)) {
+            // We're on the create page — use array to collect taxes
+            if (in_array($this->selectedPaymentMethod, $this->deskPaymentMethods)) {
+                session()->flash('error', 'This payment method has already been added.');
+                return;
+            }
+
+            $this->deskPaymentMethods[] = $this->selectedPaymentMethod;
+        } else {
+            // We're on the edit page — update the product directly
+            $existingMethods = $this->setting->payment_methods ?? [];
+
+            if (in_array($this->selectedPaymentMethod, $existingMethods)) {
+                session()->flash('error', 'This payment method has already been added to this restaurant.');
+                return;
+            }
+
+            $existingMethods[] = $this->selectedPaymentMethod;
+            $this->setting->payment_methods = $existingMethods;
+            $this->setting->save();
+
+            session()->flash('success', 'Payment method added to restaurant.');
+        }
+
+        $this->selectedPaymentMethod = null; // reset dropdown
+        $this->deskPaymentMethods = $this->setting->payment_methods ?? [];
+
+    }
+    public function removePaymentMethod($methodId)
+    {
+        if (is_null($this->setting)) {
+            // Create mode – work with temporary array
+            $this->deskPaymentMethods = array_filter(
+                $this->deskPaymentMethods,
+                fn ($id) => $id != $methodId
+            );
+        } else {
+            // Edit mode – update the saved product directly
+            $existingMethods = $this->setting->payment_methods ?? [];
+
+            $filtered = array_filter($existingMethods, fn ($id) => $id != $methodId);
+
+            $this->setting->payment_methods = array_values($filtered); // reindex to avoid gaps
+            $this->setting->save();
+
+            $this->deskPaymentMethods = $this->setting->payment_methods ?? [];
+            session()->flash('success', 'Payment method removed from restaurant.');
+        }
     }
 
     #[On('save')]
