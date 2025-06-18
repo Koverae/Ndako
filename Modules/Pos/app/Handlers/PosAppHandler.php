@@ -4,6 +4,8 @@ namespace Modules\Pos\Handlers;
 use App\Models\Company\Company;
 use Modules\App\Handlers\AppHandler;
 use Modules\ChannelManager\Models\Channel\Channel;
+use Modules\Pos\Models\Floor\FloorPlan;
+use Modules\Pos\Models\Floor\Table;
 use Modules\Pos\Models\Pos\Pos;
 use Modules\Pos\Models\Pos\PosSetting;
 use Modules\Pos\Models\Product\Product;
@@ -110,6 +112,54 @@ class PosAppHandler extends AppHandler{
                     ]);
                 }
             }
+
+            // Set Floor Plans and Tables
+
+            $floorPlans = [
+                [
+                    'name' => 'Main Hall',
+                    'tables' => [
+                        ['table_name' => 'T1', 'seats' => 4, 'shape' => 'square', 'status' => 'available'],
+                        ['table_name' => 'T2', 'seats' => 6, 'shape' => 'rectangle', 'status' => 'occupied'],
+                        ['table_name' => 'T3', 'seats' => 2, 'shape' => 'circle', 'status' => 'reserved'],
+                    ]
+                ],
+                [
+                    'name' => 'Terrace',
+                    'tables' => [
+                        ['table_name' => 'T4', 'seats' => 4, 'shape' => 'circle', 'status' => 'available'],
+                        ['table_name' => 'T5', 'seats' => 3, 'shape' => 'hexagon', 'status' => 'out'],
+                    ]
+                ],
+                [
+                    'name' => 'Private Lounge',
+                    'tables' => [
+                        ['table_name' => 'VIP-1', 'seats' => 6, 'shape' => 'octagon', 'status' => 'available'],
+                        ['table_name' => 'VIP-2', 'seats' => 8, 'shape' => 'rectangle', 'status' => 'occupied'],
+                    ]
+                ]
+            ];
+
+            foreach ($floorPlans as $plan) {
+                $floorPlan = FloorPlan::create([
+                    'name' => $plan['name'],
+                    'company_id' => $companyId,
+                    'pos_id' => $pos->id,
+                ]);
+
+                foreach ($plan['tables'] as $table) {
+                    Table::create([
+                        'floor_plan_id' => $floorPlan->id,
+                        'table_name' => $table['table_name'],
+                        'seats' => $table['seats'],
+                        'shape' => $table['shape'],
+                        'status' => $table['status'],
+                        'company_id' => $companyId,
+                        'pos_id' => $pos->id,,
+                    ]);
+                }
+            }
+            
         }
     }
 
