@@ -622,14 +622,14 @@
 
         <!-- Orders -->
         <div class="order-container overflow-y-auto bg-white <?php echo e($interface == 'orders' ? '' : 'd-none'); ?>" style="height: 100vh;">
-            <div class="p-4">
-                <h2 class="text-2xl font-bold mb-4"><?php echo e(__('Order History')); ?></h2>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800"><?php echo e(__('Order History')); ?></h2>
 
                 <!-- Filters -->
-                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600"><?php echo e(__('Status')); ?></label>
-                        <select wire:model="orderStatusFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                        <select wire:model="orderStatusFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="ongoing"><?php echo e(__('Ongoing')); ?></option>
                             <option value="completed"><?php echo e(__('Completed')); ?></option>
@@ -638,15 +638,35 @@
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600"><?php echo e(__('Payment Status')); ?></label>
-                        <select wire:model="paymentStatusFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                        <select wire:model="paymentStatusFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="unpaid"><?php echo e(__('Unpaid')); ?></option>
                             <option value="paid"><?php echo e(__('Paid')); ?></option>
                         </select>
                     </div>
+                    <div class="w-full md:w-1/3">
+                        <label class="text-sm font-medium text-gray-600"><?php echo e(__('Date Range')); ?></label>
+                        <input type="date" wire:model="dateFilter" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                    </div>
+                    <div class="w-full md:w-1/3">
+                        <label class="text-sm font-medium text-gray-600"><?php echo e(__('Search')); ?></label>
+                        <input type="text" wire:model.debounce.500ms="searchQuery" placeholder="<?php echo e(__('Search by ID, customer, or table')); ?>" class="w-full mt-1 rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                    </div>
                 </div>
-                <div class="overflow-x-auto ">
-                    <table class="w-100 bg-white border border-gray-200 rounded-lg shadow-sm">
+
+                <!-- Loading State -->
+                <div wire:loading class="text-center text-gray-500 mb-4">
+                    <svg class="animate-spin h-5 w-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"></path>
+                    </svg>
+                    <?php echo e(__('Loading orders...')); ?>
+
+                </div>
+
+                <!-- Orders Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo e(__('Order ID')); ?></th>
@@ -660,19 +680,19 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                            <tr class="hover:bg-gray-50">
+                            <tr class="hover:bg-gray-50 transition duration-150">
                                 <td class="px-4 py-3 text-sm"><?php echo e($order->receipt_number); ?></td>
                                 <td class="px-4 py-3 text-sm"><?php echo e($order->table->table_name ?? 'Direct Sale'); ?></td>
                                 <td class="px-4 py-3 text-sm"><?php echo e($order->guest->name ?? 'No Guest'); ?></td>
                                 <td class="px-4 py-3 text-sm"><?php echo e(format_currency($order->total_amount + ($order->tax_amount ?? 0))); ?></td>
                                 <td class="px-4 py-3 text-sm">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->status == 'ongoing' ? 'bg-yellow-100 text-yellow-800' : ($order->status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')); ?>">
                                         <?php echo e(ucfirst($order->status)); ?>
 
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->payment_status == 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'); ?>">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->payment_status == 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'); ?>">
                                         <?php echo e(ucfirst($order->payment_status)); ?>
 
                                     </span>
@@ -681,16 +701,37 @@
                                     <?php
                                         $cartData = session("pos_cart_{$pos->id}");
                                     ?>
-
                                     <!--[if BLOCK]><![endif]--><?php if($order->status === 'ongoing' && ($cartData['active_order_id'] ?? null) != $order->id): ?>
-                                        <button wire:click="selectOrder('<?php echo e($order->id); ?>')" class="btn btn-primary btn-sm"><?php echo e(__('Select')); ?></button>
+                                        <button wire:click="selectOrder('<?php echo e($order->id); ?>')" class="btn btn-primary btn-sm relative group transition duration-150 hover:bg-indigo-600" title="<?php echo e(__('Select this order')); ?>">
+                                            <?php echo e(__('Select')); ?>
+
+                                            <span class="absolute hidden group-hover:block -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2"><?php echo e(__('Select this order')); ?></span>
+                                        </button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
-                                    <button wire:click="deleteOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm"><?php echo e(__('Delete')); ?></button>
+                                        <button wire:click="confirmDelete('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm relative group transition duration-150 hover:bg-red-600" title="<?php echo e(__('Delete this order')); ?>">
+                                            <?php echo e(__('Delete')); ?>
+
+                                            <span class="absolute hidden group-hover:block -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2"><?php echo e(__('Delete this order')); ?></span>
+                                        </button>
+                                        <button wire:click="printPreBill('<?php echo e($order-> receipt_number); ?>')" class="btn btn-info btn-sm relative group transition duration-150 hover:bg-blue-600" title="<?php echo e(__('Print pre-bill')); ?>">
+                                            <?php echo e(__('Pre-Bill')); ?>
+
+                                            <span class="absolute hidden group-hover:block -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2"><?php echo e(__('Print pre-bill')); ?></span>
+                                        </button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                                    <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded'): ?>
-                                    <button wire:click="refundOrder('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm"><?php echo e(__('Refund')); ?></button>
+                                    <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded' && $order->payment_status == 'paid'): ?>
+                                        <button wire:click="confirmRefund('<?php echo e($order->id); ?>')" class="btn btn-danger btn-sm relative group transition duration-150 hover:bg-red-600" title="<?php echo e(__('Refund this order')); ?>">
+                                            <?php echo e(__('Refund')); ?>
+
+                                            <span class="absolute hidden group-hover:block -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2"><?php echo e(__('Refund this order')); ?></span>
+                                        </button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                    <button wire:click="showOrderDetails('<?php echo e($order->id); ?>')" class="btn btn-secondary btn-sm relative group transition duration-150 hover:bg-gray-600" title="<?php echo e(__('View order details')); ?>">
+                                        <?php echo e(__('Details')); ?>
+
+                                        <span class="absolute hidden group-hover:block -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2"><?php echo e(__('View order details')); ?></span>
+                                    </button>
                                 </td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -700,6 +741,48 @@
                             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-4">
+                    
+                </div>
+
+                <!-- Confirmation Modal for Delete/Refund -->
+                <div x-data="{ open: false, action: '', orderId: null }" x-show="open" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+                        <h3 class="text-lg font-bold mb-4"><?php echo e(__('Confirm Action')); ?></h3>
+                        <p class="text-sm text-gray-600" x-text="action === 'delete' ? '<?php echo e(__('Are you sure you want to delete this order?')); ?>' : '<?php echo e(__('Are you sure you want to refund this order?')); ?>'"></p>
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button x-on:click="open = false" class="btn btn-secondary btn-sm"><?php echo e(__('Cancel')); ?></button>
+                            <button x-on:click="open = false; $wire.dispatch(action, [orderId])" class="btn btn-danger btn-sm"><?php echo e(__('Confirm')); ?></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Details Modal -->
+                <div x-data="{ detailsOpen: false }" x-show="detailsOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <div class="bg-white rounded-lg p-6 max-w-lg w-full">
+                        <h3 class="text-lg font-bold mb-4"><?php echo e(__('Order Details')); ?></h3>
+                        <div wire:loading wire:target="showOrderDetails" class="text-center text-gray-500">
+                            <svg class="animate-spin h-5 w-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"></path>
+                            </svg>
+                            <?php echo e(__('Loading details...')); ?>
+
+                        </div>
+                        <div x-show="!$wire.loading">
+                            <!-- Placeholder for order details, populated by Livewire -->
+                            <p class="text-sm text-gray-600"><?php echo e(__('Order ID')); ?>: <span wire:model="selectedOrder.receipt_number"></span></p>
+                            <p class="text-sm text-gray-600"><?php echo e(__('Items')); ?>: <span wire:model="selectedOrder.items"></span></p>
+                            <p class="text-sm text-gray-600"><?php echo e(__('Total')); ?>: <span wire:model="selectedOrder.total_amount"></span></p>
+                            <!-- Add more details as needed -->
+                        </div>
+                        <div class="mt-6 flex justify-end">
+                            <button x-on:click="detailsOpen = false" class="btn btn-secondary btn-sm"><?php echo e(__('Close')); ?></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

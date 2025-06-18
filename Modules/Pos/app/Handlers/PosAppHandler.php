@@ -159,7 +159,7 @@ class PosAppHandler extends AppHandler{
                     ]);
                 }
             }
-            
+
         }
     }
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Receipt</title>
+  <link rel="stylesheet" href="assets/css/pos.css" />
+</head>
+<body>
+  <!-- Receipt -->
+  <div class="overflow-hidden text-center pos-receipt-container col-md-6 d-none d-md-flex flex-grow-1 flex-lg-grow-0 user-select-none justify-content-center bg-200">
+    <div class="p-3 m-3 overflow-y-auto bg-white border rounded receipt-block d-inline-block w-50 bg-view text-start">
+      <div class="p-2 pos-receipt">
+        <!-- Logo -->
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <img src="assets/images/logo/ndako.png" alt="Ndako Logo" class="pos-receipt-logo">
+        </div>
+
+        <!-- Company Info -->
+        <div class="d-flex flex-column align-items-center company-info">
+          <span>1234 Main Street, Nairobi</span>
+          <span>Tel: +254 712 345 678</span>
+          <div>-------------------------</div>
+          <div>Guest: John Doe</div>
+          <div>Served by: Jane Smith</div>
+          <div class="receipt-number"><span class="fs-3">GHJKSSHSJJKJS</span></div>
+        </div>
+
+        <!-- Order list -->
+        <div class="overflow-y-auto mt-2 order-container-bg-view flex-grow-1 d-flex flex-column text-start">
+          <ul>
+            <li class="p-2 cursor-pointer orderline lh-sm">
+              <div class="d-flex">
+                <div class="w-75 d-flex gap-2 pe-1 text-truncate">
+                  <span class="qty fw-bolder">2</span>
+                  <span class="name">Grilled Chicken</span>
+                </div>
+                <div class="product-price w-50 text-end">KES 1,000.00</div>
+              </div>
+            </li>
+            <li class="p-2 cursor-pointer orderline lh-sm">
+              <div class="d-flex">
+                <div class="w-75 d-flex gap-2 pe-1 text-truncate">
+                  <span class="qty fw-bolder">1</span>
+                  <span class="name">Coke 500ml</span>
+                </div>
+                <div class="product-price w-50 text-end">KES 150.00</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Separator -->
+        <div class="align-items-center">---------------------------</div>
+
+        <!-- Totals -->
+        <div class="overflow-y-auto order-container-bg-view flex-grow-1 d-flex flex-column text-start">
+          <ul>
+            <li class="p-2 cursor-pointer orderline lh-sm">
+              <div class="d-flex">
+                <div class="w-75 pe-1 text-truncate">Subtotal</div>
+                <div class="w-50 text-end">KES 1,150.00</div>
+              </div>
+            </li>
+            <li class="p-2 cursor-pointer orderline lh-sm">
+              <div class="d-flex">
+                <div class="w-75 pe-1 text-truncate">VAT 16%</div>
+                <div class="w-50 text-end">KES 184.00</div>
+              </div>
+            </li>
+            <li class="p-2 cursor-pointer orderline lh-sm">
+              <div class="d-flex">
+                <div class="w-75 pe-1 text-truncate fw-bold">Total</div>
+                <div class="w-50 text-end fw-bold">KES 1,334.00</div>
+              </div>
+            </li>
+            <li class="p-2 cursor-pointer orderline lh-sm">
+              <div class="d-flex">
+                <div class="w-75 pe-1 text-truncate">Payment</div>
+                <div class="w-50 text-end">KES 1,334.00</div>
+              </div>
+              <ul>
+                <li class="price-per-unit mt-1" style="padding-left: 3px;">Cash: KES 1,334.00</li>
+                <li class="price-per-unit mt-1" style="padding-left: 3px;">Card: KES 0.00</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- QR Code -->
+        <div class="pos-receipt-order-data d-flex mt-2 mb-2 text-center fs-5">
+          <img src="assets/images/default/sample-qrcode.png" style="height: 100px; width: 100px;" alt="">
+          <div class="d-block">
+            <span class="fw-bolder">Need an invoice?</span>
+            <p>Code: yhK2r</p>
+          </div>
+        </div>
+
+        <!-- Order Meta -->
+        <div class="pos-receipt-order-data d-flex mt-2 text-center fs-5 flex-column align-items-center">
+          <p>Powered by <a href="https://ndako.koverae.com" target="_blank" class="fw-bold">Ndako</a></p>
+          <div>05-06-25 13:42</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
