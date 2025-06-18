@@ -142,6 +142,7 @@ class ProductForm extends LightWeightForm
         }
 
         $this->selectedSaleTax = null; // reset dropdown
+        $this->productSaleTaxes = $this->product->sale_taxes;
     }
 
     public function removeSaleTax($taxId)
