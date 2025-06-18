@@ -87,8 +87,11 @@ unset($__defined_vars); ?>
             </div>
 
             <div class="gap-2 d-flex">
+                <?php
+                    $label = (session()->has("pos_session_id_{$pos->id}") || $pos->active_session_id) ? 'Continue Selling' : 'Open Register';
+                ?>
                 <a wire:click="openSession('<?php echo e($id); ?>')" class="mt-2 btn btn-primary cursor-pointer">
-                    <?php echo e(session()->get("pos_session_id_{$id}") ? __('Continue Session') : __('Open Register')); ?>
+                    <?php echo e($label); ?>
 
                 </a>
             </div>

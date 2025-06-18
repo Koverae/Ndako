@@ -56,8 +56,11 @@
             </div>
 
             <div class="gap-2 d-flex">
+                @php
+                    $label = (session()->has("pos_session_id_{$pos->id}") || $pos->active_session_id) ? 'Continue Selling' : 'Open Register';
+                @endphp
                 <a wire:click="openSession('{{ $id }}')" class="mt-2 btn btn-primary cursor-pointer">
-                    {{ session()->get("pos_session_id_{$id}") ? __('Continue Session') : __('Open Register') }}
+                    {{ $label }}
                 </a>
             </div>
         </div>

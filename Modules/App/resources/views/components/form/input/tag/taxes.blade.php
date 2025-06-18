@@ -31,7 +31,7 @@
                 @endif
             </div>
             <span class="col-12">
-                @foreach($data['data'] as $value => $text)
+                @foreach($data['data'] ?? [] as $value => $text)
                 @php
                     $tax = \Modules\RevenueManager\Models\Tax\Tax::find($text);
                 @endphp
