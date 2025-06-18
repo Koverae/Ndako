@@ -583,7 +583,7 @@
                 @foreach($floorPlanOptions->where('id', $selectedPlanId)->first()->tables as $table)
                 <div class="floor col-md-3">
                     <div class="floor-table p-0 rounded flex-column cursor-pointer justify-content-between position-absolute dark:bg-gray-700">
-                        <div wire:click="selectTable('{{ $table->id }}')" class="info table-info {{ $selectedTable?->id == $table->id ? 'active' : '' }} w-100 h-100 overflow-hidden dark:text-gray-200">
+                        <div wire:click="selectTable('{{ $table->id }}')" class="info {{ $selectedTable?->id == $table->id ? 'active' : '' }} w-100 h-100 overflow-hidden dark:text-gray-200">
                             <div class="label top-50 start-50 fw-bolder position-absolute fs-3 translate-middle">
                                 {{ $table->table_name }}
                                 <br>

@@ -26,6 +26,11 @@ class OpeningControlModal extends ModalComponent
         $this->closeModal();
     }
 
+    public static function modalMaxWidth(): string
+    {
+        return 'xl';
+    }
+
     public function open()
     {
         $this->validate([

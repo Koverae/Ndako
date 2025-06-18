@@ -598,7 +598,7 @@
                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions->where('id', $selectedPlanId)->first()->tables; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $table): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="floor col-md-3">
                     <div class="floor-table p-0 rounded flex-column cursor-pointer justify-content-between position-absolute dark:bg-gray-700">
-                        <div wire:click="selectTable('<?php echo e($table->id); ?>')" class="info table-info <?php echo e($selectedTable?->id == $table->id ? 'active' : ''); ?> w-100 h-100 overflow-hidden dark:text-gray-200">
+                        <div wire:click="selectTable('<?php echo e($table->id); ?>')" class="info <?php echo e($selectedTable?->id == $table->id ? 'active' : ''); ?> w-100 h-100 overflow-hidden dark:text-gray-200">
                             <div class="label top-50 start-50 fw-bolder position-absolute fs-3 translate-middle">
                                 <?php echo e($table->table_name); ?>
 

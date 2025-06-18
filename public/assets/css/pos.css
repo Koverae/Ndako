@@ -619,6 +619,9 @@ label {
             background-color: #1a202c; /* Tailwind gray-900 */
             color: #9ea8b6; /* Tailwind gray-200 */
         }
+        [data-theme="dark"] main {
+            background-color: #1B1D26; /* Tailwind gray-800 */
+        }
         [data-theme="dark"] .bg-white {
             background-color: #262A36; /* Tailwind gray-800 */
         }
@@ -757,10 +760,15 @@ label {
         [data-theme="dark"] .badge-info {
             background-color: #2b6cb0; /* Tailwind blue-700 */
         }
-        [data-theme="dark"] .selected {
+
+        [data-theme="dark"] .search-bar {
+            background-color: #1B1D26; /* Tailwind blue-700 */
+        }
+
+        /* [data-theme="dark"] .selected {
             background-color: #4c51bf; Tailwind indigo-600
             color: #ffffff;
-        }
+        } */
         [data-theme="dark"] .order-container-bg-view {
             background-color: #262A36; /* Tailwind gray-800 */
         }
@@ -773,6 +781,9 @@ label {
         }
         
         /* Register */
-        [data-theme="dark"] .order-container-bg-view {
+        [data-theme="dark"] .product {
             background-color: #262A36; /* Tailwind gray-800 */
+        }
+        [data-theme="dark"] .product .product-name {
+            color: #e2e8f0; /* Tailwind gray-200 */
         }
