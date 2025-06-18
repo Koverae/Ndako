@@ -36,7 +36,7 @@ class PosAppHandler extends AppHandler{
         $pos = Pos::create([
             'company_id' => $company->id,
             'name' => $company->name.' Restaurant',
-            'has_multiple_employee' => $company->multiple_employee,
+            // 'has_multiple_employee' => $company->multiple_employee,
             'is_restaurant' => true,
         ]);
 
