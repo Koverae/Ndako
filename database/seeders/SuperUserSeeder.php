@@ -26,11 +26,7 @@ class SuperUserSeeder extends Seeder
         $appManager = new AppManagerHandler;
         $appManager->configure();
 
-        if(env('APP_DISTRIBUTION') === "demo"){
-            $this->call([
-                SetDemoDataSeeder::class,
-            ]);
-        }
+
 
         // $user = User::factory()->create([
         //     'name' => 'Arden BOUET',
