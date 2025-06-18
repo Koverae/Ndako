@@ -155,7 +155,7 @@ class PosAppHandler extends AppHandler{
                         'shape' => $table['shape'],
                         'status' => $table['status'],
                         'company_id' => $companyId,
-                        'pos_id' => $pos->id,,
+                        'pos_id' => $pos->id,
                     ]);
                 }
             }
