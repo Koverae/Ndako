@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
             // RolePermissionSeeder::class,
             // AppDatabaseSeeder::class,
             PlanTableSeeder::class,
-            SuperUserSeeder::class
+            SuperUserSeeder::class,
         ]);
-        
+
     }
 }
