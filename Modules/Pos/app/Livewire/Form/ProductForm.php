@@ -162,6 +162,7 @@ class ProductForm extends LightWeightForm
             $this->product->sale_taxes = array_values($filtered); // reindex to avoid gaps
             $this->product->save();
 
+            $this->productSaleTaxes = $this->product->sale_taxes;
             session()->flash('success', 'Tax removed from product.');
         }
     }
