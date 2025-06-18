@@ -22,7 +22,7 @@ class PosAppHandler extends AppHandler{
     protected function handleInstallation($company)
     {
         // Example: Create settings-related data and initial configuration
-        // $this->configure($company);
+        $this->configure($company);
     }
 
     protected function handleUninstallation()
