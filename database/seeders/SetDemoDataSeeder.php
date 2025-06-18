@@ -13,6 +13,7 @@ use Koverae\KoveraeBilling\Models\Plan;
 use Modules\App\Handlers\AppManagerHandler;
 use Modules\Pos\Models\Product\Product;
 use Modules\Pos\Models\Product\ProductCategory;
+use Illuminate\Support\Str;
 
 class SetDemoDataSeeder extends Seeder
 {
@@ -27,13 +28,14 @@ class SetDemoDataSeeder extends Seeder
             ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'phone' => '+254732878945', 'role' => 'maintenance-staff'],
         ];
 
-        $user = User::factory()->create([
+        $user = User::create([
             'name' => 'Arden BOUET',
             'email' => 'ardenbouet@mambaresorts.com',
             'phone' => '+254745908945',
             'password' => Hash::make('ndako'),
             'email_verified_at' => now(),
             'phone_verified_at' => now(),
+            'remember_token' => Str::random(10),
         ]);
         $user->save();
 
