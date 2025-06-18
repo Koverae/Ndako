@@ -63,7 +63,7 @@ unset($__defined_vars); ?>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
             </div>
             <span class="col-12">
-                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $data['data']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $data['data'] ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php
                     $tax = \Modules\RevenueManager\Models\Tax\Tax::find($text);
                 ?>
