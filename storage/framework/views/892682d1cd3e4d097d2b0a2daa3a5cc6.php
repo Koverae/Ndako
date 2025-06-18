@@ -197,9 +197,8 @@
                         <!--[if BLOCK]><![endif]--><?php if($this->photo != null): ?>
                         <img src="<?php echo e($this->photo->temporaryUrl()); ?>" alt="image" class="img img-fluid">
                         <?php else: ?>
-                        <?php echo e(dd(storage_path('avatars/' . $this->image_path))); ?>
-
-                        <img src="<?php echo e($this->image_path ? Storage::url('avatars/' . $this->image_path) . '?v=' . time() : asset('assets/images/default/'.$default_img.'.png')); ?>" alt="<?php echo e($this->image_path); ?>" class="img img-fluid">
+                        
+                        <img src="<?php echo e($this->image_path ? url(Storage::url('avatars/' . $this->image_path)) . '?v=' . time() : asset('assets/images/default/'.$default_img.'.png')); ?>" alt="<?php echo e($this->image_path); ?>" class="img img-fluid">
                         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         <!-- <small class="k_button_icon">
                             <i class="align-middle bi bi-circle text-success"></i>
