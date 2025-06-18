@@ -46,13 +46,14 @@ class PosAppHandler extends AppHandler{
         ]);
 
         // Set Payment Methods
-        $paymentMethods = Journal::whereNotIn('type', ['miscellaneous', 'sale', 'purchase', 'paystack'])->isCompany(current_company()->id)->get();
+        $paymentMethods = Journal::whereNotIn('type', ['miscellaneous', 'sale', 'purchase', 'paystack'])->isCompany($companyId)->get();
         $pos->setting->payment_methods = $paymentMethods->pluck('id')->toArray();
         $pos->setting->save();
 
-        // Set Product Categories
 
         if(env('APP_DISTRIBUTION') === "demo"){
+
+            // Set Product Categories
             $categories = [
                 'Main Dishes' => [
                     ['Ugali Beef', 180, ['Regular', 'Large']],
