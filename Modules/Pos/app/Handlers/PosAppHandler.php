@@ -89,14 +89,24 @@ class PosAppHandler extends AppHandler{
             ];
 
             foreach ($categories as $categoryName => $products) {
-                $category = ProductCategory::create(['name' => $categoryName]);
+                $category = ProductCategory::create([
+                    'company_id' => $companyId,
+                    'name' => $categoryName,
+                    'pos_id' => $pos->id,
+                ]);
 
                 foreach ($products as [$name, $price, $variants]) {
                     Product::create([
                         'product_category_id' => $category->id,
-                        'name' => $name,
-                        'price' => $price,
-                        'variants' => $variants, // Will be auto-cast to JSON
+                        'pos_id' => $pos->id,
+                        'company_id' => $companyId,
+                        'product_name' => $name,
+                        'product_price' => $price,
+                        'product_type' => 'storable',
+                        'product_cost' => 0,
+                        'product_reference' => $name,
+                        'product_code' => '',
+                        // 'variants' => $variants, // Will be auto-cast to JSON
                     ]);
                 }
             }
