@@ -20,7 +20,7 @@ class UserForm extends SimpleAvatarForm
     use ActionBarButtonTrait;
     public $user;
     public $name, $email, $phone, $role, $language, $timezone;
-    public array $rolesOptions = [], $adminOptions = [], $propertyOptions = [], $frontOptions = [], $employeeOptions = [], $languageOptions = [], $timezoneOptions = [];
+    public array $rolesOptions = [], $permissionOptions = [], $userPermissions = [], $frontOptions = [], $employeeOptions = [], $languageOptions = [], $timezoneOptions = [];
 
     // Define validation rules
     protected $rules = [
@@ -39,7 +39,7 @@ class UserForm extends SimpleAvatarForm
             $this->name = $user->name;
             $this->email = $user->email;
             $this->phone = $user->phone;
-            $this->role = $user->role;
+            $this->role = $user->getRoleNames()->first() ?? 'owner'; // Default to 'owner' if no role is assigned
             $this->image_path = $user->avatar;
             $this->language = $user->language_id;
             $this->timezone = $user->timezone;
@@ -55,17 +55,9 @@ class UserForm extends SimpleAvatarForm
         ];
         $this->rolesOptions = toSelectOptions($roles, 'id', 'label');
 
-        $admin = [
-            ['id' => 'settings', 'label' => 'Settings'],
-            ['id' => 'access-right', 'label' => 'Access Rights'],
-        ];
-        $this->adminOptions = toSelectOptions($admin, 'id', 'label');
+        $this->permissionOptions = toSelectOptions(current_company()->permissions, 'id', 'name');
 
-        $property = [
-            ['id' => 'user', 'label' => 'User'],
-            ['id' => 'admin', 'label' => 'Admin'],
-        ];
-        $this->propertyOptions = toSelectOptions($property, 'id', 'label');
+        $this->userPermissions = toSelectOptions($user->getAllPermissions(), 'id', 'name');
 
         $front = [
             ['id' => 'receptionist', 'label' => 'Receptionist'],
@@ -197,6 +189,10 @@ class UserForm extends SimpleAvatarForm
             Input::make('phone', "Phone", 'tel', 'phone', 'top-title', 'none', 'none', __('e.g. +254745908026'))->component('app::form.input.ke-title-2'),
 
             Input::make('role', 'Role', 'select', 'role', 'top-title', 'general', 'roles', "", "", $this->rolesOptions),
+
+            // Access Rights
+            Input::make('permission', 'Access Rights', 'select', 'role', 'top-title', 'general', 'roles', "", "", ['options' => $this->permissionOptions, 'data' => $this->userPermissions, 'action' => 'addUserPermission', 'delete' => 'removeUserPermission'])->component('app::form.input.tag.user-permissions'),
+
             // Preferences
             Input::make('language', 'Language', 'select', 'language', 'none', 'preferences', 'localization', "", "", $this->languageOptions),
             Input::make('timezone', 'Timezone', 'select', 'timezone', 'nope', 'preferences', 'localization', "", "", $this->timezoneOptions),

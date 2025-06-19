@@ -68,135 +68,122 @@ class SettingsAppHandler extends AppHandler
      */
     private function installRolesAndPermissions(int $companyId): void
     {
-        // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Define Permissions
-        $permissions = [
-            // Hotel Manager
-            'access_settings',
-            'modify_settings',
-            'view_users',
-            'manage_roles',
-            'invite_users',
-            'manage_reservations',
-            'view_reports',
-            'view_reservation_reports',
-            'view_property_reports',
-            'manage_rooms',
-            'manage_staff',
-            'manage_properties',
-            'create_units',
-            'manage_billing',
-
-            // Front Desk / Receptionist
-            'create_reservations',
-            'modify_reservations',
-            'view_rooms',
-            'check_in_guests',
-            'check_out_guests',
-            'manage_guest_profiles',
-            'assign_rooms',
-
-            // Maintenance Staff
-            'view_maintenance_tasks',
-            'update_task_status',
-
-            // Accountant
-            'view_financial_reports',
-            'manage_invoices',
-            'manage_expenses',
-            'process_refunds',
-
-            // Guest
-            'view_own_reservations',
-            'update_profile',
-            'request_housekeeping',
-
-            // App
-            'manage_kover_subscription',
-            'install_pwa',
-            'modify_own_profile',
-
-        ];
-
-        // Create Permissions
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission, 'company_id' => $companyId]);
-        }
-
-        // Create Roles and Assign Permissions
-        $rolesPermissions = [
-            'owner' => [
-                'access_settings',
-                'modify_settings',
-                'view_users',
-                'manage_roles',
-                'invite_users',
-                'manage_reservations',
-                'manage_properties',
+        // Grouped Permissions by Core Sections
+        $sectionPermissions = [
+            'overview' => [
                 'view_reports',
                 'view_reservation_reports',
-                'view_financial_reports',
                 'view_property_reports',
-                'manage_rooms',
-                'manage_expenses',
-                'create_units',
-                'manage_staff',
-                'manage_billing',
-                'view_maintenance_tasks',
-            ],
-            'manager' => [
-                'access_settings',
-                'modify_settings',
-                'view_users',
-                'manage_roles',
-                'invite_users',
-                'manage_reservations',
-                'manage_properties',
-                'view_reports',
-                'view_reservation_reports',
                 'view_financial_reports',
-                'view_property_reports',
-                'manage_rooms',
-                'create_units',
-                'manage_staff',
-                'manage_billing',
-                'view_maintenance_tasks',
             ],
-            'front-desk' => [
-                'manage_reservations',
-                'manage_rooms',
-                'view_rooms',
+            'reservations' => [
                 'create_reservations',
                 'modify_reservations',
+                'manage_reservations',
                 'check_in_guests',
                 'check_out_guests',
-                'manage_guest_profiles',
                 'assign_rooms',
-                // 'manage_expenses',
+                'manage_guest_profiles',
             ],
-            'maintenance-staff' => [
+            'rooms' => [
+                'view_rooms',
+                'manage_rooms',
+                'create_units',
+            ],
+            'front_office' => [
+                'create_reservations',
+                'check_in_guests',
+                'check_out_guests',
+                'assign_rooms',
+            ],
+            'operations' => [ // maintenance + housekeeping
                 'view_maintenance_tasks',
                 'update_task_status',
-                'view_rooms',
+                'request_housekeeping',
             ],
-            'accountant' => [
+            'accounting' => [
                 'view_financial_reports',
                 'manage_invoices',
                 'manage_expenses',
                 'process_refunds',
+            ],
+            'pos' => [
+                'manage_pos_orders',
+                'process_pos_payment',
+            ],
+            'settings' => [
+                'access_settings',
+                'modify_settings',
+                'manage_billing',
+            ],
+            'users' => [
+                'view_users',
+                'manage_roles',
+                'invite_users',
+                'manage_staff',
+                'modify_own_profile',
             ],
             'guest' => [
                 'view_own_reservations',
                 'update_profile',
                 'request_housekeeping',
             ],
+            'app' => [
+                'manage_kover_subscription',
+                'install_pwa',
+            ],
         ];
 
+        // Create All Permissions
+        foreach ($sectionPermissions as $permissions) {
+            foreach ($permissions as $permission) {
+                Permission::firstOrCreate([
+                    'name' => $permission,
+                    'company_id' => $companyId,
+                ]);
+            }
+        }
+
+        // Role Definitions (based on section roles)
+        $rolesPermissions = [
+            'owner' => array_merge(
+                $sectionPermissions['overview'],
+                $sectionPermissions['reservations'],
+                $sectionPermissions['rooms'],
+                $sectionPermissions['operations'],
+                $sectionPermissions['accounting'],
+                $sectionPermissions['settings'],
+                $sectionPermissions['users']
+            ),
+            'manager' => array_merge(
+                $sectionPermissions['overview'],
+                $sectionPermissions['reservations'],
+                $sectionPermissions['rooms'],
+                $sectionPermissions['operations'],
+                $sectionPermissions['settings'],
+                $sectionPermissions['users']
+            ),
+            'front-desk' => array_merge(
+                $sectionPermissions['front_office'],
+                $sectionPermissions['reservations'],
+                $sectionPermissions['rooms']
+            ),
+            'maintenance-staff' => $sectionPermissions['operations'],
+            'accountant' => $sectionPermissions['accounting'],
+            'cashier' => $sectionPermissions['pos'],
+            'guest' => $sectionPermissions['guest'],
+        ];
+
+        // Create Roles and Assign Permissions
         foreach ($rolesPermissions as $role => $permissions) {
-            $roleInstance = Role::create(['name' => $role, 'company_id' => $companyId]);
-            $roleInstance->givePermissionTo($permissions);
+            $roleInstance = Role::firstOrCreate([
+                'name' => $role,
+                'company_id' => $companyId,
+            ]);
+            $roleInstance->syncPermissions($permissions);
         }
     }
+
 }

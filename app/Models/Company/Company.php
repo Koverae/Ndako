@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
 use Modules\Pos\Models\Pos\Pos;
 use Modules\Properties\Models\Property\Property;
 use Modules\Properties\Models\Property\PropertyUnit;
+use Modules\Settings\Models\Role\Permission;
 use Spatie\Permission\Models\Role;
 
 class Company extends Model
@@ -154,7 +155,7 @@ class Company extends Model
     public function countries(){
         return Country::all()->sortBy('common_name');
     }
-    
+
     public function country() {
         return $this->belongsTo(Country::class, 'country_id', 'id');
     }
@@ -197,6 +198,14 @@ class Company extends Model
     public function restaurants()
     {
         return $this->hasMany(Pos::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get permisions for the company.
+     */
+    public function permissions()
+    {
+        return $this->hasMany(Permission::class, 'company_id', 'id');
     }
 
 }
