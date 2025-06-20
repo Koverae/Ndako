@@ -50,7 +50,7 @@ Route::middleware(['identify-kover', 'can:access_pos'])->group(function () {
     });
 
     // Product Categories
-    Route::prefix('product-categories')->name('product-categories.')->group(function () {
+    Route::prefix('product-categories')->middleware('can:manage_pos_products')->name('product-categories.')->group(function () {
         Route::get('/lists', CategoryLists::class)->name('lists');
         Route::get('/create', CategoryCreate::class)->name('create');
         Route::get('/{category}', CategoryShow::class)->name('show');
@@ -70,7 +70,7 @@ Route::middleware(['identify-kover', 'can:access_pos'])->group(function () {
     });
 
     // Sessions
-    Route::prefix('sessions')->name('pos-sessions.')->group(function () {
+    Route::prefix('sessions')->middleware('can:view_pos_sessions')->name('pos-sessions.')->group(function () {
         Route::get('/lists', PosSessionLists::class)->name('lists');
         // Route::get('/{session}', PosSessionShow::class)->name('show');
     });

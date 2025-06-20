@@ -15,7 +15,7 @@
 
             <div class="gap-2 mb-3 row" wire:poll.10s>
 
-                <div class="bg-white empty k_nocontent_help h-100">
+                <div class="bg-white empty k_nocontent_help h-100 {{ auth()->user()->hasRole('front-desk') ? 'd-none' : '' }}">
                     <img src="{{ asset('assets/images/illustrations/errors/503.svg') }}"style="height: 450px" alt="">
                     <p class="empty-title">{{ __('Welcome to Your Dashboard') }}</p>
                     <p class="empty-subtitle">{{ __('Get a quick overview of your insights and reports.') }}</p>
@@ -101,25 +101,6 @@
                 @endrole
 
                 @role('front-desk')
-                <!-- Occupancy Rate -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
-                    <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Occupancy Rate') }}</h3>
-                    </div>
-                    <div class="text-center">
-                        <h3 class="h3" style="font-size: 40px;">{{ $occupancyRate }}%</h3>
-                    </div>
-                    <div class="mb-2 d-flex justify-content-between">
-                        <span class="text-green d-inline-flex align-items-center lh-1">
-                        7% <!-- Download SVG icon from http://tabler-icons.io/i/trending-up -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg>
-                        </span>
-                        <span class="text-end">{{ __('Since last period') }}</span>
-                    </div>
-                    </div>
-                </div>
-                <!-- Occupancy Rate End -->
 
                 <!-- Room Nights Sold -->
                 <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
@@ -230,26 +211,6 @@
                     </div>
                 </div>
                 <!-- Guest Today End -->
-
-                <!-- Available Rooms -->
-                <div class="p-2 rounded col-sm-12 col-lg-4 k-dash-card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <h3 class="h3" title="Available Rooms">{{ __('Available Rooms') }}</h3>
-                        </div>
-                        <div class="text-center text-truncate">
-                            <h3 class="h3" style="font-size: 40px;">{{ $checkoutsToday }}</h3>
-                        </div>
-                        <div class="mb-2 d-flex justify-content-between">
-                            <span class="text-green d-inline-flex align-items-center lh-1">
-                            0%
-                            {{-- <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="3 17 9 11 13 15 21 7" /><polyline points="14 7 21 7 21 14" /></svg> --}}
-                            </span>
-                            <span class="text-end">{{ __('Since last period') }}</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Available Rooms End -->
                 @endrole
 
             </div>

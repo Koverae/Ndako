@@ -521,13 +521,13 @@ class BookingService
 
         $transactionId = Str::uuid(); // Generate unique transaction ID
         $extraData = [
-            'invoiceId' => $invoice->id,
+            'invoice_id' => $invoice->id,
             'method' => $method,
             'bookingId' => $bookingId
         ];
         // If Paystack, process the payment
         if ($method === 'paystack') {
-            return $this->paystackService->initializePayment($invoice->guest->name, $invoice->guest->email, $amount, $extraData);
+            return $this->paystackService->initializePayment($invoice->guest->name ?? 'Brian Mwangi', $invoice->guest->email ?? 'brianmwagi@gmail.com', $amount, $extraData);
             // $transactionId = $paystackResponse['data']['id'];
         }
 
