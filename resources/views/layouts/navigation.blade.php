@@ -71,7 +71,8 @@
                             </a>
                         </li>
 
-                        @can('manage_properties') <!-- manage_expenses -->
+                        <!-- manage_expenses -->
+                        @can('manage_expenses') 
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -109,7 +110,7 @@
                                             {{ __('Properties') }}
                                         </a>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('properties.units.lists') }}">
-                                            {{ __('Units') }}
+                                            {{ __('Rooms') }}
                                         </a>
                                         @can('view_maintenance_tasks')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('tasks.lists') }}">
@@ -123,7 +124,7 @@
                         </li>
                         @endcan
 
-                        @can('view_rooms')
+                        @hasanyrole('front-desk|maintenance-staff')
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -148,7 +149,7 @@
                                 </div>
                             </div>
                         </li>
-                        @endcan
+                        @endhasanyrole
 
                         @can('manage_reservations')
                         <li class="nav-item dropdown" data-turbolinks>
@@ -164,12 +165,17 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.lists') }}">
                                             {{ __('Reservations') }}
                                         </a>
+                                        @can('view_reservation_payments')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('bookings.payments.lists') }}">
                                             {{ __('Payments') }}
                                         </a>
+                                        @endcan
+
+                                        @can('manage_guests')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
                                             {{ __('Guests') }}
                                         </a>
+                                        @endcan
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +183,7 @@
                         @endcan
 
 
-                        @can('manage_reservations')
+                        @can('access_pos')
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -191,30 +197,46 @@
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos.overview') }}">
                                             {{ __('Overview') }}
                                         </a>
+
+                                        @can('manage_pos_products')
+
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('product-categories.lists') }}">
                                             {{ __('Product Categories') }}
                                         </a>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('products.lists') }}">
                                             {{ __('Products') }}
                                         </a>
+                                        @endcan
+
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos-floors.lists') }}">
                                             {{ __('Floor Plans') }}
                                         </a>
                                     </div>
                                     <!-- Right Side -->
                                     <div class="dropdown-menu-column">
+                                        @can('manage_pos_orders')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('orders.lists') }}">
                                             {{ __('Orders') }}
                                         </a>
+                                        @endcan
+
+                                        @can('view_pos_sessions')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('pos-sessions.lists') }}">
                                             {{ __('Sessions') }}
                                         </a>
+                                        @endcan
+
+                                        @can('view_pos_payments')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('order-payments.lists') }}">
                                             {{ __('Payments') }}
                                         </a>
+                                        @endcan
+
+                                        @can('manage_guests')
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="{{ route('guests.lists') }}">
                                             {{ __('Guests') }}
                                         </a>
+                                        @endcan
                                     </div>
                                 </div>
                             </div>

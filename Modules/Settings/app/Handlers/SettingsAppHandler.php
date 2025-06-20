@@ -77,23 +77,31 @@ class SettingsAppHandler extends AppHandler
                 'view_reservation_reports',
                 'view_property_reports',
                 'view_financial_reports',
+                'view_pos_reports',
             ],
             'reservations' => [
                 'create_reservations',
                 'modify_reservations',
                 'manage_reservations',
+                'view_reservation_payments',
                 'check_in_guests',
                 'check_out_guests',
                 'assign_rooms',
                 'manage_guest_profiles',
             ],
+            'properties' => [
+                'view_properties',
+                'manage_properties',
+                'create_properties',
+                'create_rooms',
+            ],
             'rooms' => [
                 'view_rooms',
                 'manage_rooms',
-                'create_units',
             ],
             'front_office' => [
                 'create_reservations',
+                'manage_guests',
                 'check_in_guests',
                 'check_out_guests',
                 'assign_rooms',
@@ -110,13 +118,18 @@ class SettingsAppHandler extends AppHandler
                 'process_refunds',
             ],
             'pos' => [
+                'access_pos',
                 'manage_pos_orders',
+                'view_pos_sessions',
+                'view_pos_payments',
                 'process_pos_payment',
+                'manage_pos_products',
             ],
             'settings' => [
                 'access_settings',
                 'modify_settings',
                 'manage_billing',
+                'access_companies',
             ],
             'users' => [
                 'view_users',
@@ -151,6 +164,7 @@ class SettingsAppHandler extends AppHandler
             'owner' => array_merge(
                 $sectionPermissions['overview'],
                 $sectionPermissions['reservations'],
+                $sectionPermissions['properties'],
                 $sectionPermissions['rooms'],
                 $sectionPermissions['operations'],
                 $sectionPermissions['accounting'],
@@ -160,6 +174,7 @@ class SettingsAppHandler extends AppHandler
             'manager' => array_merge(
                 $sectionPermissions['overview'],
                 $sectionPermissions['reservations'],
+                $sectionPermissions['properties'],
                 $sectionPermissions['rooms'],
                 $sectionPermissions['operations'],
                 $sectionPermissions['settings'],

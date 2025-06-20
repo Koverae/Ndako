@@ -24,13 +24,13 @@ use Modules\Settings\Livewire\Roles\Lists as RoleLists;
 */
 
 Route::middleware('identify-kover')->group( function () {
-    Route::get('/settings', GeneralSetting::class)->name('settings.general');
+    Route::get('/settings', GeneralSetting::class)->name('settings.general')->middleware('can:access_settings');
     Route::get('/users', UserLists::class)->name('settings.users');
-    Route::prefix('/users')->name('settings.users.')->group(function() {
-        Route::get('/create', UserCreate::class)->name('create');
+    Route::prefix('/users')->middleware(('can:view_users'))->name('settings.users.')->group(function() {
+        Route::get('/create', UserCreate::class)->name('create')->middleware('can:invite_users');
         Route::get('/{user}', UserShow::class)->name('show');
     });
-    Route::prefix('/companies')->name('settings.companies.')->group(function() {
+    Route::prefix('/companies')->middleware('can:access_companies')->name('settings.companies.')->group(function() {
         Route::get('/', CompanyLists::class)->name('index');
         Route::get('create', CompanyCreate::class)->name('create');
         Route::get('/{company}', CompanyShow::class)->name('show');
@@ -38,5 +38,5 @@ Route::middleware('identify-kover')->group( function () {
     // Tasks
     Route::get('/tasks', TaskLists::class)->name('tasks.lists');
     // Roles
-    Route::get('/roles', RoleLists::class)->name('roles.lists');
+    Route::get('/roles', RoleLists::class)->middleware(('can:manage_roles'))->name('roles.lists');
 });

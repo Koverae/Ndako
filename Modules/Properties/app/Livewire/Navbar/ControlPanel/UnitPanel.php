@@ -48,13 +48,14 @@ class UnitPanel extends ControlPanel
         if(Auth::user()->can('create_units')){
             $this->new = route('properties.units.create');
         }
+        
         if($unit){
             $this->showIndicators = true;
             $this->unit = $unit;
             $this->isForm = true;
             $this->currentPage = $unit->name;
         }else{
-            $this->currentPage = "Units";
+            $this->currentPage = "Rooms";
         }
 
     }

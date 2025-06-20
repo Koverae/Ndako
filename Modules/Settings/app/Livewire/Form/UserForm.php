@@ -380,7 +380,7 @@ class UserForm extends SimpleAvatarForm
     #[On('update-user')]
     public function updateUser(){
 
-        $this->authorize('update', $this->user); // Check if the user has permission to update users
+        $this->authorize('update', Auth::user()); // Check if the user has permission to update users
 
         $user = User::find($this->user->id);
 

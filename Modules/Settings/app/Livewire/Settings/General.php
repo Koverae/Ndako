@@ -35,6 +35,7 @@ class General extends AppSetting
     $has_paystack = false, $has_digest_email = true, $has_default_access_right = true, $has_geo_localization = false, $has_recaptcha = false, $has_reset_password = true, $has_quick_find = true, $has_import_from_xls = true;
 
     public function mount($setting){
+
         $this->setting = $setting;
         $this->has_customer_account = $setting->has_customer_account;
         $this->default_currency = $setting->default_currency_id;
@@ -186,6 +187,9 @@ class General extends AppSetting
 
 
     public function sendInvitation(){
+
+        $this->authorize('inviteUsers', current_company()); // Check if the user has permission to invite users
+
         // Validate the form data
         $this->validate([
             'friend_email' => 'required|email|unique:company_invitations,email',
@@ -224,6 +228,9 @@ class General extends AppSetting
 
     #[On('save')]
     public function save(){
+
+        $this->authorize('update', $this->setting); // Check if the user has permission to update settings
+
         $setting = $this->setting;
 
         $setting->update([
@@ -274,6 +281,9 @@ class General extends AppSetting
 
     // Cancel Subscription
     public function cancelSubscription(){
+
+        $this->authorize('manageSubscription', current_company()); // Check if the user has permission to manage subscription
+
         // current_company()->team->subscription('main')->cancel();
         current_company()->team->subscription('main')->update([
             'cancels_at' => now()

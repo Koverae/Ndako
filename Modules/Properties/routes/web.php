@@ -33,23 +33,23 @@ use Modules\Properties\Livewire\Tenants\Show as TenantShow;
 Route::middleware('identify-kover')->group(function () {
     Route::get('properties/overview', Overview::class)->name('properties.index');
     // Properties
-    Route::get('properties', PropertyLists::class)->name('properties.lists');
+    Route::get('properties', PropertyLists::class)->middleware('can:view_properties')->name('properties.lists');
 
-    Route::prefix('/properties')->name('properties.')->group(function() {
-        Route::get('/create', PropertyCreate::class)->middleware(['limit:properties'])->name('create');
+    Route::prefix('/properties')->name('properties.')->middleware('can:manage_properties')->group(function() {
+        Route::get('/create', PropertyCreate::class)->middleware(['limit:properties', 'can:create_properties'])->name('create');
         Route::get('/{property}', PropertyShow::class)->name('show');
     });
 
     // Property Types
-    Route::prefix('/property-types')->name('properties.types.')->group(function() {
+    Route::prefix('/property-types')->middleware('can:manage_properties')->name('properties.types.')->group(function() {
         Route::get('/', PropertyTypeLists::class)->name('lists');
-        Route::get('/create', PropertyTypeCreate::class)->name('create');
+        Route::get('/create', PropertyTypeCreate::class)->middleware('create_rooms')->name('create');
         Route::get('/{type}', PropertyTypeShow::class)->name('show');
 
     });
 
     // Unit Types
-    Route::prefix('/unit-types')->name('properties.unit-types.')->group(function() {
+    Route::prefix('/unit-types')->middleware('can:manage_properties')->name('properties.unit-types.')->group(function() {
         Route::get('/', UnitTypeLists::class)->name('lists');
         Route::get('/create', UnitTypeCreate::class)->middleware(['limit:units'])->name('create');
         Route::get('/{type}', UnitTypeShow::class)->name('show');
@@ -57,9 +57,9 @@ Route::middleware('identify-kover')->group(function () {
     });
 
     // Units
-    Route::prefix('/units')->name('properties.units.')->group(function() {
-        Route::get('/', UnitLists::class)->name('lists');
-        Route::get('/create', UnitCreate::class)->middleware(['limit:units'])->name('create');
+    Route::prefix('/units')->middleware('can:manage_rooms')->name('properties.units.')->group(function() {
+        Route::get('/', UnitLists::class)->middleware('can:view_rooms')->name('lists');
+        Route::get('/create', UnitCreate::class)->middleware(['limit:units', 'can:create_rooms'])->name('create');
         Route::get('/{unit}', UnitShow::class)->name('show');
 
     });

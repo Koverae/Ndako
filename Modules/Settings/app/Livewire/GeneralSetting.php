@@ -13,6 +13,9 @@ class GeneralSetting extends Component
     public $view = 'general';
 
     public function mount($view = null){
+
+        $this->authorize('access', settings()); // Check if the user has permission to access settings
+
         if($view){
             $this->view = $view;
         }

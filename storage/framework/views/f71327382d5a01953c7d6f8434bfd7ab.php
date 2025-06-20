@@ -88,7 +88,8 @@ if (isset($__slots)) unset($__slots);
                             </a>
                         </li>
 
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_properties')): ?> <!-- manage_expenses -->
+                        <!-- manage_expenses -->
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_expenses')): ?> 
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -131,7 +132,7 @@ if (isset($__slots)) unset($__slots);
 
                                         </a>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('properties.units.lists')); ?>">
-                                            <?php echo e(__('Units')); ?>
+                                            <?php echo e(__('Rooms')); ?>
 
                                         </a>
                                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_maintenance_tasks')): ?>
@@ -147,7 +148,7 @@ if (isset($__slots)) unset($__slots);
                         </li>
                         <?php endif; ?>
 
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_rooms')): ?>
+                        <?php if (\Illuminate\Support\Facades\Blade::check('hasanyrole', 'front-desk|maintenance-staff')): ?>
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -193,14 +194,19 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Reservations')); ?>
 
                                         </a>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_reservation_payments')): ?>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('bookings.payments.lists')); ?>">
                                             <?php echo e(__('Payments')); ?>
 
                                         </a>
+                                        <?php endif; ?>
+
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_guests')): ?>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
                                             <?php echo e(__('Guests')); ?>
 
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +214,7 @@ if (isset($__slots)) unset($__slots);
                         <?php endif; ?>
 
 
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_reservations')): ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('access_pos')): ?>
                         <li class="nav-item dropdown" data-turbolinks>
                             <a class="nav-link kover-navlink" href="#navbar-base" style="margin-right: 5px;" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                               <span class="nav-link-title">
@@ -224,6 +230,9 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Overview')); ?>
 
                                         </a>
+
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_pos_products')): ?>
+
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('product-categories.lists')); ?>">
                                             <?php echo e(__('Product Categories')); ?>
 
@@ -232,6 +241,8 @@ if (isset($__slots)) unset($__slots);
                                             <?php echo e(__('Products')); ?>
 
                                         </a>
+                                        <?php endif; ?>
+
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos-floors.lists')); ?>">
                                             <?php echo e(__('Floor Plans')); ?>
 
@@ -239,22 +250,33 @@ if (isset($__slots)) unset($__slots);
                                     </div>
                                     <!-- Right Side -->
                                     <div class="dropdown-menu-column">
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_pos_orders')): ?>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('orders.lists')); ?>">
                                             <?php echo e(__('Orders')); ?>
 
                                         </a>
+                                        <?php endif; ?>
+
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_pos_sessions')): ?>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('pos-sessions.lists')); ?>">
                                             <?php echo e(__('Sessions')); ?>
 
                                         </a>
+                                        <?php endif; ?>
+
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_pos_payments')): ?>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('order-payments.lists')); ?>">
                                             <?php echo e(__('Payments')); ?>
 
                                         </a>
+                                        <?php endif; ?>
+
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_guests')): ?>
                                         <a class=" kover-navlink dropdown-item" wire:navigate href="<?php echo e(route('guests.lists')); ?>">
                                             <?php echo e(__('Guests')); ?>
 
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
