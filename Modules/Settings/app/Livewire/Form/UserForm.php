@@ -4,6 +4,7 @@ namespace Modules\Settings\Livewire\Form;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\On;
 use Modules\App\Livewire\Components\Form\Button\ActionBarButton;
@@ -14,12 +15,13 @@ use Modules\App\Livewire\Components\Form\Tabs;
 use Modules\App\Livewire\Components\Form\Group;
 use Modules\App\Traits\Form\Button\ActionBarButton as ActionBarButtonTrait;
 use Modules\Settings\Models\Language\Language;
+use Modules\Settings\Models\Role\Permission;
 
 class UserForm extends SimpleAvatarForm
 {
     use ActionBarButtonTrait;
     public $user;
-    public $name, $email, $phone, $role, $language, $timezone;
+    public $name, $email, $phone, $role, $language, $timezone, $selectedPermission;
     public array $rolesOptions = [], $permissionOptions = [], $userPermissions = [], $frontOptions = [], $employeeOptions = [], $languageOptions = [], $timezoneOptions = [];
 
     // Define validation rules
@@ -39,7 +41,7 @@ class UserForm extends SimpleAvatarForm
             $this->name = $user->name;
             $this->email = $user->email;
             $this->phone = $user->phone;
-            $this->role = $user->getRoleNames()->first() ?? 'owner'; // Default to 'owner' if no role is assigned
+            $this->role = $user->getRoleNames()->first() ?? ''; // Default to 'owner' if no role is assigned
             $this->image_path = $user->avatar;
             $this->language = $user->language_id;
             $this->timezone = $user->timezone;
@@ -191,7 +193,7 @@ class UserForm extends SimpleAvatarForm
             Input::make('role', 'Role', 'select', 'role', 'top-title', 'general', 'roles', "", "", $this->rolesOptions),
 
             // Access Rights
-            Input::make('permission', 'Access Rights', 'select', 'role', 'top-title', 'general', 'roles', "", "", ['options' => $this->permissionOptions, 'data' => $this->userPermissions, 'action' => 'addUserPermission', 'delete' => 'removeUserPermission'])->component('app::form.input.tag.user-permissions'),
+            Input::make('permission', 'Access Rights', 'select', 'selectedPermission', 'top-title', 'general', 'roles', "", "", ['options' => $this->permissionOptions, 'data' => $this->userPermissions, 'action' => 'addUserPermission', 'delete' => 'removeUserPermission'])->component('app::form.input.tag.user-permissions'),
 
             // Preferences
             Input::make('language', 'Language', 'select', 'language', 'none', 'preferences', 'localization', "", "", $this->languageOptions),
@@ -225,6 +227,78 @@ class UserForm extends SimpleAvatarForm
             StatusBarButton::make('confirmed', 'Confirmed', 'confirmed'),
             // Add more buttons as needed
         ];
+    }
+
+    public function addUserPermission()
+    {
+        $this->validate([
+            'selectedPermission' => 'nullable|exists:taxes,id',
+        ]);
+
+        $permission = Permission::find($this->selectedPermission);
+
+        if (! $permission) {
+            session()->flash('error', 'Permission not found.');
+            return;
+        }
+
+        if (is_null($this->user)) {
+            // We're on the create page — use array to collect taxes
+            if (collect($this->userPermissions)->pluck('id')->contains($this->selectedPermission)) {
+                session()->flash('error', 'This permission has already been added.');
+                return;
+            }
+
+            $this->userPermissions[] = $this->selectedPermission;
+        } else {
+            // We're on the edit page — update the user directly
+            $existingPermissions = $this->userPermissions ?? [];
+
+            if (in_array($this->selectedPermission, $existingPermissions)) {
+                session()->flash('error', 'This permission has already been added to this user.');
+                return;
+            }
+
+            $existingPermissions[] = $this->selectedPermission;
+            $this->user->givePermissionTo($permission);
+            $this->user->save();
+
+            session()->flash('success', 'Permission added to user.');
+        }
+
+        $this->selectedPermission = null; // reset dropdown
+        $this->userPermissions = toSelectOptions($this->user->getAllPermissions(), 'id', 'name');
+    }
+
+    public function removeUserPermission($permissionId)
+    {
+        if (! $this->user) {
+            // If creating user (not yet saved), just remove from local array
+            $this->userPermissions = collect($this->userPermissions)
+                ->reject(fn ($item) => $item['id'] == $permissionId)
+                ->values()
+                ->all();
+        } else {
+            $permission = Permission::find($permissionId);
+
+            if (! $permission) {
+                session()->flash('error', 'Permission not found.');
+                Log::error('Permission not found for ID: ' . $permissionId);
+                return;
+            }
+
+            // Revoke permission from user
+            if ($this->user->hasDirectPermission($permission)) {
+                $this->user->revokePermissionTo($permission->name);
+            } else {
+                session()->flash('error', 'This permission is assigned via a role and cannot be removed directly.');
+                Log::warning("Tried to revoke permission {$permission->name} which is inherited via role.");
+            }
+
+            session()->flash('success', 'Permission removed successfully.');
+            Log::info('Permission removed from user: ' . $this->user->id . ', Permission ID: ' . $permissionId);
+
+        }
     }
 
     public function updatedPhoto(){
@@ -285,7 +359,8 @@ class UserForm extends SimpleAvatarForm
     public function updateUser(){
         $user = User::find($this->user->id);
 
-        $this->validate();
+        // $this->validate();
+
         if(!$this->image_path){
             $this->image_path = $user->id . '_avatar.png';
         }

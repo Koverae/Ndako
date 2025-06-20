@@ -34,7 +34,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<div class="d-flex" style="margin-bottom: 8px;">
+<div class="d-flex" style="margin-bottom: 8px; height: 200px;">
     <!-- Input Label -->
     <!--[if BLOCK]><![endif]--><?php if($value->label): ?>
     <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
@@ -55,7 +55,7 @@ unset($__defined_vars); ?>
                 <select wire:model="<?php echo e($value->model); ?>" id="<?php echo e($value->model); ?>" class="k-input" <?php echo e($this->blocked ? 'disabled' : ''); ?>>
                     <option value=""></option>
                     <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $value->data['options']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($value); ?>"><?php echo e($text); ?></option>
+                        <option value="<?php echo e($value); ?>"><?php echo e(inverseSlug($text)); ?></option>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                 </select>
                 <!--[if BLOCK]><![endif]--><?php if($data['action']): ?>
@@ -63,13 +63,13 @@ unset($__defined_vars); ?>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
             </div>
             <span class="col-12">
+
                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $data['data'] ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                
                 <a class="cursor-pointer badge rounded-pill k_web_settings_users" style="color: #0E6163;">
-                    <?php echo e($text); ?>
+                    <?php echo e(inverseSlug($text)); ?>
 
                     <!--[if BLOCK]><![endif]--><?php if($data['delete']): ?>
-                    <i wire:click.prevent="<?php echo e($data['delete']); ?>('<?php echo e($value); ?>')" wire:confirm="Are you sure you want to remove <?php echo e($text); ?> ?" class="bi bi-x cancelled_icon" data-bs-toggle="tooltip" data-bs-placement="right" title="Remove <?php echo e($text); ?>"></i>
+                    <i wire:click.prevent="<?php echo e($data['delete']); ?>('<?php echo e($value); ?>')" wire:confirm="Are you sure you want to remove <?php echo e(inverseSlug($text)); ?> ?" class="bi bi-x cancelled_icon" data-bs-toggle="tooltip" data-bs-placement="right" title="Remove <?php echo e($text); ?>"></i>
                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 </a>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->

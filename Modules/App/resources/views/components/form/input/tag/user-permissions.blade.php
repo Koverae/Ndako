@@ -3,7 +3,7 @@
     'data'
 ])
 
-<div class="d-flex" style="margin-bottom: 8px;">
+<div class="d-flex" style="margin-bottom: 8px; height: 200px;">
     <!-- Input Label -->
     @if($value->label)
     <div class="k_cell k_wrap_label flex-grow-1 flex-sm-grow-0 text-break text-900">
@@ -23,7 +23,7 @@
                 <select wire:model="{{ $value->model }}" id="{{ $value->model }}" class="k-input" {{ $this->blocked ? 'disabled' : '' }}>
                     <option value=""></option>
                     @foreach($value->data['options'] as $value => $text)
-                        <option value="{{ $value }}">{{ $text }}</option>
+                        <option value="{{ $value }}">{{ inverseSlug($text) }}</option>
                     @endforeach
                 </select>
                 @if($data['action'])
@@ -31,14 +31,12 @@
                 @endif
             </div>
             <span class="col-12">
+
                 @foreach($data['data'] ?? [] as $value => $text)
-                {{-- @php
-                    $tax = \Modules\RevenueManager\Models\Tax\Tax::find($text);
-                @endphp --}}
                 <a class="cursor-pointer badge rounded-pill k_web_settings_users" style="color: #0E6163;">
-                    {{ $text }}
+                    {{ inverseSlug($text) }}
                     @if($data['delete'])
-                    <i wire:click.prevent="{{ $data['delete'] }}('{{ $value }}')" wire:confirm="Are you sure you want to remove {{ $text }} ?" class="bi bi-x cancelled_icon" data-bs-toggle="tooltip" data-bs-placement="right" title="Remove {{ $text }}"></i>
+                    <i wire:click.prevent="{{ $data['delete'] }}('{{ $value }}')" wire:confirm="Are you sure you want to remove {{ inverseSlug($text) }} ?" class="bi bi-x cancelled_icon" data-bs-toggle="tooltip" data-bs-placement="right" title="Remove {{ $text }}"></i>
                     @endif
                 </a>
                 @endforeach
