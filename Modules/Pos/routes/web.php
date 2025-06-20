@@ -40,9 +40,9 @@ use Modules\Pos\Livewire\Payment\Lists as PaymentLists;
 |
 */
 
-Route::middleware('identify-kover')->group(function () {
+Route::middleware(['identify-kover', 'can:access_pos'])->group(function () {
     Route::get('/pos/overview', PosLists::class)->name('pos.overview');
-    Route::get('/pos/create', PosCreate::class)->name('pos.create');
+    Route::get('/pos/create', PosCreate::class)->middleware('can:create_pos')->name('pos.create');
     Route::get('/pos/{pos}', PosShow::class)->name('pos.show');
 
     Route::prefix("pos/ui")->group(function() {
@@ -57,14 +57,14 @@ Route::middleware('identify-kover')->group(function () {
     });
 
     // Product
-    Route::prefix('products')->name('products.')->group(function () {
+    Route::prefix('products')->middleware('can:manage_pos_products')->name('products.')->group(function () {
         Route::get('/lists', ProductLists::class)->name('lists');
         Route::get('/create', ProductCreate::class)->name('create');
         Route::get('/{product}', ProductShow::class)->name('show');
     });
 
     // Orders
-    Route::prefix('orders')->name('orders.')->group(function () {
+    Route::prefix('orders')->middleware('can:manage_pos_orders')->name('orders.')->group(function () {
         Route::get('/lists', OrderLists::class)->name('lists');
         Route::get('/{order}', OrderShow::class)->name('show');
     });
@@ -76,7 +76,7 @@ Route::middleware('identify-kover')->group(function () {
     });
 
     // Payments
-    Route::prefix('order-payments')->name('order-payments.')->group(function () {
+    Route::prefix('order-payments')->middleware('can:manage_pos_orders')->name('order-payments.')->group(function () {
         Route::get('/lists', PaymentLists::class)->name('lists');
     });
 

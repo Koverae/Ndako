@@ -130,6 +130,8 @@ class SettingsAppHandler extends AppHandler
                 'modify_settings',
                 'manage_billing',
                 'access_companies',
+                'create_pos',
+                'manage_pos_settings',
             ],
             'users' => [
                 'view_users',

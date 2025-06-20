@@ -27,21 +27,21 @@ use Modules\ChannelManager\Livewire\BookingPayments\Lists as PaymentLists;
 
 Route::middleware('identify-kover')->group(function () {
     // Route::get('channelmanager', ChannelManagerController::class, 'index')->name('channels.index');
-    Route::get('channels/overview', Overview::class)->name('channels.index');
-    Route::get('channels', ChannelLists::class)->name('channels.lists');
-    Route::get('channels/{channel}', ChannelShow::class)->name('channels.show');
-    Route::get('/guests', GuestLists::class)->name('guests.lists');
+    // Route::get('channels/overview', Overview::class)->name('channels.index');
+    // Route::get('channels', ChannelLists::class)->name('channels.lists');
+    // Route::get('channels/{channel}', ChannelShow::class)->name('channels.show');
+    Route::get('/guests', GuestLists::class)->middleware('can:manage_guest_profiles')->name('guests.lists');
 
     // Bookings
-    Route::prefix('/bookings')->name('bookings.')->group(function() {
+    Route::prefix('/bookings')->middleware('can:manage_reservations')->name('bookings.')->group(function() {
         Route::get('/', BookingLists::class)->name('lists');
-        Route::get('/create', BookingCreate::class)->name('create');
-        Route::get('/{booking}', BookingShow::class)->name('show');
+        Route::get('/create', BookingCreate::class)->middleware('can:create_reservations')->name('create');
+        Route::get('/{booking}', BookingShow::class)->middleware('can:modify_reservations')->name('show');
 
     });
 
         // Booking Invoices
-        Route::prefix('/booking-invoices')->name('bookings.invoices.')->group(function() {
+        Route::prefix('/booking-invoices')->middleware('can:manage_reservations')->name('bookings.invoices.')->group(function() {
             Route::get('/', InvoiceLists::class)->name('lists');
             Route::get('/create', InvoiceCreate::class)->name('create');
             Route::get('/{invoice}', InvoiceShow::class)->name('show');
@@ -49,7 +49,7 @@ Route::middleware('identify-kover')->group(function () {
         });
 
         // Booking Payments
-        Route::prefix('/booking-payments')->name('bookings.payments.')->group(function() {
+        Route::prefix('/booking-payments')->middleware('can:view_reservation_payments')->name('bookings.payments.')->group(function() {
             Route::get('/', PaymentLists::class)->name('lists');
             // Route::get('/create', PaymentCreate::class)->name('create');
             // Route::get('/{invoice}', PaymentShow::class)->name('show');

@@ -22,9 +22,11 @@ class BookingPanel extends ControlPanel
         $this->view_type = 'calendar';
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+
         if(Auth::user()->can('create_reservations')){
             $this->new = route('bookings.create');
         }
+        
         if($isForm){
             $this->showIndicators = true;
         }
