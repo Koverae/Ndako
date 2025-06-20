@@ -2,6 +2,7 @@
 
 namespace App\Models\Team;
 
+use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -42,6 +43,11 @@ class Team extends Model
     public function wallet()
     {
         return $this->hasOne(Kredit::class, 'team_id', 'id');
+    }
+
+    public function companies()
+    {
+        return $this->hasMany(Company::class, 'team_id', 'id');
     }
 
 }

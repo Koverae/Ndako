@@ -81,7 +81,7 @@ class User extends Authenticatable
     // Get Team
     public function team()
     {
-        return $this->belongsTo(Team::class, 'team_id');
+        return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
     public function identityVerification()

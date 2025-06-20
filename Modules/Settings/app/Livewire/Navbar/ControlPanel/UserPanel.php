@@ -2,6 +2,8 @@
 
 namespace Modules\Settings\Livewire\Navbar\ControlPanel;
 
+use App\Models\Company\Company;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Modules\App\Livewire\Components\Navbar\Button\ActionButton;
 use Modules\App\Livewire\Components\Navbar\Button\ActionDropdown;
@@ -16,7 +18,13 @@ class UserPanel extends ControlPanel
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
+
+        $companies = Company::isTeam(Auth::user()->company->team_id)
+        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
+        ->toArray() ?? [];
+
         $this->filterTypes = [
+            'company_id' => $companies,
             'status' => [
                 'confirmed' => 'Active',    // string filter
                 'never-connected' => 'Inactive',

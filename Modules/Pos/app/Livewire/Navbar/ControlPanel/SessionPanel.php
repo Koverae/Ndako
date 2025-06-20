@@ -28,6 +28,7 @@ class SessionPanel extends ControlPanel
         $this->filterTypes = [
             'pos_id' => $restaurants,
         ];
+
         if($isForm){
             $this->showIndicators = true;
         }

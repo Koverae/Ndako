@@ -47,6 +47,12 @@ class Company extends Model
         });
     }
 
+    public function scopeIsTeam(Builder $query, $team_id)
+    {
+        return $query->where('team_id', $team_id)
+                     ->where('status', 'active');
+    }
+
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('status', 'active');

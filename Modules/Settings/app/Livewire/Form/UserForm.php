@@ -3,6 +3,7 @@
 namespace Modules\Settings\Livewire\Form;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,14 @@ class UserForm extends SimpleAvatarForm
     public function mount($user = null){
         $this->status = 'never-connected';
         if($user){
+            $this->user = $user;
+            $this->authorize('view', $user); // Check if the user has permission to view users
+
+            // Apply policy check
+            if (!Auth::user()->can('update', $this->user)) {
+                $this->blocked = true;
+            }
+
             $this->name = $user->name;
             $this->email = $user->email;
             $this->phone = $user->phone;
@@ -46,14 +55,18 @@ class UserForm extends SimpleAvatarForm
             $this->language = $user->language_id;
             $this->timezone = $user->timezone;
             $this->status = $user->last_login_at ? 'confirmed' : 'never-connected';
+        }else{
+            $this->authorize('create', User::class);
         }
 
         $roles = [
             ['id' => 'owner', 'label' => __('Owner')],
-            ['id' => 'manager', 'label' => __('Hotel/General Manager')],
+            ['id' => 'manager', 'label' => __('General Manager')],
             ['id' => 'front-desk', 'label' => __('Front Desk / Receptionist')],
             ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
             ['id' => 'accountant', 'label' => __('Accountant')],
+            ['id' => 'cashier', 'label' => __('Cashier')],
+
         ];
         $this->rolesOptions = toSelectOptions($roles, 'id', 'label');
 
@@ -231,6 +244,8 @@ class UserForm extends SimpleAvatarForm
 
     public function addUserPermission()
     {
+        $this->authorize('assignPermissions', $this->user); // Check if the user has permission to assign permissions
+
         $this->validate([
             'selectedPermission' => 'nullable|exists:taxes,id',
         ]);
@@ -272,6 +287,8 @@ class UserForm extends SimpleAvatarForm
 
     public function removeUserPermission($permissionId)
     {
+        $this->authorize('assignPermissions', $this->user); // Check if the user has permission to assign permissions
+
         if (! $this->user) {
             // If creating user (not yet saved), just remove from local array
             $this->userPermissions = collect($this->userPermissions)
@@ -302,6 +319,9 @@ class UserForm extends SimpleAvatarForm
     }
 
     public function updatedPhoto(){
+
+        $this->authorize('update', $this->user); // Check if the user has permission to update users
+
         // Validate the uploaded file
         $this->validate();
         if($this->user){
@@ -326,6 +346,8 @@ class UserForm extends SimpleAvatarForm
 
     #[On('create-user')]
     public function createUser(){
+
+        $this->authorize('create', User::class); // Check if the user has permission to create users
 
         $this->validate();
 
@@ -357,6 +379,9 @@ class UserForm extends SimpleAvatarForm
 
     #[On('update-user')]
     public function updateUser(){
+
+        $this->authorize('update', $this->user); // Check if the user has permission to update users
+
         $user = User::find($this->user->id);
 
         // $this->validate();
@@ -364,8 +389,16 @@ class UserForm extends SimpleAvatarForm
         if(!$this->image_path){
             $this->image_path = $user->id . '_avatar.png';
         }
+
         if($this->photo){
             $this->photo->storeAs('avatars', $this->image_path, 'public');
+        }
+
+        if($this->role && $this->role != $user->getRoleNames()->first()) {
+            // Remove old role
+            $user->removeRole($user->getRoleNames()->first());
+            // Assign new role
+            $user->assignRole($this->role);
         }
 
         $user->update([
