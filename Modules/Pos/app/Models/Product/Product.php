@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Pos\Models\Order\PosOrderDetail;
 use Modules\RevenueManager\Models\Tax\Tax;
 
 class Product extends Model
@@ -31,6 +32,10 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
+    }
+
+    public function details() {
+        return $this->hasMany(PosOrderDetail::class, 'product_id', 'id');
     }
 
 }

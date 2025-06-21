@@ -10,12 +10,15 @@ use Modules\Pos\Models\Floor\FloorPlan;
 use Modules\Pos\Models\Order\PosOrder;
 use Modules\Pos\Models\Order\PosOrderPayment;
 use Modules\Pos\Models\Pos\Pos;
+use Modules\Pos\Models\Pos\PosSession;
+use Modules\Pos\Models\Product\Product;
+use Modules\Pos\Models\Product\ProductCategory;
 
 class Order extends Component
 {
     public $period = 1, $restaurant;
     public $soldAmount, $unpaidAmount, $averageOrderAmount, $numberOfOrders, $dso, $orders, $payments;
-    public $restaurants, $floors, $unitTypes, $mothlyOrders;
+    public $restaurants, $floors, $unitTypes, $mothlyOrders, $bestCategories, $bestProducts, $bestPosSessions;
     public $startDate, $endDate;
 
     public function mount(){
@@ -88,6 +91,77 @@ class Order extends Component
         ->get();
 
         $this->mothlyOrders = $this->getMonthlyOrders();
+
+        // Fetch room types with aggregated booking revenue
+        $this->bestCategories = ProductCategory::isCompany(current_company()->id)
+            ->when($this->restaurant, function ($query) {
+            $query->where('pos_id', $this->restaurant);
+            })
+            ->with(['products' => function ($query) {
+            $query->withCount(['details as details_count' => function ($subQuery) {
+                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                }])
+                ->withSum(['details as details_sum_sub_total' => function ($subQuery) {
+                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                }], 'sub_total');
+            }])
+            ->get()
+            ->map(function ($category) {
+            $totalRevenue = $category->products->sum('details_sum_sub_total') ?? 0;
+            $totalOrders = $category->products->sum('details_count') ?? 0;
+
+            return [
+                'name' => $category->name,
+                'total_orders' => $totalOrders,
+                'total_revenue' => $totalRevenue,
+            ];
+            })
+            ->sortByDesc('total_revenue')
+            ->values();
+
+            // Fetch best selling products with aggregated revenue and order count
+            $this->bestProducts = Product::isCompany(current_company()->id)
+                ->when($this->restaurant, function ($query) {
+                    $query->where('pos_id', $this->restaurant);
+                })
+                ->withCount(['details as details_count' => function ($subQuery) {
+                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                }])
+                ->withSum(['details as details_sum_sub_total' => function ($subQuery) {
+                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                }], 'sub_total')
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'name' => $product->product_name,
+                        'total_orders' => $product->details_count ?? 0,
+                        'total_revenue' => $product->details_sum_sub_total ?? 0,
+                    ];
+                })
+                ->sortByDesc('total_revenue')
+                ->values();
+                // Fetch best POS sessions with aggregated revenue and order count
+                $this->bestPosSessions = PosSession::isCompany(current_company()->id)
+                    ->when($this->restaurant, function ($query) {
+                        $query->where('pos_id', $this->restaurant);
+                    })
+                    ->withCount(['orders as orders_count' => function ($subQuery) {
+                        $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                    }])
+                    ->withSum(['orders as orders_sum_total_amount' => function ($subQuery) {
+                        $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                    }], 'total_amount')
+                    ->get()
+                    ->map(function ($session) {
+                        return [
+                            'name' => $session->name,
+                            'total_orders' => $session->orders_count ?? 0,
+                            'total_revenue' => $session->orders_sum_total_amount ?? 0,
+                        ];
+                    })
+                    ->sortByDesc('total_revenue')
+                    ->values();
+
 
     }
 

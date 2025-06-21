@@ -24,7 +24,7 @@
             </div>
 
             <!-- Display panel buttons -->
-            <div class="k_cp_switch_buttons gap-2 d-print-none d-xl-inline-flex btn-group text-end">
+            <div class="gap-2 k_cp_switch_buttons d-print-none d-xl-inline-flex btn-group text-end">
 
                 <!-- Open Dashboard -->
                 <a title="view" class="gap-1 k_switch_view d-lg-inline-block btn btn-secondary active k-list" id="share-dash" data-bs-toggle="offcanvas" href="#dashboardOffcanvas" role="button" aria-controls="offcanvasEnd">
@@ -58,7 +58,7 @@
                 {{ session('message') }}
             </div>
             @endif
-            
+
             @if (session()->has('error'))
                 <div
                     x-data="{ show: true }"

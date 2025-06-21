@@ -85,11 +85,11 @@
                 </div>
                 <!-- Sales End -->
 
-                <!-- Average Invoice -->
+                <!-- Average Order -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <h3 class="h3"><?php echo e(__('Average Invoice')); ?></h3>
+                            <h3 class="h3"><?php echo e(__('Average Order')); ?></h3>
                         </div>
                         <div class="text-center text-truncate">
                             <h3 class="h3" style="font-size: 40px;"><?php echo e(format_currency($averageOrderAmount)); ?></h3>
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Average Invoice End -->
+                <!-- Average Order End -->
 
                 <!-- DSO -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
@@ -131,12 +131,12 @@
                 </div>
                 <!-- Sales by Month End -->
 
-                <!-- Top Invoices -->
+                <!-- Top Orders -->
                 <div class="p-0 k-dash-category col-md-12 col-lg-12">
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            <?php echo e(__('Top Invoices')); ?>
+                            <?php echo e(__('Top Orders')); ?>
 
                         </div>
                     </div>
@@ -178,7 +178,7 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Top Invoices End -->
+                <!-- Top Orders End -->
 
                 <!-- Top Payments -->
                 <div class="p-0 k-dash-category col-md-12 col-lg-12">
@@ -213,6 +213,102 @@
                     </table>
                 </div>
                 <!-- Top Payments End -->
+
+                <!-- Top Categories -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Categories')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Name')); ?></th>
+                                <th><?php echo e(__('Qty')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $bestCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($category['name']); ?></td>
+                                <td><?php echo e($category['total_orders']); ?></td>
+                                <td><?php echo e(__(format_currency($category['total_revenue']))); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Categories End -->
+
+                <!-- Top Products -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Products')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Product')); ?></th>
+                                <th><?php echo e(__('Qty')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $bestProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($product['name']); ?></td>
+                                <td><?php echo e($product['total_orders']); ?></td>
+                                <td><?php echo e(__(format_currency($product['total_revenue']))); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Products End -->
+
+                <!-- Top Sessions -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Sessions')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Top Sessions')); ?></th>
+                                <th><?php echo e(__('N° Orders')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $bestProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($product['name']); ?></td>
+                                <td><?php echo e($product['total_orders']); ?></td>
+                                <td><?php echo e(__(format_currency($product['total_revenue']))); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Sessions End -->
 
             </div>
 

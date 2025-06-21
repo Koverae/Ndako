@@ -81,11 +81,11 @@
                 </div>
                 <!-- Sales End -->
 
-                <!-- Average Invoice -->
+                <!-- Average Order -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <h3 class="h3">{{ __('Average Invoice') }}</h3>
+                            <h3 class="h3">{{ __('Average Order') }}</h3>
                         </div>
                         <div class="text-center text-truncate">
                             <h3 class="h3" style="font-size: 40px;">{{ format_currency($averageOrderAmount) }}</h3>
@@ -93,7 +93,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Average Invoice End -->
+                <!-- Average Order End -->
 
                 <!-- DSO -->
                 <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
@@ -126,12 +126,12 @@
                 </div>
                 <!-- Sales by Month End -->
 
-                <!-- Top Invoices -->
+                <!-- Top Orders -->
                 <div class="p-0 k-dash-category col-md-12 col-lg-12">
                     <!-- separator -->
                     <div class="g-col-sm-2">
                         <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
-                            {{ __('Top Invoices') }}
+                            {{ __('Top Orders') }}
                         </div>
                     </div>
                     <table class="k-borderless-table">
@@ -169,7 +169,7 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Top Invoices End -->
+                <!-- Top Orders End -->
 
                 <!-- Top Payments -->
                 <div class="p-0 k-dash-category col-md-12 col-lg-12">
@@ -203,6 +203,99 @@
                     </table>
                 </div>
                 <!-- Top Payments End -->
+
+                <!-- Top Categories -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Top Categories') }}
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Qty') }}</th>
+                                <th>{{ __('Revenue') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($bestCategories as $key => $category)
+                            <tr>
+                                <td>{{ $category['name'] }}</td>
+                                <td>{{ $category['total_orders'] }}</td>
+                                <td>{{ __(format_currency($category['total_revenue'])) }}</td>
+                            </tr>
+                            @empty
+                            <tr></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Categories End -->
+
+                <!-- Top Products -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Top Products') }}
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Product') }}</th>
+                                <th>{{ __('Qty') }}</th>
+                                <th>{{ __('Revenue') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($bestProducts as $key => $product)
+                            <tr>
+                                <td>{{ $product['name'] }}</td>
+                                <td>{{ $product['total_orders'] }}</td>
+                                <td>{{ __(format_currency($product['total_revenue'])) }}</td>
+                            </tr>
+                            @empty
+                            <tr></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Products End -->
+
+                <!-- Top Sessions -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Top Sessions') }}
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Top Sessions') }}</th>
+                                <th>{{ __('N° Orders') }}</th>
+                                <th>{{ __('Revenue') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($bestProducts as $key => $product)
+                            <tr>
+                                <td>{{ $product['name'] }}</td>
+                                <td>{{ $product['total_orders'] }}</td>
+                                <td>{{ __(format_currency($product['total_revenue'])) }}</td>
+                            </tr>
+                            @empty
+                            <tr></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Sessions End -->
 
             </div>
 
