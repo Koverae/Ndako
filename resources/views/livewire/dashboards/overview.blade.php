@@ -118,6 +118,8 @@
             <livewire:properties::dashboards.property />
             @elseif($dash == 'tickets')
             <livewire:properties::dashboards.ticket />
+            @elseif($dash == 'orders')
+            <livewire:pos::dashboards.order />
             @endif
           </div>
         </div>
@@ -131,7 +133,7 @@
         <div class="p-0 offcanvas-body">
             <div class="flex-grow-0 flex-shrink-0 mb-5 overflow-auto bg-white border-left col-md-12 app-sidebar bg-view position-relative pe-1 ps-3" style=" z-index: 500;">
               <form action="./" method="get" autocomplete="off" novalidate class="sticky-top">
-  
+
                   @if(!Auth::user()->can('view_reports'))
                   <ul class="pt-3" style="margin-left: 10px;">
                       <a  href="{{ route('dashboard', ['dash' => 'home']) }}" wire:navigate>
@@ -141,11 +143,11 @@
                       </a>
                   </ul>
                   @endif
-  
+
                   @can('view_reservation_reports')
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b>{{ __('Reservations') }}</b></header>
                   <ul class="mb-4" style="margin-left: 10px;">
-  
+
                       <a  href="{{ route('dashboard', ['dash' => 'reservations']) }}" wire:navigate>
                           <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="{{ $dash == 'reservations' ? 'background-color: #E6F2F3 ;' : '' }} ">
                           {{ __('Reservations') }}
@@ -158,7 +160,7 @@
                       </a>
                   </ul>
                   @endcan
-  
+
                   @can('view_financial_reports')
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b>{{ __('Revenue & Financials') }}</b></header>
                   <ul class="mb-4" style="margin-left: 10px;">
@@ -174,7 +176,7 @@
                       </a>
                   </ul>
                   @endcan
-  
+
                   @can('view_property_reports')
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b>{{ __('Properties') }}</b></header>
                   <ul class="mb-4" style="margin-left: 10px;">
@@ -190,7 +192,7 @@
                       </a>
                   </ul>
                   @endcan
-  
+
               </form>
             </div>
         </div>

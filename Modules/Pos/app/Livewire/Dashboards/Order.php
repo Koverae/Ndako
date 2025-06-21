@@ -1,27 +1,26 @@
 <?php
 
-namespace Modules\RevenueManager\Livewire\Dashboards;
+namespace Modules\Pos\Livewire\Dashboards;
 
-use Carbon\Carbon;
 use Livewire\Component;
-use Modules\ChannelManager\Models\Booking\BookingInvoice;
-use Modules\Properties\Models\Property\Property;
-use Modules\Properties\Models\Property\PropertyUnit;
-use Modules\Properties\Models\Property\PropertyUnitType;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\App\Services\ReportExportService;
-use Modules\ChannelManager\Models\Booking\BookingPayment;
+use Modules\Pos\Models\Floor\FloorPlan;
+use Modules\Pos\Models\Order\PosOrder;
+use Modules\Pos\Models\Order\PosOrderPayment;
+use Modules\Pos\Models\Pos\Pos;
 
-class Invoicing extends Component
+class Order extends Component
 {
-    public $period = 1, $property;
-    public $invoicedAmount, $unpaidAmount, $averageInvoiceAmount, $numberOfInvoices, $dso, $invoices, $payments;
-    public $properties, $units, $unitTypes, $mothlyInvoices;
+    public $period = 1, $restaurant;
+    public $soldAmount, $unpaidAmount, $averageOrderAmount, $numberOfOrders, $dso, $orders, $payments;
+    public $restaurants, $floors, $unitTypes, $mothlyOrders;
     public $startDate, $endDate;
 
     public function mount(){
-        $this->properties = Property::isCompany(current_company()->id)->get();
-        $this->property = current_property()->id ?? null;
+        $this->restaurants = Pos::isCompany(current_company()->id)->get();
+        $this->restaurant = current_property()->id ?? null;
 
         $this->startDate = Carbon::today()->format('Y-m-d');
         $this->endDate = Carbon::today()->addDays($this->period)->format('Y-m-d');
@@ -29,83 +28,66 @@ class Invoicing extends Component
         $this->loadData();
     }
 
-    public function loadData($property = null){
-        if($property){
-            $this->property = $property;
+    public function loadData($restaurant = null){
+        if($restaurant){
+            $this->restaurant = $restaurant;
         }
 
-        $this->property = $property;
-        $this->units = PropertyUnit::isCompany(current_company()->id)->isProperty($this->property)->get();
-        $this->unitTypes = PropertyUnitType::isCompany(current_company()->id)->isProperty($this->property)->get();
+        $this->restaurant = $restaurant;
+        $this->floors = FloorPlan::isCompany(current_company()->id)->isPos($this->restaurant)->get();
 
-        $invoices = BookingInvoice::isCompany(current_company()->id)
+        $orders = PosOrder::isCompany(current_company()->id)
         ->whereBetween('date', [$this->startDate, $this->endDate])
-        ->with(['booking' => function ($query) {
-                $query->with(['unit' => function ($subQuery) {
-                    $subQuery->when($this->property, function ($property){
-                        $property->where('property_id', $this->property);
-                    });
-                }]);
-        }])
         ->select(
-            DB::raw('SUM(total_amount) as total_invoiced'),
+            DB::raw('SUM(total_amount) as total_amount'),
             DB::raw('SUM(total_amount - paid_amount) as total_unpaid')
         )
         ->first();
 
-        $this->invoicedAmount = $invoices->total_invoiced ?? 0;
-        $this->unpaidAmount = $invoices->total_unpaid ?? 0;
+        $this->soldAmount = $orders->total_amount ?? 0;
+        $this->unpaidAmount = $orders->total_unpaid ?? 0;
 
-        $invoiceStats = BookingInvoice::isCompany(current_company()->id)
+        $orderStats = PosOrder::isCompany(current_company()->id)
         ->whereBetween('date', [$this->startDate, $this->endDate])
-        ->with(['booking' => function ($query) {
-                $query->with(['unit' => function ($subQuery) {
-                    $subQuery->when($this->property, function ($property){
-                        $property->where('property_id', $this->property);
-                    });
-                }]);
-        }])
         ->select(
-            DB::raw('AVG(total_amount) as average_invoice_amount'),
-            DB::raw('COUNT(id) as number_of_invoices')
+            DB::raw('AVG(total_amount) as average_order_amount'),
+            DB::raw('COUNT(id) as number_of_orders')
         )
         ->first();
 
-        $this->averageInvoiceAmount = round($invoiceStats->average_invoice_amount) ?? 0;
-        $this->numberOfInvoices = $invoiceStats->number_of_invoices ?? 0;
+        $this->averageOrderAmount = round($orderStats->average_order_amount) ?? 0;
+        $this->numberOfOrders = $orderStats->number_of_orders ?? 0;
 
 
         // Number of days for the period (e.g., last 30 days)
         $daysInPeriod = 365; // Change as necessary (e.g., 7, 30, 365)
 
         // Calculate DSO
-        if ($this->invoicedAmount > 0) {
-            $this->dso = round(($this->unpaidAmount / $this->invoicedAmount) * $daysInPeriod);
+        if ($this->soldAmount > 0) {
+            $this->dso = round(($this->unpaidAmount / $this->soldAmount) * $daysInPeriod);
         } else {
             $this->dso = 0; // Avoid division by zero
         }
 
-        $this->invoices = BookingInvoice::isCompany(current_company()->id)
+        $this->orders = PosOrder::isCompany(current_company()->id)
         ->whereBetween('date', [$this->startDate, $this->endDate])
-        ->with(['booking' => function ($query) {
-                $query->whereHas('unit', function ($query) {
-                    $query->when($this->property, fn($q, $id) => $q->isProperty($id));
-                });
-        }])
-        ->orderByDesc('total_amount')
-        ->get();
+           ->when($this->restaurant, function ($query) {
+                $query->where('pos_id', $this->restaurant);
+            })
+            ->orderByDesc('total_amount')
+                ->get();
 
-        $this->payments = BookingPayment::isCompany(current_company()->id)
+        $this->payments = PosOrderPayment::isCompany(current_company()->id)
         ->whereBetween('date', [$this->startDate, $this->endDate])
-        ->when($this->property, function ($query) {
-            $query->with('invoice.booking', function ($query) {
-                $query->where('property_unit_id', $this->property);
+        ->when($this->restaurant, function ($query) {
+            $query->with('order', function ($query) {
+                $query->where('pos_id', $this->restaurant);
             });
         })
         ->orderByDesc('amount')
         ->get();
 
-        $this->mothlyInvoices = $this->getMonthlyInvoices();
+        $this->mothlyOrders = $this->getMonthlyOrders();
 
     }
 
@@ -134,25 +116,22 @@ class Invoicing extends Component
         }
     }
 
-    public function getMonthlyInvoices(): \Illuminate\Support\Collection
+    public function getMonthlyOrders(): \Illuminate\Support\Collection
     {
         $startOfYear = now()->startOfYear();
         $endOfYear = now()->endOfYear();
 
-        $invoices = BookingInvoice::isCompany(current_company()->id)->with(['booking' => function ($query) {
-                $query->with(['unit' => function ($subQuery) {
-                    $subQuery->when($this->property, function ($property){
-                        $property->where('property_id', $this->property);
-                    });
-                }]);
-            }])
+        $orders = PosOrder::isCompany(current_company()->id)
+            ->when($this->restaurant, function ($query) {
+                $query->where('pos_id', $this->restaurant);
+            })
             ->whereBetween('date', [$startOfYear, $endOfYear])
             ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(total_amount) as total_revenue, SUM(total_amount - paid_amount) as total_unpaid')
             ->groupBy('year', 'month')
             ->orderByRaw('year ASC, month ASC')
             ->get();
 
-        return $invoices->map(fn ($invoice) => [
+        return $orders->map(fn ($invoice) => [
             'month'   => Carbon::create($invoice->year, $invoice->month, 1)->format('F Y'),
             'revenue' => round((float) $invoice->total_revenue, 2),
             'unpaid'  => round((float) $invoice->total_unpaid, 2),
@@ -163,23 +142,18 @@ class Invoicing extends Component
         $this->loadData($this->property);
     }
 
-    public function render()
-    {
-        return view('revenuemanager::livewire.dashboards.invoicing');
-    }
-
 
     public function export(ReportExportService $exportService)
     {
 
         // ✅ Summary Data (Example: Dashboard Stats)
         $summaryData = [
-            'Invoiced' => ['value' => format_currency($this->invoicedAmount), 'change' => format_currency($this->unpaidAmount)],
-            'Average Invoice' => ['value' => format_currency($this->averageInvoiceAmount), 'change' => $this->numberOfInvoices],
+            'Invoiced' => ['value' => format_currency($this->soldAmount), 'change' => format_currency($this->unpaidAmount)],
+            'Average Invoice' => ['value' => format_currency($this->averageOrderAmount), 'change' => $this->numberOfOrders],
             'Days Sales Outstanding (DSO)' => ['value' => $this->dso, 'change' => "0%"],
         ];
 
-        $topInvoices = $this->invoices->map(function ($invoice) {
+        $topInvoices = $this->orders->map(function ($invoice) {
             return [
                 'reference' => $invoice->reference,
                 'guest' => $invoice->guest->name,
@@ -223,5 +197,10 @@ class Invoicing extends Component
         }
 
         return 'Unknown';
+    }
+
+    public function render()
+    {
+        return view('pos::livewire.dashboards.order');
     }
 }

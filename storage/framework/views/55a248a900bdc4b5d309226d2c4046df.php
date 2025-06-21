@@ -232,6 +232,23 @@ unset($__params);
 unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
+            <?php elseif($dash == 'orders'): ?>
+            <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('pos::dashboards.order', []);
+
+$__html = app('livewire')->mount($__name, $__params, 'lw-221140226-7', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
           </div>
         </div>
@@ -245,7 +262,7 @@ if (isset($__slots)) unset($__slots);
         <div class="p-0 offcanvas-body">
             <div class="flex-grow-0 flex-shrink-0 mb-5 overflow-auto bg-white border-left col-md-12 app-sidebar bg-view position-relative pe-1 ps-3" style=" z-index: 500;">
               <form action="./" method="get" autocomplete="off" novalidate class="sticky-top">
-  
+
                   <!--[if BLOCK]><![endif]--><?php if(!Auth::user()->can('view_reports')): ?>
                   <ul class="pt-3" style="margin-left: 10px;">
                       <a  href="<?php echo e(route('dashboard', ['dash' => 'home'])); ?>" wire:navigate>
@@ -256,11 +273,11 @@ if (isset($__slots)) unset($__slots);
                       </a>
                   </ul>
                   <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-  
+
                   <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_reservation_reports')): ?>
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><?php echo e(__('Reservations')); ?></b></header>
                   <ul class="mb-4" style="margin-left: 10px;">
-  
+
                       <a  href="<?php echo e(route('dashboard', ['dash' => 'reservations'])); ?>" wire:navigate>
                           <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'reservations' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
                           <?php echo e(__('Reservations')); ?>
@@ -275,7 +292,7 @@ if (isset($__slots)) unset($__slots);
                       </a>
                   </ul>
                   <?php endif; ?>
-  
+
                   <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_financial_reports')): ?>
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><?php echo e(__('Revenue & Financials')); ?></b></header>
                   <ul class="mb-4" style="margin-left: 10px;">
@@ -293,7 +310,7 @@ if (isset($__slots)) unset($__slots);
                       </a>
                   </ul>
                   <?php endif; ?>
-  
+
                   <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_property_reports')): ?>
                   <header class="pt-3 form-label font-weight-bold text-uppercase"> <b><?php echo e(__('Properties')); ?></b></header>
                   <ul class="mb-4" style="margin-left: 10px;">
@@ -311,7 +328,7 @@ if (isset($__slots)) unset($__slots);
                       </a>
                   </ul>
                   <?php endif; ?>
-  
+
               </form>
             </div>
         </div>

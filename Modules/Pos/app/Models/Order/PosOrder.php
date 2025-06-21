@@ -32,7 +32,7 @@ class PosOrder extends Model
 
         static::creating(function ($model) {
             $number = PosOrder::isCompany(current_company()->id)->max('id') + 1;
-            $model->reference = make_reference_id($model->pos->name, $number);
+            $model->reference = make_reference_id("ND/POS/{$model->pos->name}", $number);
         });
     }
 
