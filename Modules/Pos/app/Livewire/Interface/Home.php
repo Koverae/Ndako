@@ -579,10 +579,24 @@ class Home extends Component
         $this->saveCartToSession();
     }
 
+    // #[On('processPayment')]
     #[On('processPayment')]
-    public function processPayment($orderId)
+    public function processPayment()
     {
-        if(!$this->guest){
+        $this->selectedProductId = null;
+
+        if (!$this->order || empty($this->cart)) {
+            LivewireAlert::title('No order to process!')
+                ->text('Please add products to the cart before processing payment.')
+                ->error()
+                ->position('top-end')
+                ->timer(4000)
+                ->toast()
+                ->show();
+            return;
+        }
+
+        if (!$this->guest && !$this->selectedCustomerId) {
             LivewireAlert::title('No guest selected!')
                 ->text('Please select a guest before processing payment.')
                 ->error()
@@ -593,8 +607,15 @@ class Home extends Component
             return;
         }
 
-        $this->selectedProductId = null;
-        $this->dispatch('openModal', component: 'pos::modal.payment-modal', order: $this->order->id);
+        // Refresh order totals before payment
+        $this->recalculateTotals();
+        $this->order->update([
+            'total_amount' => $this->cartTotal,
+            'due_amount' => $this->cartTotal,
+        ]);
+        $this->saveCartToSession();
+
+        $this->dispatch('openModal', component: 'pos::modal.payment-modal', arguments: ['order' => $this->order->id]);
     }
 
     #[On('posOrderPaymentCompleted')]
