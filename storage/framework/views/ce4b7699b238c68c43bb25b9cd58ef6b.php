@@ -30,4 +30,4 @@
         </div>
     </div>
 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-<?php /**PATH D:\My Laravel Startup\ndako\vendor\laravel\framework\src\Illuminate\Foundation\Providers/../resources/exceptions/renderer/components/editor.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\My Laravel Startup\ndako\vendor\laravel\framework\src\Illuminate\Foundation\resources\exceptions\renderer\components\editor.blade.php ENDPATH**/ ?>

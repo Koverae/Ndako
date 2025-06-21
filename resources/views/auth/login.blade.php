@@ -89,6 +89,7 @@
                             $demoUsers = [
                                 ['name' => 'Arden BOUET - Manager', 'email' => 'ardenbouet@mambaresorts.com', 'password' => 'ndako'],
                                 ['name' => 'Brian Mwangi - Receptionist', 'email' => 'brianmwagi@mambaresorts.com', 'password' => 'ndako'],
+                                ['name' => 'Fayth Mutave - Cashier', 'email' => 'faythmutave@mambaresorts.com', 'phone' => '+254733478906', 'role' => 'cashier'],
                                 ['name' => 'Sam Baraka - Maintenance Staff', 'email' => 'sambaraka@mambaresorts.com', 'password' => 'ndako'],
                             ];
                         @endphp
