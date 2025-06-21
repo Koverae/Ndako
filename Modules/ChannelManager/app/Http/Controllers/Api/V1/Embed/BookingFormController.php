@@ -9,13 +9,15 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Modules\Accounting\Entities\Journal;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Models\Booking\BookingInvoice;
+use Modules\ChannelManager\Models\Booking\BookingPayment;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
+use Modules\RevenueManager\Models\Accounting\Journal;
 use Modules\RevenueManager\Services\Pricing\RateService;
+use Illuminate\Support\Str;
 
 class BookingFormController extends Controller
 {
@@ -270,6 +272,7 @@ class BookingFormController extends Controller
             ['company_id' => $client->company_id, 'email' => $request->email],
             ['name' => $request->name, 'phone' => $request->phone]
         );
+        Log::info('Guest retrieved or created', ['guest_id' => $guest->id, 'email' => $request->email]);
 
         // Create booking
         $rateService = new RateService();
@@ -303,6 +306,7 @@ class BookingFormController extends Controller
         ]);
         $this->createInvoice($booking);
         
+        Log::info('Booking created successfully', ['booking_id' => $booking->id, 'guest_id' => $guest->id]);
         return response()->json([
             'success' => true, 
             'message' => 'Booking confirmed.',
@@ -319,15 +323,33 @@ class BookingFormController extends Controller
             'date' => now(),
             'due_date' => $booking->check_out,
             'payment_status' => $booking->payment_status,
-            // 'agent_id' => Auth::user()->id,
+            'agent_id' => null,
             'terms' => $booking->terms,
             'total_amount' => $booking->total_amount,
             'paid_amount' => $booking->paid_amount,
             'due_amount' => $booking->due_amount,
-            'status' => 'draft',
+            'status' => 'posted',
             'to_checked' => false,
         ]);
         $invoice->save();
+
+        if($booking->paid_amount >= 0){
+            $journal = Journal::isCompany(current_company()->id)->isType($booking->payment_method ?? 'paystack')->first();
+            $payment = BookingPayment::create([
+                'company_id' => $invoice->company_id,
+                'booking_invoice_id' => $invoice->id,
+                'journal_id' => $journal->id ?? null,
+                'transaction_id' => Str::random(16),
+                'amount' => $invoice->paid_amount,
+                'due_amount' => $invoice->due_amount,
+                'date' => now(),
+                'note' => 'Payment Received for Invoice #'. $invoice->reference,
+                // 'reference' => $invoice->reference,
+                'type' => 'debit',
+                'payment_method' => $booking->payment_method ?? 'paystack',
+            ]);
+            $payment->save();
+        }
 
         $booking->update([
             'invoice_status' => 'invoiced'

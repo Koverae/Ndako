@@ -171,7 +171,8 @@ class SettingsAppHandler extends AppHandler
                 $sectionPermissions['operations'],
                 $sectionPermissions['accounting'],
                 $sectionPermissions['settings'],
-                $sectionPermissions['users']
+                $sectionPermissions['users'],
+                $sectionPermissions['pos'],
             ),
             'manager' => array_merge(
                 $sectionPermissions['overview'],
@@ -180,7 +181,8 @@ class SettingsAppHandler extends AppHandler
                 $sectionPermissions['rooms'],
                 $sectionPermissions['operations'],
                 $sectionPermissions['settings'],
-                $sectionPermissions['users']
+                $sectionPermissions['users'],
+                $sectionPermissions['pos']
             ),
             'front-desk' => array_merge(
                 $sectionPermissions['front_office'],

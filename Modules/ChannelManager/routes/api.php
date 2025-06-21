@@ -68,7 +68,7 @@ Route::middleware(['throttle:60,1','checkApiKey'])->group(function () {
                 'name' => $room->name,
                 'type' => $room->unitType->name,
                 'price' => $room->unitType->price,
-                'details' => $room->description,
+                'details' => $room->unitType->description ?? '',
             ]);
         });
         Route::get('/confirm-booking-html/{roomId}', [BookingFormController::class, 'confirmBookingHtml']);
