@@ -136,7 +136,7 @@ class BookingTable extends Table
             })->toArray();
 
         Log::debug("Events loaded: " . json_encode($this->events));
-        $this->dispatch('calendarUpdated', ['events' => $this->events]);
+        // $this->dispatch('calendarUpdated', ['events' => $this->events]);
     }
 
     // public function refreshEvents()
