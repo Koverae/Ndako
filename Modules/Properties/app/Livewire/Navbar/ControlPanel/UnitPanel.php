@@ -33,6 +33,7 @@ class UnitPanel extends ControlPanel
         ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
         ->toArray();
 
+
         $this->filterTypes = [
             'property_id' => $properties,
             'status' => [
@@ -45,10 +46,10 @@ class UnitPanel extends ControlPanel
         ];
 
         // dd($this->breadcrumbs);
-        if(Auth::user()->can('create_units')){
+        if(Auth::user()->can('create_rooms')){
             $this->new = route('properties.units.create');
         }
-        
+
         if($unit){
             $this->showIndicators = true;
             $this->unit = $unit;
