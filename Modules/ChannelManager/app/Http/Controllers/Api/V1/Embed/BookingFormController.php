@@ -26,15 +26,15 @@ use Modules\Properties\Models\Property\Property;
 
 class BookingFormController extends Controller
 {
-    
+
 
     public function getEmbedConfig(Request $request)
     {
         $publicKey = $request->header('X-API-Key');
         // $origin = $request->header('Origin') ?? parse_url($request->headers->get('Referer'), PHP_URL_HOST);
-    
+
         $client = ApiClient::where('public_key', $publicKey)->first();
-    
+
         if (!$client) {
             return response()->json(['success' => false, 'message' => 'Invalid API key.'], 403);
         }
@@ -55,16 +55,16 @@ class BookingFormController extends Controller
     public function embed(Request $request)
     {
         $client = $request->get('api_client');
-    
+
         $roomTypes = PropertyUnitType::with(['property'])->isCompany($client->company_id)->get();
-        
+
         // Generate the HTML for the available rooms
         return view('channelmanager::embed.booking-form', ['roomTypes' => $roomTypes])->render();
     }
 
     public function checkAvailability(Request $request)
     {
-        
+
         $client = $request->get('api_client');
 
         // Validating that check_in is a required date, it should be a valid date, and it must be today or in the future
@@ -76,12 +76,12 @@ class BookingFormController extends Controller
             'room_type' => 'nullable|integer|exists:property_unit_types,id', // Ensure at least 1 person is specified
             'people' => 'required|integer|min:1', // Ensure at least 1 person is specified
         ]);
-        
+
         $type = $validated['room_type'];
         $people = $validated['people'];
         $startDate = $validated['check_in'];
         $endDate = $validated['check_out'];
-    
+
         // Step 2: Business logic - Check if the check-out date is at least one day after the check-in date
         // The 'after:check_in' validation ensures that, but it's worth mentioning again in this context
         if ($request->check_in === $request->check_out) {
@@ -90,7 +90,7 @@ class BookingFormController extends Controller
                 'message' => 'Check-out date must be at least one day after the check-in date.',
             ], 400); // 400 Bad Request
         }
-    
+
         // Step 3: Custom logic - Business rules for availability
         // Example: Ensure that the number of people is within a certain limit (for example, 1-10 people)
         if ($validated['people'] > 10) {
@@ -99,10 +99,10 @@ class BookingFormController extends Controller
                 'message' => 'We only accept bookings for up to 10 people.',
             ], 400); // 400 Bad Request
         }
-    
+
         // Step 4: Simulate availability check
         // Normally, you'd check the availability based on the dates and number of people in a database, but for now, we'll simulate
-        
+
         // Step 1: Fetch rooms that fit the capacity criteria
         $rooms = PropertyUnit::isCompany($client->company_id)->where('capacity', '>=', $people)
         ->with(['unitType']) // Eager load related price table
@@ -120,7 +120,7 @@ class BookingFormController extends Controller
                 })
                 ->exists();
         })->values(); // Reindex the filtered collection
-        
+
         // Store available rooms in session
         Cache::put('available_rooms', $availableRooms, now()->addMinutes(10));
 
@@ -153,23 +153,23 @@ class BookingFormController extends Controller
     public function roomDetail($room){
         // Log::info('Room:', ['room' => $room]);
         $room = PropertyUnit::find($room);
-    
+
         if (!$room) {
             return response()->json(['message' => 'Room not found.'], 404);
         }
-    
+
         // Cache::put('available_rooms', $room, now()->addMinutes(10));
         return response()->json([
             'id' => $room->id,
             'name' => $room->name,
             'type' => $room->unitType->name,
             'price' => $room->unitType->price,
-            'details' => $room->description,  // Add more fields as necessary    
+            'details' => $room->description,  // Add more fields as necessary
         ]);
     }
 
     public function confirmBookingHtml(Request $request, $roomId){
-        
+
         $room = PropertyUnit::find($roomId);
         $checkIn = Carbon::parse($request->query('check_in'));
         $checkOut = Carbon::parse($request->query('check_out'));
@@ -178,7 +178,7 @@ class BookingFormController extends Controller
 
         $rateService = new RateService();
         $totalPrice = $rateService->getOptimalPricing($room->unitType->id, $nights);
-        
+
         // Generate the HTML for the available rooms
         return view('channelmanager::embed.checkout-section', [
             'room' => $room,
@@ -190,7 +190,7 @@ class BookingFormController extends Controller
             ])->render();
     }
 
-    
+
     public function initiate(Request $request)
     {
         $validated = $request->validate([
@@ -206,7 +206,7 @@ class BookingFormController extends Controller
 
         // Process the booking and Guest identification or registration
 
-        
+
         // Save callback in session or encode it into redirect URL
         Cache::put('callback_url', $request->callback_url, now()->addMinutes(10));
 
@@ -215,19 +215,19 @@ class BookingFormController extends Controller
         return [
             'callback_url' => 'http://localhost::5000/thank-you'
         ];
-        
+
     }
 
     public function confirm(Request $request, $id)
     {
         $reservation = User::findOrFail($id);
-    
+
         // Simulate or verify payment (e.g., via Paystack webhook or ref)
         // $verified = $this->verifyPayment($reservation);
-    
+
         // Retrieve the original success URL
         $successUrl = Cache::get('callback_url', 'http://thanks.com');
-    
+
         // Optional: Add info to query string
         $query = http_build_query([
             'name' => $reservation->name,
@@ -235,15 +235,15 @@ class BookingFormController extends Controller
             'amount' => $reservation->total_price,
             'ref' => 'TXN123ABC' // or actual transaction ref
         ]);
-    
+
         return redirect()->away($successUrl . '?' . $query);
     }
 
     public function confirmBooking(Request $request)
     {
-        
+
         $client = $request->get('api_client');
-        
+
         session(['current_company' => $client->company]);
 
         // $request->validate([
@@ -258,7 +258,7 @@ class BookingFormController extends Controller
         $room = PropertyUnit::find($request->room_id);
         if(!$room){
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'The selected room does not exist.',
             ]);
         }
@@ -273,7 +273,7 @@ class BookingFormController extends Controller
 
         if ($conflictingBooking) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Room is no longer available.'
             ], 400);
         }
@@ -317,9 +317,9 @@ class BookingFormController extends Controller
         ]);
 
         $this->createInvoice($booking);
-        
+
         Log::info('Booking created successfully', ['booking_id' => $booking->id, 'guest_id' => $guest->id]);
-        
+
         // Send Notification
         $notification = Notification::create([
             'user_id' => 1,
@@ -331,7 +331,7 @@ class BookingFormController extends Controller
             ],
         ]);
 
-        // event(new NotificationEvent($notification));
+        event(new NotificationEvent($notification));
 
         // Send Email
         $this->sendBookingConfirmationEmail($booking);
@@ -340,12 +340,12 @@ class BookingFormController extends Controller
 
         // Optionally, you can redirect to a thank you page or return a success response
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Booking confirmed.',
             'redirect_url' => $request->callback_url
         ]);
     }
-    
+
     public function createInvoice($booking){
 
         $invoice = BookingInvoice::create([

@@ -131,7 +131,7 @@
         <!-- RIGHT: Payment Section -->
         <div class="booking-column payment-column">
             <h4>{{ __('Payment Information') }}</h4>
-            
+
             <div class="form-group">
                 <label>{{ __('Full Name') }}</label>
                 <input type="text" name="name" id="name" required placeholder="Brian Mwangi">

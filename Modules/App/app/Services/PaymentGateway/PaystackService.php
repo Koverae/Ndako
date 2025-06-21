@@ -134,10 +134,17 @@ class PaystackService
         }
 
         $source = $result->data->metadata->source ?? 'booking';
-
-        return $source === 'pos'
-            ? $this->processPOSPayment($result->data)
-            : $this->processBookingPayment($result->data);
+        switch ($source) {
+            case 'pos':
+            return $this->processPOSPayment($result->data);
+            case 'booking':
+            return $this->processBookingPayment($result->data);
+            case 'website':
+            return $this->processWebsitePayment($result->data);
+            default:
+            session()->flash('error', "Unknown payment source: {$source}. Ref: {$reference}");
+            return view('app::paystack.callback', ['data' => $result->data]);
+        }
 
     }
 
@@ -148,6 +155,55 @@ class PaystackService
      * @return \Illuminate\View\View
      */
     protected function processBookingPayment(object $data)
+    {
+        $invoice = BookingInvoice::find($data->metadata->invoice_id);
+
+        DB::transaction(function () use ($invoice, $data) {
+            $journal = Journal::isCompany(current_company()->id)
+                ->isType($data->metadata->method)
+                ->first();
+
+            $payment = BookingPayment::create([
+                'company_id'         => current_company()->id,
+                'booking_invoice_id' => $invoice->id,
+                'transaction_id'     => $data->reference,
+                'journal_id'         => $journal->id,
+                'payment_method'     => $data->channel,
+                'amount'             => $data->amount / 100,
+                'date'               => now(),
+                'note'               => 'Payment Received for Invoice #' . $invoice->reference,
+                'type'               => 'credit',
+            ]);
+
+            $due = $invoice->due_amount - $payment->amount;
+            $status = $due === $invoice->total_amount ? 'unpaid' : ($due > 0 ? 'partial' : 'paid');
+
+            $invoice->update([
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
+            ]);
+
+            $invoice->booking->update([
+                'payment_status' => $status,
+                'paid_amount'    => $invoice->paid_amount + $payment->amount,
+                'due_amount'     => $due,
+            ]);
+
+            $payment->update(['due_amount' => $due]);
+        });
+
+        session()->flash('success', "Payment successful! Ref: {$data->reference}");
+        return view('app::paystack.callback', ['data' => $data]);
+    }
+
+    /**
+     * Process payment for a Booking.
+     *
+     * @param object $data
+     * @return \Illuminate\View\View
+     */
+    protected function processWebsitePayment(object $data)
     {
         $invoice = BookingInvoice::find($data->metadata->invoice_id);
 

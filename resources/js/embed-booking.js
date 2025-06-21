@@ -95,15 +95,15 @@
                         .then(response => response.json())
                         .then(roomData => {
                             const roomId = roomData.id;
-                            
+
                             const url = new URL(`${apiBaseUrl}/confirm-booking-html/${roomId}`);
                             url.searchParams.append('check_in', checkIn);
                             url.searchParams.append('check_out', checkOut);
                             url.searchParams.append('callback_url', callbackUrl);
-                            
+
                             fetch(url.toString(), {
                                 headers: {
-                                    'X-API-Key': apiKey,
+                                                                'X-API-Key': apiKey,
                                     'X-API-Secret': apiSecret,
                                 },
                             })
@@ -126,12 +126,7 @@
                 // 🔥 NEW: Event Listener for Booking Confirmation
                 document.addEventListener('click', function (e) {
                     if (e.target.id === 'confirmBookingBtn') {
-
-                        const btn = e.target;
-                        btn.disabled = true;
-                        btn.textContent = 'Processing...';
-
-                        const data = {
+                          const data = {
                             room_id: document.getElementById('roomId').value,
                             check_in: document.getElementById('checkIn').value,
                             check_out: document.getElementById('checkOut').value,
@@ -142,10 +137,10 @@
                             phone: document.getElementById('phone').value,
                             callback_url: callbackUrl, // optional
                         };
-                
+
                         fetch(`${apiBaseUrl}/embed/confirm-booking`, {
                             method: "POST",
-                            headers: {
+                                            headers: {
                                 "Content-Type": "application/json",
                                 "X-API-Key": apiKey,
                                 "X-API-Secret": apiSecret,
@@ -168,11 +163,11 @@
                         });
                     }
                 });
-                
-                
+
+
                 // document.addEventListener('click', function (e) {
                 //     if (e.target.id === 'confirmBookingBtn') {
-                //         const roomId = localStorage.getItem('selectedRoom');
+                //         con                st                 roomId = localStorage.getItem('selectedRoom');
                 //         if (!roomId) {
                 //             alert('No room selected.');
                 //             return;

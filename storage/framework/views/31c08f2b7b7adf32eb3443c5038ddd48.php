@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('styles'); ?>
 <style>
 .booking-confirmation-wrapper {
@@ -131,7 +129,7 @@
         <!-- RIGHT: Payment Section -->
         <div class="booking-column payment-column">
             <h4><?php echo e(__('Payment Information')); ?></h4>
-            
+
             <div class="form-group">
                 <label><?php echo e(__('Full Name')); ?></label>
                 <input type="text" name="name" id="name" required placeholder="Brian Mwangi">
