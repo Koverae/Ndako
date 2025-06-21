@@ -382,7 +382,7 @@
         <div class="rooms-header">
             <h3>Rooms</h3>
             <div class="rooms-header-actions">
-                @if($selectedUnit)
+                @if($selectedUnit || $selectedFloor)
                     <button wire:click="clearUnitFilter" class="clear-filter-btn">Clear Filter</button>
                 @endif
 

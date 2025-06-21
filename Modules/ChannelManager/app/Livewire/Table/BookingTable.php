@@ -115,7 +115,7 @@ class BookingTable extends Table
             ->get()
             ->map(function ($booking) {
                 $status = strtolower($booking->status);
-                Log::debug("Booking {$booking->id} Status: {$status}, Unit ID: {$booking->property_unit_id}");
+                // Log::debug("Booking {$booking->id} Status: {$status}, Unit ID: {$booking->property_unit_id}");
                 return [
                     'id' => $booking->id,
                     'title' => $booking->unit->name ?? 'Unknown Unit',
@@ -168,13 +168,14 @@ class BookingTable extends Table
     public function selectFloor($floorId)
     {
         if (!$floorId) {
-            Log::debug("selectFloor called with null floorId, resetting selectedFloor");
+            // Log::debug("selectFloor called with null floorId, resetting selectedFloor");
             $this->selectedFloor = null;
             $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
             $this->loadBookings();
             return;
         }
-        Log::debug("selectFloor called with floorId: {$floorId}");
+
+        // Log::debug("selectFloor called with floorId: {$floorId}");
         $this->selectedFloor = $floorId;
         $this->units = PropertyUnit::isCompany(current_company()->id)
             ->where('floor_id', $floorId)
@@ -188,6 +189,8 @@ class BookingTable extends Table
     {
         Log::debug("clearUnitFilter called");
         $this->selectedUnit = null;
+        $this->selectedFloor = null;
+        $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
         $this->loadBookings();
     }
 
