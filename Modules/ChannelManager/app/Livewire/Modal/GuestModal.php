@@ -38,7 +38,7 @@ class GuestModal extends ModalComponent
             ->get();
     }
 
-    #[On('assign-created-guest')]
+    #[On('guest-added')]
     public function assignCreatedGuest($guestId)
     {
         // Find the guest by ID
@@ -46,7 +46,7 @@ class GuestModal extends ModalComponent
 
         // If guest exists, dispatch the event with the guest ID
         if ($guest) {
-            $this->dispatch('assign-created-guest', guest: $guestId);
+            $this->dispatch('assign-created-guest', guestId: $guestId);
             $this->dispatch('closeModal');
         } else {
             // Handle case where guest is not found (optional)

@@ -680,9 +680,9 @@ class Home extends Component
     }
 
     #[On('assign-created-guest')]
-    public function assignCreatedGuest($guest): void
+    public function assignCreatedGuest($guestId): void
     {
-        $this->selectedCustomerId = $guest;
+        $this->selectedCustomerId = $guestId;
         $this->guest = Guest::find($this->selectedCustomerId);
         if($this->order){
             $this->order->update([

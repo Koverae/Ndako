@@ -64,7 +64,7 @@ class AddGuestModal extends ModalComponent
         ]);
 
         $this->dispatch('load-guests');
-        $this->dispatch('assign-created-guest', guestId: $guest->id);
+        $this->dispatch('guest-added', guestId: $guest->id);
 
         $this->closeModal();
     }
