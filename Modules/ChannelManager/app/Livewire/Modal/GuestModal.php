@@ -13,6 +13,11 @@ class GuestModal extends ModalComponent
     public string $guestSearch = '';
     public $guests;
 
+    public static function modalMaxWidth(): string
+    {
+        return '2xl';
+    }
+
     public function mount(){
         $this->guests = Guest::isCompany(current_company()->id)->get();
     }
