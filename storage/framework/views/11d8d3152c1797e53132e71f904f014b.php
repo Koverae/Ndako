@@ -485,6 +485,8 @@
 
     <!-- Calendar -->
     <div id="calendar" class="rounded-lg" style="min-height: 500px;"></div>
+
+    
 </div>
 
 <script>
@@ -493,12 +495,16 @@
         initializeCalendar();
     });
 
-    Livewire.on('calendarUpdated', function() {
-            setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
-        });
     let calendar = null;
 
-    function initializeCalendar(eventsData = <?php echo json_encode($events ?? [], 15, 512) ?>) {
+    function initializeCalendar(eventsDataRaw = <?php echo json_encode($events ?? [], 15, 512) ?>) {
+        // Adjust end date ONLY for visual display
+        const eventsData = eventsDataRaw.map(event => ({
+            ...event,
+            // Only adjust end date for rendering purposes
+            displayEnd: addOneDay(event.end)
+        }));
+
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) {
             console.error('Calendar element not found');
@@ -526,12 +532,15 @@
                     }
                 });
             },
-            events: eventsData,
+            events: eventsData.map(event => ({
+                ...event,
+                end: event.displayEnd // Apply adjusted end date only here
+            })),
             timeZone: 'local',
             eventDrop: function(info) {
                 console.debug('Event dropped:', info.event);
-                const newStart = info.event.start ? info.event.start.toISOString() : null;
-                const newEnd = info.event.end ? info.event.end.toISOString() : null;
+                const newStart = info.event.start?.toISOString() ?? null;
+                const newEnd = addOneDay(info.event.end?.toISOString()); // Correct before sending
 
                 Livewire.dispatch('updateBookingDate', {
                     bookingId: info.event.id,
@@ -541,8 +550,8 @@
             },
             eventResize: function(info) {
                 console.debug('Event resized:', info.event);
-                const newStart = info.event.start ? info.event.start.toISOString() : null;
-                const newEnd = info.event.end ? info.event.end.toISOString() : null;
+                const newStart = info.event.start?.toISOString() ?? null;
+                const newEnd = subtractOneDay(info.event.end?.toISOString());
 
                 Livewire.dispatch('updateBookingDate', {
                     bookingId: info.event.id,
@@ -551,7 +560,6 @@
                 });
             },
             eventMouseEnter: function(info) {
-                console.debug('Event mouse enter:', info.event);
                 const event = info.event;
                 const tooltip = document.createElement('div');
                 tooltip.className = 'calendar-tooltip';
@@ -559,7 +567,7 @@
                     <strong>${event.extendedProps.reference}</strong><br>
                     <span>Guest: ${event.extendedProps.guest}</span><br>
                     <span>Room: ${event.extendedProps.room} - ${event.extendedProps.unitType}</span><br>
-                    <span>Stay: ${formatDate(event.start)} ~ ${formatDate(event.end)}</span><br>
+                    <span>Stay: ${formatDate(event.start)} ~ ${formatDate(subtractOneDay(event.end))}</span><br>
                     <span>Status: ${event.extendedProps.status}</span>
                 `;
                 document.body.appendChild(tooltip);
@@ -574,12 +582,10 @@
                 info.el.setAttribute('data-tooltip-id', event.id);
             },
             eventMouseLeave: function(info) {
-                console.debug('Event mouse leave:', info.event);
                 const tooltip = document.querySelector('.calendar-tooltip');
                 if (tooltip) tooltip.remove();
             },
             eventContent: function(info) {
-                console.debug('Rendering event content:', info.event);
                 const event = info.event;
                 const statusColor = getStatusColor(event.extendedProps.status);
 
@@ -596,7 +602,7 @@
                                 <div class="event-details">
                                     <span class="event-guest">${event.extendedProps.guest}</span>
                                     <span class="event-room">${event.extendedProps.room} - ${event.extendedProps.unitType}</span>
-                                    <span class="event-dates">${formatDate(event.start)} ~ ${formatDate(event.end)}</span>
+                                    <span class="event-dates">${formatDate(event.start)} ~ ${formatDate(subtractOneDay(event.end))}</span>
                                 </div>
                                 <div class="event-footer">
                                     <span class="event-channel">${event.extendedProps.channel}</span>
@@ -645,18 +651,12 @@
     });
 
     function getStatusColor(status) {
-        console.debug('Getting status color for:', status);
-        switch (status.toLowerCase()) {
-            case 'pending':
-                return '#fbc02d';
-            case 'confirmed':
-                return '#017e84';
-            case 'completed':
-                return '#1e88e5';
-            case 'canceled':
-                return '#e53935';
-            default:
-                return '#757575';
+        switch ((status ?? '').toLowerCase()) {
+            case 'pending': return '#fbc02d';
+            case 'confirmed': return '#017e84';
+            case 'completed': return '#1e88e5';
+            case 'canceled': return '#e53935';
+            default: return '#757575';
         }
     }
 
@@ -667,5 +667,21 @@
             day: 'numeric'
         });
     }
+
+    function addOneDay(dateStr) {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + 1);
+        return date.toISOString();
+    }
+
+    function subtractOneDay(dateStr) {
+        if (!dateStr) return null;
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() - 1);
+        return date.toISOString();
+    }
 </script>
+
+
+
 <?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/calendar.blade.php ENDPATH**/ ?>

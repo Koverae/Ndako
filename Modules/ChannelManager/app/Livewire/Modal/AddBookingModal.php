@@ -14,6 +14,11 @@ class AddBookingModal extends ModalComponent
         $this->endDate = $endDate;
     }
 
+    public static function modalMaxWidth(): string
+    {
+        return '2xl';
+    }
+
     public function render()
     {
         return view('channelmanager::livewire.modal.add-booking-modal');

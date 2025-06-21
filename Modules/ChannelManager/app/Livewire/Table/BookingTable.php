@@ -139,6 +139,11 @@ class BookingTable extends Table
         $this->dispatch('calendarUpdated', ['events' => $this->events]);
     }
 
+    // public function refreshEvents()
+    // {
+    //     $this->loadBookings();
+    // }
+
     public function getStatusColor($status)
     {
         return match ($status) {

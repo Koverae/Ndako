@@ -186,3 +186,187 @@
             }
         }
 </script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.debug('DOM loaded, initializing calendar');
+        initializeCalendar();
+    });
+
+    Livewire.on('calendarUpdated', function() {
+            setTimeout(() => initializeCalendar(), 100); // Small delay to allow Livewire to update the DOM
+        });
+    let calendar = null;
+
+    function initializeCalendar(eventsData = @json($events ?? [])) {
+        const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) {
+            console.error('Calendar element not found');
+            return;
+        }
+
+        if (calendar) {
+            console.debug('Destroying existing calendar');
+            calendar.destroy();
+        }
+
+        console.debug('Initializing calendar with events:', eventsData);
+
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: '{{ $options['initialView'] }}',
+            editable: {{ $options['editable'] ? 'true' : 'false' }},
+            selectable: {{ $options['selectable'] ? 'true' : 'false' }},
+            select: function(info) {
+                console.debug('Calendar select:', info);
+                Livewire.dispatch('openModal', {
+                    component: 'channelmanager::modal.add-booking-modal',
+                    arguments: {
+                        startDate: info.startStr,
+                        endDate: info.endStr
+                    }
+                });
+            },
+            events: eventsData,
+            timeZone: 'local',
+            eventDrop: function(info) {
+                console.debug('Event dropped:', info.event);
+                const newStart = info.event.start ? info.event.start.toISOString() : null;
+                const newEnd = info.event.end ? info.event.end.toISOString() : null;
+
+                Livewire.dispatch('updateBookingDate', {
+                    bookingId: info.event.id,
+                    start: newStart,
+                    end: newEnd
+                });
+            },
+            eventResize: function(info) {
+                console.debug('Event resized:', info.event);
+                const newStart = info.event.start ? info.event.start.toISOString() : null;
+                const newEnd = info.event.end ? info.event.end.toISOString() : null;
+
+                Livewire.dispatch('updateBookingDate', {
+                    bookingId: info.event.id,
+                    start: newStart,
+                    end: newEnd
+                });
+            },
+            eventMouseEnter: function(info) {
+                console.debug('Event mouse enter:', info.event);
+                const event = info.event;
+                const tooltip = document.createElement('div');
+                tooltip.className = 'calendar-tooltip';
+                tooltip.innerHTML = `
+                    <strong>${event.extendedProps.reference}</strong><br>
+                    <span>Guest: ${event.extendedProps.guest}</span><br>
+                    <span>Room: ${event.extendedProps.room} - ${event.extendedProps.unitType}</span><br>
+                    <span>Stay: ${formatDate(event.start)} ~ ${formatDate(event.end)}</span><br>
+                    <span>Status: ${event.extendedProps.status}</span>
+                `;
+                document.body.appendChild(tooltip);
+
+                let x = info.jsEvent.pageX + 10;
+                let y = info.jsEvent.pageY + 10;
+                if (x + 300 > window.innerWidth) x = info.jsEvent.pageX - 320;
+                if (y + 100 > window.innerHeight) y = info.jsEvent.pageY - 100;
+                tooltip.style.left = `${x}px`;
+                tooltip.style.top = `${y}px`;
+
+                info.el.setAttribute('data-tooltip-id', event.id);
+            },
+            eventMouseLeave: function(info) {
+                console.debug('Event mouse leave:', info.event);
+                const tooltip = document.querySelector('.calendar-tooltip');
+                if (tooltip) tooltip.remove();
+            },
+            eventContent: function(info) {
+                console.debug('Rendering event content:', info.event);
+                const event = info.event;
+                const statusColor = getStatusColor(event.extendedProps.status);
+
+                return {
+                    html: `
+                        <div class="fc-event-custom animate__animated animate__fadeIn" style="--status-color: ${statusColor};">
+                            <div class="event-content">
+                                <div class="event-header">
+                                    <span class="cursor-pointer event-reference" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.booking-modal', arguments: {booking: ${event.id}}})">
+                                        ${event.extendedProps.reference}
+                                    </span>
+                                    <span class="event-status-icon"></span>
+                                </div>
+                                <div class="event-details">
+                                    <span class="event-guest">${event.extendedProps.guest}</span>
+                                    <span class="event-room">${event.extendedProps.room} - ${event.extendedProps.unitType}</span>
+                                    <span class="event-dates">${formatDate(event.start)} ~ ${formatDate(event.end)}</span>
+                                </div>
+                                <div class="event-footer">
+                                    <span class="event-channel">${event.extendedProps.channel}</span>
+                                    <div class="event-actions">
+                                        <i class="cursor-pointer fas fa-user-cog event-action-icon" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: ${event.id}}})"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+                };
+            },
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            slotMinTime: '00:00:00',
+            slotMaxTime: '24:00:00',
+            height: 'auto',
+            contentHeight: 'auto'
+        });
+
+        calendar.render();
+        console.debug('Calendar rendered with events:', calendar.getEvents());
+    }
+
+    Livewire.on('calendarUpdated', function(data) {
+        console.log('Received calendarUpdated event with data:', data);
+        const events = data.events || [];
+        console.debug('Extracted events:', events);
+
+        if (!calendar) {
+            console.warn('Calendar not initialized, reinitializing');
+            initializeCalendar(events);
+            return;
+        }
+
+        if (!Array.isArray(events)) {
+            console.error('Invalid events data:', events);
+            initializeCalendar([]);
+            return;
+        }
+
+        console.debug('Reinitializing calendar with new events');
+        initializeCalendar(events);
+    });
+
+    function getStatusColor(status) {
+        console.debug('Getting status color for:', status);
+        switch (status.toLowerCase()) {
+            case 'pending':
+                return '#fbc02d';
+            case 'confirmed':
+                return '#017e84';
+            case 'completed':
+                return '#1e88e5';
+            case 'canceled':
+                return '#e53935';
+            default:
+                return '#757575';
+        }
+    }
+
+    function formatDate(date) {
+        return new Date(date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+</script>
