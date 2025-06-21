@@ -14,7 +14,7 @@ class GuestModal extends ModalComponent
     public $guests;
 
     public function mount(){
-        $this->loadGuests();
+        $this->guests = Guest::isCompany(current_company()->id)->get();
     }
 
     public function render()
@@ -23,13 +23,40 @@ class GuestModal extends ModalComponent
     }
 
     #[On('load-guests')]
-    protected function loadGuests(): void
+    // public function loadGuests(): void
+    // {
+    //     $this->guests = Guest::isCompany(current_company()->id)
+    //         ->where('name', 'like', '%' . $this->guestSearch . '%')
+    //         ->orWhere('email', 'like', '%' . $this->guestSearch . '%')
+    //         ->orWhere('phone', 'like', '%' . $this->guestSearch . '%')
+    //         ->take(10)
+    //         ->get();
+    // }
+
+    public function updatedGuestSearch()
     {
+        // Update guests based on guestSearch term
         $this->guests = Guest::isCompany(current_company()->id)
             ->where('name', 'like', '%' . $this->guestSearch . '%')
             ->orWhere('email', 'like', '%' . $this->guestSearch . '%')
-            ->take(10)
+            ->orWhere('phone', 'like', '%' . $this->guestSearch . '%')
             ->get();
+    }
+
+    #[On('assign-created-guest')]
+    public function assignCreatedGuest($guestId)
+    {
+        // Find the guest by ID
+        $guest = Guest::find($guestId);
+
+        // If guest exists, dispatch the event with the guest ID
+        if ($guest) {
+            $this->dispatch('assigned-guest', guest: $guestId);
+            $this->dispatch('closeModal');
+        } else {
+            // Handle case where guest is not found (optional)
+            session()->flash('error', 'Guest not found.');
+        }
     }
 
     public function selectGuest($guestId){
