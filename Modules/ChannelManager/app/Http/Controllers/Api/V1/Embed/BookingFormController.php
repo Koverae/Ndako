@@ -178,6 +178,7 @@ class BookingFormController extends Controller
             'checkIn' => $checkIn,
             'checkOut' => $checkOut,
             'nights' => $nights,
+            'people' => $request->query('people', 1), // Default to 1 person if not provided
             'totalPrice' => $totalPrice,
             ])->render();
     }
@@ -287,7 +288,7 @@ class BookingFormController extends Controller
             'property_unit_id' => $room->id,
             'guest_id' => $guest->id,
             // 'agent_id' => Auth::user()->id,
-            'guests' => $request->people,
+            'guests' => $request->people ?? 2,
             'check_in' => $request->check_in,
             'check_out' => $request->check_out,
             'unit_price' => $rateService->getDefaultRate($room->unitType->id)->price,
@@ -312,7 +313,7 @@ class BookingFormController extends Controller
         Log::info('Booking created successfully', ['booking_id' => $booking->id, 'guest_id' => $guest->id]);
         
         session()->forget('current_company');
-        
+
         // Optionally, you can redirect to a thank you page or return a success response
         return response()->json([
             'success' => true, 
