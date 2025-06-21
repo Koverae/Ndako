@@ -679,6 +679,26 @@ class Home extends Component
             ->show();
     }
 
+    #[On('assign-created-guest')]
+    public function assignCreatedGuest($guest): void
+    {
+        $this->selectedCustomerId = $guest;
+        $this->guest = Guest::find($this->selectedCustomerId);
+        if($this->order){
+            $this->order->update([
+                'customer_id' => $this->selectedCustomerId
+            ]);
+        }
+
+        LivewireAlert::title('New guest selected!')
+            ->text("{$this->guest->name} has been selected!")
+            ->success()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+    }
+
     public function deleteOrder($orderId){
         $order = PosOrder::find($orderId);
         $receipt_number = $order->receipt_number;
