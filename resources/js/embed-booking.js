@@ -131,6 +131,8 @@
                             room_id: document.getElementById('roomId').value,
                             check_in: document.getElementById('checkIn').value,
                             check_out: document.getElementById('checkOut').value,
+                            people: document.getElementById('people').value,
+                            total_amount: document.getElementById('total_price').value,
                             name: document.getElementById('name').value,
                             email: document.getElementById('email').value,
                             phone: document.getElementById('phone').value,

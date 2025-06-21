@@ -150,6 +150,7 @@
             <input type="hidden" name="room_id" id="roomId" value="{{ $room->id }}">
             <input type="hidden" name="check_in" id="checkIn" value="{{ $checkIn }}">
             <input type="hidden" name="check_out" id="checkOut" value="{{ $checkOut }}">
+            <input type="hidden" name="people" id="people" value="{{ $room->capacity }}">
             <input type="hidden" name="total_price" id="totalPrice" value="{{ $totalPrice ?? $room->price }}">
 
             <span id="confirmBookingBtn" class="confirm-payment-btn">
