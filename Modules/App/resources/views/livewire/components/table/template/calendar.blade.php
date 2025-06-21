@@ -129,6 +129,26 @@
             color: #1f2937;
             font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
         }
+        .floor-section{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .floor-section button {
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .floor-section button:hover {
+            background: linear-gradient(45deg, #0E6163, #2c8f91);
+            color: white;
+        }
+
         .rooms-header-actions {
             display: flex;
             gap: 0.5rem;
@@ -355,15 +375,15 @@
                 @if($selectedUnit)
                     <button wire:click="clearUnitFilter" class="clear-filter-btn">Clear Filter</button>
                 @endif
-                
+
                 @role('front-desk')
-                
+
                     @if($units->isNotEmpty())
                     @php
                         $startDate = now();
                         $endDate = now()->addDays(1);
                     @endphp
-                    
+
                     <button
                         onclick="Livewire.dispatch('openModal', {
                             component: 'channelmanager::modal.add-booking-modal',
@@ -380,6 +400,29 @@
                 @endrole
             </div>
         </div>
+        <div class="floor-section" style="margin-bottom: 1rem;">
+            <div class="flex flex-wrap gap-2">
+            <button
+                wire:click="selectFloor('')"
+                class="px-4 py-2 rounded-lg border transition-all duration-150
+                {{ !$selectedFloor ? 'bg-gradient-to-r from-[#0E6163] to-[#2c8f91] font-semibold shadow' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}"
+                style="min-width: 90px;"
+            >
+                All
+            </button>
+            @foreach($floors ?? [] as $floor)
+                <button
+                wire:click="selectFloor({{ $floor->id }})"
+                class="px-4 py-2 rounded-lg border transition-all duration-150
+                    {{ $selectedFloor == $floor->id ? 'bg-gradient-to-r from-[#0E6163] to-[#2c8f91] text-white font-semibold shadow' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}"
+                style="min-width: 90px;"
+                >
+                {{ $floor->name }}
+                </button>
+            @endforeach
+            </div>
+        </div>
+
         <div class="rooms-container">
             <div class="rooms-scroll">
                 @forelse($units as $unit)

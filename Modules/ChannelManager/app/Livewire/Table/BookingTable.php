@@ -13,6 +13,7 @@ use Modules\App\Livewire\Components\Table\Column;
 use Modules\App\Traits\Table\HasCalendar;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Services\Booking\BookingService;
+use Modules\Properties\Models\Property\PropertyFloor;
 use Modules\Properties\Models\Property\PropertyUnit;
 
 class BookingTable extends Table
@@ -21,8 +22,8 @@ class BookingTable extends Table
 
     public array $data = [];
     public $unitID;
-    public $selectedUnit = null;
-    public $units;
+    public $selectedUnit = null, $selectedFloor = null;
+    public $units, $floors;
     public $events = [];
     protected $bookingService;
 
@@ -38,6 +39,7 @@ class BookingTable extends Table
         $this->data = ['integration_status', 'last_sync_date'];
         $this->unitID = request()->query('unit', null);
         $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
+        $this->floors = PropertyFloor::isCompany(current_company()->id)->get();
         $this->options = array_merge([
             'initialView' => 'dayGridMonth',
             'editable' => true,

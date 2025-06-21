@@ -23,7 +23,7 @@
 
         <div class="calendar-legend">
             <span class="legend-item" style="background-color: #fbc02d;"></span> Pending
-            <span class="legend-item" style="background-color: #017E84;"></span> Confirmed
+            <span class="legend-item" style="background-color: #017E84;"></span> Confirmed t
             <span class="legend-item" style="background-color: #1e88e5;"></span> Completed
             <span class="legend-item" style="background-color: #e53935;"></span> Canceled
             <span class="legend-item" style="background-color: #757575;"></span> Fallback

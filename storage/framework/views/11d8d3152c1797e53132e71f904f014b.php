@@ -129,6 +129,26 @@
             color: #1f2937;
             font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
         }
+        .floor-section{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .floor-section button {
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .floor-section button:hover {
+            background: linear-gradient(45deg, #0E6163, #2c8f91);
+            color: white;
+        }
+
         .rooms-header-actions {
             display: flex;
             gap: 0.5rem;
@@ -355,15 +375,15 @@
                 <!--[if BLOCK]><![endif]--><?php if($selectedUnit): ?>
                     <button wire:click="clearUnitFilter" class="clear-filter-btn">Clear Filter</button>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                
+
                 <!--[if BLOCK]><![endif]--><?php if (\Illuminate\Support\Facades\Blade::check('role', 'front-desk')): ?>
-                
+
                     <!--[if BLOCK]><![endif]--><?php if($units->isNotEmpty()): ?>
                     <?php
                         $startDate = now();
                         $endDate = now()->addDays(1);
                     ?>
-                    
+
                     <button
                         onclick="Livewire.dispatch('openModal', {
                             component: 'channelmanager::modal.add-booking-modal',
@@ -380,6 +400,30 @@
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
             </div>
         </div>
+        <div class="floor-section" style="margin-bottom: 1rem;">
+            <div class="flex flex-wrap gap-2">
+            <button
+                wire:click="selectFloor('')"
+                class="px-4 py-2 rounded-lg border transition-all duration-150
+                <?php echo e(!$selectedFloor ? 'bg-gradient-to-r from-[#0E6163] to-[#2c8f91] font-semibold shadow' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'); ?>"
+                style="min-width: 90px;"
+            >
+                All
+            </button>
+            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floors ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $floor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <button
+                wire:click="selectFloor(<?php echo e($floor->id); ?>)"
+                class="px-4 py-2 rounded-lg border transition-all duration-150
+                    <?php echo e($selectedFloor == $floor->id ? 'bg-gradient-to-r from-[#0E6163] to-[#2c8f91] text-white font-semibold shadow' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'); ?>"
+                style="min-width: 90px;"
+                >
+                <?php echo e($floor->name); ?>
+
+                </button>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+            </div>
+        </div>
+
         <div class="rooms-container">
             <div class="rooms-scroll">
                 <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $units; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $unit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
@@ -613,4 +657,5 @@
             day: 'numeric'
         });
     }
-</script><?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/calendar.blade.php ENDPATH**/ ?>
+</script>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/App\resources/views/livewire/components/table/template/calendar.blade.php ENDPATH**/ ?>

@@ -12,6 +12,7 @@ use Modules\App\Livewire\Components\Navbar\ControlPanel;
 use Modules\App\Livewire\Components\Navbar\SwitchButton;
 use Modules\App\Services\ReportExportService;
 use Modules\ChannelManager\Models\Booking\Booking;
+use Modules\Properties\Models\Property\Property;
 
 class BookingPanel extends ControlPanel
 {
@@ -26,7 +27,7 @@ class BookingPanel extends ControlPanel
         if(Auth::user()->can('create_reservations')){
             $this->new = route('bookings.create');
         }
-        
+
         if($isForm){
             $this->showIndicators = true;
         }
@@ -38,6 +39,14 @@ class BookingPanel extends ControlPanel
         }else{
             $this->currentPage = "Bookings";
         }
+
+        $properties = Property::isCompany(current_company()->id)
+        ->pluck('name', 'id') // now it's an array like [1 => 'House', 2 => 'Apartment']
+        ->toArray();
+
+        $this->filterTypes = [
+            'property_id' => $properties,
+        ];
 
     }
 
