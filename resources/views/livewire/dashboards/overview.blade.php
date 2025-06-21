@@ -92,11 +92,6 @@
                                 {{ __('Orders') }}
                         </li>
                     </a>
-                    <a  href="{{ route('dashboard', ['dash' => 'products']) }}" wire:navigate>
-                        <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="{{ $dash == 'products' ? 'background-color: #E6F2F3 ;' : '' }} ">
-                                {{ __('Products') }}
-                        </li>
-                    </a>
                 </ul>
                 @endcan
 

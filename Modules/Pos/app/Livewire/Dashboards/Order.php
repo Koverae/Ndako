@@ -273,42 +273,29 @@ class Order extends Component
 
         // ✅ Summary Data (Example: Dashboard Stats)
         $summaryData = [
-            'Invoiced' => ['value' => format_currency($this->soldAmount), 'change' => format_currency($this->unpaidAmount)],
-            'Average Invoice' => ['value' => format_currency($this->averageOrderAmount), 'change' => $this->numberOfOrders],
+            'Sold' => ['value' => format_currency($this->soldAmount), 'change' => format_currency($this->unpaidAmount)],
+            'Average Order' => ['value' => format_currency($this->averageOrderAmount), 'change' => $this->numberOfOrders],
             'Days Sales Outstanding (DSO)' => ['value' => $this->dso, 'change' => "0%"],
         ];
 
-        $topInvoices = $this->orders->map(function ($invoice) {
-            return [
-                'reference' => $invoice->reference,
-                'guest' => $invoice->guest->name,
-                'agent' => $invoice->agent->name,
-                'status' => $this->getPaymentStatus($invoice->status),
-                'date' => Carbon::parse($invoice->date)->format('m/d/y'),
-                'revenue' => format_currency($invoice->total_amount)
-            ];
-        })
-        ->sortByDesc('revenue');
-
-        $topPayments = $this->payments->map(function ($payment) {
-            return [
-                'reference' => $payment->reference,
-                'invoice' => $payment->invoice->reference,
-                'date' => Carbon::parse($payment->date)->format('m/d/y'),
-                // 'status' => $this->getPaymentStatus($payment->status),
-                'amount' => format_currency($payment->amount)
-            ];
-        })
-        ->sortByDesc('amount');
-
         // Assign to detailed sections
         $detailedSections = [
-            'Top Invoices' => $topInvoices,
-            'Top Payments' => $topPayments,
+            'Top Orders' => $this->orders,
+            'Top Payments' => $this->payments,
+            'Top Categories' => $this->bestCategories,
+            'Top Products' => $this->bestProducts,
+            'Top Sessions' => $this->bestPosSessions,
+            'Top Guests' => $this->guestOrders->map(function ($guest) {
+                return [
+                    'name' => $guest->name,
+                    'orders_count' => $guest->orders_count,
+                    'total_revenue' => format_currency($guest->orders_sum_total_amount),
+                ];
+            })->sortByDesc('total_revenue')->values(),
         ];
 
         // ✅ Export Report
-        return $exportService->export('Invoicing Report', $summaryData, $detailedSections, 'xlsx');
+        return $exportService->export('Restaurant Report', $summaryData, $detailedSections, 'xlsx');
     }
 
     public function getPaymentStatus($status)
