@@ -136,17 +136,26 @@
             position: relative;
         }
         .floor-section button {
-            font-size: 0.875rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            scroll-snap-align: start;
+            /* flex: 0 0 18rem; */
+            padding: 1rem;
+            background-color: #ffffff;
+            background-image: linear-gradient(45deg, #f9fafb 25%, transparent 25%, transparent 50%, #f9fafb 50%, #f9fafb 75%, transparent 75%, transparent);
+            background-size: 4px 4px;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .floor-section button:hover {
-            background: linear-gradient(45deg, #0E6163, #2c8f91);
-            color: white;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .floor-section button.selected {
+            border: 2px solid transparent;
+            background: linear-gradient(#eff6ff, #eff6ff) padding-box, linear-gradient(45deg, #0E6163, #2c8f91) border-box;
         }
 
         .rooms-header-actions {
@@ -195,6 +204,7 @@
         .room-card {
             scroll-snap-align: start;
             flex: 0 0 18rem;
+
             padding: 1rem;
             background-color: #ffffff;
             background-image: linear-gradient(45deg, #f9fafb 25%, transparent 25%, transparent 50%, #f9fafb 50%, #f9fafb 75%, transparent 75%, transparent);
@@ -405,16 +415,16 @@
             <button
                 wire:click="selectFloor('')"
                 class="px-4 py-2 rounded-lg border transition-all duration-150
-                <?php echo e(!$selectedFloor ? 'bg-gradient-to-r from-[#0E6163] to-[#2c8f91] font-semibold shadow' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'); ?>"
+                <?php echo e(!$selectedFloor ? 'selected' : ''); ?>"
                 style="min-width: 90px;"
             >
                 All
             </button>
             <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floors ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $floor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <button
-                wire:click="selectFloor(<?php echo e($floor->id); ?>)"
+                wire:click="selectFloor('<?php echo e($floor->id); ?>')"
                 class="px-4 py-2 rounded-lg border transition-all duration-150
-                    <?php echo e($selectedFloor == $floor->id ? 'bg-gradient-to-r from-[#0E6163] to-[#2c8f91] text-white font-semibold shadow' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'); ?>"
+                    <?php echo e($selectedFloor == $floor->id ? 'selected' : ''); ?>"
                 style="min-width: 90px;"
                 >
                 <?php echo e($floor->name); ?>
