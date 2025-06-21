@@ -280,16 +280,33 @@ class Order extends Component
 
         // Assign to detailed sections
         $detailedSections = [
-            'Top Orders' => $this->orders,
-            'Top Payments' => $this->payments,
+            'Top Orders' => $this->orders->map(function ($order) {
+                return [
+                    'reference' => $order->reference,
+                    'date' => Carbon::parse($order->date)->format('Y-m-d'),
+                    'total_amount' => $order->total_amount,
+                    'paid_amount' => $order->paid_amount,
+                    'unpaid_amount' => $order->total_amount- $order->paid_amount,
+                    'status' => $this->getPaymentStatus($order->payment_status),
+                ];
+            })->sortByDesc('total_amount')->values(),
+            'Top Payments' => $this->payments->map(function ($payment) {
+                return [
+                    'reference' => $payment->reference ?? 'N/A',
+                    'order_reference' => $payment->order->reference ?? 'N/A',
+                    'date' => Carbon::parse($payment->date)->format('Y-m-d'),
+                    'amount' => $payment->amount,
+                    'status' => $this->getPaymentStatus($payment->status),
+                ];
+            })->sortByDesc('amount')->values(),
             'Top Categories' => $this->bestCategories,
             'Top Products' => $this->bestProducts,
             'Top Sessions' => $this->bestPosSessions,
             'Top Guests' => $this->guestOrders->map(function ($guest) {
                 return [
                     'name' => $guest->name,
-                    'orders_count' => $guest->orders_count,
-                    'total_revenue' => format_currency($guest->orders_sum_total_amount),
+                    'orders_count' => $guest->orders_count ?? 0,
+                    'total_revenue' => $guest->orders_sum_total_amount ?? 0,
                 ];
             })->sortByDesc('total_revenue')->values(),
         ];
@@ -300,9 +317,9 @@ class Order extends Component
 
     public function getPaymentStatus($status)
     {
-        if ($status == 'partial') {
+        if ($status == 'unpaid') {
             return 'Partially Paid';
-        } elseif ($status == 'pending') {
+        } elseif ($status == 'partial') {
             return 'Not Paid';
         } elseif ($status == 'paid') {
             return 'Paid';

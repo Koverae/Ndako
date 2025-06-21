@@ -100,12 +100,6 @@
 
                         </li>
                     </a>
-                    <a  href="<?php echo e(route('dashboard', ['dash' => 'products'])); ?>" wire:navigate>
-                        <li class="w-auto p-2 rounded cursor-pointer kover-navlink text-decoration-none panel-category" style="<?php echo e($dash == 'products' ? 'background-color: #E6F2F3 ;' : ''); ?> ">
-                                <?php echo e(__('Products')); ?>
-
-                        </li>
-                    </a>
                 </ul>
                 <?php endif; ?>
 
