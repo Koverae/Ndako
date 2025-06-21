@@ -23,15 +23,10 @@ class GuestModal extends ModalComponent
     }
 
     #[On('load-guests')]
-    // public function loadGuests(): void
-    // {
-    //     $this->guests = Guest::isCompany(current_company()->id)
-    //         ->where('name', 'like', '%' . $this->guestSearch . '%')
-    //         ->orWhere('email', 'like', '%' . $this->guestSearch . '%')
-    //         ->orWhere('phone', 'like', '%' . $this->guestSearch . '%')
-    //         ->take(10)
-    //         ->get();
-    // }
+    public function loadGuests(): void
+    {
+        $this->guests = Guest::isCompany(current_company()->id)->get();
+    }
 
     public function updatedGuestSearch()
     {
@@ -51,7 +46,7 @@ class GuestModal extends ModalComponent
 
         // If guest exists, dispatch the event with the guest ID
         if ($guest) {
-            $this->dispatch('assigned-guest', guest: $guestId);
+            $this->dispatch('assign-created-guest', guest: $guestId);
             $this->dispatch('closeModal');
         } else {
             // Handle case where guest is not found (optional)
