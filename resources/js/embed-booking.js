@@ -126,13 +126,17 @@
                 // 🔥 NEW: Event Listener for Booking Confirmation
                 document.addEventListener('click', function (e) {
                     if (e.target.id === 'confirmBookingBtn') {
-                        
+
+                        const btn = e.target;
+                        btn.disabled = true;
+                        btn.textContent = 'Processing...';
+
                         const data = {
                             room_id: document.getElementById('roomId').value,
                             check_in: document.getElementById('checkIn').value,
                             check_out: document.getElementById('checkOut').value,
                             people: document.getElementById('people').value,
-                            total_amount: document.getElementById('total_amount').value,
+                            total_amount: document.getElementById('totalPrice').value,
                             name: document.getElementById('name').value,
                             email: document.getElementById('email').value,
                             phone: document.getElementById('phone').value,

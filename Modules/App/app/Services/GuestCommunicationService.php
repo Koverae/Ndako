@@ -409,13 +409,13 @@ class GuestCommunicationService{
             }
 
             // Show success alert
-            LivewireAlert::title('Email Sent!')
-                ->text('Email sent to all recipients successfully.')
-                ->success()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            // LivewireAlert::title('Email Sent!')
+            //     ->text('Email sent to all recipients successfully.')
+            //     ->success()
+            //     ->position('top-end')
+            //     ->timer(4000)
+            //     ->toast()
+            //     ->show();
 
             // $this->closeModal();
 
@@ -426,13 +426,13 @@ class GuestCommunicationService{
                 'error' => $e->getMessage(),
             ]);
 
-            LivewireAlert::title('Email Failed')
-                ->text('We couldn’t send the email. Please try again later.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            // LivewireAlert::title('Email Failed')
+            //     ->text('We couldn’t send the email. Please try again later.')
+            //     ->error()
+            //     ->position('top-end')
+            //     ->timer(4000)
+            //     ->toast()
+            //     ->show();
         }
     }
 }

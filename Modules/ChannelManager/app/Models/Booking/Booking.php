@@ -2,6 +2,7 @@
 
 namespace Modules\ChannelManager\Models\Booking;
 
+use App\Models\Company\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -88,6 +89,10 @@ class Booking extends Model
 
     public function invoice() {
         return $this->hasOne(BookingInvoice::class);
+    }
+
+    public function company() {
+        return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 
     public function unit() {

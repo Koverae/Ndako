@@ -150,6 +150,7 @@
             <input type="hidden" name="room_id" id="roomId" value="<?php echo e($room->id); ?>">
             <input type="hidden" name="check_in" id="checkIn" value="<?php echo e($checkIn); ?>">
             <input type="hidden" name="check_out" id="checkOut" value="<?php echo e($checkOut); ?>">
+            <input type="hidden" name="people" id="people" value="<?php echo e($room->capacity); ?>">
             <input type="hidden" name="total_price" id="totalPrice" value="<?php echo e($totalPrice ?? $room->price); ?>">
 
             <span id="confirmBookingBtn" class="confirm-payment-btn">

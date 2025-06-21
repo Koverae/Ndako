@@ -22,6 +22,7 @@ use Modules\RevenueManager\Services\Pricing\RateService;
 use Modules\App\Services\GuestCommunicationService;
 use Modules\ChannelManager\Services\Booking\BookingService;
 use Illuminate\Support\Str;
+use Modules\Properties\Models\Property\Property;
 
 class BookingFormController extends Controller
 {
@@ -330,7 +331,7 @@ class BookingFormController extends Controller
             ],
         ]);
 
-        event(new NotificationEvent($notification));
+        // event(new NotificationEvent($notification));
 
         // Send Email
         $this->sendBookingConfirmationEmail($booking);
@@ -394,21 +395,22 @@ class BookingFormController extends Controller
             'guest_id' => (int) $booking->guest_id, // Ensure integer
             'booking_id' => (int) $booking->id, // Ensure integer
         ];
+        $property = Property::find($booking->unit->property_id);
 
         $subjectReplace = [
             $booking->reference,
-            current_property()->name ?? 'Hotel',
+            $property->name ?? 'Hotel',
         ];
 
         $contentReplace = [
-            $booking->guest->name ?? 'Arden BOUET',
+            $booking->guest->name ?? 'Brian Mwangi',
             $booking->reference,
-            current_property()->name,
+            $property->name,
             // format_currency($booking->amount ?? 0),
             Carbon::parse($booking->check_in)->format('d M Y'),
             Carbon::parse($booking->check_out)->format('d M Y'),
             format_currency($booking->total_amount ?? 0),
-            current_company()->name
+            $booking->company->name ?? 'Mamba Resorts'
         ];
 
         $checkIn = Carbon::parse($booking->check_in);
