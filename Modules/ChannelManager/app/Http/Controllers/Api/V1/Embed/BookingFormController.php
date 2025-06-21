@@ -4,6 +4,8 @@ namespace Modules\ChannelManager\Http\Controllers\Api\V1\Embed;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client\ApiClient;
+use Modules\App\Events\NotificationEvent;
+use Modules\App\Models\Notification\Notification;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,10 +19,14 @@ use Modules\Properties\Models\Property\PropertyUnit;
 use Modules\Properties\Models\Property\PropertyUnitType;
 use Modules\RevenueManager\Models\Accounting\Journal;
 use Modules\RevenueManager\Services\Pricing\RateService;
+use Modules\App\Services\GuestCommunicationService;
+use Modules\ChannelManager\Services\Booking\BookingService;
 use Illuminate\Support\Str;
 
 class BookingFormController extends Controller
 {
+    
+
     public function getEmbedConfig(Request $request)
     {
         $publicKey = $request->header('X-API-Key');
@@ -293,9 +299,9 @@ class BookingFormController extends Controller
             'check_out' => $request->check_out,
             'unit_price' => $rateService->getDefaultRate($room->unitType->id)->price,
             'paid_amount' => $paidAmount,
-            'due_amount' => $request->total_amount,
-            'total_amount' => $request->total_amount,
-            'status' => $request->status,
+            'due_amount' => $request->total_amount ?? 0,
+            'total_amount' => $request->total_amount ?? 0,
+            'status' => $request->status ?? 'pending',
             'payment_status' => 'unpaid',
             'invoice_status' => 'not_invoiced',
             // Add the check-in and check-out status fields
@@ -308,10 +314,27 @@ class BookingFormController extends Controller
         $booking->unit->update([
             'status' => 'reserved'
         ]);
+
         $this->createInvoice($booking);
         
         Log::info('Booking created successfully', ['booking_id' => $booking->id, 'guest_id' => $guest->id]);
         
+        // Send Notification
+        $notification = Notification::create([
+            'user_id' => 1,
+            'company_id' => $booking->company_id,
+            'type' => 'booking.created',
+            'data' => [
+                'message' => "New booking #{$booking->reference} for {$booking->guest->name}",
+                'booking_id' => $booking->id,
+            ],
+        ]);
+
+        event(new NotificationEvent($notification));
+
+        // Send Email
+        $this->sendBookingConfirmationEmail($booking);
+
         session()->forget('current_company');
 
         // Optionally, you can redirect to a thank you page or return a success response
@@ -330,7 +353,7 @@ class BookingFormController extends Controller
             'guest_id' => $booking->guest_id,
             'date' => now(),
             'due_date' => $booking->check_out,
-            'payment_status' => $booking->payment_status,
+            'payment_status' => 'pending',
             'agent_id' => null,
             'terms' => $booking->terms,
             'total_amount' => $booking->total_amount,
@@ -362,6 +385,62 @@ class BookingFormController extends Controller
         $booking->update([
             'invoice_status' => 'invoiced'
         ]);
+    }
+
+    // Send Email
+    public function sendBookingConfirmationEmail($booking){
+
+        $model = [
+            'guest_id' => (int) $booking->guest_id, // Ensure integer
+            'booking_id' => (int) $booking->id, // Ensure integer
+        ];
+
+        $subjectReplace = [
+            $booking->reference,
+            current_property()->name ?? 'Hotel',
+        ];
+
+        $contentReplace = [
+            $booking->guest->name ?? 'Arden BOUET',
+            $booking->reference,
+            current_property()->name,
+            // format_currency($booking->amount ?? 0),
+            Carbon::parse($booking->check_in)->format('d M Y'),
+            Carbon::parse($booking->check_out)->format('d M Y'),
+            format_currency($booking->total_amount ?? 0),
+            current_company()->name
+        ];
+
+        $checkIn = Carbon::parse($booking->check_in);
+        $checkOut = Carbon::parse($booking->check_out);
+        $nights = $checkIn->diffInDays($checkOut);
+
+        $data = [
+            'total_amount' => format_currency($booking->total_amount ?? 0),
+            'paid_amount' => format_currency($booking->paid_amount ?? 0),
+            'reference' => $booking->reference,
+            'booking_reference' => $booking->reference,
+            'date' => $booking->date,
+            'check_in' => $booking->check_in,
+            'check_out' => $booking->check_out,
+            'room' => $booking->unit->name ." ~ ". $booking->unit->unitType->name,
+            'guest_count' => $booking->unit->unitType->capacity,
+            'nights' => $nights
+            // 'company_phone' => '+254 123 456 789',
+        ];
+
+        $view = "app::emails.booking-confirmation";
+
+        // Send Payment Receipt Email
+        $guestCommunicationService = new GuestCommunicationService();
+        $guestCommunicationService->initiateTemplate(
+            1,
+            $model,
+            $subjectReplace,
+            $contentReplace,
+            $data,
+            $view
+        );
     }
 
 }
