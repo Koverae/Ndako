@@ -36,7 +36,7 @@
     window.Livewire.on('reset-inactivity-timer', resetTimer);
 ">
         <!-- Lock Screen -->
-        <div x-show="isLocked" style="z-index: 99999;" class="fixed inset-0 flex items-center justify-center bg-opacity-75 bg-body-secondary backdrop-blur animate-fade-in">
+        <div x-show="isLocked" style="z-index: 99999;" class="fixed inset-0 flex items-center justify-center bg-opacity-75 d-print-none bg-body-secondary backdrop-blur animate-fade-in">
             <div class="relative flex flex-col items-center justify-center w-full h-full bg-white">
                 <!-- Top Bar: Date/Time (left) and Logo (right) -->
                 <div class="top-0 px-4 py-4 position-absolute start-0 end-0 d-flex justify-content-between align-items-center" style="width: 100%;">
@@ -204,7 +204,7 @@
 
 
         <!-- Regiter -->
-        <div class="row {{ $interface == 'register' ? '' : 'd-none' }}">
+        <div class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none">
             <!-- Product Section -->
             <section class="container-fluid {{ $tab == 'cart' ? 'd-none d-lg-block' : '' }} col-lg-7 col-md-12" style="height: 100vh;" id="product-box">
                 <!-- Search Bar -->
@@ -606,7 +606,7 @@
         <!-- Orders -->
 
         <!-- Orders -->
-        <div class="order-container overflow-y-auto bg-white {{ $interface == 'orders' ? '' : 'd-none' }}" style="height: 100vh;">
+        <div class="order-container d-print-none overflow-y-auto bg-white {{ $interface == 'orders' ? '' : 'd-none' }}" style="height: 100vh;">
             <div class="p-6">
                 <h2 class="mb-6 text-2xl font-bold text-gray-800">{{ __('Order History') }}</h2>
 
