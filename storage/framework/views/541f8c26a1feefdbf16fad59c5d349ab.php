@@ -32,7 +32,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<div class="row gap-1 justify-content-md-center <?php echo e($this->currentStep == $value->step ? '' : 'd-none'); ?>">
+<div class="row gap-1 overflow-y-auto justify-content-md-center <?php echo e($this->currentStep == $value->step ? '' : 'd-none'); ?>"  style="max-height: 80vh;">
 
     <div class="border shadow-sm col-12 col-md-8 card">
         <div class="card-body">
@@ -90,7 +90,7 @@ unset($__defined_vars); ?>
                 
                 <!--[if BLOCK]><![endif]--><?php if($this->availableRooms->count() >= $this->perPage): ?>
                 <button wire:click="loadMore"
-                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        class="px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-700">
                     Load More
                 </button>
                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
@@ -98,8 +98,9 @@ unset($__defined_vars); ?>
             <!-- Available Rooms ENd -->
         </div>
     </div>
+
     <!--[if BLOCK]><![endif]--><?php if($this->guest): ?>
-    <div class="shadow-sm col-12 col-md-3 card" style="max-height: 450px;">
+    <div class="shadow-sm col-12 d-none d-lg-block col-md-3 card" style="max-height: 450px;">
         <div class="card-body">
             <img src="<?php echo e($this->guest->avatar ? Storage::url('avatars/' . $this->guest->avatar) . '?v=' . time() : asset('assets/images/default/user.png')); ?>" alt="<?php echo e($this->guest->name); ?>" class="img img-fluid" height="350px" width="350px">
             <div class="mt-2">

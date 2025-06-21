@@ -2,7 +2,7 @@
     'value',
 ])
 
-<div class="row gap-1 justify-content-md-center {{ $this->currentStep == $value->step ? '' : 'd-none' }}">
+<div class="row gap-1 overflow-y-auto justify-content-md-center {{ $this->currentStep == $value->step ? '' : 'd-none' }}"  style="max-height: 80vh;">
 
     <div class="border shadow-sm col-12 col-md-8 card">
         <div class="card-body">
@@ -59,7 +59,7 @@
                 
                 @if ($this->availableRooms->count() >= $this->perPage)
                 <button wire:click="loadMore"
-                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        class="px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-700">
                     Load More
                 </button>
                 @endif

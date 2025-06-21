@@ -1,12 +1,12 @@
 <div>
-    <div class="modal-content rounded-lg shadow-lg border-0">
+    <div class="border-0 rounded-lg shadow-lg modal-content">
         <div class="modal-header">
-            <h5 class="modal-title font-semibold">{{ __("Opening Control") }}</h5>
+            <h5 class="font-semibold modal-title">{{ __("Opening Control") }}</h5>
             <button type="button" class="btn-close" wire:click="$dispatch('closeModal')" aria-label="Close"></button>
         </div>
 
         <form wire:submit.prevent="open">
-            <div class="modal-body pt-4 pb-2">
+            <div class="pt-4 pb-2 modal-body">
                 <div class="mb-4">
                     <label for="opening_cash" class="form-label fw-bold">{{ __('Opening Cash') }}</label>
                     <div class="input-group">
@@ -21,7 +21,7 @@
                     @error('opening_note') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
             </div>
-            <div class="modal-footer bg-light rounded-b-lg">
+            <div class="rounded-b-lg modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" wire:click="$dispatch('closeModal')">{{ __('Discard') }}</button>
                 <button type="submit" class="btn btn-primary">{{ __('Open Register') }}</button>
             </div>
