@@ -30,7 +30,7 @@ class PosOrderDetail extends Model
     }
 
     public function order() {
-        return $this->belongsTo(PosOrder::class, 'order_id', 'id');
+        return $this->belongsTo(PosOrder::class, 'pos_order_id', 'id');
     }
 
     public function product() {

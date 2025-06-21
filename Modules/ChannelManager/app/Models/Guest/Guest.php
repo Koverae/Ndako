@@ -10,6 +10,7 @@ use Modules\App\Traits\Files\HasImportLogic;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\Settings\Models\Localization\Country;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Modules\Pos\Models\Order\PosOrder;
 
 class Guest extends Model
 {
@@ -63,6 +64,10 @@ class Guest extends Model
 
     public function bookings() {
         return $this->hasMany(Booking::class, 'guest_id', 'id');
+    }
+
+    public function orders() {
+        return $this->hasMany(PosOrder::class, 'customer_id', 'id');
     }
 
     public function country() {

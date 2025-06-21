@@ -72,7 +72,7 @@
             <div class="gap-2 mb-3 row">
 
                 <!-- Sales -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
                         <h3 class="h3"><?php echo e(__('Sold')); ?></h3>
@@ -86,7 +86,7 @@
                 <!-- Sales End -->
 
                 <!-- Average Order -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <h3 class="h3"><?php echo e(__('Average Order')); ?></h3>
@@ -99,19 +99,33 @@
                 </div>
                 <!-- Average Order End -->
 
-                <!-- DSO -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
+                <!-- Best Product -->
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3"><?php echo e(__('Days Sales Outstanding (DSO)')); ?></h3>
+                        <h3 class="h3"><?php echo e(__('Best Product')); ?></h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;"><?php echo e($dso); ?> <?php echo e(__('days')); ?></h3>
-                        <span class="text-muted"><?php echo e(__('in current year')); ?></span>
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($bestProduct['name']); ?></h3>
+                        <span class="text-muted"><?php echo e($bestProduct['total_orders'] ?? 0); ?> <?php echo e(__('orders')); ?></span>
                     </div>
                     </div>
                 </div>
-                <!-- DSO End -->
+                <!-- Best Product End -->
+
+                <!-- Best Category -->
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3"><?php echo e(__('Best Category')); ?></h3>
+                    </div>
+                    <div class="text-center text-truncate">
+                        <h3 class="h3" style="font-size: 40px;"><?php echo e($bestCategory['name']); ?></h3>
+                        <span class="text-muted"><?php echo e($bestCategory['total_orders'] ?? 0); ?> <?php echo e(__('orders')); ?></span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Best Category End -->
 
             </div>
 
@@ -291,16 +305,18 @@
                         <thead>
                             <tr>
                                 <th><?php echo e(__('Top Sessions')); ?></th>
+                                <th><?php echo e(__('Closing Date')); ?></th>
                                 <th><?php echo e(__('N° Orders')); ?></th>
                                 <th><?php echo e(__('Revenue')); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $bestProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $bestPosSessions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td><?php echo e($product['name']); ?></td>
-                                <td><?php echo e($product['total_orders']); ?></td>
-                                <td><?php echo e(__(format_currency($product['total_revenue']))); ?></td>
+                                <td><?php echo e($session['reference']); ?></td>
+                                <td><?php echo e(\Carbon\Carbon::parse($session['closing_date'])->format('m/d/y') ?? 'N/A'); ?></td>
+                                <td><?php echo e($session['total_orders']); ?></td>
+                                <td><?php echo e(__(format_currency($session['total_revenue']))); ?></td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr></tr>
@@ -309,6 +325,38 @@
                     </table>
                 </div>
                 <!-- Top Sessions End -->
+
+                <!-- Top Guests -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            <?php echo e(__('Top Guests')); ?>
+
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th><?php echo e(__('Guest')); ?></th>
+                                <th><?php echo e(__('Orders')); ?></th>
+                                <th><?php echo e(__('Revenue')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $guestOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $guest): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td><?php echo e($guest->name); ?></td>
+                                <td><?php echo e($guest->orders_count); ?></td>
+                                <td><?php echo e(format_currency($guest->orders_sum_total_amount)); ?></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr></tr>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Guests End -->
 
             </div>
 

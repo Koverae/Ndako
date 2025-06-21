@@ -68,7 +68,7 @@
             <div class="gap-2 mb-3 row">
 
                 <!-- Sales -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
                         <h3 class="h3">{{ __('Sold') }}</h3>
@@ -82,7 +82,7 @@
                 <!-- Sales End -->
 
                 <!-- Average Order -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card">
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <h3 class="h3">{{ __('Average Order') }}</h3>
@@ -95,19 +95,33 @@
                 </div>
                 <!-- Average Order End -->
 
-                <!-- DSO -->
-                <div class="p-2 rounded col-sm-12 col-lg-3 k-dash-card pink">
+                <!-- Best Product -->
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
                     <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <h3 class="h3">{{ __('Days Sales Outstanding (DSO)') }}</h3>
+                        <h3 class="h3">{{ __('Best Product') }}</h3>
                     </div>
                     <div class="text-center text-truncate">
-                        <h3 class="h3" style="font-size: 40px;">{{ $dso }} {{ __('days') }}</h3>
-                        <span class="text-muted">{{ __('in current year') }}</span>
+                        <h3 class="h3" style="font-size: 40px;">{{ $bestProduct['name'] }}</h3>
+                        <span class="text-muted">{{ $bestProduct['total_orders'] ?? 0 }} {{ __('orders') }}</span>
                     </div>
                     </div>
                 </div>
-                <!-- DSO End -->
+                <!-- Best Product End -->
+
+                <!-- Best Category -->
+                <div class="p-2 rounded col-sm-12 col-lg-5 k-dash-card pink">
+                    <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <h3 class="h3">{{ __('Best Category') }}</h3>
+                    </div>
+                    <div class="text-center text-truncate">
+                        <h3 class="h3" style="font-size: 40px;">{{ $bestCategory['name'] }}</h3>
+                        <span class="text-muted">{{ $bestCategory['total_orders'] ?? 0 }} {{ __('orders') }}</span>
+                    </div>
+                    </div>
+                </div>
+                <!-- Best Category End -->
 
             </div>
 
@@ -278,16 +292,18 @@
                         <thead>
                             <tr>
                                 <th>{{ __('Top Sessions') }}</th>
+                                <th>{{ __('Closing Date') }}</th>
                                 <th>{{ __('N° Orders') }}</th>
                                 <th>{{ __('Revenue') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($bestProducts as $key => $product)
+                            @forelse($bestPosSessions as $key => $session)
                             <tr>
-                                <td>{{ $product['name'] }}</td>
-                                <td>{{ $product['total_orders'] }}</td>
-                                <td>{{ __(format_currency($product['total_revenue'])) }}</td>
+                                <td>{{ $session['reference'] }}</td>
+                                <td>{{ \Carbon\Carbon::parse($session['closing_date'])->format('m/d/y') ?? 'N/A' }}</td>
+                                <td>{{ $session['total_orders'] }}</td>
+                                <td>{{ __(format_currency($session['total_revenue'])) }}</td>
                             </tr>
                             @empty
                             <tr></tr>
@@ -296,6 +312,37 @@
                     </table>
                 </div>
                 <!-- Top Sessions End -->
+
+                <!-- Top Guests -->
+                <div class="p-0 k-dash-category col-md-12 col-lg-5">
+                    <!-- separator -->
+                    <div class="g-col-sm-2">
+                        <div class="m-0 mt-3 k_horizontal_separator text-uppercase fw-bolder small">
+                            {{ __('Top Guests') }}
+                        </div>
+                    </div>
+                    <table class="k-borderless-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Guest') }}</th>
+                                <th>{{ __('Orders') }}</th>
+                                <th>{{ __('Revenue') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($guestOrders as $key => $guest)
+                            <tr>
+                                <td>{{ $guest->name }}</td>
+                                <td>{{ $guest->orders_count }}</td>
+                                <td>{{ format_currency($guest->orders_sum_total_amount) }}</td>
+                            </tr>
+                            @empty
+                            <tr></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Top Guests End -->
 
             </div>
 

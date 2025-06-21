@@ -6,6 +6,7 @@ use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\App\Services\ReportExportService;
+use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Pos\Models\Floor\FloorPlan;
 use Modules\Pos\Models\Order\PosOrder;
 use Modules\Pos\Models\Order\PosOrderPayment;
@@ -18,7 +19,7 @@ class Order extends Component
 {
     public $period = 1, $restaurant;
     public $soldAmount, $unpaidAmount, $averageOrderAmount, $numberOfOrders, $dso, $orders, $payments;
-    public $restaurants, $floors, $unitTypes, $mothlyOrders, $bestCategories, $bestProducts, $bestPosSessions;
+    public $restaurants, $floors, $unitTypes, $mothlyOrders, $bestCategories, $bestProducts, $bestPosSessions, $bestCategory, $bestProduct, $guestOrders;
     public $startDate, $endDate;
 
     public function mount(){
@@ -40,23 +41,25 @@ class Order extends Component
         $this->floors = FloorPlan::isCompany(current_company()->id)->isPos($this->restaurant)->get();
 
         $orders = PosOrder::isCompany(current_company()->id)
-        ->whereBetween('date', [$this->startDate, $this->endDate])
-        ->select(
-            DB::raw('SUM(total_amount) as total_amount'),
-            DB::raw('SUM(total_amount - paid_amount) as total_unpaid')
-        )
-        ->first();
+        ->where('status', 'receipt')
+            ->whereBetween('date', [$this->startDate, $this->endDate])
+                ->select(
+                    DB::raw('SUM(total_amount) as total_amount'),
+                    DB::raw('SUM(total_amount - paid_amount) as total_unpaid')
+                )
+                ->first();
 
         $this->soldAmount = $orders->total_amount ?? 0;
         $this->unpaidAmount = $orders->total_unpaid ?? 0;
 
         $orderStats = PosOrder::isCompany(current_company()->id)
-        ->whereBetween('date', [$this->startDate, $this->endDate])
-        ->select(
-            DB::raw('AVG(total_amount) as average_order_amount'),
-            DB::raw('COUNT(id) as number_of_orders')
-        )
-        ->first();
+        ->where('status', 'receipt')
+            ->whereBetween('date', [$this->startDate, $this->endDate])
+                ->select(
+                    DB::raw('AVG(total_amount) as average_order_amount'),
+                    DB::raw('COUNT(id) as number_of_orders')
+                )
+                ->first();
 
         $this->averageOrderAmount = round($orderStats->average_order_amount) ?? 0;
         $this->numberOfOrders = $orderStats->number_of_orders ?? 0;
@@ -73,12 +76,13 @@ class Order extends Component
         }
 
         $this->orders = PosOrder::isCompany(current_company()->id)
-        ->whereBetween('date', [$this->startDate, $this->endDate])
-           ->when($this->restaurant, function ($query) {
-                $query->where('pos_id', $this->restaurant);
-            })
-            ->orderByDesc('total_amount')
-                ->get();
+        ->where('status', 'receipt')
+            ->whereBetween('date', [$this->startDate, $this->endDate])
+                ->when($this->restaurant, function ($query) {
+                        $query->where('pos_id', $this->restaurant);
+                    })
+                    ->orderByDesc('total_amount')
+                        ->get();
 
         $this->payments = PosOrderPayment::isCompany(current_company()->id)
         ->whereBetween('date', [$this->startDate, $this->endDate])
@@ -99,10 +103,16 @@ class Order extends Component
             })
             ->with(['products' => function ($query) {
             $query->withCount(['details as details_count' => function ($subQuery) {
-                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                    $subQuery->whereHas('order', function ($query) {
+                        $query->where('status', 'receipt');
+                    })
+                    ->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }])
                 ->withSum(['details as details_sum_sub_total' => function ($subQuery) {
-                $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                    $subQuery->whereHas('order', function ($query) {
+                        $query->where('status', 'receipt');
+                    })
+                    ->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }], 'sub_total');
             }])
             ->get()
@@ -119,16 +129,24 @@ class Order extends Component
             ->sortByDesc('total_revenue')
             ->values();
 
+            $this->bestCategory = $this->bestCategories->first(); // Get the top category
+
             // Fetch best selling products with aggregated revenue and order count
             $this->bestProducts = Product::isCompany(current_company()->id)
                 ->when($this->restaurant, function ($query) {
                     $query->where('pos_id', $this->restaurant);
                 })
                 ->withCount(['details as details_count' => function ($subQuery) {
-                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                    $subQuery->whereHas('order', function ($query) {
+                        $query->where('status', 'receipt');
+                    })
+                    ->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }])
                 ->withSum(['details as details_sum_sub_total' => function ($subQuery) {
-                    $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                    $subQuery->whereHas('order', function ($query) {
+                        $query->where('status', 'receipt');
+                    })
+                    ->whereBetween('created_at', [$this->startDate, $this->endDate]);
                 }], 'sub_total')
                 ->get()
                 ->map(function ($product) {
@@ -140,21 +158,28 @@ class Order extends Component
                 })
                 ->sortByDesc('total_revenue')
                 ->values();
-                // Fetch best POS sessions with aggregated revenue and order count
-                $this->bestPosSessions = PosSession::isCompany(current_company()->id)
-                    ->when($this->restaurant, function ($query) {
+
+            $this->bestProduct = $this->bestProducts->first(); // Get the top product
+
+            // Fetch best POS sessions with aggregated revenue and order count
+            $this->bestPosSessions = PosSession::isCompany(current_company()->id)
+                ->when($this->restaurant, function ($query) {
                         $query->where('pos_id', $this->restaurant);
                     })
                     ->withCount(['orders as orders_count' => function ($subQuery) {
-                        $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+                        $subQuery->where('status', 'receipt')
+                            ->whereBetween('created_at', [$this->startDate, $this->endDate]);
                     }])
                     ->withSum(['orders as orders_sum_total_amount' => function ($subQuery) {
-                        $subQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
+
+                        $subQuery->where('status', 'receipt')
+                            ->whereBetween('created_at', [$this->startDate, $this->endDate]);
                     }], 'total_amount')
                     ->get()
                     ->map(function ($session) {
                         return [
-                            'name' => $session->name,
+                            'reference' => $session->reference,
+                            'closing_date' => $session->closing_date,
                             'total_orders' => $session->orders_count ?? 0,
                             'total_revenue' => $session->orders_sum_total_amount ?? 0,
                         ];
@@ -162,6 +187,31 @@ class Order extends Component
                     ->sortByDesc('total_revenue')
                     ->values();
 
+
+        $this->guestOrders = Guest::isCompany(current_company()->id)
+            ->with(['orders' => function($query) {
+            $query->where('status', 'receipt')
+                ->whereBetween('date', [$this->startDate, $this->endDate])
+                ->when($this->restaurant, function ($q) {
+                $q->where('pos_id', $this->restaurant);
+                });
+            }])
+            ->withCount(['orders as orders_count' => function ($query) {
+            $query->where('status', 'receipt')
+                ->whereBetween('date', [$this->startDate, $this->endDate])
+                ->when($this->restaurant, function ($q) {
+                $q->where('pos_id', $this->restaurant);
+                });
+            }])
+            ->withSum(['orders as orders_sum_total_amount' => function ($query) {
+            $query->where('status', 'receipt')
+                ->whereBetween('date', [$this->startDate, $this->endDate])
+                ->when($this->restaurant, function ($q) {
+                $q->where('pos_id', $this->restaurant);
+                });
+            }], 'total_amount')
+            ->orderByDesc('orders_sum_total_amount')
+            ->get();
 
     }
 
@@ -196,14 +246,15 @@ class Order extends Component
         $endOfYear = now()->endOfYear();
 
         $orders = PosOrder::isCompany(current_company()->id)
-            ->when($this->restaurant, function ($query) {
-                $query->where('pos_id', $this->restaurant);
-            })
-            ->whereBetween('date', [$startOfYear, $endOfYear])
-            ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(total_amount) as total_revenue, SUM(total_amount - paid_amount) as total_unpaid')
-            ->groupBy('year', 'month')
-            ->orderByRaw('year ASC, month ASC')
-            ->get();
+            ->where('status', 'receipt')
+                ->when($this->restaurant, function ($query) {
+                    $query->where('pos_id', $this->restaurant);
+                })
+                ->whereBetween('date', [$startOfYear, $endOfYear])
+                    ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(total_amount) as total_revenue, SUM(total_amount - paid_amount) as total_unpaid')
+                    ->groupBy('year', 'month')
+                        ->orderByRaw('year ASC, month ASC')
+                        ->get();
 
         return $orders->map(fn ($invoice) => [
             'month'   => Carbon::create($invoice->year, $invoice->month, 1)->format('F Y'),
