@@ -116,7 +116,7 @@ class PropertyForm extends LightWeightForm
         return [
             Capsule::make('units', __('Property Units'), __('Units assigned to the property'), 'link', 'fa fa-home-user', route('properties.units.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => $this->property ? $this->property->units->count() : 0]),
             // Capsule::make('inventory-items', __('Inventory Items'), __('Inventory items assigned to the property'), 'link', 'fa fa-warehouse'),
-            Capsule::make('tenants', __('Guest/Tenants'), __('Inventory items assigned to the property'), 'link', 'fa fa-users',   route($this->property->isHospitality() ? 'guests.lists' : 'tenants.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => 0]),
+            Capsule::make('tenants', __('Guest'), __('Inventory items assigned to the property'), 'link', 'fa fa-users',   route($this->property->isHospitality() ? 'guests.lists' : 'tenants.lists', ['property' => $this->property ? $this->property->id : null]), ['amount' => 0]),
         ];
     }
 
