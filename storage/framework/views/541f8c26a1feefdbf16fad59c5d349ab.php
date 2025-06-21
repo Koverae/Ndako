@@ -98,9 +98,8 @@ unset($__defined_vars); ?>
             <!-- Available Rooms ENd -->
         </div>
     </div>
-
     <!--[if BLOCK]><![endif]--><?php if($this->guest): ?>
-    <div class="shadow-sm col-12 d-none d-lg-block col-md-3 card" style="max-height: 450px;">
+    <div class="shadow-sm col-12 col-md-3 card" style="max-height: 450px;">
         <div class="card-body">
             <img src="<?php echo e($this->guest->avatar ? Storage::url('avatars/' . $this->guest->avatar) . '?v=' . time() : asset('assets/images/default/user.png')); ?>" alt="<?php echo e($this->guest->name); ?>" class="img img-fluid" height="350px" width="350px">
             <div class="mt-2">
