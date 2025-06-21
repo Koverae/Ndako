@@ -235,6 +235,8 @@ class BookingFormController extends Controller
     {
         
         $client = $request->get('api_client');
+        
+        session(['current_company' => $client->company]);
 
         // $request->validate([
         //     'room_id' => 'required|integer|exists:property_units,id',
@@ -252,6 +254,7 @@ class BookingFormController extends Controller
                 'message' => 'The selected room does not exist.',
             ]);
         }
+        Log::info('Room selected for booking', ['room_id' => $room->id, 'room_name' => $room->name]);
 
         $conflictingBooking = Booking::where('property_unit_id', $room->id)
             ->where(function ($query) use ($request) {
@@ -307,6 +310,10 @@ class BookingFormController extends Controller
         $this->createInvoice($booking);
         
         Log::info('Booking created successfully', ['booking_id' => $booking->id, 'guest_id' => $guest->id]);
+        
+        session()->forget('current_company');
+        
+        // Optionally, you can redirect to a thank you page or return a success response
         return response()->json([
             'success' => true, 
             'message' => 'Booking confirmed.',
