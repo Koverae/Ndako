@@ -55,6 +55,8 @@ class UserForm extends SimpleAvatarForm
             $this->language = $user->language_id;
             $this->timezone = $user->timezone;
             $this->status = $user->last_login_at ? 'confirmed' : 'never-connected';
+            $this->userPermissions = toSelectOptions($user->getAllPermissions(), 'id', 'name');
+
         }else{
             $this->authorize('create', User::class);
         }
@@ -72,7 +74,6 @@ class UserForm extends SimpleAvatarForm
 
         $this->permissionOptions = toSelectOptions(current_company()->permissions, 'id', 'name');
 
-        $this->userPermissions = toSelectOptions($user->getAllPermissions(), 'id', 'name');
 
         $front = [
             ['id' => 'receptionist', 'label' => 'Receptionist'],

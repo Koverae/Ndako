@@ -748,10 +748,10 @@
                 <div class="flex flex-col gap-4 mb-6 md:flex-row">
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600"><?php echo e(__('Status')); ?></label>
-                        <select wire:model="orderStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <select wire:model.live="orderStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="ongoing"><?php echo e(__('Ongoing')); ?></option>
-                            <option value="completed"><?php echo e(__('Completed')); ?></option>
+                            <option value="receipt"><?php echo e(__('Completed')); ?></option>
                             <option value="refunded"><?php echo e(__('Refunded')); ?></option>
                         </select>
                     </div>

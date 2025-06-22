@@ -429,6 +429,12 @@ class Home extends Component
         $this->orders = $query->latest()->take(50)->get();
     }
 
+    public function updatedOrderStatusFilter(){
+        $this->orders = PosOrder::isCompany(current_company()->id)->isPos($this->pos->id)
+            ->where('status', $this->orderStatusFilter)
+                ->latest()->take(50)->get();
+    }
+
     protected function loadCustomers(): void
     {
         $this->customers = Guest::where('company_id', current_company()->id)

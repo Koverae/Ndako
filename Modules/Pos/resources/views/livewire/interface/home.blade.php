@@ -726,10 +726,10 @@
                 <div class="flex flex-col gap-4 mb-6 md:flex-row">
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600">{{ __('Status') }}</label>
-                        <select wire:model="orderStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <select wire:model.live="orderStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">{{ __('All') }}</option>
                             <option value="ongoing">{{ __('Ongoing') }}</option>
-                            <option value="completed">{{ __('Completed') }}</option>
+                            <option value="receipt">{{ __('Completed') }}</option>
                             <option value="refunded">{{ __('Refunded') }}</option>
                         </select>
                     </div>
