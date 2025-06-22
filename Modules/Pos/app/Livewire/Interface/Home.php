@@ -169,6 +169,8 @@ class Home extends Component
         } else {
             $this->calculatorInput = '';
         }
+        
+        $this->dispatch('play-sound', type: 'beep');
     }
 
     public function selectOrder($orderId): void

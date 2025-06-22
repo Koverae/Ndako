@@ -7702,6 +7702,18 @@ document.addEventListener("DOMContentLoaded", function () {
     })).render();
 });
 
+window.playSound = (type) => {
+    const sounds = {
+        beep: new Audio('/sounds/beep.mp3'),
+        success: new Audio('/sounds/success.mp3'),
+        error: new Audio('/sounds/error.mp3')
+    };
+
+    if (sounds[type]) {
+        sounds[type].play();
+    }
+};
+
 // Reservations Chart
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -7811,6 +7823,8 @@ function formatDate(date) {
         year: 'numeric'  
     });
 }
+
+
 
 // Import File DropZone
 

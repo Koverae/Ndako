@@ -618,7 +618,7 @@
                                             </div>
                                         </li>
                                         <li class="p-2 cursor-pointer orderline lh-sm">
-                                            <div class="d-flex">
+                                             <div class="d-flex">
                                                 <div class="w-75 pe-1 text-truncate">{{ __('VAT') }} {{ config('pos.tax_rate', 0.16) * 100 }}%</div>
                                                 <div class="w-50 text-end">{{ format_currency($cartTax) }}</div>
                                             </div>
@@ -878,6 +878,24 @@
     </main>
 
 <script>
+    
+    // Play Sound
+    window.playSound = (type) => {
+        const sounds = {
+            beep: new Audio('/sounds/beep.mp3'),
+            success: new Audio('/sounds/success.mp3'),
+            error: new Audio('/sounds/error.mp3')
+        };
+
+        if (sounds[type]) {
+            sounds[type].play();
+        }
+    };
+
+    Livewire.on('play-sound', ({ type }) => {
+        playSound(type);
+    });
+    
     function calculatorComponent($wire) {
         return {
             input: '',
