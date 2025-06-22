@@ -17,13 +17,14 @@ class PaymentModal extends ModalComponent
     public PosOrder $order;
     private PaystackService $paystackService;
     public string $tab = 'offline';
-    public ?string $offlineMethod = null;
+    public ?string $offlineMethod = 'cash';
     public ?string $paymentMethod = null;
     public float $amount = 0;
     public string $reference;
 
     public function mount(PosOrder $order){
         $this->order = $order;
+        $this->amount = $order->total_amount;
     }
 
     public function boot(PaystackService $paystackService){

@@ -470,6 +470,12 @@ label {
     padding: 5px 0;
 }
 
+.pos-receipt .order-container-bg-view-receipt {
+    max-height: 700px;
+    height: auto;
+    overflow-y: auto;
+}
+
 /* Print View */
 @media print {
     @page {
@@ -492,7 +498,8 @@ label {
         background-color: #fff !important;
     }
 
-    .pos-receipt .order-container-bg-view {
+    .pos-receipt .order-container-bg-view-receipt {
+        height: auto;
         overflow-y: hidden !important;
     }
 }

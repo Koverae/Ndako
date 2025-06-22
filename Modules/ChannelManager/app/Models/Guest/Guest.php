@@ -20,6 +20,7 @@ class Guest extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'id',
         'company_id',
         'user_id',
         'avatar',
