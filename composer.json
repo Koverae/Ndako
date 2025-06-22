@@ -20,6 +20,7 @@
         "mhmiton/laravel-modules-livewire": "^4.2",
         "nwidart/laravel-modules": "^11.1",
         "phpoffice/phpspreadsheet": "^3.8",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.10",
         "unicodeveloper/laravel-paystack": "^1.2",
         "wire-elements/modal": "^2.0"

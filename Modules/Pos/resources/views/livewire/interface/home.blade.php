@@ -122,281 +122,281 @@
         </div>
         <!-- Lock Screen -->
 
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky dark:bg-gray-800">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                    <a href="">
-                        <img src="{{ asset('assets/images/logo/ndako.png') }}" alt="Ndako Logo" class="navbar-brand-image normal">
-                        <img src="{{ asset('assets/images/logo/ndako-white.png') }}" alt="Ndako Logo" class="navbar-brand-image dark">
-                    </a>
-                </h1>
-                <div class="flex-row navbar-nav order-md-last">
-                    <div class="d-md-flex d-flex">
-                        <div class="nav-item dropdown d-md-flex me-3">
-                            <a href="#" class="px-0 nav-link text-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-toggle="tooltip" data-bs-placement="bottom">
-                                <i class="bi bi-translate" style="font-size: 16px;"></i>
-                            </a>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
-                                <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
-                            </a>
-                            <div class="p-0 dropdown-menu dark-menu pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
-                                <div class="p-2 pb-3 mb-2 border-bottom">
-                                    <span class="text-center btn pos-customer-screen btn-lg w-100 dark:bg-gray-700 dark:text-gray-200">
-                                        <i class="fas fa-desktop"></i>
-                                    </span>
-                                </div>
-                                <div class="p-2 rounded menu-items">
-                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 toggle-theme">
-                                        <span class="theme-label">{{ __('Switch to Dark Mode') }}</span>
-                                    </span>
-                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                                        {{ __('Cash In/Out') }}
-                                    </span>
-                                    <span wire:click="goToBackend" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                                        {{ __('Backend') }}
-                                    </span>
-                                    <span wire:click="closeRegister" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                                        {{ __('Close Register') }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="collapse navbar-collapse" id="navbar-menu">
-                    <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
-                        <ul class="navbar-nav">
-                            <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
-                                <li class="cursor-pointer nav-item" data-turbolinks>
-                                    <a class="nav-link kover-navlink {{ $interface == 'tables' ? 'selected' : '' }} dark:text-gray-200" wire:click="switchInterface('tables')" style="margin-right: 5px;">
-                                        <span class="nav-link-title">{{ __('Tables') }}</span>
-                                    </a>
-                                </li>
-                                <li class="cursor-pointer nav-item" data-turbolinks>
-                                    <a class="nav-link kover-navlink {{ $interface == 'register' ? 'selected' : '' }} dark:text-gray-200" wire:click="switchInterface('register')" style="margin-right: 5px;">
-                                        <span class="nav-link-title">{{ __('Register') }}</span>
-                                    </a>
-                                </li>
-                                <li class="cursor-pointer nav-item" data-turbolinks>
-                                    <a class="nav-link kover-navlink {{ $interface == 'orders' ? 'selected' : '' }} dark:text-gray-200" wire:click="switchInterface('orders')" style="margin-right: 5px;">
-                                        <span class="nav-link-title">{{ __('Orders') }}</span>
-                                    </a>
-                                </li>
-                                @if($selectedTable)
-                                <li class="nav-item" data-turbolinks>
-                                    <span class="text-white cursor-pointer badge rounded-pill bg-info fs-4 fw-bolder text-truncate dark:bg-blue-700">
-                                        {{ $selectedTable->table_name ?? __('Direct Sale') }}
-                                    </span>
-                                </li>
-                                @endif
-                            </div>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </nav>
+                                        <!-- Navbar -->
+                                        <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky dark:bg-gray-800">
+                                            <div class="container-fluid">
+                                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                                                    <span class="navbar-toggler-icon"></span>
+                                                </button>
+                                                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                                                    <a href="">
+                                                        <img src="{{ asset('assets/images/logo/ndako.png') }}" alt="Ndako Logo" class="navbar-brand-image normal">
+                                                        <img src="{{ asset('assets/images/logo/ndako-white.png') }}" alt="Ndako Logo" class="navbar-brand-image dark">
+                                                    </a>
+                                                </h1>
+                                                <div class="flex-row navbar-nav order-md-last">
+                                                    <div class="d-md-flex d-flex">
+                                                        <div class="nav-item dropdown d-md-flex me-3">
+                                                            <a href="#" class="px-0 nav-link text-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                                                <i class="bi bi-translate" style="font-size: 16px;"></i>
+                                                            </a>
+                                                        </div>
+                                                        <div class="nav-item dropdown">
+                                                            <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
+                                                                <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
+                                                            </a>
+                                                            <div class="p-0 dropdown-menu dark-menu pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
+                                                                <div class="p-2 pb-3 mb-2 border-bottom">
+                                                                    <span class="text-center btn pos-customer-screen btn-lg w-100 dark:bg-gray-700 dark:text-gray-200">
+                                                                        <i class="fas fa-desktop"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="p-2 rounded menu-items">
+                                                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 toggle-theme">
+                                                                        <span class="theme-label">{{ __('Switch to Dark Mode') }}</span>
+                                                                    </span>
+                                                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                                                                        {{ __('Cash In/Out') }}
+                                                                    </span>
+                                                                    <span wire:click="goToBackend" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                                                                        {{ __('Backend') }}
+                                                                    </span>
+                                                                    <span wire:click="closeRegister" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                                                                        {{ __('Close Register') }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="collapse navbar-collapse" id="navbar-menu">
+                                                    <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+                                                        <ul class="navbar-nav">
+                                                            <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+                                                                <li class="cursor-pointer nav-item" data-turbolinks>
+                                                                    <a class="nav-link kover-navlink {{ $interface == 'tables' ? 'selected' : '' }} dark:text-gray-200" wire:click="switchInterface('tables')" style="margin-right: 5px;">
+                                                                        <span class="nav-link-title">{{ __('Tables') }}</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="cursor-pointer nav-item" data-turbolinks>
+                                                                    <a class="nav-link kover-navlink {{ $interface == 'register' ? 'selected' : '' }} dark:text-gray-200" wire:click="switchInterface('register')" style="margin-right: 5px;">
+                                                                        <span class="nav-link-title">{{ __('Register') }}</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="cursor-pointer nav-item" data-turbolinks>
+                                                                    <a class="nav-link kover-navlink {{ $interface == 'orders' ? 'selected' : '' }} dark:text-gray-200" wire:click="switchInterface('orders')" style="margin-right: 5px;">
+                                                                        <span class="nav-link-title">{{ __('Orders') }}</span>
+                                                                    </a>
+                                                                </li>
+                                                                @if($selectedTable)
+                                                                <li class="nav-item" data-turbolinks>
+                                                                    <span class="text-white cursor-pointer badge rounded-pill bg-info fs-4 fw-bolder text-truncate dark:bg-blue-700">
+                                                                        {{ $selectedTable->table_name ?? __('Direct Sale') }}
+                                                                    </span>
+                                                                </li>
+                                                                @endif
+                                                            </div>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </nav>
 
 
-        <!-- Regiter -->
-        <div class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none">
-            <!-- Product Section -->
-            <section class="container-fluid {{ $tab == 'cart' ? 'd-none d-lg-block' : '' }} col-lg-7 col-md-12" style="height: 100vh;" id="product-box">
-                <!-- Search Bar -->
-                <div class="search-bar">
-                    <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products" wire:model.live="searchQuery">
-                    <i class="bi bi-search search-icon"></i>
-                </div>
+                                        <!-- Regiter -->
+                                        <div class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none">
+                                            <!-- Product Section -->
+                                            <section class="container-fluid {{ $tab == 'cart' ? 'd-none d-lg-block' : '' }} col-lg-7 col-md-12" style="height: 100vh;" id="product-box">
+                                                <!-- Search Bar -->
+                                                <div class="search-bar">
+                                                    <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products" wire:model.live="searchQuery">
+                                                    <i class="bi bi-search search-icon"></i>
+                                                </div>
 
-                <!-- Categories -->
-                <div class="category_section_buttons">
-                    <div class="d-flex w-100">
-                        <span class="category_button cursor-pointer home {{ $selectedCategoryId == null ? 'selected' : '' }}" wire:click="selectCategory('')">
-                            <i class="bi bi-house-fill"></i>
-                        </span>
-                        <div class="cursor-pointer d-flex w-100 section_buttons">
-                            @foreach ($productCategoryOptions as $category)
-                            <span class="gap-2 category_button {{ $selectedCategoryId == $category->id ? 'selected' : '' }}" wire:click="selectCategory('{{ $category->id }}')">
-                                {{ $category->name }}
-                            </span>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
+                                                <!-- Categories -->
+                                                <div class="category_section_buttons">
+                                                    <div class="d-flex w-100">
+                                                        <span class="category_button cursor-pointer home {{ $selectedCategoryId == null ? 'selected' : '' }}" wire:click="selectCategory('')">
+                                                            <i class="bi bi-house-fill"></i>
+                                                        </span>
+                                                        <div class="cursor-pointer d-flex w-100 section_buttons">
+                                                            @foreach ($productCategoryOptions as $category)
+                                                            <span class="gap-2 category_button {{ $selectedCategoryId == $category->id ? 'selected' : '' }}" wire:click="selectCategory('{{ $category->id }}')">
+                                                                {{ $category->name }}
+                                                            </span>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                <!-- Product List -->
-                <div class="gap-2 p-3 product-list row row-cols-2 row-cols-md-3 row-cols-lg-4">
-                    @foreach ($productOptions as $product)
-                    <article class="cursor-pointer product" wire:click="addToCart('{{ $product->id }}')">
-                        <div class="product-information-tag">
-                            <i class="bi bi-info" aria-label="Product info"></i>
-                        </div>
-                        <div class="badge badge-info"><i class="fas fa-infinity"></i></div>
-                        <img src="{{ $product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png') }}"
-                            alt="{{ $product->product_name }}" class="card-img-top" alt="Product">
-                        <div class="product-content">
-                            <div class="product-name">{{ $product->product_name }}</div>
-                            <div class="price-tag">{{ format_currency($product->product_price) }}</div>
-                        </div>
-                    </article>
-                    @endforeach
-                </div>
-                {{-- <div class="pagination">
-                    {{ $productOptions->links() }}
-                </div> --}}
+                                                <!-- Product List -->
+                                                <div class="gap-2 p-3 product-list row row-cols-2 row-cols-md-3 row-cols-lg-4">
+                                                    @foreach ($productOptions as $product)
+                                                    <article class="cursor-pointer product" wire:click="addToCart('{{ $product->id }}')">
+                                                        <div class="product-information-tag">
+                                                            <i class="bi bi-info" aria-label="Product info"></i>
+                                                        </div>
+                                                        <div class="badge badge-info"><i class="fas fa-infinity"></i></div>
+                                                        <img src="{{ $product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png') }}"
+                                                            alt="{{ $product->product_name }}" class="card-img-top" alt="Product">
+                                                        <div class="product-content">
+                                                            <div class="product-name">{{ $product->product_name }}</div>
+                                                            <div class="price-tag">{{ format_currency($product->product_price) }}</div>
+                                                        </div>
+                                                    </article>
+                                                    @endforeach
+                                                </div>
+                                                {{-- <div class="pagination">
+                                                    {{ $productOptions->links() }}
+                                                </div> --}}
 
-            </section>
+                                            </section>
 
-            <!-- Checkout Section -->
-            <section class="col-lg-5 col-md-12 {{ $tab == 'pay' ? 'd-none d-lg-block' : '' }} " id="checkout-box">
-                <div class="border-0 shadow-sm card">
-                    <div class="card-body" id="cart-body">
-                        <div class="overflow-y-auto order-container-bg-view flex-grow-1 d-flex flex-column text-start">
+                                            <!-- Checkout Section -->
+                                            <section class="col-lg-5 col-md-12 {{ $tab == 'pay' ? 'd-none d-lg-block' : '' }} " id="checkout-box">
+                                                <div class="border-0 shadow-sm card">
+                                                    <div class="card-body" id="cart-body">
+                                                        <div class="overflow-y-auto order-container-bg-view flex-grow-1 d-flex flex-column text-start">
 
-                            @forelse ($cart as $item)
-                            <ul wire:click="selectProduct('{{ $item['id'] }}')">
-                                <li class="p-2 cursor-pointer orderline lh-s  {{ $selectedProductId == $item['id'] ? 'selected' : '' }}">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="product-name w-75 fw-bolder pe-1 text-truncate">
-                                            {{ $item['name'] }}
+                                                            @forelse ($cart as $item)
+                                                            <ul wire:click="selectProduct('{{ $item['id'] }}')">
+                                                                <li class="p-2 cursor-pointer orderline lh-s  {{ $selectedProductId == $item['id'] ? 'selected' : '' }}">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div class="product-name w-75 fw-bolder pe-1 text-truncate">
+                                                                            {{ $item['name'] }}
+                                                                        </div>
+                                                                        <div class="product-price w-25 text-end fw-bolder">
+                                                                            {{ format_currency(($item['unit_price'] * $item['quantity']) ) }}
+                                                                        </div>
+                                                                    </div>
+                                                                    <ul>
+                                                                        <li class="price-per-unit">
+                                                                            <em class="qty fst-normal fw-bolder me-1">{{ $item['quantity'] }}</em>
+                                                                            unit(s) x {{ format_currency($item['unit_price']) }}
+                                                                        </li>
+                                                                        @if ($item['discount'] > 0)
+                                                                        <li class="price-per-unit text-muted">
+                                                                            {{ $item['discount'] }}% discount
+                                                                        </li>
+                                                                        @endif
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                            @empty
+                                                            <div class="empty-cart d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted">
+                                                                <i class="rotate-45 bi bi-cart-fill" style="font-size: 60px; color: #898989;"></i>
+                                                                <br>
+                                                                <h3>
+                                                                    {{ __('No items in cart.') }}
+                                                                </h3>
+                                                            </div>
+                                                            @endforelse
+                                                        </div>
+                                                        <div class="px-3 py-2 order-summary w-100 bg-100 text-end fw-bolder fs-2 lh-sm">
+                                                            Total: <span class="total">{{ format_currency($cartTotal) }}</span>
+                                                            <div class="text-muted subentry">
+                                                                Taxes: <span class="tax">(+) {{ format_currency($cartTax) }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-wrap control_buttons d-flex bg-300 border-bottom">
+
+                                                            <button class="gap-2 k_price_list_button btn btn-light rounded-0 fw-bolder">
+                                                                <i class="fas fa-tags"></i> <span>Pricelists</span>
+                                                            </button>
+                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                                <i class="fas fa-sync-alt"></i> <span>Refund</span>
+                                                            </button>
+                                                            <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.service-type-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder preset">
+                                                                @if($selectedService)
+                                                                <i class="{{ $selectedService['icon'] }}"></i> <span>{{ $selectedService['label'] }}</span>
+                                                                @else
+                                                                {{ __('Service Type') }}
+                                                                @endif
+                                                            </button>
+
+                                                            <button class="gap-3 btn btn-light rounded-0 fw-bolder" wire:click="switchInterface('tables')" style="background-color: #B7EDBE;">
+                                                                <i class="fas fa-chair"></i> <span>{{ $selectedTable->table_name ?? __('Table') }}</span>
+                                                            </button>
+                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                                <i class="bi bi-stickies"></i> <span>Customer Note</span>
+                                                            </button>
+                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                                <i class="bi bi-stickies"></i> <span>Note</span>
+                                                            </button>
+
+                                                            <button wire:click="cancelOrder" wire:confirm="{{ __('Are you sure to reset the cart?') }}" class="gap-2 btn btn-light rounded-0 fw-bolder {{ empty($cart) ? 'disabled' : '' }}" id="reset-cart">
+                                                                <i class="fas fa-trash"></i> <span>Cancel Order</span>
+                                                            </button>
+                                                            @php
+                                                                $customer = $this->guest ? Str::limit($this->guest->name, 10) : __('Guest');
+                                                            @endphp
+                                                            <button onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
+                                                                <i class="fas fa-user"></i> <span>{{ $customer }}</span>
+                                                            </button>
+
+                                                        </div>
+
+                                                        <!-- Calculator -->
+                                                        <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
+                                                            <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
+                                                                <button wire:click="processPayment" class="btn btn-light rounded-0 fw-bolder {{ empty($cart) ? 'disabled' : '' }}" id="pay">
+                                                                    {{ __('Payment') }}
+                                                                </button>
+                                                            </div>
+                                                            <div x-data="calculatorComponent(@this)"
+                                                                x-init="
+                                                                    window.addEventListener('keydown', (e) => {
+                                                                        press(e.key);
+                                                                    });"
+                                                                class="flex-wrap w-75 d-flex"
+                                                            >
+                                                                <template x-for="key in keys" :key="key.label + key.value">
+                                                                    <button
+                                                                        type="button"
+                                                                        @click="press(key.value)"
+                                                                        :class="[
+                                                                            'btn',
+                                                                            'rounded-0',
+                                                                            'fw-bolder',
+                                                                            key.class,
+                                                                            key.mode && $wire.calculatorMode === key.value ? 'selected' : ''
+                                                                        ]"
+                                                                        :style="key.style"
+                                                                    >
+                                                                        <template x-if="key.icon">
+                                                                            <i :class="key.icon"></i>
+                                                                        </template>
+                                                                        <template x-if="!key.icon">
+                                                                            <span x-text="key.label"></span>
+                                                                        </template>
+                                                                    </button>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Calculator -->
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <!-- Mobile Checkout -->
+                                            <section class="d-lg-none" id="mobile-checkout-box">
+                                                <div class="fixed-bar">
+                                                    <button wire:click="changeTab('pay')" class="text-white btn-switch_pane rounded-0 fw-bolder review-button" id="pay-order">
+                                                        <span class="fs-1 d-block">Pay</span>
+                                                        <span>{{ format_currency($cartTotal) }}</span>
+                                                    </button>
+                                                    <button wire:click="changeTab('cart')" class="text-black btn-switch_pane rounded-0 fw-bolder review-button">
+                                                        <span class="fs-1 d-block">Cart</span>
+                                                        <span>{{ count($cart) }} items</span>
+                                                    </button>
+                                                </div>
+                                            </section>
                                         </div>
-                                        <div class="product-price w-25 text-end fw-bolder">
-                                            {{ format_currency(($item['unit_price'] * $item['quantity']) ) }}
-                                        </div>
-                                    </div>
-                                    <ul>
-                                        <li class="price-per-unit">
-                                            <em class="qty fst-normal fw-bolder me-1">{{ $item['quantity'] }}</em>
-                                            unit(s) x {{ format_currency($item['unit_price']) }}
-                                        </li>
-                                        @if ($item['discount'] > 0)
-                                        <li class="price-per-unit text-muted">
-                                            {{ $item['discount'] }}% discount
-                                        </li>
-                                        @endif
-                                    </ul>
-                                </li>
-                            </ul>
-                            @empty
-                            <div class="empty-cart d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted">
-                                <i class="rotate-45 bi bi-cart-fill" style="font-size: 60px; color: #898989;"></i>
-                                <br>
-                                <h3>
-                                    {{ __('No items in cart.') }}
-                                </h3>
-                            </div>
-                            @endforelse
-                        </div>
-                        <div class="px-3 py-2 order-summary w-100 bg-100 text-end fw-bolder fs-2 lh-sm">
-                            Total: <span class="total">{{ format_currency($cartTotal) }}</span>
-                            <div class="text-muted subentry">
-                                Taxes: <span class="tax">(+) {{ format_currency($cartTax) }}</span>
-                            </div>
-                        </div>
-                        <div class="flex-wrap control_buttons d-flex bg-300 border-bottom">
+                                        <!-- Regiter -->
 
-                            <button class="gap-2 k_price_list_button btn btn-light rounded-0 fw-bolder">
-                                <i class="fas fa-tags"></i> <span>Pricelists</span>
-                            </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
-                                <i class="fas fa-sync-alt"></i> <span>Refund</span>
-                            </button>
-                            <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.service-type-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder preset">
-                                @if($selectedService)
-                                <i class="{{ $selectedService['icon'] }}"></i> <span>{{ $selectedService['label'] }}</span>
-                                @else
-                                {{ __('Service Type') }}
-                                @endif
-                            </button>
-
-                            <button class="gap-3 btn btn-light rounded-0 fw-bolder" wire:click="switchInterface('tables')" style="background-color: #B7EDBE;">
-                                <i class="fas fa-chair"></i> <span>{{ $selectedTable->table_name ?? __('Table') }}</span>
-                            </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
-                                <i class="bi bi-stickies"></i> <span>Customer Note</span>
-                            </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
-                                <i class="bi bi-stickies"></i> <span>Note</span>
-                            </button>
-
-                            <button wire:click="cancelOrder" wire:confirm="{{ __('Are you sure to reset the cart?') }}" class="gap-2 btn btn-light rounded-0 fw-bolder {{ empty($cart) ? 'disabled' : '' }}" id="reset-cart">
-                                <i class="fas fa-trash"></i> <span>Cancel Order</span>
-                            </button>
-                            @php
-                                $customer = $this->guest ? Str::limit($this->guest->name, 10) : __('Guest');
-                            @endphp
-                            <button onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
-                                <i class="fas fa-user"></i> <span>{{ $customer }}</span>
-                            </button>
-
-                        </div>
-
-                        <!-- Calculator -->
-                        <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
-                            <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
-                                <button wire:click="processPayment" class="btn btn-light rounded-0 fw-bolder {{ empty($cart) ? 'disabled' : '' }}" id="pay">
-                                    {{ __('Payment') }}
-                                </button>
-                            </div>
-                            <div x-data="calculatorComponent(@this)"
-                                x-init="
-                                    window.addEventListener('keydown', (e) => {
-                                        press(e.key);
-                                    });"
-                                class="flex-wrap w-75 d-flex"
-                            >
-                                <template x-for="key in keys" :key="key.label + key.value">
-                                    <button
-                                        type="button"
-                                        @click="press(key.value)"
-                                        :class="[
-                                            'btn',
-                                            'rounded-0',
-                                            'fw-bolder',
-                                            key.class,
-                                            key.mode && $wire.calculatorMode === key.value ? 'selected' : ''
-                                        ]"
-                                        :style="key.style"
-                                    >
-                                        <template x-if="key.icon">
-                                            <i :class="key.icon"></i>
-                                        </template>
-                                        <template x-if="!key.icon">
-                                            <span x-text="key.label"></span>
-                                        </template>
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
-                        <!-- Calculator -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Mobile Checkout -->
-            <section class="d-lg-none" id="mobile-checkout-box">
-                <div class="fixed-bar">
-                    <button wire:click="changeTab('pay')" class="text-white btn-switch_pane rounded-0 fw-bolder review-button" id="pay-order">
-                        <span class="fs-1 d-block">Pay</span>
-                        <span>{{ format_currency($cartTotal) }}</span>
-                    </button>
-                    <button wire:click="changeTab('cart')" class="text-black btn-switch_pane rounded-0 fw-bolder review-button">
-                        <span class="fs-1 d-block">Cart</span>
-                        <span>{{ count($cart) }} items</span>
-                    </button>
-                </div>
-            </section>
-        </div>
-        <!-- Regiter -->
-
-        <!-- Payment -->
-        <div class="payment-container d-print-none bg-white {{ $interface == 'payment' ? '' : 'd-none' }}" style="height: 100vh;">
-            <div class="payment-confirmed">
+                                        <!-- Payment -->
+                                        <div class="payment-container d-print-none bg-white {{ $interface == 'payment' ? '' : 'd-none' }}" style="height: 100vh;">
+                                            <div class="payment-confirmed">
                 <div class="row">
                     <div class="top-content d-print-none">
                         <h1>{{ format_currency($order->total_amount ?? 0) }}</h1>
@@ -529,16 +529,20 @@
                                 </div>
 
                                 <!-- Qr Code -->
-                                <div class="mt-2 mb-2 text-center pos-receipt-order-data d-flex fs-5">
-                                    <img src="{{ asset('assets/images/default/sample-qrcode.png') }}" style="height: 100px; width: 100px;" alt="" class="">
+<div class="mt-2 mb-2 text-center pos-receipt-order-data d-flex fs-5">
+    @if ($order)
+        {!! QrCode::size(100)->generate('https://ndako.koverae.com') !!}
+    @else
+        {!! QrCode::size(100)->generate('https://ndako.koverae.com') !!}
+    @endif
 
-                                    <div class="d-block">
-                                        <span class="fw-bolder">
-                                            {{ __('Need an invoice?') }}
-                                        </span>
-                                        <p>Code: yhK2r</p>
-                                    </div>
-                                </div>
+    <div class="d-block ms-2 text-start">
+        <span class="fw-bolder">{{ __('Need an invoice?') }}</span>
+        <p>
+            Code: {{ $order->receipt_number ?? 'N/A' }}
+        </p>
+    </div>
+</div>
 
                                 <!-- Order Meta -->
                                 <div class="mt-2 text-center pos-receipt-order-data d-flex fs-5 flex-column align-items-center">
@@ -557,7 +561,7 @@
 
                     <!-- Receipt -->
                     @if($order)
-                        
+
                             <div class="p-2 pos-receipt d-none d-print-block">
                                 <!-- Logo -->
                                 <div class="d-flex flex-column justify-content-center align-items-center">
@@ -641,13 +645,17 @@
 
                                 <!-- Qr Code -->
                                 <div class="mt-2 mb-2 text-center pos-receipt-order-data d-flex fs-5">
-                                    <img src="{{ asset('assets/images/default/sample-qrcode.png') }}" style="height: 100px; width: 100px;" alt="" class="">
+                                    @if ($order)
+                                        {!! QrCode::size(100)->generate('https://ndako.koverae.com') !!}
+                                    @else
+                                        {!! QrCode::size(100)->generate('https://ndako.koverae.com') !!}
+                                    @endif
 
-                                    <div class="d-block">
-                                        <span class="fw-bolder">
-                                            {{ __('Need an invoice?') }}
-                                        </span>
-                                        <p>Code: yhK2r</p>
+                                    <div class="d-block ms-2 text-start">
+                                        <span class="fw-bolder">{{ __('Need an invoice?') }}</span>
+                                        <p>
+                                            Code: {{ $order->receipt_number ?? 'N/A' }}
+                                        </p>
                                     </div>
                                 </div>
 

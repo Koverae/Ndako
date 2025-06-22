@@ -124,290 +124,290 @@
         </div>
         <!-- Lock Screen -->
 
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky dark:bg-gray-800">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                    <a href="">
-                        <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="navbar-brand-image normal">
-                        <img src="<?php echo e(asset('assets/images/logo/ndako-white.png')); ?>" alt="Ndako Logo" class="navbar-brand-image dark">
-                    </a>
-                </h1>
-                <div class="flex-row navbar-nav order-md-last">
-                    <div class="d-md-flex d-flex">
-                        <div class="nav-item dropdown d-md-flex me-3">
-                            <a href="#" class="px-0 nav-link text-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-toggle="tooltip" data-bs-placement="bottom">
-                                <i class="bi bi-translate" style="font-size: 16px;"></i>
-                            </a>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
-                                <span class="avatar avatar-sm" style="background-image: url(<?php echo e(Storage::url('avatars/' . auth()->user()->avatar)); ?>)"></span>
-                            </a>
-                            <div class="p-0 dropdown-menu dark-menu pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
-                                <div class="p-2 pb-3 mb-2 border-bottom">
-                                    <span class="text-center btn pos-customer-screen btn-lg w-100 dark:bg-gray-700 dark:text-gray-200">
-                                        <i class="fas fa-desktop"></i>
-                                    </span>
-                                </div>
-                                <div class="p-2 rounded menu-items">
-                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 toggle-theme">
-                                        <span class="theme-label"><?php echo e(__('Switch to Dark Mode')); ?></span>
-                                    </span>
-                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                                        <?php echo e(__('Cash In/Out')); ?>
+                                        <!-- Navbar -->
+                                        <nav class="navbar navbar-expand-md w-100 navbar-light d-block d-print-none k-sticky dark:bg-gray-800">
+                                            <div class="container-fluid">
+                                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                                                    <span class="navbar-toggler-icon"></span>
+                                                </button>
+                                                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                                                    <a href="">
+                                                        <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="navbar-brand-image normal">
+                                                        <img src="<?php echo e(asset('assets/images/logo/ndako-white.png')); ?>" alt="Ndako Logo" class="navbar-brand-image dark">
+                                                    </a>
+                                                </h1>
+                                                <div class="flex-row navbar-nav order-md-last">
+                                                    <div class="d-md-flex d-flex">
+                                                        <div class="nav-item dropdown d-md-flex me-3">
+                                                            <a href="#" class="px-0 nav-link text-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                                                                <i class="bi bi-translate" style="font-size: 16px;"></i>
+                                                            </a>
+                                                        </div>
+                                                        <div class="nav-item dropdown">
+                                                            <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
+                                                                <span class="avatar avatar-sm" style="background-image: url(<?php echo e(Storage::url('avatars/' . auth()->user()->avatar)); ?>)"></span>
+                                                            </a>
+                                                            <div class="p-0 dropdown-menu dark-menu pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
+                                                                <div class="p-2 pb-3 mb-2 border-bottom">
+                                                                    <span class="text-center btn pos-customer-screen btn-lg w-100 dark:bg-gray-700 dark:text-gray-200">
+                                                                        <i class="fas fa-desktop"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="p-2 rounded menu-items">
+                                                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 toggle-theme">
+                                                                        <span class="theme-label"><?php echo e(__('Switch to Dark Mode')); ?></span>
+                                                                    </span>
+                                                                    <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                                                                        <?php echo e(__('Cash In/Out')); ?>
 
-                                    </span>
-                                    <span wire:click="goToBackend" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                                        <?php echo e(__('Backend')); ?>
+                                                                    </span>
+                                                                    <span wire:click="goToBackend" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                                                                        <?php echo e(__('Backend')); ?>
 
-                                    </span>
-                                    <span wire:click="closeRegister" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                                        <?php echo e(__('Close Register')); ?>
+                                                                    </span>
+                                                                    <span wire:click="closeRegister" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                                                                        <?php echo e(__('Close Register')); ?>
 
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="collapse navbar-collapse" id="navbar-menu">
-                    <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
-                        <ul class="navbar-nav">
-                            <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
-                                <li class="cursor-pointer nav-item" data-turbolinks>
-                                    <a class="nav-link kover-navlink <?php echo e($interface == 'tables' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('tables')" style="margin-right: 5px;">
-                                        <span class="nav-link-title"><?php echo e(__('Tables')); ?></span>
-                                    </a>
-                                </li>
-                                <li class="cursor-pointer nav-item" data-turbolinks>
-                                    <a class="nav-link kover-navlink <?php echo e($interface == 'register' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('register')" style="margin-right: 5px;">
-                                        <span class="nav-link-title"><?php echo e(__('Register')); ?></span>
-                                    </a>
-                                </li>
-                                <li class="cursor-pointer nav-item" data-turbolinks>
-                                    <a class="nav-link kover-navlink <?php echo e($interface == 'orders' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('orders')" style="margin-right: 5px;">
-                                        <span class="nav-link-title"><?php echo e(__('Orders')); ?></span>
-                                    </a>
-                                </li>
-                                <!--[if BLOCK]><![endif]--><?php if($selectedTable): ?>
-                                <li class="nav-item" data-turbolinks>
-                                    <span class="text-white cursor-pointer badge rounded-pill bg-info fs-4 fw-bolder text-truncate dark:bg-blue-700">
-                                        <?php echo e($selectedTable->table_name ?? __('Direct Sale')); ?>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="collapse navbar-collapse" id="navbar-menu">
+                                                    <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+                                                        <ul class="navbar-nav">
+                                                            <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+                                                                <li class="cursor-pointer nav-item" data-turbolinks>
+                                                                    <a class="nav-link kover-navlink <?php echo e($interface == 'tables' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('tables')" style="margin-right: 5px;">
+                                                                        <span class="nav-link-title"><?php echo e(__('Tables')); ?></span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="cursor-pointer nav-item" data-turbolinks>
+                                                                    <a class="nav-link kover-navlink <?php echo e($interface == 'register' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('register')" style="margin-right: 5px;">
+                                                                        <span class="nav-link-title"><?php echo e(__('Register')); ?></span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="cursor-pointer nav-item" data-turbolinks>
+                                                                    <a class="nav-link kover-navlink <?php echo e($interface == 'orders' ? 'selected' : ''); ?> dark:text-gray-200" wire:click="switchInterface('orders')" style="margin-right: 5px;">
+                                                                        <span class="nav-link-title"><?php echo e(__('Orders')); ?></span>
+                                                                    </a>
+                                                                </li>
+                                                                <!--[if BLOCK]><![endif]--><?php if($selectedTable): ?>
+                                                                <li class="nav-item" data-turbolinks>
+                                                                    <span class="text-white cursor-pointer badge rounded-pill bg-info fs-4 fw-bolder text-truncate dark:bg-blue-700">
+                                                                        <?php echo e($selectedTable->table_name ?? __('Direct Sale')); ?>
 
-                                    </span>
-                                </li>
-                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                            </div>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </nav>
+                                                                    </span>
+                                                                </li>
+                                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                                            </div>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </nav>
 
 
-        <!-- Regiter -->
-        <div class="row <?php echo e($interface == 'register' ? '' : 'd-none'); ?> d-print-none">
-            <!-- Product Section -->
-            <section class="container-fluid <?php echo e($tab == 'cart' ? 'd-none d-lg-block' : ''); ?> col-lg-7 col-md-12" style="height: 100vh;" id="product-box">
-                <!-- Search Bar -->
-                <div class="search-bar">
-                    <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products" wire:model.live="searchQuery">
-                    <i class="bi bi-search search-icon"></i>
-                </div>
+                                        <!-- Regiter -->
+                                        <div class="row <?php echo e($interface == 'register' ? '' : 'd-none'); ?> d-print-none">
+                                            <!-- Product Section -->
+                                            <section class="container-fluid <?php echo e($tab == 'cart' ? 'd-none d-lg-block' : ''); ?> col-lg-7 col-md-12" style="height: 100vh;" id="product-box">
+                                                <!-- Search Bar -->
+                                                <div class="search-bar">
+                                                    <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products" wire:model.live="searchQuery">
+                                                    <i class="bi bi-search search-icon"></i>
+                                                </div>
 
-                <!-- Categories -->
-                <div class="category_section_buttons">
-                    <div class="d-flex w-100">
-                        <span class="category_button cursor-pointer home <?php echo e($selectedCategoryId == null ? 'selected' : ''); ?>" wire:click="selectCategory('')">
-                            <i class="bi bi-house-fill"></i>
-                        </span>
-                        <div class="cursor-pointer d-flex w-100 section_buttons">
-                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productCategoryOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <span class="gap-2 category_button <?php echo e($selectedCategoryId == $category->id ? 'selected' : ''); ?>" wire:click="selectCategory('<?php echo e($category->id); ?>')">
-                                <?php echo e($category->name); ?>
+                                                <!-- Categories -->
+                                                <div class="category_section_buttons">
+                                                    <div class="d-flex w-100">
+                                                        <span class="category_button cursor-pointer home <?php echo e($selectedCategoryId == null ? 'selected' : ''); ?>" wire:click="selectCategory('')">
+                                                            <i class="bi bi-house-fill"></i>
+                                                        </span>
+                                                        <div class="cursor-pointer d-flex w-100 section_buttons">
+                                                            <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productCategoryOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <span class="gap-2 category_button <?php echo e($selectedCategoryId == $category->id ? 'selected' : ''); ?>" wire:click="selectCategory('<?php echo e($category->id); ?>')">
+                                                                <?php echo e($category->name); ?>
 
-                            </span>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-                        </div>
-                    </div>
-                </div>
+                                                            </span>
+                                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                <!-- Product List -->
-                <div class="gap-2 p-3 product-list row row-cols-2 row-cols-md-3 row-cols-lg-4">
-                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <article class="cursor-pointer product" wire:click="addToCart('<?php echo e($product->id); ?>')">
-                        <div class="product-information-tag">
-                            <i class="bi bi-info" aria-label="Product info"></i>
-                        </div>
-                        <div class="badge badge-info"><i class="fas fa-infinity"></i></div>
-                        <img src="<?php echo e($product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png')); ?>"
-                            alt="<?php echo e($product->product_name); ?>" class="card-img-top" alt="Product">
-                        <div class="product-content">
-                            <div class="product-name"><?php echo e($product->product_name); ?></div>
-                            <div class="price-tag"><?php echo e(format_currency($product->product_price)); ?></div>
-                        </div>
-                    </article>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
-                </div>
-                
+                                                <!-- Product List -->
+                                                <div class="gap-2 p-3 product-list row row-cols-2 row-cols-md-3 row-cols-lg-4">
+                                                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $productOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <article class="cursor-pointer product" wire:click="addToCart('<?php echo e($product->id); ?>')">
+                                                        <div class="product-information-tag">
+                                                            <i class="bi bi-info" aria-label="Product info"></i>
+                                                        </div>
+                                                        <div class="badge badge-info"><i class="fas fa-infinity"></i></div>
+                                                        <img src="<?php echo e($product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png')); ?>"
+                                                            alt="<?php echo e($product->product_name); ?>" class="card-img-top" alt="Product">
+                                                        <div class="product-content">
+                                                            <div class="product-name"><?php echo e($product->product_name); ?></div>
+                                                            <div class="price-tag"><?php echo e(format_currency($product->product_price)); ?></div>
+                                                        </div>
+                                                    </article>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                                                </div>
+                                                
 
-            </section>
+                                            </section>
 
-            <!-- Checkout Section -->
-            <section class="col-lg-5 col-md-12 <?php echo e($tab == 'pay' ? 'd-none d-lg-block' : ''); ?> " id="checkout-box">
-                <div class="border-0 shadow-sm card">
-                    <div class="card-body" id="cart-body">
-                        <div class="overflow-y-auto order-container-bg-view flex-grow-1 d-flex flex-column text-start">
+                                            <!-- Checkout Section -->
+                                            <section class="col-lg-5 col-md-12 <?php echo e($tab == 'pay' ? 'd-none d-lg-block' : ''); ?> " id="checkout-box">
+                                                <div class="border-0 shadow-sm card">
+                                                    <div class="card-body" id="cart-body">
+                                                        <div class="overflow-y-auto order-container-bg-view flex-grow-1 d-flex flex-column text-start">
 
-                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                            <ul wire:click="selectProduct('<?php echo e($item['id']); ?>')">
-                                <li class="p-2 cursor-pointer orderline lh-s  <?php echo e($selectedProductId == $item['id'] ? 'selected' : ''); ?>">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="product-name w-75 fw-bolder pe-1 text-truncate">
-                                            <?php echo e($item['name']); ?>
+                                                            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                            <ul wire:click="selectProduct('<?php echo e($item['id']); ?>')">
+                                                                <li class="p-2 cursor-pointer orderline lh-s  <?php echo e($selectedProductId == $item['id'] ? 'selected' : ''); ?>">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div class="product-name w-75 fw-bolder pe-1 text-truncate">
+                                                                            <?php echo e($item['name']); ?>
 
+                                                                        </div>
+                                                                        <div class="product-price w-25 text-end fw-bolder">
+                                                                            <?php echo e(format_currency(($item['unit_price'] * $item['quantity']) )); ?>
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <ul>
+                                                                        <li class="price-per-unit">
+                                                                            <em class="qty fst-normal fw-bolder me-1"><?php echo e($item['quantity']); ?></em>
+                                                                            unit(s) x <?php echo e(format_currency($item['unit_price'])); ?>
+
+                                                                        </li>
+                                                                        <!--[if BLOCK]><![endif]--><?php if($item['discount'] > 0): ?>
+                                                                        <li class="price-per-unit text-muted">
+                                                                            <?php echo e($item['discount']); ?>% discount
+                                                                        </li>
+                                                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                            <div class="empty-cart d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted">
+                                                                <i class="rotate-45 bi bi-cart-fill" style="font-size: 60px; color: #898989;"></i>
+                                                                <br>
+                                                                <h3>
+                                                                    <?php echo e(__('No items in cart.')); ?>
+
+                                                                </h3>
+                                                            </div>
+                                                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                                        </div>
+                                                        <div class="px-3 py-2 order-summary w-100 bg-100 text-end fw-bolder fs-2 lh-sm">
+                                                            Total: <span class="total"><?php echo e(format_currency($cartTotal)); ?></span>
+                                                            <div class="text-muted subentry">
+                                                                Taxes: <span class="tax">(+) <?php echo e(format_currency($cartTax)); ?></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-wrap control_buttons d-flex bg-300 border-bottom">
+
+                                                            <button class="gap-2 k_price_list_button btn btn-light rounded-0 fw-bolder">
+                                                                <i class="fas fa-tags"></i> <span>Pricelists</span>
+                                                            </button>
+                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                                <i class="fas fa-sync-alt"></i> <span>Refund</span>
+                                                            </button>
+                                                            <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.service-type-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder preset">
+                                                                <!--[if BLOCK]><![endif]--><?php if($selectedService): ?>
+                                                                <i class="<?php echo e($selectedService['icon']); ?>"></i> <span><?php echo e($selectedService['label']); ?></span>
+                                                                <?php else: ?>
+                                                                <?php echo e(__('Service Type')); ?>
+
+                                                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                                                            </button>
+
+                                                            <button class="gap-3 btn btn-light rounded-0 fw-bolder" wire:click="switchInterface('tables')" style="background-color: #B7EDBE;">
+                                                                <i class="fas fa-chair"></i> <span><?php echo e($selectedTable->table_name ?? __('Table')); ?></span>
+                                                            </button>
+                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                                <i class="bi bi-stickies"></i> <span>Customer Note</span>
+                                                            </button>
+                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                                <i class="bi bi-stickies"></i> <span>Note</span>
+                                                            </button>
+
+                                                            <button wire:click="cancelOrder" wire:confirm="<?php echo e(__('Are you sure to reset the cart?')); ?>" class="gap-2 btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="reset-cart">
+                                                                <i class="fas fa-trash"></i> <span>Cancel Order</span>
+                                                            </button>
+                                                            <?php
+                                                                $customer = $this->guest ? Str::limit($this->guest->name, 10) : __('Guest');
+                                                            ?>
+                                                            <button onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
+                                                                <i class="fas fa-user"></i> <span><?php echo e($customer); ?></span>
+                                                            </button>
+
+                                                        </div>
+
+                                                        <!-- Calculator -->
+                                                        <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
+                                                            <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
+                                                                <button wire:click="processPayment" class="btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="pay">
+                                                                    <?php echo e(__('Payment')); ?>
+
+                                                                </button>
+                                                            </div>
+                                                            <div x-data="calculatorComponent(window.Livewire.find('<?php echo e($_instance->getId()); ?>'))"
+                                                                x-init="
+                                                                    window.addEventListener('keydown', (e) => {
+                                                                        press(e.key);
+                                                                    });"
+                                                                class="flex-wrap w-75 d-flex"
+                                                            >
+                                                                <template x-for="key in keys" :key="key.label + key.value">
+                                                                    <button
+                                                                        type="button"
+                                                                        @click="press(key.value)"
+                                                                        :class="[
+                                                                            'btn',
+                                                                            'rounded-0',
+                                                                            'fw-bolder',
+                                                                            key.class,
+                                                                            key.mode && $wire.calculatorMode === key.value ? 'selected' : ''
+                                                                        ]"
+                                                                        :style="key.style"
+                                                                    >
+                                                                        <template x-if="key.icon">
+                                                                            <i :class="key.icon"></i>
+                                                                        </template>
+                                                                        <template x-if="!key.icon">
+                                                                            <span x-text="key.label"></span>
+                                                                        </template>
+                                                                    </button>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Calculator -->
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <!-- Mobile Checkout -->
+                                            <section class="d-lg-none" id="mobile-checkout-box">
+                                                <div class="fixed-bar">
+                                                    <button wire:click="changeTab('pay')" class="text-white btn-switch_pane rounded-0 fw-bolder review-button" id="pay-order">
+                                                        <span class="fs-1 d-block">Pay</span>
+                                                        <span><?php echo e(format_currency($cartTotal)); ?></span>
+                                                    </button>
+                                                    <button wire:click="changeTab('cart')" class="text-black btn-switch_pane rounded-0 fw-bolder review-button">
+                                                        <span class="fs-1 d-block">Cart</span>
+                                                        <span><?php echo e(count($cart)); ?> items</span>
+                                                    </button>
+                                                </div>
+                                            </section>
                                         </div>
-                                        <div class="product-price w-25 text-end fw-bolder">
-                                            <?php echo e(format_currency(($item['unit_price'] * $item['quantity']) )); ?>
+                                        <!-- Regiter -->
 
-                                        </div>
-                                    </div>
-                                    <ul>
-                                        <li class="price-per-unit">
-                                            <em class="qty fst-normal fw-bolder me-1"><?php echo e($item['quantity']); ?></em>
-                                            unit(s) x <?php echo e(format_currency($item['unit_price'])); ?>
-
-                                        </li>
-                                        <!--[if BLOCK]><![endif]--><?php if($item['discount'] > 0): ?>
-                                        <li class="price-per-unit text-muted">
-                                            <?php echo e($item['discount']); ?>% discount
-                                        </li>
-                                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                                    </ul>
-                                </li>
-                            </ul>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                            <div class="empty-cart d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted">
-                                <i class="rotate-45 bi bi-cart-fill" style="font-size: 60px; color: #898989;"></i>
-                                <br>
-                                <h3>
-                                    <?php echo e(__('No items in cart.')); ?>
-
-                                </h3>
-                            </div>
-                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                        </div>
-                        <div class="px-3 py-2 order-summary w-100 bg-100 text-end fw-bolder fs-2 lh-sm">
-                            Total: <span class="total"><?php echo e(format_currency($cartTotal)); ?></span>
-                            <div class="text-muted subentry">
-                                Taxes: <span class="tax">(+) <?php echo e(format_currency($cartTax)); ?></span>
-                            </div>
-                        </div>
-                        <div class="flex-wrap control_buttons d-flex bg-300 border-bottom">
-
-                            <button class="gap-2 k_price_list_button btn btn-light rounded-0 fw-bolder">
-                                <i class="fas fa-tags"></i> <span>Pricelists</span>
-                            </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
-                                <i class="fas fa-sync-alt"></i> <span>Refund</span>
-                            </button>
-                            <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.service-type-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder preset">
-                                <!--[if BLOCK]><![endif]--><?php if($selectedService): ?>
-                                <i class="<?php echo e($selectedService['icon']); ?>"></i> <span><?php echo e($selectedService['label']); ?></span>
-                                <?php else: ?>
-                                <?php echo e(__('Service Type')); ?>
-
-                                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                            </button>
-
-                            <button class="gap-3 btn btn-light rounded-0 fw-bolder" wire:click="switchInterface('tables')" style="background-color: #B7EDBE;">
-                                <i class="fas fa-chair"></i> <span><?php echo e($selectedTable->table_name ?? __('Table')); ?></span>
-                            </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
-                                <i class="bi bi-stickies"></i> <span>Customer Note</span>
-                            </button>
-                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
-                                <i class="bi bi-stickies"></i> <span>Note</span>
-                            </button>
-
-                            <button wire:click="cancelOrder" wire:confirm="<?php echo e(__('Are you sure to reset the cart?')); ?>" class="gap-2 btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="reset-cart">
-                                <i class="fas fa-trash"></i> <span>Cancel Order</span>
-                            </button>
-                            <?php
-                                $customer = $this->guest ? Str::limit($this->guest->name, 10) : __('Guest');
-                            ?>
-                            <button onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder" id="reset-cart">
-                                <i class="fas fa-user"></i> <span><?php echo e($customer); ?></span>
-                            </button>
-
-                        </div>
-
-                        <!-- Calculator -->
-                        <div class="flex-wrap calculator_buttons d-flex bg-300 border-bottom">
-                            <div class="flex-wrap w-25 d-flex" id="vertical_buttons">
-                                <button wire:click="processPayment" class="btn btn-light rounded-0 fw-bolder <?php echo e(empty($cart) ? 'disabled' : ''); ?>" id="pay">
-                                    <?php echo e(__('Payment')); ?>
-
-                                </button>
-                            </div>
-                            <div x-data="calculatorComponent(window.Livewire.find('<?php echo e($_instance->getId()); ?>'))"
-                                x-init="
-                                    window.addEventListener('keydown', (e) => {
-                                        press(e.key);
-                                    });"
-                                class="flex-wrap w-75 d-flex"
-                            >
-                                <template x-for="key in keys" :key="key.label + key.value">
-                                    <button
-                                        type="button"
-                                        @click="press(key.value)"
-                                        :class="[
-                                            'btn',
-                                            'rounded-0',
-                                            'fw-bolder',
-                                            key.class,
-                                            key.mode && $wire.calculatorMode === key.value ? 'selected' : ''
-                                        ]"
-                                        :style="key.style"
-                                    >
-                                        <template x-if="key.icon">
-                                            <i :class="key.icon"></i>
-                                        </template>
-                                        <template x-if="!key.icon">
-                                            <span x-text="key.label"></span>
-                                        </template>
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
-                        <!-- Calculator -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Mobile Checkout -->
-            <section class="d-lg-none" id="mobile-checkout-box">
-                <div class="fixed-bar">
-                    <button wire:click="changeTab('pay')" class="text-white btn-switch_pane rounded-0 fw-bolder review-button" id="pay-order">
-                        <span class="fs-1 d-block">Pay</span>
-                        <span><?php echo e(format_currency($cartTotal)); ?></span>
-                    </button>
-                    <button wire:click="changeTab('cart')" class="text-black btn-switch_pane rounded-0 fw-bolder review-button">
-                        <span class="fs-1 d-block">Cart</span>
-                        <span><?php echo e(count($cart)); ?> items</span>
-                    </button>
-                </div>
-            </section>
-        </div>
-        <!-- Regiter -->
-
-        <!-- Payment -->
-        <div class="payment-container d-print-none bg-white <?php echo e($interface == 'payment' ? '' : 'd-none'); ?>" style="height: 100vh;">
-            <div class="payment-confirmed">
+                                        <!-- Payment -->
+                                        <div class="payment-container d-print-none bg-white <?php echo e($interface == 'payment' ? '' : 'd-none'); ?>" style="height: 100vh;">
+                                            <div class="payment-confirmed">
                 <div class="row">
                     <div class="top-content d-print-none">
                         <h1><?php echo e(format_currency($order->total_amount ?? 0)); ?></h1>
@@ -542,17 +542,23 @@
                                 </div>
 
                                 <!-- Qr Code -->
-                                <div class="mt-2 mb-2 text-center pos-receipt-order-data d-flex fs-5">
-                                    <img src="<?php echo e(asset('assets/images/default/sample-qrcode.png')); ?>" style="height: 100px; width: 100px;" alt="" class="">
+<div class="mt-2 mb-2 text-center pos-receipt-order-data d-flex fs-5">
+    <!--[if BLOCK]><![endif]--><?php if($order): ?>
+        <?php echo QrCode::size(100)->generate('https://ndako.koverae.com'); ?>
 
-                                    <div class="d-block">
-                                        <span class="fw-bolder">
-                                            <?php echo e(__('Need an invoice?')); ?>
+    <?php else: ?>
+        <?php echo QrCode::size(100)->generate('https://ndako.koverae.com'); ?>
 
-                                        </span>
-                                        <p>Code: yhK2r</p>
-                                    </div>
-                                </div>
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
+    <div class="d-block ms-2 text-start">
+        <span class="fw-bolder"><?php echo e(__('Need an invoice?')); ?></span>
+        <p>
+            Code: <?php echo e($order->receipt_number ?? 'N/A'); ?>
+
+        </p>
+    </div>
+</div>
 
                                 <!-- Order Meta -->
                                 <div class="mt-2 text-center pos-receipt-order-data d-flex fs-5 flex-column align-items-center">
@@ -571,7 +577,7 @@
 
                     <!-- Receipt -->
                     <!--[if BLOCK]><![endif]--><?php if($order): ?>
-                        
+
                             <div class="p-2 pos-receipt d-none d-print-block">
                                 <!-- Logo -->
                                 <div class="d-flex flex-column justify-content-center align-items-center">
@@ -656,14 +662,20 @@
 
                                 <!-- Qr Code -->
                                 <div class="mt-2 mb-2 text-center pos-receipt-order-data d-flex fs-5">
-                                    <img src="<?php echo e(asset('assets/images/default/sample-qrcode.png')); ?>" style="height: 100px; width: 100px;" alt="" class="">
+                                    <!--[if BLOCK]><![endif]--><?php if($order): ?>
+                                        <?php echo QrCode::size(100)->generate('https://ndako.koverae.com'); ?>
 
-                                    <div class="d-block">
-                                        <span class="fw-bolder">
-                                            <?php echo e(__('Need an invoice?')); ?>
+                                    <?php else: ?>
+                                        <?php echo QrCode::size(100)->generate('https://ndako.koverae.com'); ?>
 
-                                        </span>
-                                        <p>Code: yhK2r</p>
+                                    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
+                                    <div class="d-block ms-2 text-start">
+                                        <span class="fw-bolder"><?php echo e(__('Need an invoice?')); ?></span>
+                                        <p>
+                                            Code: <?php echo e($order->receipt_number ?? 'N/A'); ?>
+
+                                        </p>
                                     </div>
                                 </div>
 
