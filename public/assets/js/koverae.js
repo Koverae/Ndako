@@ -1,4 +1,4 @@
- 
+
 (function (factory) {
 	typeof define === 'function' && define.amd ? define(factory) :
 	factory();
@@ -7702,10 +7702,12 @@ document.addEventListener("DOMContentLoaded", function () {
     })).render();
 });
 
+
+// Play Sound
 window.playSound = (type) => {
     const sounds = {
         beep: new Audio('/sounds/beep.mp3'),
-        success: new Audio('/sounds/success.mp3'),
+        cashier: new Audio('/sounds/cashier.mp3'),
         error: new Audio('/sounds/error.mp3')
     };
 
@@ -7817,10 +7819,10 @@ function formatDate(date) {
     // Get Laravel's locale (pass it from backend)
     let locale = document.documentElement.lang || 'en';
 
-    return new Date(date).toLocaleDateString(locale, {  
-        day: '2-digit',  
-        month: 'short',  
-        year: 'numeric'  
+    return new Date(date).toLocaleDateString(locale, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
     });
 }
 

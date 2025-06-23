@@ -144,6 +144,7 @@ class Home extends Component
             ->timer(4000)
             ->toast()
             ->show();
+            
     }
 
     public function selectProduct($productId): void
@@ -166,11 +167,11 @@ class Home extends Component
                 'discount' => $item['discount'],
                 default => '',
             };
+            
         } else {
             $this->calculatorInput = '';
         }
-        
-        $this->dispatch('play-sound', type: 'beep');
+
     }
 
     public function selectOrder($orderId): void
@@ -296,6 +297,9 @@ class Home extends Component
             ->timer(4000)
             ->toast()
             ->show();
+
+        $this->dispatch('play-sound', type: 'beep');
+        Log::info('played beep sound');
     }
 
     public function removeFromCart($productId): void
@@ -647,6 +651,8 @@ class Home extends Component
             ->timer(4000)
             ->toast()
             ->show();
+
+        $this->dispatch('play-sound', type: 'cashier');
     }
 
     #[On('switchInterface')]

@@ -7,34 +7,7 @@
     </style>
     @endsection
 
-    <main class="relative main" x-data="{ isLocked: @entangle('isLocked'), timer: null }" x-init="
-    // Initialize inactivity timer
-    let lastActivity = Date.now();
-    const TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
-
-    const resetTimer = () => {
-        lastActivity = Date.now();
-        isLocked = false;
-    };
-
-    const checkInactivity = () => {
-        if (Date.now() - lastActivity > TIMEOUT) {
-            isLocked = true;
-            $wire.set('isLocked', true);
-        }
-    };
-
-    // Event listeners for activity
-    ['mousemove', 'mousedown', 'keypress', 'touchstart'].forEach(event =>
-        document.addEventListener(event, resetTimer)
-    );
-
-    // Start checking for inactivity
-    timer = setInterval(checkInactivity, 1000);
-
-    // Listen for reset event from Livewire
-    window.Livewire.on('reset-inactivity-timer', resetTimer);
-">
+    <main class="relative main" x-data="{ isLocked: @entangle('isLocked'), timer: null }">
         <!-- Lock Screen -->
         <div x-show="isLocked" style="z-index: 99999;" class="fixed inset-0 flex items-center justify-center bg-opacity-75 d-print-none bg-body-secondary backdrop-blur animate-fade-in">
             <div class="relative flex flex-col items-center justify-center w-full h-full bg-white">
@@ -300,10 +273,10 @@
                                                         </div>
                                                         <div class="flex-wrap control_buttons d-flex bg-300 border-bottom">
 
-                                                            <button class="gap-2 k_price_list_button btn btn-light rounded-0 fw-bolder">
+                                                            <button class="gap-2 k_price_list_button disabled btn btn-light rounded-0 fw-bolder">
                                                                 <i class="fas fa-tags"></i> <span>Pricelists</span>
                                                             </button>
-                                                            <button class="gap-2 btn btn-light rounded-0 fw-bolder">
+                                                            <button class="gap-2 btn btn-light disabled rounded-0 fw-bolder">
                                                                 <i class="fas fa-sync-alt"></i> <span>Refund</span>
                                                             </button>
                                                             <button onclick="Livewire.dispatch('openModal', {component: 'pos::modal.service-type-modal'})" class="gap-2 btn btn-light rounded-0 fw-bolder preset">
@@ -878,24 +851,12 @@
     </main>
 
 <script>
-    
+
     // Play Sound
-    window.playSound = (type) => {
-        const sounds = {
-            beep: new Audio('/sounds/beep.mp3'),
-            success: new Audio('/sounds/success.mp3'),
-            error: new Audio('/sounds/error.mp3')
-        };
-
-        if (sounds[type]) {
-            sounds[type].play();
-        }
-    };
-
     Livewire.on('play-sound', ({ type }) => {
         playSound(type);
     });
-    
+
     function calculatorComponent($wire) {
         return {
             input: '',
