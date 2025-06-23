@@ -26,7 +26,7 @@ class PropertyForm extends LightWeightForm
     use HasFileUploads;
 
     public $property;
-    public $property_type, $invoicing = '', $name, $country, $street, $city, $state, $zip, $description, $selectedAmenity;
+    public $property_type, $invoicing = 'rate', $name, $country, $street, $city, $state, $zip, $description, $selectedAmenity;
     public $base_price = 25000, $payment_interval = 'monthly', $stay = 1;
     public array  $includedAmenities = [], $typeOptions = [], $invoiceOptions = [], $paymentIntervalOptions = [], $propertyAmenitiesOptions = [], $amenityOptions, $rateFrequencyOptions = [];
 

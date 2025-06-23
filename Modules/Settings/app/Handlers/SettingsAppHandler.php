@@ -84,9 +84,6 @@ class SettingsAppHandler extends AppHandler
                 'modify_reservations',
                 'manage_reservations',
                 'view_reservation_payments',
-                'check_in_guests',
-                'check_out_guests',
-                'assign_rooms',
                 'manage_guest_profiles',
             ],
             'properties' => [
