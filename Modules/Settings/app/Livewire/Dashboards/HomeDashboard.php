@@ -11,6 +11,7 @@ use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\Settings\Models\WorkItem;
 use Modules\Settings\Notifications\MultiChannelNotification;
 use Livewire\Attributes\On;
+use Modules\App\Services\PaymentGateway\PesapalService;
 use Modules\Properties\Models\Property\PropertyUnit;
 
 class HomeDashboard extends Component
@@ -199,6 +200,11 @@ class HomeDashboard extends Component
         ]);
 
         $this->loadTickets();
+    }
+
+    public function testPesapal(){
+        $pesapal = new PesapalService();
+        $response = $pesapal->makeOrder($order);
     }
 
 }

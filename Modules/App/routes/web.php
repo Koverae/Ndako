@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Koverae\KoveraeBilling\Controllers\Payments\PaystackController as PaymentsPaystackController;
 use Modules\App\Http\Controllers\AppController;
 use Modules\App\Http\Controllers\PaymentGateway\PaystackController;
+use Modules\App\Http\Controllers\PaymentGateway\PesapalController;
 use Modules\App\Livewire\ImportFile;
 use Modules\App\Livewire\Subscription\SubscriptionPage;
 
@@ -36,4 +37,8 @@ Route::middleware('identify-kover')->group(function () {
     // Koverae Billing
     Route::get('/koverae-billing/paystack/callback', [PaymentsPaystackController::class, 'callback'])->name('billing.paystack.callback');
     Route::get('/koverae-billing/paystack/webhook', [PaymentsPaystackController::class, 'handle'])->name('billing.paystack.webhook');
+
+    // Pesapal Payment
+    Route::get('/pesapal/callback', [PesapalController::class, 'handleCallback']);
+
 });

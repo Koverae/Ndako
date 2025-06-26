@@ -19,6 +19,7 @@
                     <img src="<?php echo e(asset('assets/images/illustrations/errors/503.svg')); ?>"style="height: 450px" alt="">
                     <p class="empty-title"><?php echo e(__('Welcome to Your Dashboard')); ?></p>
                     <p class="empty-subtitle"><?php echo e(__('Get a quick overview of your insights and reports.')); ?></p>
+                    <span wire:click="testPesapal">Pesapal Test</span>
                 </div>
 
                 <!--[if BLOCK]><![endif]--><?php if (\Illuminate\Support\Facades\Blade::check('role', 'maintenance-staff')): ?>

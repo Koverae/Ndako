@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\App\Http\Controllers\AppController;
+use Modules\App\Http\Controllers\PaymentGateway\PesapalController;
 
 /*
  *--------------------------------------------------------------------------
@@ -17,3 +18,6 @@ use Modules\App\Http\Controllers\AppController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('app', AppController::class)->names('app');
 });
+
+// Pesapal IPN route
+Route::post('/pesapal/ipn', [PesapalController::class, 'handleIPN']);
