@@ -1,3 +1,4 @@
+
 @section('page_title', "Choose a plan to continue managing your properties")
 
 

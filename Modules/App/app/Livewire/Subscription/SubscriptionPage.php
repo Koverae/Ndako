@@ -79,13 +79,12 @@ class SubscriptionPage extends Component
         $this->amount = ($plan->discounted_price * max(1, $this->roomCount) * max(1, $this->invoicePeriod));
     }
 
-    public function updatedRoomCount(): void
+    public function updatedroomCount(): void
     {
         $company = current_company();
         $minRooms = max(1, optional($company->units)->count() ?? 1);
         if ($this->roomCount < $minRooms) {
             $this->roomCount = $minRooms;
-            $this->addError('roomCount', "Room count can't be less than {$minRooms} (your current units).");
         }
         $this->updatedSelectedPlan();
     }
@@ -94,7 +93,7 @@ class SubscriptionPage extends Component
     {
         return view('app::livewire.subscription.subscription-page')
             ->extends('layouts.auth')
-            ->section('page_content');
+                ->section('page_content');
     }
 
     public function initiatePayment(Paystack $paystack): void
