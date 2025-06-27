@@ -10,8 +10,16 @@ use Modules\App\Services\PaymentGateway\PaystackService;
 
 class SubscriptionPage extends Component
 {
-    public $renew;
-    public $plans, $billingCycle, $invoicePeriod = 1, $selectedPlan, $amount = 0, $roomCount = 1, $email, $plan;
+    public ?bool $renew = null;
+    public $plans = [];
+    public string $billingCycle = 'month';
+    public int $invoicePeriod = 1;
+    public ?string $selectedPlan = null;
+    public float $amount = 0;
+    public int $roomCount = 1;
+    public string $email = '';
+    public ?Plan $plan = null;
+
     protected $queryString = ['renew'];
 
     protected $rules = [
@@ -26,44 +34,78 @@ class SubscriptionPage extends Component
         $this->paystackService = $paystackService;
     }
 
-    public function mount(){
-
-        $this->selectedPlan = current_company()->team->subscription('main')->plan->tag;
+    public function mount(): void
+    {
+        $company = current_company();
+        $this->selectedPlan = optional(optional($company->team)->subscription('main'))->plan->tag ?? null;
         $this->billingCycle = 'month';
-        $this->roomCount = current_company()->size;
-        $this->plans = Plan::where('is_active', true)->where('invoice_interval', $this->billingCycle)
-          ->where('price', '>', 1)
+        $this->roomCount = max(1, optional($company->units)->count() ?? 1);
+
+        $this->plans = Plan::where('is_active', true)
+            ->where('invoice_interval', $this->billingCycle)
+            ->where('price', '>', 1)
             ->get();
-        $this->email = Auth::user()->email;
+        $this->email = Auth::user()->email ?? '';
         $this->updatedSelectedPlan();
     }
 
-    public function updatedBillingCycle(){
-        $this->plans = Plan::where('is_active', true)->where('invoice_interval', $this->billingCycle)
-          ->where('price', '>', 1)
+    public function updatedBillingCycle(): void
+    {
+        $this->plans = Plan::where('is_active', true)
+            ->where('invoice_interval', $this->billingCycle)
+            ->where('price', '>', 1)
             ->get();
-        $this->selectedPlan = '';
+        $this->selectedPlan = null;
+        $this->plan = null;
+        $this->amount = 0;
     }
 
-    public function updatedSelectedPlan(){
+    public function updatedSelectedPlan(): void
+    {
+        if (!$this->selectedPlan) {
+            $this->plan = null;
+            $this->amount = 0;
+            return;
+        }
+
         $plan = Plan::getByTag($this->selectedPlan);
-        $this->amount = ($plan->discounted_price * max(1, $this->roomCount) * $this->invoicePeriod);
+        if (!$plan) {
+            $this->plan = null;
+            $this->amount = 0;
+            return;
+        }
+
         $this->plan = $plan;
+        $this->amount = ($plan->discounted_price * max(1, $this->roomCount) * max(1, $this->invoicePeriod));
     }
 
-    public function updatedRoomCount(){
+    public function updatedRoomCount(): void
+    {
+        $company = current_company();
+        $minRooms = max(1, optional($company->units)->count() ?? 1);
+        if ($this->roomCount < $minRooms) {
+            $this->roomCount = $minRooms;
+            $this->addError('roomCount', "Room count can't be less than {$minRooms} (your current units).");
+        }
         $this->updatedSelectedPlan();
     }
 
     public function render()
     {
         return view('app::livewire.subscription.subscription-page')
-        ->extends('layouts.auth')->section('page_content');
+            ->extends('layouts.auth')
+            ->section('page_content');
     }
 
-    public function initiatePayment(Paystack $paystack)
+    public function initiatePayment(Paystack $paystack): void
     {
-        // $this->validate();
+        $this->validate();
+
+        if (!$this->plan) {
+            $this->addError('plan', 'Please select a valid plan.');
+            return;
+        }
+
         $paystack->initializePayment(
             current_company()->name,
             $this->email,
@@ -74,16 +116,17 @@ class SubscriptionPage extends Component
         );
     }
 
-
-    public function increaseInvoicePeriod(){
-        if($this->selectedPlan){
+    public function increaseInvoicePeriod(): void
+    {
+        if ($this->selectedPlan) {
             $this->invoicePeriod++;
             $this->updatedSelectedPlan();
         }
     }
 
-    public function decreaseInvoicePeriod(){
-        if($this->invoicePeriod >= 1 && $this->selectedPlan){
+    public function decreaseInvoicePeriod(): void
+    {
+        if ($this->invoicePeriod > 1 && $this->selectedPlan) {
             $this->invoicePeriod--;
             $this->updatedSelectedPlan();
         }
