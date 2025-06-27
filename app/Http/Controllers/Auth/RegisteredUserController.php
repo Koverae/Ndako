@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['nullable', 'string', 'max:15', 'unique:'.User::class],
+            'phone' => ['required', 'string', 'max:15', 'unique:'.User::class],
             'password' => ['required', Rules\Password::defaults()],
         ]);
 
@@ -43,12 +43,36 @@ class RegisteredUserController extends Controller
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);
-
+        
         event(new Registered($user));
 
         Auth::login($user);
 
+        // If the user doesn't have a phone number, redirect them to complete profile
+        if (!$user->phone) {
+            return redirect(route('complete-phone'));
+        }
+
         // return redirect(route('dashboard', absolute: false));
         return redirect(route('getting-started', absolute: false));
     }
+
+    public function completePhoneForm()
+    {
+        return view('auth.complete-phone');
+    }
+
+    public function storePhone(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|digits_between:10,15|unique:users,phone',
+        ]);
+
+        $user = User::find(Auth::user());
+        $user->phone = $request->phone;
+        $user->save();
+
+        return redirect(route('getting-started', absolute: false));
+    }
+
 }

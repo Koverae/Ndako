@@ -50,6 +50,10 @@ Route::middleware('guest')->prefix('/web')->group(function () {
 });
 
 Route::middleware('auth')->prefix('/web')->group(function () {
+
+    Route::get('/complete-phone', [RegisteredUserController::class, 'completePhoneForm'])->name('complete-phone');
+    Route::post('/complete-phone', [RegisteredUserController::class, 'storePhone']);
+
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
