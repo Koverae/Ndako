@@ -25,26 +25,27 @@ class PesapalService{
 
     public function makeOrder(array $data): array
     {
-        $response = Http::withToken($this->token)->post(
-            config('pesapal.base_url') . '/api/Transactions/SubmitOrderRequest',
-            [
-                "id" => $data['id'] ?? 'order-id-' . time(),
-                "currency" => "KES",
-                "amount" => $data['amount'],
-                "description" => $data['description'] ?? 'Payment for order',
-                "callback_url" => config('pesapal.callback_url'),
-                "notification_id" => "your-ipn-url-uuid", // You must register this on Pesapal
-                "billing_address" => [
-                    "email_address" => "jane@example.com",
-                    "phone_number" => "0700000000",
-                    "country_code" => "KE",
-                    "first_name" => "Jane",
-                    "last_name" => "Mwangi"
-                ]
+        $payload = [
+            "id" => $data['id'] ?? uniqid('order_'),
+            "currency" => "KES",
+            "amount" => $data['amount'],
+            "description" => $data['description'] ?? 'Payment',
+            "callback_url" => config('pesapal.callback_url'),
+            "notification_id" => config('pesapal.ipn_id'),
+            "billing_address" => [
+                "email_address" => $data['email'],
+                "phone_number" => $data['phone'],
+                "country_code" => "KE",
+                "first_name" => $data['first_name'],
+                "last_name" => $data['last_name']
             ]
-        );
+        ];
 
-        return $response->json();
+
+        $res = Http::withToken($this->token)
+            ->post(config('pesapal.base_url') . '/api/Transactions/SubmitOrderRequest', $payload);
+
+        return $res->json();
     }
 
     public function getTransactionStatus(string $trackingId): array
