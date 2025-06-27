@@ -20,6 +20,14 @@ class PesapalService{
             config('pesapal.consumer_secret')
         )->post(config('pesapal.base_url') . '/api/Auth/RequestToken');
 
+        if (!$response->ok()) {
+            logger()->error('Pesapal Auth failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            return '';
+        }
+
         return $response->json('token');
     }
 
