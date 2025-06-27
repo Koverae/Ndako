@@ -202,19 +202,4 @@ class HomeDashboard extends Component
         $this->loadTickets();
     }
 
-    public function testPesapal(){
-
-        $pesapal = new PesapalService();
-        $response = $pesapal->makeOrder([
-            'amount' => 500,
-            'description' => 'My Product',
-            'email' => 'client@example.com',
-            'phone' => '0700000000',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-        ]);
-
-        return redirect($response['redirect_url']);
-    }
-
 }

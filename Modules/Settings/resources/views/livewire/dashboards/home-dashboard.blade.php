@@ -19,7 +19,6 @@
                     <img src="{{ asset('assets/images/illustrations/errors/503.svg') }}"style="height: 450px" alt="">
                     <p class="empty-title">{{ __('Welcome to Your Dashboard') }}</p>
                     <p class="empty-subtitle">{{ __('Get a quick overview of your insights and reports.') }}</p>
-                    <span wire:click="testPesapal">Pesapal Test</span>
                 </div>
 
                 @role('maintenance-staff')
