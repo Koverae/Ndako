@@ -22,6 +22,13 @@ class TwoFactorMiddleware
         $user = User::find(Auth::user()->id); // Get the authenticated user
 
         if ($user) {
+
+            
+            // If the user doesn't have a phone number, redirect them to complete profile
+            if (!$user->phone) {
+                return redirect(route('complete-phone'));
+            }
+            
             // Check if the user's phone is not verified
             if (!$user->phone_verified_at) {
                 // Generate and send OTP only if it hasn’t been sent already

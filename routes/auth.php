@@ -37,7 +37,7 @@ Route::middleware('guest')->prefix('/web')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
-                        
+
     Route::get('/join/{token}', [CompanyInvitationController::class, 'showJoinPage'])->name('company.invitations.accept')->middleware('valid.invitation');
     Route::post('/join/{token}', [CompanyInvitationController::class, 'acceptInvitation'])->name('company.invitations.accept.post')->middleware('valid.invitation');
 
@@ -52,7 +52,7 @@ Route::middleware('guest')->prefix('/web')->group(function () {
 Route::middleware('auth')->prefix('/web')->group(function () {
 
     Route::get('/complete-phone', [RegisteredUserController::class, 'completePhoneForm'])->name('complete-phone');
-    Route::post('/complete-phone', [RegisteredUserController::class, 'storePhone']);
+    Route::post('/complete-phone', [RegisteredUserController::class, 'storePhone'])->name('complete-phone.submit');
 
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');

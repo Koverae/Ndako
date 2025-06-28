@@ -31,8 +31,10 @@ class PlanTableSeeder extends Seeder
             ['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11],
             ['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12],
             ['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13],
-            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => false, 'sort_order' => 7],
             ['tag' => 'guest-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 16],
+
+            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => false, 'sort_order' => 7],
+            ['tag' => 'restaurant-pos', 'name' => 'Restaurant POS', 'value' => false, 'sort_order' => 17],
         ];
         $starterPlan = Plan::create([
             'tag' => 'starter',
@@ -72,8 +74,10 @@ class PlanTableSeeder extends Seeder
             ['tag' => 'custom-roles', 'name' => 'Custom User Roles & Permissions', 'value' => false, 'sort_order' => 11],
             ['tag' => 'bulk-import-export', 'name' => 'Bulk Import/Export', 'value' => false, 'sort_order' => 12],
             ['tag' => 'ota-connector', 'name' => 'OTA Connector', 'value' => false, 'sort_order' => 13],
-            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => 'bridge', 'sort_order' => 7],
             ['tag' => 'guest-portal', 'name' => 'Guest Portal', 'value' => false, 'sort_order' => 15],
+
+            ['tag' => 'website-integration', 'name' => 'Website Integration', 'value' => true, 'sort_order' => 7],
+            ['tag' => 'restaurant-pos', 'name' => 'Restaurant POS', 'value' => true, 'sort_order' => 17],
         ];
         $sparkMonthly = Plan::create([
             'tag' => 'spark-monthly',
