@@ -24,7 +24,7 @@ use Modules\RevenueManager\Models\Accounting\Journal;
 class Home extends Component
 {
     public Pos $pos;
-    public string $interface = 'tables', $tab = 'pay', $calculatorMode = 'qty';
+    public string $interface = 'tables', $tab = 'pay', $calculatorMode = 'qty', $toPrint = 'receipt';
     public ?int $selectedCategoryId = null, $selectedProductId = null, $selectedPlanId = null, $selectedCustomerId = null;
     public Collection $productCategoryOptions;
     public Collection $productOptions;
@@ -626,6 +626,7 @@ class Home extends Component
             'due_amount' => $this->cartTotal,
         ]);
         $this->saveCartToSession();
+        $this->toPrint = 'receipt';
 
         $this->dispatch('openModal', component: 'pos::modal.payment-modal', arguments: ['order' => $this->order->id]);
     }
@@ -644,6 +645,7 @@ class Home extends Component
 
         $this->resetCart();
         $this->interface = 'payment';
+        $this->toPrint = 'receipt';
         LivewireAlert::title('Order completed!')
             ->text('Order has been processed successfully.')
             ->success()
@@ -749,6 +751,38 @@ class Home extends Component
             ->show();
 
         $this->loadOrders();
+    }
+
+    public function printPreBill($orderId){
+        $this->order = PosOrder::find($orderId);
+        if (!$this->order) {
+            LivewireAlert::title('Order not found!')
+                ->text('Selected order does not exist.')
+                ->error()
+                ->position('top-end')
+                ->timer(4000)
+                ->toast()
+                ->show();
+            return;
+        }
+
+        $this->selectedTable = $this->order->table_id ? Table::find($this->order->table_id) : null;
+        $this->selectedCustomerId = $this->order->customer_id;
+        $this->syncCartWithOrder();
+        // $this->interface = 'register';
+        $this->saveCartToSession();
+        $this->toPrint = 'bill';
+
+        LivewireAlert::title('Bill printing has been launched!')
+            ->text('Bill printing has been launched.')
+            ->success()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+        
+
+        $this->dispatch('print-bill');
     }
 
     protected function loadActiveOrder(): void

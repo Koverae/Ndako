@@ -40,7 +40,9 @@ use Modules\Pos\Livewire\Payment\Lists as PaymentLists;
 |
 */
 
-Route::middleware(['identify-kover', 'can:access_pos', 'feature:restaurant-pos'])->group(function () {
+Route::middleware(['identify-kover', 'can:access_pos'
+// , 'feature:restaurant-pos'
+])->group(function () {
     Route::get('/pos/overview', PosLists::class)->name('pos.overview');
     Route::get('/pos/create', PosCreate::class)->middleware('can:create_pos')->name('pos.create');
     Route::get('/pos/{pos}', PosShow::class)->name('pos.show');
