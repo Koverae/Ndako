@@ -846,7 +846,7 @@
                             <tr>
                                 <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Order ID')); ?></th>
                                 <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Table')); ?></th>
-                                <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Customer')); ?></th>
+                                <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Guest')); ?></th>
                                 <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Total')); ?></th>
                                 <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Status')); ?></th>
                                 <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Payment')); ?></th>
@@ -858,7 +858,7 @@
                             <tr class="transition duration-150 hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm"><?php echo e($order->receipt_number); ?></td>
                                 <td class="px-4 py-3 text-sm"><?php echo e($order->table->table_name ?? 'Direct Sale'); ?></td>
-                                <td class="px-4 py-3 text-sm"><?php echo e($order->guest->name ?? 'No Guest'); ?></td>
+                                <td class="px-4 py-3 text-sm"><?php echo e($order->guest->name ?? 'N/A'); ?></td>
                                 <td class="px-4 py-3 text-sm"><?php echo e(format_currency($order->total_amount + ($order->tax_amount ?? 0))); ?></td>
                                 <td class="px-4 py-3 text-sm">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->status == 'ongoing' ? 'bg-yellow-100 text-yellow-800' : ($order->status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')); ?>">
@@ -902,11 +902,6 @@
                                             <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('Refund this order')); ?></span>
                                         </button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                                    <button wire:click="showOrderDetails('<?php echo e($order->id); ?>')" class="relative transition duration-150 btn btn-secondary btn-sm group hover:bg-gray-600" title="<?php echo e(__('View order details')); ?>">
-                                        <?php echo e(__('Details')); ?>
-
-                                        <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('View order details')); ?></span>
-                                    </button>
                                 </td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
