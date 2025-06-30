@@ -418,7 +418,7 @@
                     </div>
 
                     <!-- Receipt -->
-                    <div class=" overflow-hidden text-center pos-receipt-container col-md-6 d-none d-md-flex flex-grow-1 flex-lg-grow-0 user-select-none justify-content-center bg-200">
+                    <div class="overflow-hidden text-center pos-receipt-container col-md-6 d-none d-md-flex flex-grow-1 flex-lg-grow-0 user-select-none justify-content-center bg-200">
                         <div class="p-3 m-3 overflow-y-auto bg-white border rounded receipt-block d-inline-block w-50 bg-view text-start">
                             <div class="p-2 pos-receipt">
                                 <!-- Logo -->
@@ -717,7 +717,7 @@
             </div>
         </div>
         <!-- Bill -->
-        
+
         @endif
 
 
@@ -790,7 +790,7 @@
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600">{{ __('Payment Status') }}</label>
-                        <select wire:model="paymentStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <select wire:model.live="paymentStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">{{ __('All') }}</option>
                             <option value="unpaid">{{ __('Unpaid') }}</option>
                             <option value="paid">{{ __('Paid') }}</option>
@@ -798,11 +798,11 @@
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600">{{ __('Date Range') }}</label>
-                        <input type="date" wire:model="dateFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="date" wire:model.live="dateFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600">{{ __('Search') }}</label>
-                        <input type="text" wire:model.debounce.500ms="searchQuery" placeholder="{{ __('Search by ID, customer, or table') }}" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" wire:model.live="searchOrderQuery" placeholder="{{ __('Search by ID, guest, or table') }}" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
 

@@ -430,7 +430,7 @@
                     </div>
 
                     <!-- Receipt -->
-                    <div class=" overflow-hidden text-center pos-receipt-container col-md-6 d-none d-md-flex flex-grow-1 flex-lg-grow-0 user-select-none justify-content-center bg-200">
+                    <div class="overflow-hidden text-center pos-receipt-container col-md-6 d-none d-md-flex flex-grow-1 flex-lg-grow-0 user-select-none justify-content-center bg-200">
                         <div class="p-3 m-3 overflow-y-auto bg-white border rounded receipt-block d-inline-block w-50 bg-view text-start">
                             <div class="p-2 pos-receipt">
                                 <!-- Logo -->
@@ -738,7 +738,7 @@
             </div>
         </div>
         <!-- Bill -->
-        
+
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
 
@@ -813,7 +813,7 @@
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600"><?php echo e(__('Payment Status')); ?></label>
-                        <select wire:model="paymentStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <select wire:model.live="paymentStatusFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                             <option value=""><?php echo e(__('All')); ?></option>
                             <option value="unpaid"><?php echo e(__('Unpaid')); ?></option>
                             <option value="paid"><?php echo e(__('Paid')); ?></option>
@@ -821,11 +821,11 @@
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600"><?php echo e(__('Date Range')); ?></label>
-                        <input type="date" wire:model="dateFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="date" wire:model.live="dateFilter" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="w-full md:w-1/3">
                         <label class="text-sm font-medium text-gray-600"><?php echo e(__('Search')); ?></label>
-                        <input type="text" wire:model.debounce.500ms="searchQuery" placeholder="<?php echo e(__('Search by ID, customer, or table')); ?>" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" wire:model.live="searchOrderQuery" placeholder="<?php echo e(__('Search by ID, guest, or table')); ?>" class="w-full mt-1 transition duration-150 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
 
@@ -884,7 +884,7 @@
                                         </button>
                                     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                     <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
-                                        <button wire:click="confirmDelete('<?php echo e($order->id); ?>')" wire:confirm="<?php echo e(__('Do you really want to delete this order?')); ?>" class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600" title="<?php echo e(__('Delete this order')); ?>">
+                                        <button wire:click="cancelOrder('<?php echo e($order->id); ?>')" wire:confirm="<?php echo e(__('Do you really want to delete this order?')); ?>" class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600" title="<?php echo e(__('Delete this order')); ?>">
                                             <?php echo e(__('Delete')); ?>
 
                                             <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('Delete this order')); ?></span>

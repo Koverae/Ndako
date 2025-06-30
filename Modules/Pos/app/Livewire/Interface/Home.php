@@ -2,6 +2,7 @@
 
 namespace Modules\Pos\Livewire\Interface;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Modules\Pos\Models\Pos\Pos;
@@ -46,6 +47,7 @@ class Home extends Component
     public string $searchQuery = '', $customerSearch = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
     public bool $isLocked = false;
+    public $dateFilter, $searchOrderQuery = '';
 
     public function mount(Pos $pos)
     {
@@ -70,6 +72,8 @@ class Home extends Component
         if ($this->order) {
             $this->syncCartWithOrder();
         }
+
+        $this->dateFilter = Carbon::today()->format('Y-m-d');
 
         $this->loadFloors();
         $this->loadCategories();
@@ -358,6 +362,13 @@ class Home extends Component
         }
 
         if ($this->order) {
+            // Restore inventory for each order detail before deleting
+            foreach ($this->order->details as $detail) {
+                $product = $detail->product;
+                if ($product) {
+                    $product->increment('product_quantity', $detail->quantity);
+                }
+            }
             // Delete all related order details
             $this->order->details()->delete();
             // Delete the order itself
@@ -439,23 +450,51 @@ class Home extends Component
         $this->productOptions = $query->get();
     }
 
-    protected function loadOrders(): void
+    public function loadOrders(): void
     {
         $query = PosOrder::where('pos_id', $this->pos->id)
             ->where('company_id', current_company()->id);
         if ($this->orderStatusFilter) {
             $query->where('status', $this->orderStatusFilter);
         }
+
+        if ($this->dateFilter) {
+            $date = Carbon::parse($this->dateFilter);
+            $query->whereDate('date', $date);
+        }
+
+        if ($this->searchOrderQuery) {
+            $query->where(function ($q) {
+            $q->where('receipt_number', 'like', "%{$this->searchOrderQuery}%")
+              ->orWhereHas('table', function ($t) {
+                  $t->where('table_name', 'like', "%{$this->searchOrderQuery}%");
+              })
+              ->orWhereHas('guest', function ($c) {
+                  $c->where('name', 'like', "%{$this->searchOrderQuery}%");
+              });
+            });
+        }
+
         if ($this->paymentStatusFilter) {
             $query->where('payment_status', $this->paymentStatusFilter);
         }
         $this->orders = $query->latest()->take(50)->get();
     }
 
-    public function updatedOrderStatusFilter(){
-        $this->orders = PosOrder::isCompany(current_company()->id)->isPos($this->pos->id)
-            ->where('status', $this->orderStatusFilter)
-                ->latest()->take(50)->get();
+    public function updatedPaymentStatusFilter($value){
+        $this->loadOrders();
+    }
+
+    public function updatedOrderStatusFilter($value){
+        $this->loadOrders();
+    }
+
+    public function updatedSearchOrderQuery($value){
+        $this->loadOrders();
+    }
+
+    public function updatedDateFilter($value){
+        $this->loadOrders();
     }
 
     protected function loadCustomers(): void
