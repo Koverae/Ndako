@@ -857,7 +857,7 @@
                                         </button>
                                     @endif
                                     @if($order->status == 'ongoing')
-                                        <button wire:click="confirmDelete('{{ $order->id }}')" wire:confirm="{{ __('Do you really want to delete this order?') }}" class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600" title="{{ __('Delete this order') }}">
+                                        <button wire:click="cancelOrder('{{ $order->id }}')" wire:confirm="{{ __('Do you really want to delete this order?') }}" class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600" title="{{ __('Delete this order') }}">
                                             {{ __('Delete') }}
                                             <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2">{{ __('Delete this order') }}</span>
                                         </button>

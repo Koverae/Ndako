@@ -144,7 +144,7 @@ class Home extends Component
             ->timer(4000)
             ->toast()
             ->show();
-            
+
     }
 
     public function selectProduct($productId): void
@@ -167,7 +167,7 @@ class Home extends Component
                 'discount' => $item['discount'],
                 default => '',
             };
-            
+
         } else {
             $this->calculatorInput = '';
         }
@@ -351,14 +351,31 @@ class Home extends Component
         }
     }
 
-    public function cancelOrder(){
+    public function cancelOrder($orderId){
+        // Ensure the order is loaded
+        if (!$this->order || $this->order->id != $orderId) {
+            $this->order = PosOrder::find($orderId);
+        }
+
         if ($this->order) {
+            // Delete all related order details
             $this->order->details()->delete();
+            // Delete the order itself
             $this->order->delete();
             $this->order = null;
         }
+
         $this->resetCart();
         $this->interface = 'tables';
+
+        LivewireAlert::title('Order Delete!')
+            ->text('The order has been deleted')
+            ->success()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
+
     }
 
     public function resetCart(): void
@@ -780,7 +797,7 @@ class Home extends Component
             ->timer(4000)
             ->toast()
             ->show();
-        
+
 
         $this->dispatch('print-bill');
     }
