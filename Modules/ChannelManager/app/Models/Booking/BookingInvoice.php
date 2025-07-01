@@ -56,6 +56,11 @@ class BookingInvoice extends Model
         return $query->where('company_id', $company_id);
     }
 
+    public function scopeFindByReference(Builder $query, $reference)
+    {
+        return $query->where('reference', $reference);
+    }
+
     public function booking() {
         return $this->belongsTo(Booking::class);
     }

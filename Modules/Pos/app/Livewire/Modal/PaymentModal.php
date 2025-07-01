@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use LivewireUI\Modal\ModalComponent;
+use Modules\App\Services\PaymentGateway\Daraja\DarajaService;
 use Modules\App\Services\PaymentGateway\PaystackService;
+use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Pos\Models\Order\PosOrder;
 use Modules\Pos\Models\Order\PosOrderPayment;
 use Modules\RevenueManager\Models\Accounting\Journal;
@@ -42,6 +44,25 @@ class PaymentModal extends ModalComponent
         $responseData = $this->paystackService->initializePayment($this->order->guest->name ?? 'Brian Mwangi', $this->order->guest->email ?? 'brianmwangi@gmail.com', $this->order->total_amount, $extraData);
         return $this->dispatch('openPaystackPopup', $responseData->data->authorization_url);
         // return $this->dispatch('openPaystackTab', $responseData->data->authorization_url);
+    }
+    /**
+     * Initiates a Daraja STK Push payment request for the current order.
+     *
+     * This method creates an instance of the DarajaService and retrieves the guest (customer)
+     * associated with the current order. It then triggers an STK Push to the guest's phone number
+     * for the specified payment amount, using the order's unique token as the reference.
+     *
+     * @return void
+     *
+     * @throws \Exception If the DarajaService fails to initiate the STK Push.
+     */
+
+    public function initiateDarajaStk(){
+        $daraja = new DarajaService();
+        $guest = Guest::find($this->order->customer_id);
+
+        // STK Push
+        $daraja->stk()->initiateStkPush($guest->phone ?? null, $this->amount, $this->order->unique_token, 'Order Payment');
     }
 
     #[On('poPaymentCompleted')]
@@ -81,10 +102,23 @@ class PaymentModal extends ModalComponent
             'offlineMethod' => 'required|string',
             'amount' => 'required|numeric|min:0.01',
         ]);
+
         if ($this->amount <= 0) {
             session()->flash('error', 'Amount must be greater than zero.');
             return;
         }
+
+        if ($this->amount > $this->order->total_amount) {
+            session()->flash('error', 'Amount cannot exceed the order total of ' . number_format($this->order->total_amount, 2) . '.');
+            return;
+        }
+
+        if ($this->amount < $this->order->total_amount) {
+            session()->flash('warning', 'Received amount is less than the order total. Please confirm if this is a partial payment.');
+            // Optionally, you can return here or allow partial payments based on your business logic.
+            return;
+        }
+
         if (!$this->offlineMethod) {
             session()->flash('error', 'Please select a payment method.');
             return;

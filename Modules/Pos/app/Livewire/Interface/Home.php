@@ -919,7 +919,7 @@ class Home extends Component
             'pos_session_id' => $this->order->pos_session_id ?? null,
             'guest_id'       => $this->order->guest_id ?? null,
             'payment_method' => $data['method'],
-            'amount'         => $data['amount'] ?? 'cash',
+            'amount'         => $data['amount'] ?? 0,
             'date'           => now(),
             'transaction_id' => $data['reference'] ?? Str::random(16),
             'label'          => 'Payment Received for Order #' . $this->order->receipt_number,

@@ -20,6 +20,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('app', AppController::class)->names('app');
 });
 
+// Daraja API
 Route::prefix('v1/payments/mpesa')->group(function () {
     Route::post('/stk-callback', [DarajaCallbackController::class, 'stkCallback']);
     Route::post('/b2c-result', [DarajaCallbackController::class, 'b2cResult']);
