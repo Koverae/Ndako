@@ -7,8 +7,5 @@
         <div class="p-0 modal-body">
             <livewire:channelmanager::wizard.add-booking-wizard :startDate="$startDate" :endDate="$endDate" />
         </div>
-        <div class="p-0 modal-footer">
-            <button class="btn btn-secondary" wire:click="$dispatch('closeModal')">{{ __('Close') }}</button>
-        </div>
     </div>
 </div>

@@ -54,77 +54,118 @@ class OnboardingWizard extends SimpleWizard
 
         $unitTypes = [
             // Basic & Standard Rooms
-            ['id' => 'single-room', 'label' => 'Single Room 🛏️'],
-            ['id' => 'double-room', 'label' => 'Double Room 🛏️🛏️'],
-            ['id' => 'twin-room', 'label' => 'Twin Room 🛏️🛏️'],
-            ['id' => 'triple-room', 'label' => 'Triple Room 🛏️🛏️🛏️'],
-            ['id' => 'quadruple-room', 'label' => 'Quadruple Room 🛏️🛏️🛏️🛏️'],
-            ['id' => 'family-room', 'label' => 'Family Room 👨‍👩‍👧‍👦'],
-            ['id' => 'bunk-room', 'label' => 'Bunk Room 🛏️🛏️'],
+            ['id' => 'single-room',          'label' => 'Single Room 🛏️'],
+            ['id' => 'double-room',          'label' => 'Double Room 🛏️🛏️'],
+            ['id' => 'twin-room',            'label' => 'Twin Room 🛏️🛏️'],
+            ['id' => 'double-double-room',   'label' => 'Double-Double Room 🛏️🛏️'], // two double beds
+            ['id' => 'queen-room',           'label' => 'Queen Room 👑🛏️'],
+            ['id' => 'king-room',            'label' => 'King Room 👑🛏️'],
+            ['id' => 'triple-room',          'label' => 'Triple Room 🛏️🛏️🛏️'],
+            ['id' => 'quadruple-room',       'label' => 'Quadruple Room 🛏️🛏️🛏️🛏️'],
+            ['id' => 'family-room',          'label' => 'Family Room 👨‍👩‍👧‍👦'],
+            ['id' => 'bunk-room',            'label' => 'Bunk Room 🛏️🛏️'],
+            ['id' => 'connecting-room',      'label' => 'Connecting Rooms 🔗'],
+            ['id' => 'adjoining-room',       'label' => 'Adjoining Room 🚪'],
 
             // Premium & Luxury Rooms
-            ['id' => 'standard-room', 'label' => 'Standard Room 🌟'],
-            ['id' => 'deluxe-room', 'label' => 'Deluxe Room 🌟'],
-            ['id' => 'superior-room', 'label' => 'Superior Room ✨'],
-            ['id' => 'executive-room', 'label' => 'Executive Room 💼'],
-            ['id' => 'junior-suite', 'label' => 'Junior Suite 🏡'],
-            ['id' => 'suite', 'label' => 'Suite 🏢'],
-            ['id' => 'presidential-suite', 'label' => 'Presidential Suite 🏆'],
-            ['id' => 'penthouse', 'label' => 'Penthouse 🌆'],
+            ['id' => 'standard-room',        'label' => 'Standard Room 🌟'],
+            ['id' => 'deluxe-room',          'label' => 'Deluxe Room 🌟'],
+            ['id' => 'superior-room',        'label' => 'Superior Room ✨'],
+            ['id' => 'club-room',            'label' => 'Club Room 🎟️'],
+            ['id' => 'executive-room',       'label' => 'Executive Room 💼'],
+            ['id' => 'junior-suite',         'label' => 'Junior Suite 🏡'],
+            ['id' => 'family-suite',         'label' => 'Family Suite 👨‍👩‍👧‍👦'],
+            ['id' => 'bridal-suite',         'label' => 'Bridal Suite 💐'],
+            ['id' => 'suite',                'label' => 'Suite 🏢'],
+            ['id' => 'panoramic-suite',      'label' => 'Panoramic Suite 🌅'],
+            ['id' => 'royal-suite',          'label' => 'Royal Suite 👑'],
+            ['id' => 'presidential-suite',   'label' => 'Presidential Suite 🏆'],
+            ['id' => 'penthouse',            'label' => 'Penthouse 🌆'],
 
             // Specialty & Themed Rooms
-            ['id' => 'honeymoon-suite', 'label' => 'Honeymoon Suite 💕'],
-            ['id' => 'wellness-room', 'label' => 'Wellness Room 🧘'],
-            ['id' => 'accessible-room', 'label' => 'Accessible Room ♿'],
-            ['id' => 'tatami-room', 'label' => 'Tatami Room 🎎'],
-            ['id' => 'themed-room', 'label' => 'Themed Room 🎭'],
-            ['id' => 'smart-room', 'label' => 'Smart Room 🤖'],
+            ['id' => 'honeymoon-suite',      'label' => 'Honeymoon Suite 💕'],
+            ['id' => 'wellness-room',        'label' => 'Wellness Room 🧘'],
+            ['id' => 'accessible-room',      'label' => 'Accessible Room ♿'],
+            ['id' => 'tatami-room',          'label' => 'Tatami Room 🎎'],
+            ['id' => 'themed-room',          'label' => 'Themed Room 🎭'],
+            ['id' => 'smart-room',           'label' => 'Smart Room 🤖'],
+            ['id' => 'cave-suite',           'label' => 'Cave Suite 🪨'],
+            ['id' => 'riad-room',            'label' => 'Riad Room 🕌'],
 
-            // Apartment & Long-Stay Options
-            ['id' => 'studio-room', 'label' => 'Studio Room 🏢'],
-            ['id' => 'serviced-apartment', 'label' => 'Serviced Apartment 🏡'],
-            ['id' => 'loft-room', 'label' => 'Loft Room 🏙️'],
-            ['id' => 'duplex-room', 'label' => 'Duplex Room 🏠'],
-
-            // Budget & Shared Accommodation
-            ['id' => 'shared-dormitory', 'label' => 'Shared Dormitory 🏘️'],
-            ['id' => 'capsule-room', 'label' => 'Capsule Room 📦'],
-            ['id' => 'micro-room', 'label' => 'Micro Room 🚪'],
-
-            // Efficiency Apartments
+            // Apartment & Long-Stay Options (Hotel-style)
+            ['id' => 'studio-room',          'label' => 'Studio Room 🏢'],
+            ['id' => 'loft-room',            'label' => 'Loft Room 🏙️'],
+            ['id' => 'duplex-room',          'label' => 'Duplex Room 🏠'],
             ['id' => 'efficiency-apartment', 'label' => 'Efficiency Apartment 🔄'],
 
-            // Multi-Room Apartments
-            ['id' => 'one-bedroom-apartment', 'label' => 'One-Bedroom Apartment 🛏️'],
-            ['id' => 'two-bedroom-apartment', 'label' => 'Two-Bedroom Apartment 🏡'],
-            ['id' => 'three-bedroom-apartment', 'label' => 'Three-Bedroom Apartment 🏠'],
-            ['id' => 'penthouse-apartment', 'label' => 'Penthouse Apartment 🌆'],
-            ['id' => 'garden-apartment', 'label' => 'Garden Apartment 🌿'],
-            ['id' => 'basement-apartment', 'label' => 'Basement Apartment ⬇️'],
+            // Budget & Shared Accommodation
+            ['id' => 'shared-dormitory',     'label' => 'Shared Dormitory 🏘️'],
+            ['id' => 'mixed-dorm',           'label' => 'Mixed Dorm 🛌'],
+            ['id' => 'female-dorm',          'label' => 'Female Dorm 🚺'],
+            ['id' => 'male-dorm',            'label' => 'Male Dorm 🚹'],
+            ['id' => 'private-room-shared-bath', 'label' => 'Private Room (Shared Bath) 🚿'],
+            ['id' => 'ensuite-room',         'label' => 'Ensuite Room 🛁'],
+            ['id' => 'capsule-room',         'label' => 'Capsule Room 📦'],
+            ['id' => 'micro-room',           'label' => 'Micro Room 🚪'],
+            ['id' => 'pod-dorm',             'label' => 'Pod Dorm 🧩'],
+
+            // Alternative Lodging / Resort
+            ['id' => 'bungalow',             'label' => 'Bungalow 🏖️'],
+            ['id' => 'cottage',              'label' => 'Cottage 🏡'],
+            ['id' => 'chalet',               'label' => 'Chalet 🏔️'],
+            ['id' => 'cabin',                'label' => 'Cabin 🌲'],
+            ['id' => 'treehouse',            'label' => 'Treehouse 🌳'],
+            ['id' => 'yurt',                 'label' => 'Yurt 🏕️'],
+            ['id' => 'glamping-tent',        'label' => 'Glamping Tent ⛺'],
+            ['id' => 'safari-tent',          'label' => 'Safari Tent 🐘'],
+            ['id' => 'overwater-bungalow',   'label' => 'Overwater Bungalow 🌊'],
+
+            // Villas & Homes
+            ['id' => 'one-bedroom-villa',    'label' => 'One-Bedroom Villa 🏠'],
+            ['id' => 'two-bedroom-villa',    'label' => 'Two-Bedroom Villa 🏠🏠'],
+            ['id' => 'three-bedroom-villa',  'label' => 'Three-Bedroom Villa 🏠🏠🏠'],
+            ['id' => 'pool-villa',           'label' => 'Pool Villa 🏊'],
+            ['id' => 'beach-villa',          'label' => 'Beach Villa 🏝️'],
+            ['id' => 'garden-villa',         'label' => 'Garden Villa 🌿'],
+
+            // Apartments (Residential / Serviced)
+            ['id' => 'studio-apartment',     'label' => 'Studio Apartment 🏢'],
+            ['id' => 'alcove-studio',        'label' => 'Alcove Studio 🧩'],
+            ['id' => 'one-bedroom-apartment','label' => 'One-Bedroom Apartment 🛏️'],
+            ['id' => 'two-bedroom-apartment','label' => 'Two-Bedroom Apartment 🏡'],
+            ['id' => 'three-bedroom-apartment','label'=> 'Three-Bedroom Apartment 🏠'],
+            ['id' => 'maisonette-apartment', 'label' => 'Maisonette Apartment 🪜'],
+            ['id' => 'railroad-apartment',   'label' => 'Railroad Apartment 🚆'],
+            ['id' => 'loft-apartment',       'label' => 'Loft Apartment 🏙️'],
+            ['id' => 'garden-apartment',     'label' => 'Garden Apartment 🌿'],
+            ['id' => 'basement-apartment',   'label' => 'Basement Apartment ⬇️'],
+            ['id' => 'penthouse-apartment',  'label' => 'Penthouse Apartment 🌆'],
+            ['id' => 'corporate-apartment',  'label' => 'Corporate Apartment 💼'],
+            ['id' => 'luxury-apartment',     'label' => 'Luxury Apartment 🌟'],
+            ['id' => 'smart-apartment',      'label' => 'Smart Apartment 🤖'],
+            ['id' => 'serviced-apartment',   'label' => 'Serviced Apartment 🏡'], // kept one; removed duplicate
 
             // Townhouses & Multi-Story Living
-            ['id' => 'duplex', 'label' => 'Duplex 🏠🏠'],
-            ['id' => 'triplex', 'label' => 'Triplex 🏡🏡🏡'],
-            ['id' => 'townhouse', 'label' => 'Townhouse 🏘️'],
-
-            // Luxury & High-End Apartments
-            ['id' => 'loft-apartment', 'label' => 'Loft Apartment 🏙️'],
-            ['id' => 'serviced-apartment', 'label' => 'Serviced Apartment 🏢'],
-            ['id' => 'corporate-apartment', 'label' => 'Corporate Apartment 💼'],
-            ['id' => 'luxury-apartment', 'label' => 'Luxury Apartment 🌟'],
-            ['id' => 'smart-apartment', 'label' => 'Smart Apartment 🤖'],
+            ['id' => 'duplex',               'label' => 'Duplex 🏠🏠'],
+            ['id' => 'triplex',              'label' => 'Triplex 🏡🏡🏡'],
+            ['id' => 'townhouse',            'label' => 'Townhouse 🏘️'],
         ];
+
         $this->unitTypes = toSelectOptions($unitTypes, 'id', 'label');
 
         $this->leaseTerms = toSelectOptions(LeaseTerm::isCompany(current_company()->id)->get(), 'id', 'name');
 
         $roles = [
-            ['id' => 'owner', 'label' => __('Owner / Founder')],
-            ['id' => 'manager', 'label' => __('Hotel Manager')],
-            ['id' => 'front-desk', 'label' => __('Front Desk / Receptionist')],
-            ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
-            ['id' => 'accountant', 'label' => __('Accountant')],
+            ['id' => 'owner',         'label' => __('Owner')], // full access
+            ['id' => 'manager',       'label' => __('General / Property Manager')], // ops + settings + reports
+            ['id' => 'front-office',  'label' => __('Front Office (Reception & Concierge)')], // check-in/out, guests, payments
+            ['id' => 'reservations',  'label' => __('Reservations Agent')], // holds & confirms bookings
+            ['id' => 'housekeeping',  'label' => __('Housekeeping')], // room status & tasks
+            ['id' => 'maintenance',   'label' => __('Maintenance Technician')], // work orders & status
+            ['id' => 'accounting',    'label' => __('Accountant / Finance')], // invoices, refunds, reports
+            ['id' => 'cashier',       'label' => __('POS Cashier')],
         ];
+
         $this->roles = toSelectOptions($roles, 'id', 'label');
 
     }
@@ -137,23 +178,23 @@ class OnboardingWizard extends SimpleWizard
 
     public function steps(){
         return [
-            Step::make(0, 'Identity Verification 🔒', true),
-            Step::make(1, 'Add First Property 🏡', false),
-            Step::make(2, 'Define Your Units 🏢', false),
-            Step::make(3, 'Invite Team Members 👥', false),
-            Step::make(4, 'Personalization (Logo, Currency, Timezone) 🎨', false),
-            Step::make(5, 'Final Step - Dashboard Tour 🚀', false),
+            // Step::make(0, 'Identity Verification 🔒', true),
+            Step::make(0, 'Add First Property 🏡', false),
+            Step::make(1, 'Define Your Units 🏢', false),
+            Step::make(2, 'Invite Team Members 👥', false),
+            Step::make(3, 'Personalization (Logo, Currency, Timezone) 🎨', false),
+            Step::make(4, 'Final Step - Dashboard Tour 🚀', false),
         ];
     }
 
     public function stepPages(){
         return [
-            StepPage::make('Identity Verification 🔒', '', 0)->component('app::wizard.step-page.special.onboarding.identity'),
-            StepPage::make('Add First Property 🏡', '', 1)->component('app::wizard.step-page.special.onboarding.add-property'),
-            StepPage::make('Define Your Units 🏢', '', 2)->component('app::wizard.step-page.special.onboarding.add-units'),
-            StepPage::make('Invite Team Members 👥', '', 3)->component('app::wizard.step-page.special.onboarding.invite-members'),
-            StepPage::make('Personalization (Logo, Currency, Timezone) 🎨 👥', '', 4)->component('app::wizard.step-page.special.onboarding.personalization'),
-            StepPage::make('final', '', 5)->component('app::wizard.step-page.special.onboarding.final'),
+            // StepPage::make('Identity Verification 🔒', '', 0)->component('app::wizard.step-page.special.onboarding.identity'),
+            StepPage::make('Add First Property 🏡', '', 0)->component('app::wizard.step-page.special.onboarding.add-property'),
+            StepPage::make('Define Your Units 🏢', '', 1)->component('app::wizard.step-page.special.onboarding.add-units'),
+            StepPage::make('Invite Team Members 👥', '', 2)->component('app::wizard.step-page.special.onboarding.invite-members'),
+            StepPage::make('Personalization (Logo, Currency, Timezone) 🎨 👥', '', 3)->component('app::wizard.step-page.special.onboarding.personalization'),
+            StepPage::make('final', '', 4)->component('app::wizard.step-page.special.onboarding.final'),
             // StepPage::make('confirmation', '', 6),
         ];
     }
@@ -204,6 +245,17 @@ class OnboardingWizard extends SimpleWizard
             'capacity' => 'required|integer|min:1',
             'unitSize' => 'nullable|numeric|min:1',
         ]);
+
+        // Check if company units limit have been reached
+
+        $allowedLimit = current_company()->team->subscription('main')->features()->where('tag', 'units')->value('value');
+        $currentCount = current_company()->units()->count(); // Dynamic model name
+
+        if ($currentCount >= $allowedLimit) {
+            $title = "Units limit has been reached";
+            $message = "You have reached your $allowedLimit units limit. Upgrade your plan to add more.";
+            return session()->flash('error', $message);
+        }
 
         // Add the current unit data to the propertyUnits array
         $this->propertyUnits[] = [

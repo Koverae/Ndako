@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
+            'auth' => \App\Http\Middleware\Authenticate::class,
             'twofactor' => \App\Http\Middleware\TwoFactorMiddleware::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
@@ -50,7 +51,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // $middleware->redirectGuestsTo('/login');
         // Using a closure...
-        $middleware->redirectGuestsTo(fn (Request $request) => route('login'));
+        // $middleware->redirectGuestsTo(fn (Request $request) => route('login'));
+        $middleware->redirectGuestsTo(function (Request $request) {
+            $middlewares = $request->route()?->middleware() ?? [];
+
+            $guardMiddleware = collect($middlewares)->first(fn ($m) => str_starts_with($m, 'auth:'));
+
+            $guard = $guardMiddleware ? explode(':', $guardMiddleware)[1] ?? null : null;
+
+            return match ($guard) {
+                'admin' => route('admin.login'),
+                default => route('login'),
+            };
+        });
 
         // $middleware->validateCsrfTokens(except: [
         //     'api/check-availability', // Add your route here

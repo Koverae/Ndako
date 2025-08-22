@@ -3,18 +3,19 @@
 namespace Modules\ChannelManager\Livewire\Table;
 
 use Carbon\Carbon;
-use Modules\App\Livewire\Components\Table\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\On;
 use Modules\App\Livewire\Components\Table\Card;
 use Modules\App\Livewire\Components\Table\Column;
+use Modules\App\Livewire\Components\Table\Table;
 use Modules\App\Traits\Table\HasCalendar;
 use Modules\ChannelManager\Models\Booking\Booking;
 use Modules\ChannelManager\Services\Booking\BookingService;
 use Modules\Properties\Models\Property\PropertyFloor;
 use Modules\Properties\Models\Property\PropertyUnit;
+// If your Property model lives elsewhere, adjust this import:
+use Modules\Properties\Models\Property\Property;
 
 class BookingTable extends Table
 {
@@ -22,29 +23,41 @@ class BookingTable extends Table
 
     public array $data = [];
     public $unitID;
-    public $selectedUnit = null, $selectedFloor = null;
-    public $units, $floors;
-    public $events = [];
-    protected $bookingService;
 
-    public function boot(BookingService $bookingService)
+    public ?int $selectedProperty = null;
+    public ?int $selectedFloor = null;
+    public ?int $selectedUnit = null;
+
+    public $properties;
+    public $floors;
+    public $units;
+
+    public $events = [];
+
+    protected BookingService $bookingService;
+
+    public function boot(BookingService $bookingService): void
     {
         $this->bookingService = $bookingService;
     }
 
-    public function mount($events = [], $options = [])
+    public function mount($events = [], $options = []): void
     {
         $this->view_type = 'calendar';
         $this->view = 'app::livewire.components.table.template.calendar';
         $this->data = ['integration_status', 'last_sync_date'];
+
         $this->unitID = request()->query('unit', null);
-        $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
-        $this->floors = PropertyFloor::isCompany(current_company()->id)->get();
+        $this->selectedProperty = request()->query('property') ? (int) request()->query('property') : null;
+        $this->selectedFloor = request()->query('floor') ? (int) request()->query('floor') : null;
+
         $this->options = array_merge([
             'initialView' => 'dayGridMonth',
             'editable' => true,
             'selectable' => true,
         ], $options);
+
+        $this->hydrateCollections();
         $this->loadBookings();
     }
 
@@ -63,26 +76,41 @@ class BookingTable extends Table
         return 'Your reservations will appear here once added. Start by creating a new reservation to manage your bookings seamlessly.';
     }
 
+    /** Base query with cascading filters (property → floor → unit) */
     public function query(): Builder
     {
-        $query = Booking::query();
+        $q = Booking::query();
 
-        if ($this->selectedUnit) {
-            $query->where('property_unit_id', $this->selectedUnit);
-            Log::debug("Filtering bookings for unit: {$this->selectedUnit}");
-        } elseif ($this->unitID) {
-            $query->where('property_unit_id', $this->unitID);
+        // Property scope: via unit.property_id
+        if ($this->selectedProperty) {
+            $propId = $this->selectedProperty;
+            $q->whereHas('unit', fn ($u) => $u->where('property_id', $propId));
         }
 
-        if ($this->searchQuery) {
-            $query->where(function ($q) {
-                $q->where('reference', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhereHas('guest', fn($q) => $q->where('name', 'like', '%' . $this->searchQuery . '%'))
-                  ->orWhereHas('unit', fn($q) => $q->where('name', 'like', '%' . $this->searchQuery . '%'));
+        // Floor scope: via unit.floor_id
+        if ($this->selectedFloor) {
+            $floorId = $this->selectedFloor;
+            $q->whereHas('unit', fn ($u) => $u->where('floor_id', $floorId));
+        }
+
+        // Unit scope (from chip selection or deep link)
+        if ($this->selectedUnit) {
+            $q->where('property_unit_id', $this->selectedUnit);
+        } elseif ($this->unitID) {
+            $q->where('property_unit_id', $this->unitID);
+        }
+
+        // Optional server-side search (if you expose $this->searchQuery)
+        if ($this->searchQuery ?? false) {
+            $search = '%' . $this->searchQuery . '%';
+            $q->where(function ($s) use ($search) {
+                $s->where('reference', 'like', $search)
+                    ->orWhereHas('guest', fn ($g) => $g->where('name', 'like', $search))
+                    ->orWhereHas('unit', fn ($u) => $u->where('name', 'like', $search));
             });
         }
 
-        return $query;
+        return $q;
     }
 
     public function columns(): array
@@ -104,106 +132,131 @@ class BookingTable extends Table
 
     public function cards(): array
     {
-        return [
-            Card::make('name', "name", "", $this->data),
-        ];
+        return [ Card::make('name', 'name', '', $this->data) ];
     }
 
-    public function loadBookings()
+    /** Read bookings → normalize to FC events → push to browser */
+    public function loadBookings(): void
     {
-        $this->events = $this->query()->with(['unit', 'guest', 'unit.unitType', 'channel'])
+        $this->events = $this->query()
+            ->with(['unit', 'guest', 'unit.unitType', 'channel'])
             ->get()
-            ->map(function ($booking) {
-                $status = strtolower($booking->status);
-                // Log::debug("Booking {$booking->id} Status: {$status}, Unit ID: {$booking->property_unit_id}");
+            ->map(function (Booking $b) {
+                $status = strtolower($b->status);
                 return [
-                    'id' => $booking->id,
-                    'title' => $booking->unit->name ?? 'Unknown Unit',
-                    'start' => Carbon::parse($booking->check_in)->toDateTimeString(),
-                    'end' => Carbon::parse($booking->check_out)->toDateTimeString(),
+                    'id' => $b->id,
+                    'title' => $b->unit->name ?? 'Unknown Unit',
+                    'start' => Carbon::parse($b->check_in)->toDateTimeString(),
+                    'end' => Carbon::parse($b->check_out)->toDateTimeString(),
                     'backgroundColor' => $this->getStatusColor($status),
                     'borderColor' => $this->getStatusColor($status),
                     'extendedProps' => [
-                        'reference' => $booking->reference ?? 'N/A',
-                        'guest' => $booking->guest->name ?? 'N/A',
-                        'room' => $booking->unit->name ?? 'N/A',
-                        'unitType' => $booking->unit->unitType->name ?? 'N/A',
-                        // 'channel' => $booking->channel->name ?? 'Direct Booking',
-                        'channel' => inverseSlug($booking->source) ?? 'Direct Booking',
+                        'unitId' => $b->property_unit_id,
+                        'reference' => $b->reference ?? 'N/A',
+                        'guest' => $b->guest->name ?? 'N/A',
+                        'room' => $b->unit->name ?? 'N/A',
+                        'unitType' => $b->unit->unitType->name ?? 'N/A',
+                        'channel' => inverseSlug($b->source) ?? 'Direct Booking',
                         'status' => ucfirst($status),
                     ],
                 ];
             })->toArray();
 
-        Log::debug("Events loaded: " . json_encode($this->events));
-        // $this->dispatch('calendarUpdated', ['events' => $this->events]);
+        // Live refresh on the calendar
+        $this->dispatch('calendarUpdated', $this->events);
     }
 
-    // public function refreshEvents()
-    // {
-    //     $this->loadBookings();
-    // }
-
-    public function getStatusColor($status)
+    public function getStatusColor(string $status): string
     {
         return match ($status) {
-            'pending' => '#fbc02d',
+            'pending'   => '#fbc02d',
             'confirmed' => '#017E84',
             'completed' => '#1e88e5',
-            'canceled' => '#e53935',
-            default => '#757575',
+            'canceled'  => '#e53935',
+            default     => '#757575',
         };
     }
 
     #[On('updateBookingDate')]
-    public function updateBookingDate($bookingId, $start, $end)
+    public function updateBookingDate($bookingId, $start, $end): void
     {
         $this->bookingService->updateBookingDate($bookingId, $start, $end);
-        // $this->loadBookings();
-        $this->redirect(route('bookings.lists'), true);
-    }
-
-    public function selectUnit($unitId)
-    {
-        Log::debug("selectUnit called with unitId: {$unitId}");
-        $this->selectedUnit = $unitId;
+        // Reload to reflect in the UI without a hard redirect:
         $this->loadBookings();
     }
 
-    public function selectFloor($floorId)
-    {
-        if (!$floorId) {
-            // Log::debug("selectFloor called with null floorId, resetting selectedFloor");
-            $this->selectedFloor = null;
-            $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
-            $this->loadBookings();
-            return;
-        }
+    /** ========== Filters ========== */
 
-        // Log::debug("selectFloor called with floorId: {$floorId}");
-        $this->selectedFloor = $floorId;
-        $this->units = PropertyUnit::isCompany(current_company()->id)
-            ->where('floor_id', $floorId)
-            ->with('unitType')
-            ->get();
+    public function selectProperty($propertyId): void
+    {
+        $this->selectedProperty = $propertyId ? (int) $propertyId : null;
+        // Reset dependent filters when property changes
+        $this->selectedFloor = null;
+        $this->selectedUnit = null;
+        $this->hydrateCollections();
+        $this->loadBookings();
+    }
+
+    public function selectFloor($floorId): void
+    {
+        $this->selectedFloor = $floorId ? (int) $floorId : null;
+        // When floor changes, reset unit and reload units
+        $this->selectedUnit = null;
+        $this->hydrateUnitsOnly();
+        $this->loadBookings();
+    }
+
+    public function selectUnit($unitId): void
+    {
+        Log::debug("selectUnit called with unitId: {$unitId}");
+        $this->selectedUnit = (int) $unitId;
         $this->loadBookings();
     }
 
     #[On('clearUnitFilter')]
-    public function clearUnitFilter()
+    public function clearUnitFilter(): void
     {
-        Log::debug("clearUnitFilter called");
-        $this->selectedUnit = null;
+        $this->selectedProperty = null;
         $this->selectedFloor = null;
-        $this->units = PropertyUnit::isCompany(current_company()->id)->with('unitType')->get();
+        $this->selectedUnit = null;
+        $this->hydrateCollections();
         $this->loadBookings();
     }
 
-    // public function render()
-    // {
-    //     return view($this->view, [
-    //         'units' => $this->units,
-    //         'events' => $this->events,
-    //     ]);
-    // }
+    /** Load properties, floors & units according to selection */
+    protected function hydrateCollections(): void
+    {
+        $companyId = current_company()->id;
+
+        // Properties (all company)
+        $this->properties = Property::query()
+            ->where('company_id', $companyId)
+            ->orderBy('name')
+            ->get(['id','name']);
+
+        // Floors scoped to property (or all)
+        $floorsQuery = PropertyFloor::isCompany($companyId);
+        if ($this->selectedProperty) {
+            $floorsQuery->where('property_id', $this->selectedProperty);
+        }
+        $this->floors = $floorsQuery->orderBy('name')->get();
+
+        // Units scoped to property/floor (and always eager load unitType)
+        $this->hydrateUnitsOnly();
+    }
+
+    /** Load units only (respecting current property + floor) */
+    protected function hydrateUnitsOnly(): void
+    {
+        $companyId = current_company()->id;
+
+        $units = PropertyUnit::isCompany($companyId)
+            ->when($this->selectedProperty, fn ($q) => $q->where('property_id', $this->selectedProperty))
+            ->when($this->selectedFloor, fn ($q) => $q->where('floor_id', $this->selectedFloor))
+            ->with('unitType')
+            ->orderBy('name')
+            ->get();
+
+        $this->units = $units;
+    }
 }

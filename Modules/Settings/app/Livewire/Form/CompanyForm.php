@@ -18,7 +18,7 @@ class CompanyForm extends SimpleAvatarForm
     public $name, $address, $city, $department, $country, $zip, $tax, $phone, $phone_2, $currency,
     $email, $website, $tags= [], $image_path,  $photo = null, $companyID, $reference, $note, $bankAccount, $addresses;
     public array $currencyOptions = [];
-    
+
     protected $rules = [
         'name' => 'required|string|max:30',
         'phone' => ['nullable', 'string'], // Phone validation example
@@ -51,7 +51,7 @@ class CompanyForm extends SimpleAvatarForm
             $this->image_path = $company->avatar;
             $this->reference = $company->reference;
             $this->currency = $company->default_currency;
-            $this->currencyOptions = toSelectOptions(Currency::isCompany($company->id)->get(), 'code', 'currency_name');
+            $this->currencyOptions = toSelectOptions(Currency::all(), 'id', 'currency_name');
         }
     }
 
@@ -74,27 +74,27 @@ class CompanyForm extends SimpleAvatarForm
         // $this->validate();
         if($this->company){
             $company = Company::find($this->company->id);
-    
+
             if(!$this->image_path){
                 $this->image_path = $company->id . '_logo.png';
-    
+
                 // $this->photo->storeAs('avatars', $this->image_path, 'public');
                 $company->update([
                     'avatar' => $this->image_path,
                 ]);
             }
-    
+
             $this->photo->storeAs('avatars', $this->image_path, 'public');
-    
-    
+
+
             // Send success message
             session()->flash('message', 'Logo updated successfully!');
         }
     }
-    
+
     #[On('create-company')]
     public function createcompany(){
-        
+
         $company = Company::create([
             'name' => $this->name,
             'phone' => $this->phone,
@@ -110,7 +110,7 @@ class CompanyForm extends SimpleAvatarForm
             'default_currency' => $this->currency,
         ]);
         $company->save();
-        
+
         $avatar = $company->id.'_logo.png';
         if($this->photo){
             $this->photo->storeAs('avatars', $avatar, 'public');
@@ -121,11 +121,11 @@ class CompanyForm extends SimpleAvatarForm
 
         return $this->redirect(route('settings.companies.show', ['company' => $company->id]), navigate: true);
     }
-    
+
     #[On('update-company')]
     public function updatecompany(){
         $company = Company::find($this->company->id);
-        
+
         $company->update([
             'name' => $this->name,
             'phone' => $this->phone,

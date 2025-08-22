@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('phone_2')->unique()->nullable();
             $table->text('address')->nullable();
             $table->string('website')->unique()->nullable();
-            $table->text('city')->nullable();
+            $table->string('city')->nullable();
             $table->text('industry')->nullable();
             $table->string('size')->nullable();
             $table->string('primary_interest')->nullable();

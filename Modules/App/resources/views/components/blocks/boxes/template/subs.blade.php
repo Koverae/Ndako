@@ -45,9 +45,15 @@
                 </ul>
 
                 <div class="mt-2">
+                    @if(current_company()->team->subscription('main')->plan->is_free)
+                    <a href="{{ route('subscribe') }}" class="gap-2 text-white btn btn-primary text-uppercase" >
+                        <i class="bi bi-arrow-up-right-circle"></i> Upgrade to Spark
+                    </a>
+                    @else
                     <a href="{{ route('subscribe') }}" class="gap-2 text-white btn btn-primary text-uppercase" >
                         <i class="bi bi-arrow-up-right-circle"></i> {{ current_company()->team->subscription('main')->isOnTrial() ? "Upgrade Now" : "Renew" }}
                     </a>
+                    @endif
                     <span wire:click="cancelSubscription" wire:confirm='Do you really want to cancel your subscription?' class="btn btn-danger gap-2 text-uppercase {{ current_company()->team->subscription('main')->cancels_at ? 'd-none' : '' }}  {{ current_company()->team->subscription('main')->isActive() ? '' : 'd-none' }}">
                         <i class="bi bi-x-circle"></i> Cancel Subscription
                     </span>

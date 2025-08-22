@@ -68,7 +68,7 @@
         <!-- Right Sidebar -->
         <div class="settings">
             @if($view == 'general')
-            <livewire:settings::settings.general :setting="settings()" />
+            <livewire:settings::settings.general :setting="current_company()->setting" />
             @elseif($view == 'properties')
             <livewire:properties::settings.property-setting :setting="settings()" />
             @elseif($view == 'channel-manager')

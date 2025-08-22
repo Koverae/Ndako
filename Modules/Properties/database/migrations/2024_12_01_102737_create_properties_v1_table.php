@@ -14,18 +14,22 @@ return new class extends Migration
         // Property Types
         Schema::create('property_types', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
-            $table->string('name')->unique();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+
+            $table->string('name'); // no inline unique()
             $table->text('description')->nullable();
-            $table->string('slug')->unique();
+            $table->string('slug'); // no inline unique()
             $table->string('icon')->nullable();
             $table->boolean('is_active')->default(true);
             $table->enum('property_type', ['single', 'multi', 'custom'])->default('multi');
-            $table->enum('property_type_group', ['residential', 'commercial', 'hospitality', 'mixed'])->default('hospitality'); // Optional categorization
-            $table->json('attributes')->nullable(); // Customizable attributes
-            $table->json('default_settings')->nullable(); // Default attribute values
+            $table->enum('property_type_group', ['residential', 'commercial', 'hospitality', 'mixed'])->default('hospitality');
+            $table->json('attributes')->nullable();
+            $table->json('default_settings')->nullable();
 
-            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            // Uniqueness scoped by company
+            $table->unique(['company_id', 'name'], 'property_types_company_name_unique');
+            $table->unique(['company_id', 'slug'], 'property_types_company_slug_unique'); // optional but recommended
+
             $table->timestamps();
             $table->softDeletes();
         });

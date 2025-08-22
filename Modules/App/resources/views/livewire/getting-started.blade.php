@@ -70,19 +70,26 @@
                         <x-input-error :messages="$errors->get('website')" class="mt-2" />
                     </div>
                     <div class="mb-3 col-lg-6">
-                        <label class="form-label" for="city">City</label>
-                        <input type="text" class="form-control" placeholder="eg. Nairobi" id="city" wire:model="city" required>
-                        <x-input-error :messages="$errors->get('city')" class="mt-2" />
-                    </div>
-                    <div class="mb-3 col-lg-6">
-                        <label class="form-label" for="country">Country</label>
-                        <select class="form-control" wire:model="country" id="" required>
+                        <label class="form-label" for="country">Country ({{ $currentCountry }})</label>
+                        <select class="form-control" wire:model.live="country" id="" required>
                             <option value="">{{ __('Where is your company based?') }}</option>
                             @foreach($countriesOptions as $country)
                             <option {{ $country->country_code == $currentCountry ? 'selected' : '' }} value="{{ $country->id }}">{{ $country->common_name }}</option>
                             @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('country')" class="mt-2" />
+                    </div>
+                    <div class="mb-3 col-lg-6">
+                        <label class="form-label" for="city">City</label>
+                            <select wire:model="city" id="city" class="form-select">
+                                <option value="">— Select a city —</option>
+                                @foreach ($citiesOptions[$currentCountry] as $city)
+                                <option value="{{ $city }}" @selected(old('city', $selectedCity ?? '') === $city)>
+                                    {{ $city }}
+                                </option>
+                                @endforeach
+                            </select>
+                        <x-input-error :messages="$errors->get('city')" class="mt-2" />
                     </div>
                     <div class="mb-2 col-lg-12">
                         <label class="form-label" for="role">What your role in the business? *</label>
@@ -104,7 +111,7 @@
                             Get Started
                         </span>
                         <span wire:loading.attr="disabled" wire:loading class="uppercase btn btn-primary w-100">
-                            ....
+                            Loading...
                         </span>
                     </div>
                 </form>

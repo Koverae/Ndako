@@ -42,6 +42,8 @@ class CompanyTable extends Table
     {
         $query = Company::query();
 
+        // Filter companies by the current user's team
+        $query->where('team_id', current_company()->team->id);
 
         // 🎯 Filters
         if (!empty($this->filters)) {

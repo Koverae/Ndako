@@ -8,7 +8,11 @@
         <div class="card-header d-block">
             <h2 class="h2">Add Your First Property 🏡</h2>
             <p>Let's get started by adding your first property. This helps you manage bookings and operations efficiently.</p>
-
+            @if (session('error'))
+            <div class="alert alert-danger mt-3">
+                {{ session('error') }}
+            </div>
+            @endif
         </div>
         <div class="card-body">
             <form wire:submit.prevent="addProperty">

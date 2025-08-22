@@ -365,6 +365,7 @@
         </div>
 
     </div>
+
     <script>
 
         document.addEventListener('livewire:navigated', function () {

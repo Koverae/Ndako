@@ -59,8 +59,8 @@ class PlanTableSeeder extends Seeder
 
         // Ndako Spark
         $sparkFeatures = [
-            ['tag' => 'properties', 'name' => 'Properties', 'value' => 1, 'sort_order' => 0],
-            ['tag' => 'units', 'name' => 'Rooms/Units', 'value' => 100, 'sort_order' => 1],
+            ['tag' => 'properties', 'name' => 'Properties', 'value' => 5, 'sort_order' => 0],
+            ['tag' => 'units', 'name' => 'Rooms/Units', 'value' => 250, 'sort_order' => 1],
             ['tag' => 'direct-booking', 'name' => 'Direct Booking Management', 'value' => 'advanced', 'sort_order' => 2],
             ['tag' => 'guest-management', 'name' => 'Guest Management', 'value' => 'advanced', 'sort_order' => 3],
             ['tag' => 'invoicing', 'name' => 'Invoicing', 'value' => 'customizable', 'sort_order' => 4],

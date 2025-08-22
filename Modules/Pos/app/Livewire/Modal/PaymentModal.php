@@ -45,6 +45,7 @@ class PaymentModal extends ModalComponent
         return $this->dispatch('openPaystackPopup', $responseData->data->authorization_url);
         // return $this->dispatch('openPaystackTab', $responseData->data->authorization_url);
     }
+
     /**
      * Initiates a Daraja STK Push payment request for the current order.
      *

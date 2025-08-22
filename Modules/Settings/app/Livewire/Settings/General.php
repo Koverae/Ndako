@@ -14,6 +14,8 @@ use App\Models\Company\CompanyInvitation;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+use Koverae\KoveraeBilling\Models\Plan;
+use Koverae\KoveraeBilling\Models\PlanSubscription;
 use Livewire\Attributes\On;
 use Modules\Settings\Models\Currency\Currency;
 use Modules\Settings\Notifications\CompanyInvitationNotification;
@@ -37,31 +39,31 @@ class General extends AppSetting
     public function mount($setting){
 
         $this->setting = $setting;
-        $this->has_customer_account = $setting->has_customer_account;
-        $this->default_currency = $setting->default_currency_id;
-        $this->has_paystack = $setting->has_paystack;
-        $this->paystackPublicKey = $setting->paystack_public_key;
-        $this->paystackSecretKey = $setting->paystack_secret_key;
-        $this->paystackBaseUrl = $setting->paystack_base_url;
-        $this->paystackMerchandEmail = $setting->paystack_merchand_email;
+        $this->has_customer_account = $setting->has_customer_account ?? false;
+        $this->default_currency = $setting->default_currency_id ?? null;
+        $this->has_paystack = $setting->has_paystack ?? false;
+        $this->paystackPublicKey = $setting->paystack_public_key ?? null;
+        $this->paystackSecretKey = $setting->paystack_secret_key ?? null;
+        $this->paystackBaseUrl = $setting->paystack_base_url ?? null;
+        $this->paystackMerchandEmail = $setting->paystack_merchand_email ?? null;
 
-        $this->has_default_access_right = $setting->has_default_access_right;
-        $this->has_geo_localization = $setting->has_geo_localization;
-        $this->geolocation_provider = $setting->geolocation_provider;
-        $this->has_recaptcha = $setting->has_recaptcha;
-        $this->has_reset_password = $setting->has_reset_password;
-        $this->has_import_from_xls = $setting->has_import_from_xls;
+        $this->has_default_access_right = $setting->has_default_access_right ?? false;
+        $this->has_geo_localization = $setting->has_geo_localization ?? false;
+        $this->geolocation_provider = $setting->geolocation_provider ?? false;
+        $this->has_recaptcha = $setting->has_recaptcha ?? false;
+        $this->has_reset_password = $setting->has_reset_password ?? false;
+        $this->has_import_from_xls = $setting->has_import_from_xls ?? false;
 
-        $this->has_default_check_times = $setting->has_default_check_times;
-        $this->has_online_payment = $setting->has_online_payment;
-        $this->has_lock_confirmed_booking = $setting->has_lock_confirmed_booking;
-        $this->has_pro_format_invoice = $setting->has_pro_format_invoice;
-        $this->has_overbooking_prevention = $setting->has_overbooking_prevention;
-        $this->has_stay_rule_per_unit = $setting->has_stay_rule_per_unit;
-        $this->has_cleaning_frequency = $setting->has_cleaning_frequency;
-        $this->has_maintenance_alerts = $setting->has_maintenance_alerts;
-        $this->has_housekeeping_staff = $setting->has_housekeeping_staff;
-        $this->has_maintenance_requests = $setting->has_maintenance_requests;
+        $this->has_default_check_times = $setting->has_default_check_times ?? false;
+        $this->has_online_payment = $setting->has_online_payment ?? false;
+        $this->has_lock_confirmed_booking = $setting->has_lock_confirmed_booking ?? false;
+        $this->has_pro_format_invoice = $setting->has_pro_format_invoice ?? false;
+        $this->has_overbooking_prevention = $setting->has_overbooking_prevention ?? false;
+        $this->has_stay_rule_per_unit = $setting->has_stay_rule_per_unit ?? false;
+        $this->has_cleaning_frequency = $setting->has_cleaning_frequency ?? false;
+        $this->has_maintenance_alerts = $setting->has_maintenance_alerts ?? false;
+        $this->has_housekeeping_staff = $setting->has_housekeeping_staff ?? false;
+        $this->has_maintenance_requests = $setting->has_maintenance_requests ?? false;
 
         $this->pending_invitations = CompanyInvitation::isCompany(current_company()->id)->get();
         $this->users = current_company()->users()->get();
@@ -282,7 +284,7 @@ class General extends AppSetting
     // Cancel Subscription
     public function cancelSubscription(){
 
-        $this->authorize('manageSubscription', current_company()); // Check if the user has permission to manage subscription
+        $this->authorize('manage_kover_subscription', current_company()); // Check if the user has permission to manage subscription
 
         // current_company()->team->subscription('main')->cancel();
         current_company()->team->subscription('main')->update([
@@ -290,5 +292,26 @@ class General extends AppSetting
         ]);
         $this->mount($this->setting);
     }
+
+    public function upgradeSubscription(){
+        $this->authorize('manage_kover_subscription', current_company()); // Check if the user has permission to manage subscription
+
+        $plan = Plan::getByTag('spark-monthly');
+        $subscription = PlanSubscription::find(current_company()->team->subscription('main')->id);
+
+        // Change subscription plan clearing usage and synchronizing invoicing periods
+        $subscription->changePlan($plan);
+
+        // Free 7 days trial
+        $subscription->update([
+            'starts_at' => null,
+            'ends_at' => null,
+            'trial_ends_at' => now()->addDays(7)
+        ]);
+
+        redirect()->route('dashboard');
+    }
+
+
 
 }

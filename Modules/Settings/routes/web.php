@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Company\SwitchCompanyController;
 use Illuminate\Support\Facades\Route;
 use Modules\Settings\Http\Controllers\SettingsController;
 use Modules\Settings\Livewire\GeneralSetting;
@@ -30,6 +31,9 @@ Route::middleware('identify-kover')->group( function () {
         Route::get('/create', UserCreate::class)->name('create')->middleware('can:invite_users');
         Route::get('/{user}', UserShow::class)->name('show');
     });
+    Route::post('company/switch', [SwitchCompanyController::class, 'switch'])->name('company.switch');
+    // ->middleware('can:switch_companies');
+
     Route::prefix('/companies')->middleware('can:access_companies')->name('settings.companies.')->group(function() {
         Route::get('/', CompanyLists::class)->name('index');
         Route::get('create', CompanyCreate::class)->name('create');

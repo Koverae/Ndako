@@ -58,18 +58,20 @@ class UserForm extends SimpleAvatarForm
             $this->userPermissions = toSelectOptions($user->getAllPermissions(), 'id', 'name');
 
         }else{
-            $this->authorize('create', User::class);
+            // $this->authorize('create', User::class);
         }
 
         $roles = [
-            ['id' => 'owner', 'label' => __('Owner')],
-            ['id' => 'manager', 'label' => __('General Manager')],
-            ['id' => 'front-desk', 'label' => __('Front Desk / Receptionist')],
-            ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
-            ['id' => 'accountant', 'label' => __('Accountant')],
-            ['id' => 'cashier', 'label' => __('Cashier')],
-
+            ['id' => 'owner',         'label' => __('Owner')], // full access
+            ['id' => 'manager',       'label' => __('General / Property Manager')], // ops + settings + reports
+            ['id' => 'front-office',  'label' => __('Front Office (Reception & Concierge)')], // check-in/out, guests, payments
+            ['id' => 'reservations',  'label' => __('Reservations Agent')], // holds & confirms bookings
+            ['id' => 'housekeeping',  'label' => __('Housekeeping')], // room status & tasks
+            ['id' => 'maintenance',   'label' => __('Maintenance Technician')], // work orders & status
+            ['id' => 'accounting',    'label' => __('Accountant / Finance')], // invoices, refunds, reports
+            ['id' => 'cashier',       'label' => __('POS Cashier')],
         ];
+
         $this->rolesOptions = toSelectOptions($roles, 'id', 'label');
 
         $this->permissionOptions = toSelectOptions(current_company()->permissions, 'id', 'name');
@@ -248,7 +250,7 @@ class UserForm extends SimpleAvatarForm
         $this->authorize('assignPermissions', $this->user); // Check if the user has permission to assign permissions
 
         $this->validate([
-            'selectedPermission' => 'nullable|exists:taxes,id',
+            'selectedPermission' => 'nullable|exists:permissions,id'
         ]);
 
         $permission = Permission::find($this->selectedPermission);
@@ -321,7 +323,7 @@ class UserForm extends SimpleAvatarForm
 
     public function updatedPhoto(){
 
-        $this->authorize('update', $this->user); // Check if the user has permission to update users
+        // $this->authorize('update', $this->user); // Check if the user has permission to update users
 
         // Validate the uploaded file
         $this->validate();
@@ -348,7 +350,7 @@ class UserForm extends SimpleAvatarForm
     #[On('create-user')]
     public function createUser(){
 
-        $this->authorize('create', User::class); // Check if the user has permission to create users
+        // $this->authorize('create', User::class); // Check if the user has permission to create users
 
         $this->validate();
 
@@ -375,7 +377,8 @@ class UserForm extends SimpleAvatarForm
 
         $user->assignRole($this->role);
 
-        return $this->redirect(route('settings.users.show', ['user' => $user->id]), navigate: true);
+        // return $this->redirect(route('settings.users.show', ['user' => $user->id]), navigate: true);
+        return $this->redirectRoute('settings.users.show', ['user' => $user->id]);
     }
 
     #[On('update-user')]

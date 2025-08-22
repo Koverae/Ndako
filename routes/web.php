@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified', 'identify-kover', 'subscribed', 'twofacto
 
     Route::get('/onboarding', Onboarding::class)->name('onboarding');
     Route::get('/', Overview::class)->name('dashboard');
+
+    // 
 });
 
 // require __DIR__.'/auth.php';

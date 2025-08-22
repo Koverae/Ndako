@@ -143,103 +143,193 @@ class AppManagerHandler extends AppHandler
     private function installCurrencies(): void
     {
         $currencies = [
+            // -------- Africa --------
             // North Africa
-            ['currency_name' => 'Algerian Dinar', 'code' => 'DZD', 'symbol' => 'د.ج', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Egyptian Pound', 'code' => 'EGP', 'symbol' => '£', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Libyan Dinar', 'code' => 'LYD', 'symbol' => 'ل.د', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Moroccan Dirham', 'code' => 'MAD', 'symbol' => 'د.م.', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Tunisian Dinar', 'code' => 'TND', 'symbol' => 'د.ت', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Algerian Dinar',         'code' => 'DZD', 'symbol' => 'د.ج',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Egyptian Pound',         'code' => 'EGP', 'symbol' => '£',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Libyan Dinar',           'code' => 'LYD', 'symbol' => 'ل.د',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Moroccan Dirham',        'code' => 'MAD', 'symbol' => 'د.م.', 'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Sudanese Pound',         'code' => 'SDG', 'symbol' => '£',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Tunisian Dinar',         'code' => 'TND', 'symbol' => 'د.ت',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
 
             // West Africa
-            ['currency_name' => 'West African CFA Franc', 'code' => 'XOF', 'symbol' => 'CFA', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Nigerian Naira', 'code' => 'NGN', 'symbol' => '₦', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Ghanaian Cedi', 'code' => 'GHS', 'symbol' => 'GH₵', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'West African CFA Franc', 'code' => 'XOF', 'symbol' => 'CFA',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Nigerian Naira',         'code' => 'NGN', 'symbol' => '₦',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Ghanaian Cedi',          'code' => 'GHS', 'symbol' => 'GH₵',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Gambian Dalasi',         'code' => 'GMD', 'symbol' => 'D',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Guinean Franc',          'code' => 'GNF', 'symbol' => 'FG',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Liberian Dollar',        'code' => 'LRD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Cape Verdean Escudo',    'code' => 'CVE', 'symbol' => '$',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Sierra Leonean Leone',   'code' => 'SLE', 'symbol' => 'Le',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
             // Central Africa
-            ['currency_name' => 'Central African CFA Franc', 'code' => 'XAF', 'symbol' => 'FCFA', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Congolese Franc', 'code' => 'CDF', 'symbol' => 'FC', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Rwandan Franc', 'code' => 'RWF', 'symbol' => 'RF', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Central African CFA Franc','code' => 'XAF','symbol' => 'FCFA','thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Angolan Kwanza',         'code' => 'AOA', 'symbol' => 'Kz',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Congolese Franc',        'code' => 'CDF', 'symbol' => 'FC',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'São Tomé and Príncipe Dobra','code' => 'STN','symbol' => 'Db','thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
 
             // East Africa
-            ['currency_name' => 'Kenyan Shilling', 'code' => 'KES', 'symbol' => 'KSh', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Ugandan Shilling', 'code' => 'UGX', 'symbol' => 'USh', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Rwandan Franc', 'code' => 'RWF', 'symbol' => 'RF', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Kenyan Shilling',        'code' => 'KES', 'symbol' => 'KSh',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Ugandan Shilling',       'code' => 'UGX', 'symbol' => 'USh',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Tanzanian Shilling',     'code' => 'TZS', 'symbol' => 'TSh',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Rwandan Franc',          'code' => 'RWF', 'symbol' => 'RF',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Burundian Franc',        'code' => 'BIF', 'symbol' => 'FBu',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Ethiopian Birr',         'code' => 'ETB', 'symbol' => 'Br',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Djiboutian Franc',       'code' => 'DJF', 'symbol' => 'Fdj',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Eritrean Nakfa',         'code' => 'ERN', 'symbol' => 'Nfk',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Somali Shilling',        'code' => 'SOS', 'symbol' => 'Sh',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'South Sudanese Pound',   'code' => 'SSP', 'symbol' => '£',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+
+            // Indian Ocean (Africa)
+            ['currency_name' => 'Comorian Franc',         'code' => 'KMF', 'symbol' => 'CF',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Malagasy Ariary',        'code' => 'MGA', 'symbol' => 'Ar',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Mauritian Rupee',        'code' => 'MUR', 'symbol' => '₨',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Seychellois Rupee',      'code' => 'SCR', 'symbol' => '₨',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
             // Southern Africa
-            ['currency_name' => 'Botswana Pula', 'code' => 'BWP', 'symbol' => 'P', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'South African Rand', 'code' => 'ZAR', 'symbol' => 'R', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Namibian Dollar', 'code' => 'NAD', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Botswana Pula',          'code' => 'BWP', 'symbol' => 'P',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'South African Rand',     'code' => 'ZAR', 'symbol' => 'R',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Namibian Dollar',        'code' => 'NAD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Zambian Kwacha',         'code' => 'ZMW', 'symbol' => 'K',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Zimbabwean Dollar',      'code' => 'ZWL', 'symbol' => 'Z$',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Mozambican Metical',     'code' => 'MZN', 'symbol' => 'MT',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Malawian Kwacha',        'code' => 'MWK', 'symbol' => 'MK',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Lesotho Loti',           'code' => 'LSL', 'symbol' => 'L',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Eswatini Lilangeni',     'code' => 'SZL', 'symbol' => 'E',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
-            // Eurozone - Use Euro
-            ['currency_name' => 'Euro', 'code' => 'EUR', 'symbol' => '€', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            // -------- Europe --------
+            // Eurozone
+            ['currency_name' => 'Euro',                   'code' => 'EUR', 'symbol' => '€',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
 
-            // Northern Europe
-            ['currency_name' => 'Danish Krone', 'code' => 'DKK', 'symbol' => 'kr.', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Norwegian Krone', 'code' => 'NOK', 'symbol' => 'kr', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Swedish Krona', 'code' => 'SEK', 'symbol' => 'kr', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'British Pound Sterling', 'code' => 'GBP', 'symbol' => '£', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            // Nordics & UK/IE
+            ['currency_name' => 'Danish Krone',           'code' => 'DKK', 'symbol' => 'kr.',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Norwegian Krone',        'code' => 'NOK', 'symbol' => 'kr',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Swedish Krona',          'code' => 'SEK', 'symbol' => 'kr',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'British Pound Sterling', 'code' => 'GBP', 'symbol' => '£',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Icelandic Króna',        'code' => 'ISK', 'symbol' => 'kr',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Swiss Franc',            'code' => 'CHF', 'symbol' => 'CHF',  'thousand_separator' => '\'', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
-            // Eastern Europe
-            ['currency_name' => 'Polish Zloty', 'code' => 'PLN', 'symbol' => 'zł', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Hungarian Forint', 'code' => 'HUF', 'symbol' => 'Ft', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Romanian Leu', 'code' => 'RON', 'symbol' => 'lei', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Bulgarian Lev', 'code' => 'BGN', 'symbol' => 'лв.', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Russian Ruble', 'code' => 'RUB', 'symbol' => '₽', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            // Central & Eastern Europe (non-euro)
+            ['currency_name' => 'Czech Koruna',           'code' => 'CZK', 'symbol' => 'Kč',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Polish Złoty',           'code' => 'PLN', 'symbol' => 'zł',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Hungarian Forint',       'code' => 'HUF', 'symbol' => 'Ft',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Romanian Leu',           'code' => 'RON', 'symbol' => 'lei',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Bulgarian Lev',          'code' => 'BGN', 'symbol' => 'лв.',  'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Serbian Dinar',          'code' => 'RSD', 'symbol' => 'дин',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Macedonian Denar',       'code' => 'MKD', 'symbol' => 'ден',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Albanian Lek',           'code' => 'ALL', 'symbol' => 'L',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Bosnia-Herzegovina Mark','code' => 'BAM', 'symbol' => 'KM',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Moldovan Leu',           'code' => 'MDL', 'symbol' => 'L',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Ukrainian Hryvnia',      'code' => 'UAH', 'symbol' => '₴',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Belarusian Ruble',       'code' => 'BYN', 'symbol' => 'Br',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Russian Ruble',          'code' => 'RUB', 'symbol' => '₽',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
 
-            // Southern Europe
-            ['currency_name' => 'Turkish Lira', 'code' => 'TRY', 'symbol' => '₺', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Swiss Franc', 'code' => 'CHF', 'symbol' => 'CHF', 'thousand_separator' => '\'', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            // -------- Middle East & Caucasus --------
+            ['currency_name' => 'United Arab Emirates Dirham', 'code' => 'AED', 'symbol' => 'د.إ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Saudi Riyal',            'code' => 'SAR', 'symbol' => '﷼',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Qatari Riyal',           'code' => 'QAR', 'symbol' => '﷼',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Kuwaiti Dinar',          'code' => 'KWD', 'symbol' => 'د.ك', 'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Omani Rial',             'code' => 'OMR', 'symbol' => '﷼',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Bahraini Dinar',         'code' => 'BHD', 'symbol' => '.د.ب', 'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Israeli New Shekel',     'code' => 'ILS', 'symbol' => '₪',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Jordanian Dinar',        'code' => 'JOD', 'symbol' => 'د.ا',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Iraqi Dinar',            'code' => 'IQD', 'symbol' => 'د.ع',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Iranian Rial',           'code' => 'IRR', 'symbol' => '﷼',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Lebanese Pound',         'code' => 'LBP', 'symbol' => 'ل.ل', 'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Syrian Pound',           'code' => 'SYP', 'symbol' => '£',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            // Caucasus
+            ['currency_name' => 'Georgian Lari',          'code' => 'GEL', 'symbol' => '₾',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Armenian Dram',          'code' => 'AMD', 'symbol' => '֏',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Azerbaijani Manat',      'code' => 'AZN', 'symbol' => '₼',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
 
-            // Western Europe (outside Eurozone)
-            ['currency_name' => 'Icelandic Krona', 'code' => 'ISK', 'symbol' => 'kr', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-            ['currency_name' => 'Croatian Kuna', 'code' => 'HRK', 'symbol' => 'kn', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'suffix'],
-
+            // -------- Asia (Far East, SE Asia, South & Central) --------
             // Far East
-            ['currency_name' => 'Japanese Yen', 'code' => 'JPY', 'symbol' => '¥', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'South Korean Won', 'code' => 'KRW', 'symbol' => '₩', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Chinese Yuan', 'code' => 'CNY', 'symbol' => '¥', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Hong Kong Dollar', 'code' => 'HKD', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Taiwan Dollar', 'code' => 'TWD', 'symbol' => 'NT$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Japanese Yen',           'code' => 'JPY', 'symbol' => '¥',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Chinese Yuan',           'code' => 'CNY', 'symbol' => '¥',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Hong Kong Dollar',       'code' => 'HKD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Macanese Pataca',        'code' => 'MOP', 'symbol' => 'MOP$', 'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'New Taiwan Dollar',      'code' => 'TWD', 'symbol' => 'NT$',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'South Korean Won',       'code' => 'KRW', 'symbol' => '₩',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Mongolian Tögrög',       'code' => 'MNT', 'symbol' => '₮',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
             // Southeast Asia
-            ['currency_name' => 'Thai Baht', 'code' => 'THB', 'symbol' => '฿', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Singapore Dollar', 'code' => 'SGD', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Malaysian Ringgit', 'code' => 'MYR', 'symbol' => 'RM', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Indonesian Rupiah', 'code' => 'IDR', 'symbol' => 'Rp', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Philippine Peso', 'code' => 'PHP', 'symbol' => '₱', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Singapore Dollar',       'code' => 'SGD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Malaysian Ringgit',      'code' => 'MYR', 'symbol' => 'RM',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Thai Baht',              'code' => 'THB', 'symbol' => '฿',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Indonesian Rupiah',      'code' => 'IDR', 'symbol' => 'Rp',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Philippine Peso',        'code' => 'PHP', 'symbol' => '₱',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Vietnamese Đồng',        'code' => 'VND', 'symbol' => '₫',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Cambodian Riel',         'code' => 'KHR', 'symbol' => '៛',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Lao Kip',                'code' => 'LAK', 'symbol' => '₭',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Myanmar Kyat',           'code' => 'MMK', 'symbol' => 'K',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Brunei Dollar',          'code' => 'BND', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
             // South Asia
-            ['currency_name' => 'Indian Rupee', 'code' => 'INR', 'symbol' => '₹', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Pakistani Rupee', 'code' => 'PKR', 'symbol' => '₨', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Bangladeshi Taka', 'code' => 'BDT', 'symbol' => '৳', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Sri Lankan Rupee', 'code' => 'LKR', 'symbol' => 'Rs', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Afghan Afghani', 'code' => 'AFN', 'symbol' => '؋', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Indian Rupee',           'code' => 'INR', 'symbol' => '₹',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Pakistani Rupee',        'code' => 'PKR', 'symbol' => '₨',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Bangladeshi Taka',       'code' => 'BDT', 'symbol' => '৳',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Sri Lankan Rupee',       'code' => 'LKR', 'symbol' => 'Rs',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Nepalese Rupee',         'code' => 'NPR', 'symbol' => 'Rs',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Bhutanese Ngultrum',     'code' => 'BTN', 'symbol' => 'Nu.',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Maldivian Rufiyaa',      'code' => 'MVR', 'symbol' => 'Rf',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Afghan Afghani',         'code' => 'AFN', 'symbol' => '؋',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
+            // Central Asia
+            ['currency_name' => 'Kazakhstani Tenge',      'code' => 'KZT', 'symbol' => '₸',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Uzbekistani Soʻm',       'code' => 'UZS', 'symbol' => 'soʻm', 'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Tajikistani Somoni',     'code' => 'TJS', 'symbol' => 'ЅМ',   'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Turkmenistan Manat',     'code' => 'TMT', 'symbol' => 'm',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Kyrgyzstani Som',        'code' => 'KGS', 'symbol' => 'сом',  'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
+
+            // -------- Americas --------
             // North America
-            ['currency_name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Canadian Dollar', 'code' => 'CAD', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Mexican Peso', 'code' => 'MXN', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'US Dollar',              'code' => 'USD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Canadian Dollar',        'code' => 'CAD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Mexican Peso',           'code' => 'MXN', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
             // Central America
-            ['currency_name' => 'Guatemalan Quetzal', 'code' => 'GTQ', 'symbol' => 'Q', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Honduran Lempira', 'code' => 'HNL', 'symbol' => 'L', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Nicaraguan Cordoba', 'code' => 'NIO', 'symbol' => 'C$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Panamanian Balboa', 'code' => 'PAB', 'symbol' => 'B/.', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Belize Dollar', 'code' => 'BZD', 'symbol' => 'BZ$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Costa Rican Colón',      'code' => 'CRC', 'symbol' => '₡',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Guatemalan Quetzal',     'code' => 'GTQ', 'symbol' => 'Q',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Honduran Lempira',       'code' => 'HNL', 'symbol' => 'L',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Nicaraguan Córdoba',     'code' => 'NIO', 'symbol' => 'C$',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Panamanian Balboa',      'code' => 'PAB', 'symbol' => 'B/.',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Belize Dollar',          'code' => 'BZD', 'symbol' => 'BZ$',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+
+            // Caribbean & Atlantic
+            ['currency_name' => 'Dominican Peso',         'code' => 'DOP', 'symbol' => 'RD$',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Cuban Peso',             'code' => 'CUP', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Haitian Gourde',         'code' => 'HTG', 'symbol' => 'G',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Jamaican Dollar',        'code' => 'JMD', 'symbol' => 'J$',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'East Caribbean Dollar',  'code' => 'XCD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Barbadian Dollar',       'code' => 'BBD', 'symbol' => 'Bds$', 'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Bahamian Dollar',        'code' => 'BSD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Trinidad and Tobago Dollar','code' => 'TTD','symbol' => 'TT$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Cayman Islands Dollar',  'code' => 'KYD', 'symbol' => 'CI$',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Bermudian Dollar',       'code' => 'BMD', 'symbol' => 'BD$',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
 
             // South America
-            ['currency_name' => 'Brazilian Real', 'code' => 'BRL', 'symbol' => 'R$', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Argentine Peso', 'code' => 'ARS', 'symbol' => '$', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Colombian Peso', 'code' => 'COP', 'symbol' => '$', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Peruvian Sol', 'code' => 'PEN', 'symbol' => 'S/.', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Venezuelan Bolivar', 'code' => 'VES', 'symbol' => 'Bs.', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Uruguayan Peso', 'code' => 'UYU', 'symbol' => '$', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Chilean Peso', 'code' => 'CLP', 'symbol' => '$', 'thousand_separator' => '.', 'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Brazilian Real',         'code' => 'BRL', 'symbol' => 'R$',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Argentine Peso',         'code' => 'ARS', 'symbol' => '$',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Chilean Peso',           'code' => 'CLP', 'symbol' => '$',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Colombian Peso',         'code' => 'COP', 'symbol' => '$',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Peruvian Sol',           'code' => 'PEN', 'symbol' => 'S/.',  'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Venezuelan Bolívar',     'code' => 'VES', 'symbol' => 'Bs.',  'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Uruguayan Peso',         'code' => 'UYU', 'symbol' => '$U',   'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Paraguayan Guaraní',     'code' => 'PYG', 'symbol' => '₲',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Bolivian Boliviano',     'code' => 'BOB', 'symbol' => 'Bs',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Guyanese Dollar',        'code' => 'GYD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Surinamese Dollar',      'code' => 'SRD', 'symbol' => '$',    'thousand_separator' => '.',  'decimal_separator' => ',', 'symbol_position' => 'prefix'],
 
-            // Caribbean
-            ['currency_name' => 'East Caribbean Dollar', 'code' => 'XCD', 'symbol' => '$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Haitian Gourde', 'code' => 'HTG', 'symbol' => 'G', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix'],
-            ['currency_name' => 'Jamaican Dollar', 'code' => 'JMD', 'symbol' => 'J$', 'thousand_separator' => ',', 'decimal_separator' => '.', 'symbol_position' => 'prefix']
+            // -------- Oceania --------
+            ['currency_name' => 'Australian Dollar',      'code' => 'AUD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'New Zealand Dollar',     'code' => 'NZD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Fijian Dollar',          'code' => 'FJD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Papua New Guinean Kina', 'code' => 'PGK', 'symbol' => 'K',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Samoan Tala',            'code' => 'WST', 'symbol' => 'T',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Tongan Paʻanga',         'code' => 'TOP', 'symbol' => 'T$',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'Vanuatu Vatu',           'code' => 'VUV', 'symbol' => 'Vt',   'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'suffix'],
+            ['currency_name' => 'Solomon Islands Dollar', 'code' => 'SBD', 'symbol' => '$',    'thousand_separator' => ',',  'decimal_separator' => '.', 'symbol_position' => 'prefix'],
+            ['currency_name' => 'CFP Franc',              'code' => 'XPF', 'symbol' => '₣',    'thousand_separator' => ' ',  'decimal_separator' => ',', 'symbol_position' => 'suffix'],
         ];
 
         foreach ($currencies as $currency) {

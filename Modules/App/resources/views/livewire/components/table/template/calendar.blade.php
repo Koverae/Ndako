@@ -1,677 +1,685 @@
-<div class="p-4 bg-white rounded-lg shadow-sm calendar-container" wire:key="calendar-container">
-    <style>
-        .calendar-legend .legend-item {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-        }
-        .calendar-tooltip {
-            position: fixed;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            padding: 8px 12px;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            max-width: 300px;
-            font-size: 13px;
-            color: #374151;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .fc-event-custom {
-            background-color: var(--status-color, #757575) !important;
-            border: none !important;
-            border-radius: 6px;
-            padding: 8px;
-            margin: 2px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-            cursor: pointer;
-            max-height: 120px;
-            overflow: hidden;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .fc-event-custom:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            border: 2px solid transparent;
-            background: linear-gradient(var(--status-color), var(--status-color)) padding-box, linear-gradient(45deg, #0E6163, #3aa8aa) border-box;
-        }
-        .event-content {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            color: white;
-            font-size: 13px;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-            line-height: 1.3;
-        }
-        .event-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .event-reference {
-            font-weight: 600;
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .event-status-icon {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: white;
-            opacity: 0.8;
-        }
-        .event-details {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .event-guest, .event-room, .event-dates {
-            font-size: 13px;
-            opacity: 0.9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .event-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-        }
-        .event-channel {
-            background: white;
-            color: #1f2937;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 10px;
-            line-height: 1.2;
-        }
-        .event-actions {
-            display: flex;
-            gap: 6px;
-        }
-        .event-action-icon {
-            font-size: 16px;
-            color: white;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-        }
-        .event-action-icon:hover {
-            opacity: 1;
-        }
-        .scrollbar-thin {
-            scrollbar-width: thin;
-        }
-        .scrollbar-thumb-gray-300 {
-            scrollbar-color: #d1d5db #f3f4f6;
-        }
-        .rooms-section {
-            margin-bottom: 1.5rem;
-        }
-        .rooms-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .rooms-header h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .floor-section{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-        }
-        .floor-section button {
-            scroll-snap-align: start;
-            /* flex: 0 0 18rem; */
-            padding: 1rem;
-            background-color: #ffffff;
-            background-image: linear-gradient(45deg, #f9fafb 25%, transparent 25%, transparent 50%, #f9fafb 50%, #f9fafb 75%, transparent 75%, transparent);
-            background-size: 4px 4px;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .floor-section button:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .floor-section button.selected {
-            border: 2px solid transparent;
-            background: linear-gradient(#eff6ff, #eff6ff) padding-box, linear-gradient(45deg, #0E6163, #2c8f91) border-box;
-        }
+<div class="p-4 bg-white rounded-3 shadow-sm calendar-container" wire:key="calendar-shell">
+  <style>
+    :root{
+      --k-primary:#017e84;
+      --k-primary-10:rgba(1,126,132,.1);
+      --k-ok:#017e84;
+      --k-warn:#fbc02d;
+      --k-info:#1e88e5;
+      --k-danger:#e53935;
+      --k-fallback:#757575;
 
-        .rooms-header-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .clear-filter-btn, .new-booking-btn {
-            font-size: 0.875rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .clear-filter-btn {
-            color: #0E6163;
-            background: none;
-            border: none;
-        }
-        .clear-filter-btn:hover {
-            color: #094445;
-        }
-        .new-booking-btn {
-            color: white;
-            background: linear-gradient(45deg, #0E6163, #2c8f91);
-            border: none;
-        }
-        .new-booking-btn:hover {
-            background: linear-gradient(45deg, #094445, #3aa8aa);
-            animation: pulse 1.5s infinite;
-        }
-        .rooms-container {
-            position: relative;
-        }
-        .rooms-scroll {
-            display: flex;
-            gap: 1rem;
-            overflow-x: auto;
-            padding-bottom: 0.5rem;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: thin;
-            scrollbar-color: #d1d5db #f3f4f6;
-        }
-        .room-card {
-            scroll-snap-align: start;
-            flex: 0 0 18rem;
+      --k-bg:#ffffff;
+      --k-muted:#6b7280;
+      --k-text:#111827;
+      --k-border:#e5e7eb;
+      --k-soft:#f7fafc;
+    }
 
-            padding: 1rem;
-            background-color: #ffffff;
-            background-image: linear-gradient(45deg, #f9fafb 25%, transparent 25%, transparent 50%, #f9fafb 50%, #f9fafb 75%, transparent 75%, transparent);
-            background-size: 4px 4px;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .room-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .room-card.selected {
-            border: 2px solid transparent;
-            background: linear-gradient(#eff6ff, #eff6ff) padding-box, linear-gradient(45deg, #0E6163, #2c8f91) border-box;
-        }
-        .room-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .room-card-header h4 {
-            font-size: 0.975rem;
-            font-weight: 600;
-            color: #1f2937;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .status-dot {
-            width: 0.75rem;
-            height: 0.75rem;
-            border-radius: 50%;
-            transition: transform 0.2s ease;
-        }
-        .status-dot.vacant {
-            background-color: #0E6163;
-        }
-        .status-dot.vacant:hover {
-            animation: pulse 1.5s infinite;
-        }
-        .status-dot.occupied {
-            background-color: #ef4444;
-        }
-        .room-type {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: #4b5563;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .room-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-        }
-        .room-status {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        .room-status.vacant {
-            color: #0E6163;
-        }
-        .room-status.occupied {
-            color: #dc2626;
-        }
-        .room-capacity {
-            font-size: 0.80rem;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        .gradient-overlay-left {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 1.5rem;
-            height: 100%;
-            pointer-events: none;
-            background: linear-gradient(to right, #ffffff, transparent);
-        }
-        .gradient-overlay-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1.5rem;
-            height: 100%;
-            pointer-events: none;
-            background: linear-gradient(to left, #ffffff, transparent);
-        }
-        .fc-button {
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important;
-            padding: 0.5rem 1rem !important;
-            border-radius: 0.5rem !important;
-            transition: all 0.2s ease !important;
-        }
-        .fc-button:hover {
-            background: linear-gradient(45deg, #0E6163, #2c8f91) !important;
-            color: white !important;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        @media (max-width: 640px) {
-            .room-card {
-                flex: 0 0 16rem;
-            }
-            .rooms-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .rooms-header-actions {
-                width: 100%;
-                justify-content: flex-start;
-            }
-            .clear-filter-btn, .new-booking-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.75rem;
-            }
-            .fc-event-custom {
-                padding: 6px;
-                font-size: 11px;
-                max-height: 100px;
-            }
-            .event-reference {
-                font-size: 13px;
-            }
-            .event-guest, .event-room, .event-dates {
-                font-size: 11px;
-            }
-            .event-channel {
-                font-size: 10px;
-                padding: 1px 4px;
-            }
-            .event-action-icon {
-                font-size: 14px;
-            }
-            .fc-button {
-                padding: 0.4rem 0.8rem !important;
-                font-size: 0.75rem !important;
-            }
-        }
-    </style>
+    /* Toolbar */
+    .k-toolbar{
+      display:flex; gap:.75rem; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      margin-bottom:.75rem;
+    }
+    .k-toolbar-left, .k-toolbar-right{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap }
+    .k-chip{
+      display:inline-flex; align-items:center; gap:.35rem;
+      border:1px solid var(--k-border); background:#fff; color:var(--k-text);
+      padding:.5rem .65rem; border-radius:.75rem; font-size:.875rem; cursor:pointer;
+      transition: all .15s ease;
+    }
+    .k-chip:hover{ border-color: var(--k-primary); box-shadow: 0 0 0 3px var(--k-primary-10); }
+    .k-chip.active{ background:var(--k-primary); color:#fff; border-color:var(--k-primary) }
 
-    <!-- Alerts -->
-    @if (session()->has('success'))
-        <div class="p-3 mb-4 alert alert-success d-flex align-items-center justify-content-between animate__animated animate__fadeIn" role="alert">
-            <span class="text-lg">{{ session('success') }}</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    .k-search{ position:relative; min-width:220px }
+    .k-search input{
+      padding-left:2.25rem; border-radius:.75rem; border:1px solid var(--k-border); height:40px;
+    }
+    .k-search i{ position:absolute; top:50%; left:.65rem; transform: translateY(-50%); color:var(--k-muted) }
+
+    /* Legend (also a filter) */
+    .k-legend{ display:flex; flex-wrap:wrap; gap:.5rem; align-items:center }
+    .k-legend .item{
+      display:flex; align-items:center; gap:.45rem; padding:.25rem .5rem; border-radius:.5rem;
+      background:#f8fafc; border:1px solid var(--k-border); cursor:pointer; user-select:none;
+      transition: all .15s ease; font-size:.85rem;
+    }
+    .k-legend .swatch{ width:14px; height:14px; border-radius:4px }
+    .k-legend .item.active{ background:#eefaf9; border-color:var(--k-primary) }
+
+    /* Filters (properties + floors) */
+    .filter-section{ margin-bottom:.6rem }
+    .filter-pills{ display:flex; gap:.5rem; flex-wrap:wrap }
+    .filter-pills .pill{
+      border:1px solid var(--k-border); border-radius:.75rem; padding:.45rem .8rem; background:#fff; cursor:pointer;
+      transition: all .15s ease; min-width: 88px; text-align:center;
+    }
+    .filter-pills .pill:hover{ border-color:var(--k-primary) }
+    .filter-pills .pill.selected{
+      background:var(--k-primary); border-color:var(--k-primary); color:#fff;
+      box-shadow: 0 6px 14px rgba(1,126,132,.15);
+    }
+
+    /* ROOMS — enhanced cards */
+    .rooms-section{ margin-bottom: .75rem }
+    .rooms-header{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem }
+    .rooms-header h3{ font-size:1.05rem; margin:0 }
+    .rooms-header-actions{ display:flex; gap:.5rem; align-items:center }
+    .btn-ghost{
+      background:#f3f4f6; border:1px solid var(--k-border); color:#374151; border-radius:.65rem; padding:.45rem .75rem;
+    }
+    .btn-ghost:hover{ background:#eef1f4 }
+
+    .rooms-container{ position:relative }
+    .rooms-scroll{
+      display:flex; gap:.75rem; overflow-x:auto; padding-bottom:.25rem; scroll-snap-type:x mandatory;
+      scrollbar-width:thin; scrollbar-color:#d1d5db #f3f4f6;
+    }
+    .rooms-scroll.is-dragging{ cursor:grabbing }
+
+    .k-rc{ all:unset; display:block; cursor:pointer; }
+    .room-card.k-rc{
+      position:relative;
+      scroll-snap-align:start; flex:0 0 18rem;
+      background:linear-gradient(45deg,#fafafa 25%,transparent 25%,transparent 50%,#fafafa 50%,#fafafa 75%,transparent 75%,transparent);
+      background-size:4px 4px; border:1px solid var(--k-border); border-radius:.85rem; padding:.85rem;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .room-card.k-rc:hover{ transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,.08) }
+    .room-card.k-rc.selected{ border:2px solid var(--k-primary); background:#fff }
+    .k-rc-top{ display:flex; align-items:center; justify-content:space-between; gap:.5rem }
+    .k-rc-title{ display:flex; align-items:center; gap:.45rem; min-width:0 }
+    .k-rc-title h4{ margin:0; font-size:.98rem; font-weight:700; letter-spacing:.2px; max-width:12rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .k-rc-title .bi{ opacity:.8 }
+    .k-chip-status{
+      display:inline-flex; align-items:center; gap:.4rem; padding:.2rem .55rem; border-radius:999px;
+      font-size:.72rem; font-weight:700; letter-spacing:.2px; text-transform:uppercase;
+      border:1px solid var(--k-border); background:#fff; color:#374151;
+    }
+    .k-chip-status.vacant{ background: #ecfdf5; border-color:#d1fae5; color:#065f46 }
+    .k-chip-status.occupied{ background: #fef2f2; border-color:#fee2e2; color:#991b1b }
+    .k-rc-meta{ margin:.5rem 0 .35rem; display:flex; gap:.4rem; flex-wrap:wrap }
+    .k-tag{
+      display:inline-flex; align-items:center; gap:.35rem;
+      background:#f8fafc; border:1px solid var(--k-border); color:#4b5563;
+      padding:.25rem .5rem; border-radius:.5rem; font-size:.78rem;
+    }
+    .k-rc-bar{ display:flex; align-items:center; gap:.5rem; margin-top:.35rem }
+    .k-rc-bar .dot{ width:.6rem; height:.6rem; border-radius:50% }
+    .k-rc-bar .dot.vacant{ background: var(--k-ok) }
+    .k-rc-bar .dot.occupied{ background: var(--k-danger) }
+    .k-rc-label{ font-size:.8rem; font-weight:600; color:#374151 }
+    .k-rc-chevron{ opacity:.35; transition:transform .15s ease, opacity .15s ease }
+    .room-card.k-rc:hover .k-rc-chevron{ opacity:.6; transform: translateX(2px) }
+
+    .gradient-overlay-left,.gradient-overlay-right{ position:absolute; top:0; width:1.25rem; height:100%; pointer-events:none }
+    .gradient-overlay-left{ left:0; background:linear-gradient(to right,#fff,transparent) }
+    .gradient-overlay-right{ right:0; background:linear-gradient(to left,#fff,transparent) }
+
+    /* FullCalendar theming & layout improvements */
+    .fc .fc-toolbar-title{ font-weight:700; letter-spacing:.2px }
+    .fc .fc-button{
+      padding:.45rem .75rem; border-radius:.65rem; border:1px solid var(--k-border);
+      background:#fff; color:#111827; transition: all .15s ease;
+    }
+    .fc .fc-button:hover{ background: var(--k-primary); color:#fff; border-color: var(--k-primary) }
+    .fc .fc-daygrid-event{ border-radius:.6rem }
+    .fc .fc-day-today { background: rgba(1,126,132,.06) !important; }
+    .fc .fc-col-header-cell-cushion{ padding:.5rem 0 }
+    .fc .fc-daygrid-day-number{ font-weight:600 }
+
+    /* Event card – left accent + tidy internals */
+    .fc-event-custom{
+      position:relative;
+      background-color: var(--status-color, var(--k-fallback)) !important;
+      border:none !important; border-radius:.66rem; padding:.6rem .6rem .5rem .75rem; margin: 2px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      cursor:pointer; color:#fff; font-size:.86rem; line-height:1.25;
+    }
+    .fc-event-custom::before{
+      content:""; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:.66rem 0 0 .66rem;
+      background: rgba(255,255,255,.9);
+      opacity:.85;
+    }
+    .fc-event-custom:hover{
+      transform: translateY(-1px);
+      box-shadow:0 6px 12px rgba(0,0,0,.12);
+      border:2px solid transparent;
+      background: linear-gradient(var(--status-color), var(--status-color)) padding-box, linear-gradient(45deg, #0E6163, #3aa8aa) border-box;
+    }
+    .k-ev{ display:flex; flex-direction:column; gap:.25rem }
+    .k-ev-hd{ display:flex; align-items:center; justify-content:space-between; gap:.5rem }
+    .k-ev-ref{ font-weight:800; letter-spacing:.2px; max-width: 14rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 1px 1px rgba(0,0,0,.25) }
+    .k-ev-chip{
+      background:#fff; color:#111827; font-size:.7rem; font-weight:700; padding:2px 6px; border-radius:999px;
+      display:inline-flex; align-items:center; gap:.35rem;
+    }
+    .k-ev-row{ display:flex; align-items:center; gap:.5rem; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .k-ev-row i{ opacity:.9 }
+    .k-ev-ft{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-top:.1rem }
+    .k-ev-actions{ display:flex; align-items:center; gap:.5rem }
+    .k-ev-actions i{ opacity:.9 } .k-ev-actions i:hover{ opacity:1 }
+
+    /* Tooltip */
+    .calendar-tooltip{
+      position:fixed; background:#fff; border:1px solid var(--k-border); padding:.6rem .7rem; border-radius:.65rem;
+      box-shadow:0 12px 28px rgba(0,0,0,.15); z-index: 1000; max-width:340px; font-size:.86rem; color:#374151;
+    }
+    .calendar-tooltip .line{ display:flex; gap:.5rem; margin:.175rem 0 }
+    .calendar-tooltip .key{ width:74px; color:#6b7280; font-weight:600 }
+
+    /* Loading overlay */
+    .k-loading{
+      position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+      background: rgba(255,255,255,.65); backdrop-filter: blur(1px); z-index: 10;
+    }
+    .k-loading.show{ display:flex }
+    .k-spinner{ width:22px;height:22px;border-radius:50%; border:3px solid #e5e7eb;border-top-color:var(--k-primary); animation:spin .7s linear infinite }
+    @keyframes spin{ to{ transform: rotate(360deg) } }
+
+    @media (max-width:640px){
+      .rooms-scroll{ gap:.6rem }
+      .room-card.k-rc{ flex:0 0 16rem }
+      .k-search{ min-width: 180px }
+      .k-ev-ref{ max-width: 11rem }
+    }
+  </style>
+
+  {{-- TOASTS --}}
+  @foreach (['success'=>'alert-success','error'=>'alert-danger','warning'=>'alert-warning'] as $key=>$class)
+    @if (session()->has($key))
+      <div class="alert {{ $class }} d-flex align-items-center justify-content-between mb-3" role="alert">
+        <span class="fw-semibold">{{ session($key) }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
     @endif
-    @if (session()->has('error'))
-        <div class="p-3 mb-4 alert alert-danger d-flex align-items-center justify-content-between animate__animated animate__fadeIn" role="alert">
-            <span class="text-lg">{{ session('error') }}</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  @endforeach
+
+  {{-- TOP TOOLBAR --}}
+  <div class="k-toolbar">
+    <div class="k-toolbar-left">
+      <div class="k-search">
+        <i class="bi bi-search"></i>
+        <input id="kSearch" type="search" class="form-control" placeholder="{{ __('Search guest, reference, room…') }}">
+      </div>
+
+      {{-- Legend-as-filter --}}
+      <div class="k-legend" id="kLegend">
+        <div class="item active" data-status="pending">
+          <span class="swatch" style="background:var(--k-warn)"></span><span>{{ __('Pending') }}</span>
         </div>
-    @endif
-    @if (session()->has('warning'))
-        <div class="p-3 mb-4 alert alert-warning d-flex align-items-center justify-content-between animate__animated animate__fadeIn" role="alert">
-            <span class="text-lg">{{ session('warning') }}</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="item active" data-status="confirmed">
+          <span class="swatch" style="background:var(--k-ok)"></span><span>{{ __('Confirmed') }}</span>
         </div>
-    @endif
-
-    <!-- Property Units Section -->
-    <div class="rooms-section">
-        <div class="rooms-header">
-            <h3>Rooms</h3>
-            <div class="rooms-header-actions">
-                @if($selectedUnit || $selectedFloor)
-                    <button wire:click="clearUnitFilter" class="clear-filter-btn">Clear Filter</button>
-                @endif
-
-                @role('front-desk')
-
-                    @if($units->isNotEmpty())
-                    @php
-                        $startDate = now();
-                        $endDate = now()->addDays(1);
-                    @endphp
-
-                    <button
-                        onclick="Livewire.dispatch('openModal', {
-                            component: 'channelmanager::modal.add-booking-modal',
-                            arguments: {
-                                startDate: '{{ $startDate->toISOString() }}',
-                                endDate: '{{ $endDate->toISOString() }}'
-                            }
-                        })"
-                        class="new-booking-btn"
-                    >
-                        New Booking
-                    </button>
-                    @endif
-                @endrole
-            </div>
+        <div class="item active" data-status="completed">
+          <span class="swatch" style="background:var(--k-info)"></span><span>{{ __('Completed') }}</span>
         </div>
-        <div class="floor-section" style="margin-bottom: 1rem;">
-            <div class="flex flex-wrap gap-2">
+        <div class="item active" data-status="canceled">
+          <span class="swatch" style="background:var(--k-danger)"></span><span>{{ __('Canceled') }}</span>
+        </div>
+        <div class="item active" data-status="fallback">
+          <span class="swatch" style="background:var(--k-fallback)"></span><span>{{ __('Fallback') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="k-toolbar-right">
+      <button id="kToday" class="k-chip"><i class="bi bi-calendar-event"></i>{{ __('Today') }}</button>
+      <button id="kNext7" class="k-chip"><i class="bi bi-arrow-right-circle"></i>{{ __('Next 7 days') }}</button>
+      <button id="kDensity" class="k-chip" data-mode="cozy"><i class="bi bi-aspect-ratio"></i><span>{{ __('Compact') }}</span></button>
+    </div>
+  </div>
+
+  {{-- PROPERTIES FILTER --}}
+  <div class="filter-section">
+    <div class="filter-pills">
+      <button wire:click="selectProperty('')" class="pill {{ !$selectedProperty ? 'selected' : '' }}">{{ __('All Properties') }}</button>
+      @foreach(($properties ?? []) as $property)
+        <button wire:click="selectProperty('{{ $property->id }}')" class="pill {{ (string)$selectedProperty === (string)$property->id ? 'selected' : '' }}">
+          {{ $property->name }}
+        </button>
+      @endforeach
+    </div>
+  </div>
+
+  {{-- FLOORS FILTER --}}
+  <div class="filter-section">
+    <div class="filter-pills">
+      <button wire:click="selectFloor('')" class="pill {{ !$selectedFloor ? 'selected' : '' }}">{{ __('All Floors') }}</button>
+      @foreach(($floors ?? []) as $floor)
+        <button wire:click="selectFloor('{{ $floor->id }}')" class="pill {{ (string)$selectedFloor === (string)$floor->id ? 'selected' : '' }}">
+          {{ $floor->name }}
+        </button>
+      @endforeach
+    </div>
+  </div>
+
+  {{-- ROOMS (enhanced) --}}
+  <div class="rooms-section">
+    <div class="rooms-header">
+      <h3 class="fw-semibold">{{ __('Rooms') }}</h3>
+      <div class="rooms-header-actions">
+        @if($selectedUnit || $selectedFloor || $selectedProperty)
+          <button wire:click="clearUnitFilter" class="btn-ghost">{{ __('Clear filter') }}</button>
+        @endif
+
+        @role('front-desk')
+          @if(($units ?? collect())->isNotEmpty())
+            @php $startDate = now(); $endDate = now()->addDay(); @endphp
             <button
-                wire:click="selectFloor('')"
-                class="px-4 py-2 rounded-lg border transition-all duration-150
-                {{ !$selectedFloor ? 'selected' : '' }}"
-                style="min-width: 90px;"
+              onclick="Livewire.dispatch('openModal', {
+                component: 'channelmanager::modal.add-booking-modal',
+                arguments: { startDate: '{{ $startDate->toISOString() }}', endDate: '{{ $endDate->toISOString() }}' }
+              })"
+              class="btn btn-primary"
+              style="border-radius:.65rem;"
             >
-                All
+              <i class="bi bi-plus-lg me-1"></i>{{ __('New Booking') }}
             </button>
-            @foreach($floors ?? [] as $floor)
-                <button
-                wire:click="selectFloor('{{ $floor->id }}')"
-                class="px-4 py-2 rounded-lg border transition-all duration-150
-                    {{ $selectedFloor == $floor->id ? 'selected' : '' }}"
-                style="min-width: 90px;"
-                >
-                {{ $floor->name }}
-                </button>
-            @endforeach
-            </div>
-        </div>
-
-        <div class="rooms-container">
-            <div class="rooms-scroll">
-                @forelse($units as $unit)
-                    <div wire:key="unit-{{ $unit->id }}" wire:click="selectUnit({{ $unit->id }})" class="room-card {{ $selectedUnit == $unit->id ? 'selected' : '' }}" role="button" aria-label="Select room {{ $unit->name }}">
-                        <div class="room-card-header">
-                            <h4>{{ $unit->name }}</h4>
-                            <span class="status-dot {{ $unit->status == 'vacant' ? 'vacant' : 'occupied' }}" aria-hidden="true"></span>
-                        </div>
-                        <p class="room-type">{{ $unit->unitType->name ?? 'N/A' }}</p>
-                        <div class="room-footer">
-                            <span class="room-status {{ $unit->status == 'vacant' ? 'vacant' : 'occupied' }}">{{ inverseSlug($unit->status) }}</span>
-                            <span class="room-capacity">Capacity: {{ $unit->capacity ?? 'N/A' }} <i class="bi bi-people"></i></span>
-                        </div>
-                    </div>
-                @empty
-                    <p style="font-size: 0.875rem; color: #4b5563;">No rooms available.</p>
-                @endforelse
-            </div>
-            <div class="gradient-overlay-left"></div>
-            <div class="gradient-overlay-right"></div>
-        </div>
+          @endif
+        @endrole
+      </div>
     </div>
 
-    <!-- Calendar Legend -->
-    <div class="mb-4 calendar-legend">
-        <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-            <div style="display: flex; align-items: center;">
-                <span class="legend-item" style="background-color: #fbc02d;"></span>
-                <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #4b5563;">Pending</span>
+    <div class="rooms-container">
+      <div class="rooms-scroll" id="roomsScroll" role="listbox" aria-label="{{ __('Rooms list') }}">
+        @forelse(($units ?? collect()) as $unit)
+          @php
+            $isSelected = (string)$selectedUnit === (string)$unit->id;
+            $isVacant = $unit->status === 'vacant';
+          @endphp
+
+          <button
+            type="button"
+            wire:key="unit-{{ $unit->id }}"
+            wire:click="selectUnit({{ $unit->id }})"
+            class="room-card k-rc {{ $isSelected ? 'selected' : '' }}"
+            role="option"
+            aria-selected="{{ $isSelected ? 'true' : 'false' }}"
+            title="{{ $unit->name }} • {{ $unit->unitType->name ?? 'N/A' }} • {{ inverseSlug($unit->status) }}"
+          >
+            <div class="k-rc-top">
+              <div class="k-rc-title">
+                <i class="bi bi-door-open"></i>
+                <h4>{{ $unit->name }}</h4>
+              </div>
+              <span class="k-chip-status {{ $isVacant ? 'vacant' : 'occupied' }}">
+                {{ $isVacant ? __('Vacant') : __('Occupied') }}
+              </span>
             </div>
-            <div style="display: flex; align-items: center;">
-                <span class="legend-item" style="background-color: #017e84;"></span>
-                <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #4b5563;">Confirmed</span>
+
+            <div class="k-rc-meta">
+              <span class="k-tag"><i class="bi bi-tag"></i>{{ $unit->unitType->name ?? 'N/A' }}</span>
+              <span class="k-tag"><i class="bi bi-people"></i>{{ $unit->capacity ?? '—' }}</span>
+              @isset($unit->floor->name)
+                <span class="k-tag"><i class="bi bi-layers"></i>{{ $unit->floor->name }}</span>
+              @endisset
             </div>
-            <div style="display: flex; align-items: center;">
-                <span class="legend-item" style="background-color: #1e88e5;"></span>
-                <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #4b5563;">Completed</span>
+
+            <div class="k-rc-bar">
+              <span class="dot {{ $isVacant ? 'vacant' : 'occupied' }}"></span>
+              <span class="k-rc-label">{{ inverseSlug($unit->status) }}</span>
+              <i class="bi bi-chevron-right ms-auto k-rc-chevron" aria-hidden="true"></i>
             </div>
-            <div style="display: flex; align-items: center;">
-                <span class="legend-item" style="background-color: #e53935;"></span>
-                <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #4b5563;">Canceled</span>
-            </div>
-            <div style="display: flex; align-items: center;">
-                <span class="legend-item" style="background-color: #757575;"></span>
-                <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #4b5563;">Fallback</span>
-            </div>
-        </div>
+          </button>
+        @empty
+          <p class="text-muted small m-0">{{ __('No rooms available.') }}</p>
+        @endforelse
+      </div>
+
+      <div class="gradient-overlay-left"></div>
+      <div class="gradient-overlay-right"></div>
     </div>
+  </div>
 
-    <!-- Calendar -->
-    <div wire:ignore class="">
-        <div id="calendar" class="rounded-lg" style="min-height: 500px;"></div>
-    </div>
-
-
+  {{-- CALENDAR (wire:ignore to avoid Livewire repaint) --}}
+  <div class="position-relative">
+    <div class="k-loading" id="kLoading"><div class="k-spinner" aria-hidden="true"></div></div>
+    <div id="calendar" class="rounded-3" style="min-height:520px;" wire:ignore></div>
+  </div>
 </div>
 
-        <script>
-            window.addEventListener('DOMContentLoaded', function() {
-                console.debug('DOM loaded, initializing calendar');
-                initializeCalendar();
-            });
+@push('scripts')
+<script>
+  // ---- Config & State ------------------------------------------------------
+  const STATUS_COLORS = {
+    pending:   '#fbc02d',
+    confirmed: '#017e84',
+    completed: '#1e88e5',
+    canceled:  '#e53935',
+    fallback:  '#757575'
+  };
 
-            let calendar = null;
+  const state = {
+    filters: {
+      statuses: new Set(['pending','confirmed','completed','canceled','fallback']),
+      search: ''
+    },
+    density: 'cozy' // 'cozy' | 'compact'
+  };
 
-            function initializeCalendar(eventsDataRaw = @json($events ?? [])) {
-                // Adjust end date ONLY for visual display
-                const eventsData = eventsDataRaw.map(event => ({
-                    ...event,
-                    // Only adjust end date for rendering purposes
-                    displayEnd: addOneDay(event.end)
-                }));
+  const showLoading = (on=true)=> {
+    const el = document.getElementById('kLoading');
+    if(!el) return; el.classList.toggle('show', !!on);
+  };
 
-                const calendarEl = document.getElementById('calendar');
-                if (!calendarEl) {
-                    console.error('Calendar element not found');
-                    return;
-                }
+  // Debounce helper
+  const debounce = (fn, ms=250) => { let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); }; };
 
-                if (calendar) {
-                    console.debug('Destroying existing calendar');
-                    calendar.destroy();
-                }
+  // Keep one calendar instance globally
+  window.ndakoCalendar = window.ndakoCalendar || null;
 
-                console.debug('Initializing calendar with events:', eventsData);
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.ndakoCalendar) {
+      initializeCalendar(@json($events ?? []));
+    } else {
+      window.ndakoCalendar.updateSize();
+      refilterCalendar(); // re-apply filters if user navigated back
+    }
+    wireToolbar();
+    wireRoomsScroll();
+  });
 
-                calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: '{{ $options['initialView'] }}',
-                    editable: {{ $options['editable'] ? 'true' : 'false' }},
-                    selectable: {{ $options['selectable'] ? 'true' : 'false' }},
-                    select: function(info) {
-                        console.debug('Calendar select:', info);
-                        Livewire.dispatch('openModal', {
-                            component: 'channelmanager::modal.add-booking-modal',
-                            arguments: {
-                                startDate: info.startStr,
-                                endDate: info.endStr
-                            }
-                        });
-                    },
-                    events: eventsData.map(event => ({
-                        ...event,
-                        end: event.displayEnd // Apply adjusted end date only here
-                    })),
-                    timeZone: 'local',
-                    eventDrop: function(info) {
-                        console.debug('Event dropped:', info.event);
-                        const newStart = info.event.start?.toISOString() ?? null;
-                        const newEnd = addOneDay(info.event.end?.toISOString()); // Correct before sending
+  // Livewire v2 hook
+  if (window.Livewire && Livewire.hook) {
+    try {
+      Livewire.hook('message.processed', () => {
+        if (window.ndakoCalendar && document.getElementById('calendar')) {
+          window.ndakoCalendar.updateSize();
+          refilterCalendar();
+        }
+      });
+    } catch (e) {}
+  }
+  // Livewire v3 hook (fallback)
+  document.addEventListener('livewire:navigated', () => {
+    if (window.ndakoCalendar && document.getElementById('calendar')) {
+      window.ndakoCalendar.updateSize();
+      refilterCalendar();
+    }
+  });
 
-                        Livewire.dispatch('updateBookingDate', {
-                            bookingId: info.event.id,
-                            start: newStart,
-                            end: newEnd
-                        });
-                    },
-                    eventResize: function(info) {
-                        console.debug('Event resized:', info.event);
-                        const newStart = info.event.start?.toISOString() ?? null;
-                        const newEnd = subtractOneDay(info.event.end?.toISOString());
+  // ---- Calendar init -------------------------------------------------------
+  function initializeCalendar(eventsRaw){
+    const calendarEl = document.getElementById('calendar');
+    if(!calendarEl) return;
 
-                        Livewire.dispatch('updateBookingDate', {
-                            bookingId: info.event.id,
-                            start: newStart,
-                            end: newEnd
-                        });
-                    },
-                    eventMouseEnter: function(info) {
-                        const event = info.event;
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'calendar-tooltip';
-                        tooltip.innerHTML = `
-                            <strong>${event.extendedProps.reference}</strong><br>
-                            <span>Guest: ${event.extendedProps.guest}</span><br>
-                            <span>Room: ${event.extendedProps.room} - ${event.extendedProps.unitType}</span><br>
-                            <span>Stay: ${formatDate(event.start)} ~ ${formatDate(subtractOneDay(event.end))}</span><br>
-                            <span>Status: ${event.extendedProps.status}</span>
-                        `;
-                        document.body.appendChild(tooltip);
+    // If already exists, just feed events
+    if (window.ndakoCalendar) {
+      onCalendarUpdated(eventsRaw);
+      return;
+    }
 
-                        let x = info.jsEvent.pageX + 10;
-                        let y = info.jsEvent.pageY + 10;
-                        if (x + 300 > window.innerWidth) x = info.jsEvent.pageX - 320;
-                        if (y + 100 > window.innerHeight) y = info.jsEvent.pageY - 100;
-                        tooltip.style.left = `${x}px`;
-                        tooltip.style.top = `${y}px`;
+    const eventsData = (eventsRaw || []).map(e => ({ ...e, displayEnd: addOneDay(e.end) }));
 
-                        info.el.setAttribute('data-tooltip-id', event.id);
-                    },
-                    eventMouseLeave: function(info) {
-                        const tooltip = document.querySelector('.calendar-tooltip');
-                        if (tooltip) tooltip.remove();
-                    },
-                    eventContent: function(info) {
-                        const event = info.event;
-                        const statusColor = getStatusColor(event.extendedProps.status);
+    const cal = new FullCalendar.Calendar(calendarEl, {
+      initialView: '{{ $options['initialView'] }}',
+      editable: {{ $options['editable'] ? 'true' : 'false' }},
+      selectable: {{ $options['selectable'] ? 'true' : 'false' }},
+      nowIndicator: true,
+      stickyHeaderDates: true,
+      displayEventTime: false,
+      dayMaxEventRows: 4,
+      expandRows: true,
+      timeZone: 'local',
+      eventTimeFormat: { hour: '2-digit', minute: '2-digit', meridiem: false },
+      firstDay: 1,
+      weekNumbers: false,
+      // nicer scrolling in week/day
+      slotMinTime: '00:00:00',
+      slotMaxTime: '24:00:00',
 
-                        return {
-                            html: `
-                                <div class="fc-event-custom animate__animated animate__fadeIn" style="--status-color: ${statusColor};">
-                                    <div class="event-content">
-                                        <div class="event-header">
-                                            <span class="cursor-pointer event-reference" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.booking-modal', arguments: {booking: ${event.id}}})">
-                                                ${event.extendedProps.reference}
-                                            </span>
-                                            <span class="event-status-icon"></span>
-                                        </div>
-                                        <div class="event-details">
-                                            <span class="event-guest">${event.extendedProps.guest}</span>
-                                            <span class="event-room">${event.extendedProps.room} - ${event.extendedProps.unitType}</span>
-                                            <span class="event-dates">${formatDate(event.start)} ~ ${formatDate(subtractOneDay(event.end))}</span>
-                                        </div>
-                                        <div class="event-footer">
-                                            <span class="event-channel">${event.extendedProps.channel}</span>
-                                            <div class="event-actions">
-                                                <i class="cursor-pointer fas fa-user-cog event-action-icon" onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: ${event.id}}})"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>`
-                        };
-                    },
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    slotMinTime: '00:00:00',
-                    slotMaxTime: '24:00:00',
-                    height: 'auto',
-                    contentHeight: 'auto'
-                });
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
 
-                calendar.render();
-                console.debug('Calendar rendered with events:', calendar.getEvents());
-            }
+      select: (info) => {
+        Livewire.dispatch('openModal', {
+          component: 'channelmanager::modal.add-booking-modal',
+          arguments: { startDate: info.startStr, endDate: info.endStr }
+        });
+      },
 
-            Livewire.on('calendarUpdated', function(events) {
-                // const events = data || [];
-                if (!calendar) {
-                    console.warn('Calendar not yet initialized');
-                    initializeCalendar();
-                } else {
-                    calendar.removeAllEvents();
-                    calendar.addEventSource(events.map(e => ({ ...e, end: addOneDay(e.end) })));
-                }
-            });
+      events: eventsData.map(e => ({ ...e, end: e.displayEnd })),
 
-            function getStatusColor(status) {
-                switch ((status ?? '').toLowerCase()) {
-                    case 'pending': return '#fbc02d';
-                    case 'confirmed': return '#017e84';
-                    case 'completed': return '#1e88e5';
-                    case 'canceled': return '#e53935';
-                    default: return '#757575';
-                }
-            }
+      eventDidMount: (info) => {
+        // a11y title
+        const ep = info.event.extendedProps || {};
+        info.el.title = `${ep.reference || ''} — ${ep.guest || ''}`;
 
-            function formatDate(date) {
-                return new Date(date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
-            }
+        // density tweaks (applied dynamically on toggle too)
+        if(state.density === 'compact') {
+          info.el.style.padding = '6px';
+          info.el.style.fontSize = '0.8rem';
+        }
+      },
 
-            function addOneDay(dateStr) {
-                const date = new Date(dateStr);
-                date.setDate(date.getDate() + 1);
-                return date.toISOString();
-            }
+      eventDrop: (info) => {
+        const newStart = info.event.start?.toISOString() ?? null;
+        const newEnd = subtractOneDay(info.event.end?.toISOString());
+        Livewire.dispatch('updateBookingDate', {
+          bookingId: info.event.id, start: newStart, end: newEnd
+        });
+      },
 
-            function subtractOneDay(dateStr) {
-                if (!dateStr) return null;
-                const date = new Date(dateStr);
-                date.setDate(date.getDate() - 1);
-                return date.toISOString();
-            }
-        </script>
+      eventResize: (info) => {
+        const newStart = info.event.start?.toISOString() ?? null;
+        const newEnd = subtractOneDay(info.event.end?.toISOString());
+        Livewire.dispatch('updateBookingDate', {
+          bookingId: info.event.id, start: newStart, end: newEnd
+        });
+      },
 
+      eventMouseEnter: (info) => {
+        const e = info.event, ep = e.extendedProps || {};
+        const tip = document.createElement('div');
+        tip.className = 'calendar-tooltip';
+        tip.innerHTML = `
+          <div class="fw-semibold mb-1">${safe(ep.reference)}</div>
+          <div class="line"><span class="key">{{ __('Guest') }}</span><span>${safe(ep.guest)}</span></div>
+          <div class="line"><span class="key">{{ __('Room') }}</span><span>${safe(ep.room)} – ${safe(ep.unitType)}</span></div>
+          <div class="line"><span class="key">{{ __('Stay') }}</span><span>${fmt(e.start)} ~ ${fmt(subtractOneDay(e.end))}</span></div>
+          <div class="line"><span class="key">{{ __('Status') }}</span><span>${safe(ep.status)}</span></div>
+          <div class="line"><span class="key">{{ __('Source') }}</span><span>${safe(ep.channel)}</span></div>
+        `;
+        document.body.appendChild(tip);
 
+        const move = (ev) => {
+          let x = ev.pageX + 12, y = ev.pageY + 12;
+          if(x + tip.offsetWidth > window.innerWidth) x = ev.pageX - tip.offsetWidth - 12;
+          if(y + tip.offsetHeight > window.innerHeight) y = ev.pageY - tip.offsetHeight - 12;
+          tip.style.left = x + 'px'; tip.style.top = y + 'px';
+        };
+        move(info.jsEvent);
+        info.el.addEventListener('mousemove', move);
+        info.el.addEventListener('mouseleave', () => tip.remove(), { once:true });
+      },
 
+      eventContent: (info) => {
+        const e = info.event, ep = e.extendedProps || {};
+        const statusColor = getStatusColor(ep.status);
+        const html = `
+          <div class="fc-event-custom" style="--status-color:${statusColor}">
+            <div class="k-ev">
+              <div class="k-ev-hd">
+                <span class="k-ev-ref" role="button"
+                      onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.booking-modal', arguments: {booking: ${e.id}}})">
+                  ${safe(ep.reference)}
+                </span>
+                <span class="k-ev-chip"><i class="bi bi-calendar2-event"></i>${safe(ep.channel)}</span>
+              </div>
+              <div class="k-ev-row"><i class="bi bi-person"></i><span>${safe(ep.guest)}</span></div>
+              <div class="k-ev-row"><i class="bi bi-door-open"></i><span>${safe(ep.room)} — ${safe(ep.unitType)}</span></div>
+              <div class="k-ev-row"><i class="bi bi-clock"></i><span>${fmt(e.start)} ~ ${fmt(subtractOneDay(e.end))}</span></div>
+              <div class="k-ev-ft">
+                <span class="k-ev-chip" style="background:#fff;color:#111827"><i class="bi bi-circle-fill" style="font-size:8px;color:${statusColor}"></i>${safe(ep.status)}</span>
+                <div class="k-ev-actions">
+                  <i class="fas fa-user-cog" role="button"
+                     onclick="Livewire.dispatch('openModal', {component: 'channelmanager::modal.guest-booking-modal', arguments: {booking: ${e.id}}})"></i>
+                </div>
+              </div>
+            </div>
+          </div>`;
+        return { html };
+      }
+    });
+
+    cal.render();
+    window.ndakoCalendar = cal;
+    // Apply current filters once first batch is in DOM
+    setTimeout(refilterCalendar, 0);
+  }
+
+  // ---- Livewire event to refresh events (no DOM re-render) -----------------
+  const onCalendarUpdated = (eventsRaw) => {
+    const cal = window.ndakoCalendar;
+    if (!cal) { initializeCalendar(eventsRaw || []); return; }
+    showLoading(true);
+    const events = (eventsRaw || []).map(e => ({ ...e, end: addOneDay(e.end) }));
+    cal.removeAllEvents();
+    cal.addEventSource(events);
+    showLoading(false);
+    setTimeout(() => { cal.updateSize(); refilterCalendar(); }, 0);
+  };
+
+  // Livewire v2
+  if (window.Livewire && Livewire.on) {
+    Livewire.on('calendarUpdated', onCalendarUpdated);
+  }
+  // Livewire v3
+  window.addEventListener('calendarUpdated', (e) => onCalendarUpdated(e.detail || e));
+
+  // ---- Filters & Toolbar wiring -------------------------------------------
+  function wireToolbar(){
+    // Legend
+    const legend = document.getElementById('kLegend');
+    legend?.addEventListener('click', (e)=>{
+      const item = e.target.closest('.item'); if(!item) return;
+      const status = (item.dataset.status || '').toLowerCase();
+      if(state.filters.statuses.has(status)){ state.filters.statuses.delete(status); item.classList.remove('active'); }
+      else { state.filters.statuses.add(status); item.classList.add('active'); }
+      refilterCalendar();
+    });
+
+    // Search
+    const search = document.getElementById('kSearch');
+    search?.addEventListener('input', debounce((ev)=>{
+      state.filters.search = (ev.target.value || '').trim().toLowerCase();
+      refilterCalendar();
+    }, 250));
+
+    // Today
+    document.getElementById('kToday')?.addEventListener('click', ()=> window.ndakoCalendar?.today());
+
+    // Next 7 days
+    document.getElementById('kNext7')?.addEventListener('click', ()=>{
+      const start = new Date();
+      window.ndakoCalendar?.changeView('timeGridWeek', start);
+    });
+
+    // Density toggle
+    const dens = document.getElementById('kDensity');
+    dens?.addEventListener('click', ()=>{
+      state.density = state.density === 'cozy' ? 'compact' : 'cozy';
+      dens.dataset.mode = state.density;
+      dens.querySelector('span').textContent = state.density === 'cozy' ? '{{ __('Compact') }}' : '{{ __('Cozy') }}';
+      // Re-render to apply compact sizing on all events
+      window.ndakoCalendar?.render();
+      refilterCalendar();
+    });
+  }
+
+  // Strong filter application using FullCalendar API (display prop)
+  function refilterCalendar(){
+    const cal = window.ndakoCalendar;
+    if(!cal) return;
+    cal.getEvents().forEach(ev => {
+      const visible = eventMatchesFilters(ev);
+      // Prefer using display prop so FC can reflow rows
+      ev.setProp('display', visible ? 'auto' : 'none');
+      // Density per current mode (applied again for newly visible events)
+      const el = ev.el;
+      if(el){
+        if(state.density === 'compact'){ el.style.padding='6px'; el.style.fontSize='0.8rem'; }
+        else{ el.style.padding=''; el.style.fontSize=''; }
+      }
+    });
+  }
+
+  // Rooms drag/keyboard scroll UX
+  function wireRoomsScroll(){
+    const scroller = document.getElementById('roomsScroll');
+    if(!scroller) return;
+
+    // Drag to scroll
+    let isDown=false, startX=0, scrollLeft=0;
+    scroller.addEventListener('mousedown', (e)=>{ isDown=true; scroller.classList.add('is-dragging'); startX=e.pageX - scroller.offsetLeft; scrollLeft=scroller.scrollLeft; });
+    window.addEventListener('mouseup',   ()=>{ isDown=false; scroller.classList.remove('is-dragging'); });
+    scroller.addEventListener('mouseleave', ()=>{ isDown=false; scroller.classList.remove('is-dragging'); });
+    scroller.addEventListener('mousemove', (e)=>{
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - scroller.offsetLeft;
+      const walk = (x - startX) * 1;
+      scroller.scrollLeft = scrollLeft - walk;
+    });
+
+    // Shift + wheel = horizontal
+    scroller.addEventListener('wheel', (e)=>{
+      if(e.shiftKey){
+        e.preventDefault();
+        scroller.scrollLeft += (e.deltaY || e.deltaX);
+      }
+    }, { passive:false });
+
+    // Keyboard navigation
+    scroller.addEventListener('keydown', (e)=>{
+      const items = Array.from(scroller.querySelectorAll('.room-card.k-rc'));
+      if(!items.length) return;
+      const active = document.activeElement && items.includes(document.activeElement) ? document.activeElement : null;
+      const idx = active ? items.indexOf(active) : -1;
+
+      if(e.key === 'ArrowRight'){
+        e.preventDefault();
+        const next = items[Math.min(items.length-1, idx+1)] || items[0];
+        next.focus({preventScroll:true});
+        next.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+      }
+      if(e.key === 'ArrowLeft'){
+        e.preventDefault();
+        const prev = items[Math.max(0, idx-1)] || items[items.length-1];
+        prev.focus({preventScroll:true});
+        prev.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+      }
+      if(e.key === 'Enter' && active){
+        active.click();
+      }
+    });
+  }
+
+  // ---- Helpers -------------------------------------------------------------
+  function getStatusColor(status){
+    const key = (status || '').toLowerCase();
+    return STATUS_COLORS[key] || STATUS_COLORS.fallback;
+  }
+  function safe(v){ return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+  function fmt(date){ const d = new Date(date); return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); }
+  function addOneDay(s){ const d = new Date(s); d.setDate(d.getDate()+1); return d.toISOString(); }
+  function subtractOneDay(s){ if(!s) return null; const d = new Date(s); d.setDate(d.getDate()-1); return d.toISOString(); }
+
+  function eventMatchesFilters(ev){
+    const ep = ev.extendedProps || {};
+    const status = String(ep.status || '').toLowerCase();
+    if(!state.filters.statuses.has(status) && !(status === '' && state.filters.statuses.has('fallback'))) return false;
+
+    const q = state.filters.search;
+    if(!q) return true;
+    const hay = [ep.reference, ep.guest, ep.room, ep.unitType, ep.channel]
+      .map(x => String(x||'').toLowerCase())
+      .join(' ');
+    return hay.includes(q);
+  }
+</script>
+@endpush

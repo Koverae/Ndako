@@ -32,7 +32,8 @@ return new class extends Migration
             $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
             $table->timestamps();
 
-            $table->unique(['name', 'guard_name']);
+            // replaced the current unique(['name','guard_name']) with:
+            $table->unique(['name','guard_name','company_id']);
         });
 
         Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
@@ -49,7 +50,8 @@ return new class extends Migration
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
-                $table->unique(['name', 'guard_name']);
+                // replaced the current unique(['name','guard_name']) with:
+                $table->unique(['name','guard_name','company_id']);
             }
         });
 

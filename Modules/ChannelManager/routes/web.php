@@ -33,7 +33,7 @@ Route::middleware('identify-kover')->group(function () {
     Route::get('/guests', GuestLists::class)->middleware('can:manage_guest_profiles')->name('guests.lists');
 
     // Bookings
-    Route::prefix('/bookings')->middleware('can:manage_reservations')->name('bookings.')->group(function() {
+    Route::prefix('/bookings')->middleware('can:view_reservations')->name('bookings.')->group(function() {
         Route::get('/', BookingLists::class)->name('lists');
         Route::get('/create', BookingCreate::class)->middleware('can:create_reservations')->name('create');
         Route::get('/{booking}', BookingShow::class)->middleware('can:modify_reservations')->name('show');

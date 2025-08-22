@@ -18,7 +18,7 @@ use Koverae\KoveraeBilling\Models\PlanSubscriptionFeature;
 
 class GettingStarted extends Component
 {
-    public $currentCountry = 'KE', $currentLanguage = 'en', $currentCurrency = 'KES', $countriesOptions = [], $currenciesOptions = [], $languagesOptions, $rolesOptions;
+    public $currentCountry = 'KE', $currentLanguage = 'en', $currentCurrency = 'KES', $countriesOptions = [], $citiesOptions = [], $currenciesOptions = [], $languagesOptions, $rolesOptions;
     public array $typesOptions = [];
     public $name, $type, $language, $currency, $rooms, $city, $country, $website, $role;
     public $test = '';
@@ -39,35 +39,72 @@ class GettingStarted extends Component
     public function mount(){
 
         $this->currentCountry = 'KE';
-        $this->currenciesOptions = Currency::all();
-        $this->languagesOptions = Language::all();
+        $this->currenciesOptions = Currency::whereIn('code', ['KES', 'UGX', 'TZS', 'RWF','USD', 'EUR', 'GBP', 'CNY'])->get();
+        $this->languagesOptions = Language::whereIn('iso_code', ['en'])->get();
 
         $types = [
-            ['id' => 'hotel', 'label' => __('Hotels')],
-            ['id' => 'hostel', 'label' => __('Hostels')],
-            ['id' => 'motel', 'label' => __('Motels')],
-            ['id' => 'bnb', 'label' => __('BnBs ')],
-            ['id' => 'serviced-apartment', 'label' => __('Serviced Apartments & Vacation Rentals')],
-            ['id' => 'guesthouse', 'label' => __('Guesthouses & Lodges')],
+            ['id' => 'hotel',              'label' => __('Hotel')],
+            ['id' => 'lodge',              'label' => __('Lodge')], // covers safari lodges/camps for now
+            ['id' => 'guesthouse-bnb',     'label' => __('Guesthouse / B&B')],
+            ['id' => 'hostel',             'label' => __('Hostel')],
+            ['id' => 'serviced-apartment', 'label' => __('Serviced Apartment / Aparthotel')],
+            ['id' => 'holiday-home',       'label' => __('Holiday Home / Villa')],
         ];
         $this->typesOptions = toSelectOptions($types, 'id', 'label');
 
         $roles = [
-            ['id' => 'owner', 'label' => __('Owner')],
-            ['id' => 'manager', 'label' => __('Hotel/General Manager')],
-            ['id' => 'front-desk', 'label' => __('Front Desk / Receptionist')],
-            ['id' => 'maintenance-staff', 'label' => __('Maintenance Staff')],
-            ['id' => 'accountant', 'label' => __('Accountant')],
+            ['id' => 'owner',         'label' => __('Owner')], // full access
+            ['id' => 'manager',       'label' => __('General / Property Manager')], // ops + settings + reports
+            ['id' => 'front-office',  'label' => __('Front Office (Reception & Concierge)')], // check-in/out, guests, payments
+            ['id' => 'reservations',  'label' => __('Reservations Agent')], // holds & confirms bookings
+            ['id' => 'housekeeping',  'label' => __('Housekeeping')], // room status & tasks
+            ['id' => 'maintenance',   'label' => __('Maintenance Technician')], // work orders & status
+            ['id' => 'accounting',    'label' => __('Accountant / Finance')], // invoices, refunds, reports
+            ['id' => 'cashier',       'label' => __('POS Cashier')],
         ];
         $this->rolesOptions = toSelectOptions($roles, 'id', 'label');
 
-        $this->countriesOptions = Country::all();
+        $this->countriesOptions = Country::whereIn('country_code', ['KE', 'UG', 'TZ', 'RW'])->get();
+        $this->citiesOptions = [
+            'KE' => [
+                'Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Meru','Machakos',
+                // 'Malindi','Kitale', 'Nyeri','Garissa','Embu','Kericho','Naivasha',
+            ],
+            'UG' => [
+                'Kampala',
+                // 'Gulu','Lira','Mbarara','Jinja','Arua','Mbale','Fort Portal','Masaka','Hoima','Soroti','Mityana',
+            ],
+            'TZ' => [
+                'Dar es Salaam', 'Zanzibar City',
+                // 'Dodoma','Mwanza','Arusha','Mbeya','Tanga','Morogoro','Tabora','Shinyanga','Kigoma','Songea','Sumbawanga',
+            ],
+            'RW' => [
+                'Kigali',
+                // 'Huye (Butare)','Muhanga (Gitarama)','Gicumbi (Byumba)', 'Rubavu (Gisenyi)','Rusizi (Cyangugu)','Musanze (Ruhengeri)', 'Karongi (Kibuye)','Nyagatare','Rwamagana',
+            ],
+            'ZM' => [
+                'Lusaka',
+                // 'Ndola','Kitwe','Kabwe','Chingola','Livingstone','Mufulira', 'Luanshya','Kasama','Chipata','Solwezi','Mongu',
+            ],
+        ];
     }
 
     public function render()
     {
         return view('app::livewire.getting-started')
         ->extends('layouts.auth')->section('page_content');
+    }
+
+    public function updatedCountry($value){
+        $code = Country::find($value)->country_code;
+        $this->currentCountry = $code;
+    }
+    public function updatedWebsite($value){
+        if (Company::where('website', $value)->exists()) {
+            $this->addError('website', __('This website is already registered.'));
+        } else {
+            $this->resetErrorBag('website');
+        }
     }
 
     public function getStarted(){
