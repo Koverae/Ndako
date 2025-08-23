@@ -45,6 +45,7 @@ class Home extends Component
     public float $cartTotal = 0, $cartTax = 0;
     public $calculatorInput = 0;
     public string $searchQuery = '', $customerSearch = '';
+    public ?string $orderNote = '';
     public string $orderStatusFilter = '', $paymentStatusFilter = '';
     public bool $isLocked = false;
     public $dateFilter, $searchOrderQuery = '';
@@ -106,6 +107,35 @@ class Home extends Component
     {
         $this->selectedCategoryId = $categoryId ?: null;
         $this->loadProducts();
+    }
+
+
+    // keep session + db in sync whenever the user types
+    public function updatedOrderNote($val): void
+    {
+        session(["pos_order_note_{$this->pos->id}" => $val]);
+
+        if ($this->order) {
+            PosOrder::whereKey($this->order?->id)->update(['note' => $val]);
+            $this->dispatch('kds-updated'); // lets KDS refresh quickly
+        }
+    }
+
+    public function saveOrderNote(): void
+    {
+        $this->updatedOrderNote($this->orderNote);
+        session()->flash('note_saved', __('Note saved'));
+    }
+
+    // when you create/confirm an order, also persist the note:
+    protected function persistOrder(array $attrs): int
+    {
+        // ...$attrs you already set (totals, table, guest, etc.)
+        $attrs['note'] = $this->orderNote ?? '';
+        $order = PosOrder::create($attrs);
+        $this->order->id = $order->id;
+
+        return $order->id;
     }
 
     public function selectTable($tableId): void
@@ -280,6 +310,8 @@ class Home extends Component
                 'unit_price' => $product->product_price,
                 'sub_total' => $product->product_price,
                 'product_discount_amount' => 0,
+                'kds_station' => $product->category->kds_station ?? 'kitchen',
+                'kds_status' => 'queued',
             ]);
         }
 
@@ -743,6 +775,7 @@ class Home extends Component
         $this->interface = 'tables';
         $this->selectedTable = null;
         $this->selectedCustomerId = null;
+        $this->orderNote = '';
         LivewireAlert::title('New order started!')
             ->text('Ready to create a new order.')
             ->success()

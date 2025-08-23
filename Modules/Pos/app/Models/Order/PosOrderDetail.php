@@ -19,6 +19,12 @@ class PosOrderDetail extends Model
      */
     protected $guarded = [];
 
+    protected $casts = [
+        'kds_preparing_at' => 'datetime',
+        'kds_ready_at'     => 'datetime',
+        'kds_delivered_at' => 'datetime',
+    ];
+
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
@@ -35,5 +41,16 @@ class PosOrderDetail extends Model
 
     public function product() {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    // KDS
+    public function scopeForStation($q, $station)
+    {
+        return $station ? $q->where('kds_station', $station) : $q;
+    }
+
+    public function scopeOpen($q)
+    {
+        return $q->whereIn('kds_status', ['queued','preparing','ready']);
     }
 }

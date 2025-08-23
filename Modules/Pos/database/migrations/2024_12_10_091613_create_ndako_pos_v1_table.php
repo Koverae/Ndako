@@ -151,7 +151,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pos_id')->nullable();
             $table->unsignedBigInteger('pos_session_id')->nullable();
             $table->unsignedBigInteger('cashier_id')->nullable();
-            $table->date('date');
+            $table->timestamp('date');
             $table->enum('service_type', ['eat-in', 'take-away', 'in-room', 'delivery'])->default('eat-in');
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('fiscal_position_id')->nullable();

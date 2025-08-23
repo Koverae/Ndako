@@ -77,9 +77,9 @@ unset($__defined_vars); ?>
 
                 <div class="mt-2">
                     <?php if(current_company()->team->subscription('main')->plan->is_free): ?>
-                    <span wire:click="upgradeSubscription" wire:confirm="Are you sure to upgrade your current subscription?" class="gap-2 text-white btn btn-primary text-uppercase" >
-                        <i class="bi bi-arrow-up-right-circle"></i> Upgrade
-                    </span>
+                    <a href="<?php echo e(route('subscribe')); ?>" class="gap-2 text-white btn btn-primary text-uppercase" >
+                        <i class="bi bi-arrow-up-right-circle"></i> Upgrade to Spark
+                    </a>
                     <?php else: ?>
                     <a href="<?php echo e(route('subscribe')); ?>" class="gap-2 text-white btn btn-primary text-uppercase" >
                         <i class="bi bi-arrow-up-right-circle"></i> <?php echo e(current_company()->team->subscription('main')->isOnTrial() ? "Upgrade Now" : "Renew"); ?>

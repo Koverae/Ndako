@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{asset('assets/images/logo/favicon.ico')}}">
-    <title>@yield('title')</title>
+    <link rel="shortcut icon" href="<?php echo e(asset('assets/images/logo/favicon.ico')); ?>">
+    <title><?php echo $__env->yieldContent('title'); ?></title>
 
     <!-- CSS -->
-    <link href="{{asset('assets/css/koverae.css?'.time())}}" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/pos.css?'.time())}}" rel="stylesheet"/>
-    <link href="{{asset('assets/css/koverae-flags.min.css?'.time())}}" rel="stylesheet"/>
+    <link href="<?php echo e(asset('assets/css/koverae.css?'.time())); ?>" rel="stylesheet"/>
+    <link href="<?php echo e(asset('assets/css/pos.css?'.time())); ?>" rel="stylesheet"/>
+    <link href="<?php echo e(asset('assets/css/koverae-flags.min.css?'.time())); ?>" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- CSS -->
 
@@ -29,22 +29,24 @@
     <!-- Font Awesome -->
 
     <!-- Libs JS -->
-    <script src="{{asset('assets/libs/list.js/dist/list.min.js')}}" data-navigate-track ></script>
-    <script src="{{asset('assets/libs/apexcharts/dist/apexcharts.min.js')}}" data-navigate-track ></script>
-    {{-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
+    <script src="<?php echo e(asset('assets/libs/list.js/dist/list.min.js')); ?>" data-navigate-track ></script>
+    <script src="<?php echo e(asset('assets/libs/apexcharts/dist/apexcharts.min.js')); ?>" data-navigate-track ></script>
+    
     <!-- Libs JS -->
-    @yield('styles')
+    <?php echo $__env->yieldContent('styles'); ?>
     <!-- Scripts -->
 
-    <script src="{{ asset('assets/js/koverae.js?'.time())}}" data-navigate-track></script>
+    <script src="<?php echo e(asset('assets/js/koverae.js?'.time())); ?>" data-navigate-track></script>
 
     <!-- FullCalendar CSS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.17/index.global.min.js"></script> --}}
+    
 
     <!-- Scripts -->
-    @livewireStyles
-    @livewireScripts
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
+
 
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
@@ -53,28 +55,44 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 
-    @yield('scripts')
+    <?php echo $__env->yieldContent('scripts'); ?>
 
 
 </head>
 <body>
-    <script src="{{asset('assets/js/demo-theme.min.js')}}" data-navigate-track></script>
+    <script src="<?php echo e(asset('assets/js/demo-theme.min.js')); ?>" data-navigate-track></script>
     <main class="page">
 
         <!-- Navbar End -->
 
         <!-- Page Content -->
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
         <!-- Page Content End -->
 
     </main>
 
-    @livewire('wire-elements-modal')
+    <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('wire-elements-modal');
+
+$__html = app('livewire')->mount($__name, $__params, 'lw-176856119-0', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
     <!-- Custom JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @stack('scripts') <!-- This is where scripts pushed with @push('scripts') will be loaded -->
+    <?php echo $__env->yieldPushContent('scripts'); ?> <!-- This is where scripts pushed with <?php $__env->startPush('scripts'); ?> will be loaded -->
     <!-- Custom JS -->
 </body>
 
 </html>
+<?php /**PATH D:\My Laravel Startup\ndako\resources\views/layouts/pos.blade.php ENDPATH**/ ?>

@@ -61,11 +61,11 @@ class SettingsAppHandler extends AppHandler
         ]);
     }
 
-    /**
-     * Install default company roles and permissions.
-     *
-     * @param Company $company
-     */
+/**
+ * Install default company roles and permissions.
+ *
+ * @param int $companyId
+ */
     private function installRolesAndPermissions(int $companyId): void
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
@@ -90,10 +90,10 @@ class SettingsAppHandler extends AppHandler
                 'create_reservations',
                 'modify_reservations',
                 'cancel_reservations',
-                'manage_allotments',       // groups/corporates/blocks
-                'manage_rate_plans',       // create/edit rate plans & policies
-                'manage_availability',     // open/close rooms, stop-sell
-                'override_rate',           // per-booking price override
+                'manage_allotments',
+                'manage_rate_plans',
+                'manage_availability',
+                'override_rate',
                 'preauthorize_payments',
                 'take_deposits',
                 'manage_guest_profiles',
@@ -111,15 +111,15 @@ class SettingsAppHandler extends AppHandler
                 'extend_stay',
                 'post_charges',
                 'void_charges',
-                'process_payments',        // settle folio payments
-                'view_rates',              // see rates/availability (no edit)
+                'process_payments',
+                'view_rates',
                 'manage_guests',
             ],
 
             // Housekeeping
             'housekeeping' => [
                 'view_housekeeping_board',
-                'update_room_status',      // clean/dirty/OOS/OOSvc
+                'update_room_status',
                 'create_hk_task',
                 'complete_hk_task',
                 'view_lost_and_found',
@@ -146,17 +146,64 @@ class SettingsAppHandler extends AppHandler
                 'view_financial_reports',
             ],
 
-            // POS
-            'pos' => [
+            // POS — split into granular groups for least-privilege
+            'pos_core' => [ // creating & managing orders at the table
                 'access_pos',
-                'manage_pos_orders',
+                'create_pos_order',
+                'update_pos_order',
+                'cancel_pos_order',
+                'send_to_kitchen',
+                'send_to_bar',
+                'apply_line_discount',     // small/limited discounts
+                'apply_bill_discount',     // bill-level discount
+                'hold_resume_order',
+                'split_bill',
+                'merge_bills',
+                'transfer_order',          // move to another waiter
+                'change_service_type',     // dine-in/takeaway/delivery
+                'reprint_last_receipt',    // for guest copy
+                'print_kitchen_ticket',
+                'print_bar_ticket',
+                'void_pos_item',           // **requires supervisor in many orgs**
+            ],
+
+            'pos_cash' => [ // sensitive cash-drawer/settlement operations
                 'process_pos_payment',
                 'open_pos_session',
                 'close_pos_session',
                 'cash_drop',
+                'count_cash_drawer',
+                'refund_pos_order',
+                'open_cash_drawer',
+                'override_price',                 // manager/supervisor only
+                'approve_discount_over_threshold',// manager/supervisor only
                 'view_pos_sessions',
                 'view_pos_payments',
+            ],
+
+            'pos_tables' => [ // seating & table management
+                'view_floor',
+                'assign_table',
+                'release_table',
+                'move_table',
+            ],
+
+            'pos_kitchen' => [ // KDS permissions (kitchen/bar screens)
+                'view_kds',
+                'view_bar_kds',
+                'mark_item_preparing',
+                'mark_item_ready',
+                'mark_item_delivered',
+                'bump_kds_item',
+                'recall_kds_item',
+            ],
+
+            'pos_catalog' => [ // menu/product management
                 'manage_pos_products',
+                'manage_pos_categories',
+                'manage_pos_taxes',
+                'manage_pos_pricelists',
+                'manage_pos_modifiers',
             ],
 
             // Property & Rooms
@@ -164,7 +211,7 @@ class SettingsAppHandler extends AppHandler
                 'view_properties',
                 'manage_properties',
                 'create_properties',
-                'manage_policies',         // cancellation, no-show, fees
+                'manage_policies',
                 'manage_fees_taxes',
             ],
             'rooms' => [
@@ -198,7 +245,7 @@ class SettingsAppHandler extends AppHandler
                 'install_pwa',
             ],
 
-            // (Optional) Guest portal – not assigned here
+            // Guest portal (optional)
             'guest' => [
                 'view_own_reservations',
                 'update_profile',
@@ -219,10 +266,11 @@ class SettingsAppHandler extends AppHandler
 
         // ---------- ROLE → PERMISSIONS MAP ----------
         $rolesPermissions = [
+
             // Full access
             'owner' => $allPermissionNames->all(),
 
-            // Ops + settings + reports (but keep a few owner-only like manage_billing/manage_roles if you want)
+            // Operations leader — everything except the truly sensitive billing/role mgmt
             'manager' => array_merge(
                 $sectionPermissions['overview'],
                 $sectionPermissions['reservations'],
@@ -230,62 +278,93 @@ class SettingsAppHandler extends AppHandler
                 $sectionPermissions['housekeeping'],
                 $sectionPermissions['maintenance'],
                 $sectionPermissions['accounting'],
-                $sectionPermissions['pos'],
                 $sectionPermissions['properties'],
                 $sectionPermissions['rooms'],
-                // Settings minus the sensitive bits (adjust to taste)
+                // POS (all sub-groups)
+                $sectionPermissions['pos_core'],
+                $sectionPermissions['pos_cash'],
+                $sectionPermissions['pos_tables'],
+                $sectionPermissions['pos_kitchen'],
+                $sectionPermissions['pos_catalog'],
+                // Settings minus sensitive
                 array_diff($sectionPermissions['settings'], ['manage_billing', 'manage_roles']),
-                // Users (without manage_roles if you want it owner-only)
+                // Users minus manage_roles (optional)
                 array_diff($sectionPermissions['users'], ['manage_roles'])
             ),
 
-            // Desk/Concierge (includes basic reservation ops but NOT rates/availability management)
+            // Front desk/concierge
             'front-office' => array_merge(
                 $sectionPermissions['front_office'],
-                // limited reservations
                 ['view_reservations','create_reservations','modify_reservations','cancel_reservations','manage_guest_profiles','preauthorize_payments','take_deposits','view_rates'],
-                $sectionPermissions['rooms'], // view/manage room assignment context
+                $sectionPermissions['rooms']
             ),
 
-            // Dedicated bookings team (can manage rates/availability if you prefer — here we allow it)
+            // Reservations team
             'reservations' => array_merge(
                 $sectionPermissions['reservations'],
-                $sectionPermissions['rooms']   // usually need room visibility
+                $sectionPermissions['rooms']
             ),
 
-            // HK & Maintenance
-            'housekeeping' => array_merge(
-                $sectionPermissions['housekeeping'],
-                ['view_rooms'] // visibility only
-            ),
-            'maintenance' => array_merge(
-                $sectionPermissions['maintenance'],
-                ['view_rooms'] // visibility only
-            ),
+            // Housekeeping & Maintenance
+            'housekeeping' => array_merge($sectionPermissions['housekeeping'], ['view_rooms']),
+            'maintenance'  => array_merge($sectionPermissions['maintenance'],  ['view_rooms']),
 
             // Finance
             'accounting' => array_merge(
                 $sectionPermissions['accounting'],
-                // Reports visibility
                 ['view_reports','view_financial_reports','view_pos_reports']
             ),
 
-            // POS Staff (no product management by default)
-            'cashier' => [
-                'access_pos','manage_pos_orders','process_pos_payment',
-                'open_pos_session','close_pos_session','cash_drop',
-                'view_pos_sessions','view_pos_payments',
+            // POS ROLES (new)
+            'waiter' => array_merge(
+                $sectionPermissions['pos_core'],
+                $sectionPermissions['pos_tables'],
+                // Typically no payments/refunds/overrides — keep cash functions out
+                []
+            ),
+
+            'cashier' => array_merge(
+                // Payment & drawer operations; can view core to finalize at counter if needed
+                ['access_pos','reprint_last_receipt'],
+                $sectionPermissions['pos_cash']
+            ),
+
+            'kitchen' => [
+                // KDS only — no access to cash or order editing
+                'view_kds','mark_item_preparing','mark_item_ready','bump_kds_item','recall_kds_item'
             ],
+
+            'bar' => [
+                'view_bar_kds','mark_item_preparing','mark_item_ready','bump_kds_item','recall_kds_item'
+            ],
+
+            'host' => [
+                'view_floor','assign_table','release_table','move_table'
+            ],
+
+            // Shift supervisor — approvals for sensitive actions without full manager scope
+            'shift-supervisor' => array_merge(
+                ['access_pos','reprint_last_receipt'],
+                [
+                    'approve_discount_over_threshold',
+                    'override_price',
+                    'refund_pos_order',
+                    'open_cash_drawer'
+                ],
+                // optional: allow session close if manager absent
+                ['close_pos_session','count_cash_drawer','cash_drop']
+            ),
         ];
 
         // ---------- CREATE ROLES & ASSIGN ----------
         foreach ($rolesPermissions as $role => $permissions) {
             $roleInstance = Role::firstOrCreate([
-                'name' => $role,
+                'name'       => $role,
                 'company_id' => $companyId,
             ]);
             $roleInstance->syncPermissions($permissions);
         }
     }
+
 
 }

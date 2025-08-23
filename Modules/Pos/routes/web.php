@@ -26,7 +26,7 @@ use Modules\Pos\Livewire\Pos\Show as PosSessionShow;
 use Modules\Pos\Livewire\Floor\Lists as FloorLists;
 use Modules\Pos\Livewire\Floor\Create as FloorCreate;
 use Modules\Pos\Livewire\Floor\Show as FloorShow;
-
+use Modules\Pos\Livewire\Interface\KdsBoard;
 use Modules\Pos\Livewire\Payment\Lists as PaymentLists;
 
 /*
@@ -49,6 +49,13 @@ Route::middleware(['identify-kover', 'can:access_pos'
 
     Route::prefix("pos/ui")->group(function() {
         Route::get('/{pos}', Home::class)->name('pos.ui');
+    });
+
+    // kitchen: /kds or /kds/kitchen  |  bar: /kds/bar
+    Route::prefix('pos')->group(function () {
+        Route::get('/kds/{station?}/{posId?}', KdsBoard::class)
+            ->whereIn('station', ['kitchen','bar','pass'])
+            ->name('pos.kds');
     });
 
     // Product Categories
