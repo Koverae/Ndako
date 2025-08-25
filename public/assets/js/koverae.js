@@ -7708,6 +7708,7 @@ window.playSound = (type) => {
     const sounds = {
         beep: new Audio('/sounds/beep.mp3'),
         cashier: new Audio('/sounds/cashier.mp3'),
+        kds: new Audio('/sounds/kds-1.mp3'),
         error: new Audio('/sounds/error.mp3')
     };
 

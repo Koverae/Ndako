@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Modules\Properties\Models\Property\Property;
 
 class Pos extends Model
 {
@@ -26,6 +27,16 @@ class Pos extends Model
     public function scopeIsCompany(Builder $query, $company_id)
     {
         return $query->where('company_id', $company_id);
+    }
+
+    public function scopeIsProperty(Builder $query, $property_id)
+    {
+        return $query->where('property_id', $property_id);
+    }
+
+    // Get Property
+    public function property() {
+        return $this->belongsTo(Property::class, 'property_id', 'id');
     }
 
     public function sessions() {

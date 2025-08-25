@@ -1,131 +1,7 @@
 @section('title', $pos->name)
 @section('styles')
 <style>
-  /* ───────────────────────────────────────────────────────────────────────────
-    Animations & micro-interactions (kept subtle to preserve design)
-  ─────────────────────────────────────────────────────────────────────────── */
-  @keyframes k-fade-in   { from{opacity:0} to{opacity:1} }
-  @keyframes k-fade-up   { from{opacity:.4; transform: translateY(6px)} to{opacity:1; transform:none} }
-  .animate-fade-in       { animation: k-fade-in .18s ease }
-  .animate-fade-up       { animation: k-fade-up .22s ease }
 
-  /* Respect user preference */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in, .animate-fade-up { animation: none !important }
-  }
-
-  /* Utility: mobile browser UI safe viewport (no visual change, better fit) */
-  .h-screen-d { min-height: 100dvh; height: 100dvh }
-
-  /* Optional: improve print clarity without changing layout */
-  @media print {
-    .d-print-none { display: none !important }
-  }
-
-
-  /* === Checkout readability & structure (subtle, modern) === */
-  #checkout-box {
-    --pad: 14px;
-    --radius: 14px;
-    --muted: #6b7280;
-    --divider: rgba(0,0,0,.08);
-    --surface: #ffffff;
-    --surface-2: #fafafa;
-  }
-
-  #checkout-box .card{
-    display:flex; flex-direction:column;
-    border-radius: 16px;
-  }
-
-  /* Section header */
-  .co-section-head{
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 10px var(--pad); border-bottom:1px solid var(--divider);
-  }
-  .co-title{
-    font-weight:800; letter-spacing:.015em;
-    font-size: clamp(1.05rem, 1.2vw, 1.25rem);
-    margin:0;
-  }
-  .co-subtle{
-    color: var(--muted); font-size:.92rem;
-  }
-
-  /* Action bar right under the header */
-  .co-actions{
-    padding: 10px var(--pad);
-    display:flex; flex-wrap:wrap; gap:.5rem .5rem; align-items:center;
-    border-bottom:1px solid var(--divider);
-    background: var(--surface);
-  }
-  .co-actions .btn{ border-radius: 12px; }
-
-  /* Customer note */
-  .soft-panel{ background: var(--surface-2); border-top:1px solid var(--divider); }
-  #customer-note .form-label{ font-weight:700; }
-  #customer-note .form-control{ border-radius: 12px; }
-
-  /* Cart list */
-  .cart-scroll{
-    padding: .75rem; display:flex; flex-direction:column; gap:.6rem;
-    overflow:auto; min-height: 180px;
-  }
-  .orderline{
-    background: var(--surface);
-    border:1px solid var(--divider);
-    border-radius: var(--radius);
-    padding: var(--pad);
-    transition: box-shadow .15s ease, transform .12s ease;
-  }
-  .orderline:hover{ box-shadow:0 .4rem 1rem rgba(0,0,0,.06); transform: translateY(-1px); }
-  .orderline.selected{ outline:2px solid rgba(13,110,253,.22); }
-
-  .orderline .product-name{
-    font-weight: 800;
-    font-size: clamp(1rem, 1.1vw, 1.12rem);
-    line-height: 1.25;
-  }
-  .orderline .meta{
-    color: var(--muted);
-    font-size: .95rem;
-  }
-  .orderline .line-total{
-    font-weight: 800;
-    font-size: clamp(1rem, 1.2vw, 1.08rem);
-    white-space: nowrap;
-  }
-
-  /* Sticky footer with totals */
-  .checkout-footer{
-    position: sticky; bottom: 0; inset-inline: 0; z-index: 1;
-    background: var(--surface);
-    border-top:1px solid var(--divider);
-    padding: 12px var(--pad);
-  }
-  .co-totals{
-    display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
-  }
-  .co-amount{
-    font-weight: 900;
-    font-size: clamp(1.15rem, 1.8vw, 1.35rem);
-  }
-  .pay-cta{
-    min-width: 180px;
-    padding: .8rem 1.15rem;
-    border-radius: 14px;
-    font-weight: 800;
-  }
-
-  /* Empty state */
-  .empty-cart i{ opacity:.9 }
-  .empty-cart .lead{ font-weight:700; font-size:1.05rem; }
-
-  /* Better hit target on small screens */
-  @media (max-width: 576px){
-    .co-actions .btn{ padding:.5rem .6rem; }
-    .pay-cta{ width:100%; }
-  }
 
 </style>
 @endsection
@@ -295,55 +171,133 @@
 
   <!-- Register -->
   <div class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none">
-    <!-- Product Section -->
-    <section class="container-fluid {{ $tab == 'cart' ? 'd-none d-lg-block' : '' }} col-lg-7 col-md-12 h-screen-d" id="product-box">
-      <!-- Search Bar -->
-      <div class="search-bar">
-        <input type="text" class="form-control" placeholder="Search products..." aria-label="Search products" wire:model.live="searchQuery">
-        <i class="bi bi-search search-icon" aria-hidden="true"></i>
-      </div>
+<!-- Product Section -->
+<section class="container-fluid {{ $tab == 'cart' ? 'd-none d-lg-block' : '' }} col-lg-7 col-md-12 h-screen-d" id="product-box"
+         x-data="{ stuck:false }"
+         x-init="
+           const tb = $el.querySelector('.prod-toolbar');
+           const io = new IntersectionObserver(([e]) => (stuck = !e.isIntersecting), { threshold: [1] });
+           // Observe a tiny sentinel just above toolbar to toggle subtle shadow
+           const sentinel = document.createElement('div'); sentinel.style.position='absolute'; sentinel.style.top='-1px'; sentinel.style.height='1px'; sentinel.style.width='1px';
+           tb.prepend(sentinel); io.observe(sentinel);
+         ">
+  <!-- Sticky Toolbar -->
+  <div class="prod-toolbar" :class="stuck && 'stuck'">
+    <!-- Search -->
+    <div class="prod-search">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="{{ __('Search products, e.g. “Latte”, “Burger”...') }}"
+        aria-label="{{ __('Search products') }}"
+        wire:model.live="searchQuery"
+        id="prod-search-input"
+      >
+      @if(!empty($searchQuery))
+        <button class="btn-clear" type="button" aria-label="{{ __('Clear search') }}"
+                wire:click="$set('searchQuery','')">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      @endif
+    </div>
 
-      <!-- Categories -->
-      <div class="category_section_buttons">
-        <div class="d-flex w-100">
-          <span class="category_button cursor-pointer home {{ $selectedCategoryId == null ? 'selected' : '' }}" wire:click="selectCategory('')" aria-label="{{ __('All') }}">
-            <i class="bi bi-house-fill" aria-hidden="true"></i>
-          </span>
-          <div class="cursor-pointer d-flex w-100 section_buttons">
-            @foreach ($productCategoryOptions as $category)
-              <span class="gap-2 category_button {{ $selectedCategoryId == $category->id ? 'selected' : '' }}"
-                    wire:click="selectCategory('{{ $category->id }}')" role="button">
-                {{ $category->name }}
-              </span>
-            @endforeach
+    <!-- Categories (scrollable pills) -->
+    <div class="cat-scroll" role="tablist" aria-label="{{ __('Product categories') }}">
+      <button
+        type="button"
+        class="cat-pill {{ $selectedCategoryId == null ? 'active' : '' }}"
+        wire:click="selectCategory('')"
+        role="tab" aria-selected="{{ $selectedCategoryId == null ? 'true' : 'false' }}"
+      >
+        <i class="bi bi-house-fill me-1"></i>{{ __('All') }}
+      </button>
+
+      @foreach ($productCategoryOptions as $category)
+        <button
+          type="button"
+          class="cat-pill {{ $selectedCategoryId == $category->id ? 'active' : '' }}"
+          wire:click="selectCategory('{{ $category->id }}')"
+          role="tab" aria-selected="{{ $selectedCategoryId == $category->id ? 'true' : 'false' }}"
+        >
+          {{ $category->name }}
+        </button>
+      @endforeach
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="product-grid">
+    {{-- Loading skeletons (while searching / filtering) --}}
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4" wire:loading.delay wire:target="searchQuery,selectedCategoryId,selectCategory">
+      @for($i=0;$i<8;$i++)
+        <div class="col">
+          <div class="s-card">
+            <div class="skeleton s-media"></div>
+            <div class="p-2">
+              <div class="skeleton s-line" style="width:70%"></div>
+              <div class="s-gap"></div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="skeleton s-line" style="width:40%"></div>
+                <div class="skeleton s-line" style="width:25%"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      @endfor
+    </div>
 
-      <!-- Product List -->
-      <div class="gap-2 p-3 product-list row row-cols-2 row-cols-md-3 row-cols-lg-4">
-        @foreach ($productOptions as $product)
-          <article class="cursor-pointer product" wire:click="addToCart('{{ $product->id }}')" role="button" tabindex="0">
-            <div class="product-information-tag">
-              <i class="bi bi-info" aria-label="Product info"></i>
+    {{-- Products --}}
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4" wire:loading.remove>
+      @forelse ($productOptions as $product)
+        <div class="col">
+          <article class="p-card"
+                   role="button"
+                   tabindex="0"
+                   wire:click="addToCart('{{ $product->id }}')"
+                   wire:key="prod-{{ $product->id }}">
+            <div class="p-media">
+              {{-- badge (example: popular/infinite stock flag) --}}
+              <span class="p-badge d-none d-xl-inline-flex"><i class="bi bi-star-fill me-1"></i>{{ __('Popular') }}</span>
+
+              {{-- image --}}
+              <img
+                src="{{ $product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png') }}"
+                alt="{{ $product->product_name }}"
+                loading="lazy" decoding="async"
+              >
             </div>
-            <div class="badge badge-info" aria-hidden="true"><i class="fas fa-infinity"></i></div>
-            <img
-              src="{{ $product->image_path ? Storage::url('avatars/' . $product->image_path) . '?v=' . time() : asset('assets/images/default/product.png') }}"
-              alt="{{ $product->product_name }}"
-              class="card-img-top"
-              loading="lazy"
-              decoding="async"
-            >
-            <div class="product-content">
-              <div class="product-name">{{ $product->product_name }}</div>
-              <div class="price-tag">{{ format_currency($product->product_price) }}</div>
+
+            <div class="p-info">
+              <div class="text-truncate">
+                <div class="p-name text-truncate">{{ $product->product_name }}</div>
+                <div class="p-meta text-truncate">{{ $product->category->name ?? '' }}</div>
+              </div>
+              <div class="p-price">{{ format_currency($product->product_price) }}</div>
+            </div>
+
+            <div class="p-cta pt-0 pb-2 px-2">
+              <button type="button" class="btn btn-light btn-sm fw-semibold w-100" aria-label="{{ __('Add to cart') }}">
+                <i class="bi bi-plus-circle me-1"></i> {{ __('Add') }}
+              </button>
             </div>
           </article>
-        @endforeach
-      </div>
-      {{-- <div class="pagination">{{ $productOptions->links() }}</div> --}}
-    </section>
+        </div>
+      @empty
+        <div class="col-12">
+          <div class="prod-empty">
+            <div class="icon mb-2"><i class="bi bi-emoji-neutral"></i></div>
+            <div class="fw-bold">{{ __('No products match your filters') }}</div>
+            <div class="small">{{ __('Try adjusting the search or category.') }}</div>
+          </div>
+        </div>
+      @endforelse
+    </div>
+
+    {{-- (Optional) pagination placeholder if you enable it later --}}
+    {{-- <div class="mt-2">{{ $productOptions->links() }}</div> --}}
+  </div>
+</section>
 
 <!-- Checkout Section -->
 <section class="col-lg-5 col-md-12 {{ $tab == 'pay' ? 'd-none d-lg-block' : '' }}" id="checkout-box">
@@ -395,7 +349,7 @@
 
       <div class="ms-auto d-flex gap-2">
         <button
-          wire:click="cancelOrder"
+          wire:click="cancelOrder('{{ $this->order?->id }}')"
           wire:confirm="{{ __('Are you sure to reset the cart?') }}"
           class="btn btn-outline-danger btn-sm fw-semibold {{ empty($cart) ? 'disabled' : '' }}">
           <i class="fas fa-trash"></i> <span>{{ __('Cancel') }}</span>
@@ -530,19 +484,47 @@
 
 
 
-    <!-- Mobile Checkout Switcher -->
-    <section class="d-lg-none" id="mobile-checkout-box">
-      <div class="fixed-bar">
-        <button wire:click="changeTab('pay')" class="text-white btn-switch_pane rounded-0 fw-bolder review-button" id="pay-order">
-          <span class="fs-1 d-block">{{ __('Pay') }}</span>
-          <span>{{ format_currency($cartTotal) }}</span>
-        </button>
-        <button wire:click="changeTab('cart')" class="text-black btn-switch_pane rounded-0 fw-bolder review-button">
-          <span class="fs-1 d-block">{{ __('Cart') }}</span>
-          <span>{{ count($cart) }} {{ __('items') }}</span>
-        </button>
-      </div>
-    </section>
+<!-- Mobile Checkout Switcher (improved) -->
+<section class="d-lg-none" id="mobile-checkout-box" aria-label="{{ __('Cart and payment actions') }}">
+  <nav id="m-mobile-switcher" role="tablist">
+    <div class="wrap">
+      {{-- PAY --}}
+      <button
+        type="button"
+        class="btn btn-tab btn-pay {{ $tab === 'pay' ? 'active' : '' }} {{ empty($cart) ? 'disabled' : '' }}"
+        wire:click="changeTab('pay')"
+        @if(empty($cart)) disabled aria-disabled="true" @endif
+        aria-selected="{{ $tab === 'pay' ? 'true' : 'false' }}"
+        aria-label="{{ __('Go to Payment') }}"
+      >
+        <div class="label">
+          <div class="title">{{ __('Pay') }}</div>
+          <div class="sub">{{ format_currency($cartTotal) }}</div>
+        </div>
+        <i class="bi bi-credit-card-2-front icon" aria-hidden="true"></i>
+      </button>
+
+      {{-- CART --}}
+      <button
+        type="button"
+        class="btn btn-tab btn-light {{ $tab === 'cart' ? 'active' : '' }}"
+        wire:click="changeTab('cart')"
+        aria-selected="{{ $tab === 'cart' ? 'true' : 'false' }}"
+        aria-label="{{ __('Go to Cart') }}"
+      >
+        <div class="label">
+          <div class="title">{{ __('Cart') }}</div>
+          <div class="sub">{{ count($cart) }} {{ __('items') }}</div>
+        </div>
+        <i class="bi bi-bag icon" aria-hidden="true"></i>
+      </button>
+    </div>
+  </nav>
+
+  {{-- Keeps page content visible above the fixed bar --}}
+  <div class="m-mobile-switcher-spacer"></div>
+</section>
+
   </div>
   <!-- Register -->
 
@@ -1217,6 +1199,20 @@ function calculatorComponent($wire) {
   };
 }
 
+  // Press "/" to focus product search (when register is visible & not typing elsewhere)
+  (() => {
+    const onKey = (e) => {
+      if (e.key !== '/') return;
+      const isRegisterVisible = !document.querySelector('.row.d-print-none').classList.contains('d-none') && '{{ $interface }}' === 'register';
+      if (!isRegisterVisible) return;
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+      e.preventDefault();
+      document.getElementById('prod-search-input')?.focus();
+    };
+    window.addEventListener('keydown', onKey, { passive: false });
+  })();
+
 /* ============================================================================
    Theme toggle (light/dark) — resilient and single-instanced
    ========================================================================== */
@@ -1250,5 +1246,22 @@ function calculatorComponent($wire) {
     if (!localStorage.getItem('theme')) apply(e.matches ? 'dark' : 'light');
   });
 })();
+
+  // Measure the actual mobile switcher height and update the CSS var for perfect spacing
+  (function(){
+    const updateBarHeight = () => {
+      const el = document.getElementById('m-mobile-switcher');
+      if(!el) return;
+      const h = el.offsetHeight || 72;
+      document.documentElement.style.setProperty('--mobile-bar-h', `${h}px`);
+    };
+    // Run on load and on resize/orientation changes
+    window.addEventListener('load', updateBarHeight, { passive: true });
+    window.addEventListener('resize', updateBarHeight, { passive: true });
+    window.addEventListener('orientationchange', updateBarHeight, { passive: true });
+    // In case Livewire re-renders the footer
+    document.addEventListener('livewire:navigated', updateBarHeight, { passive: true });
+  })();
+
 </script>
 @endpush

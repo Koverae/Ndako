@@ -221,6 +221,7 @@
                   <option value="90">{{ __('Last 1.5h') }}</option>
                   <option value="120">{{ __('Last 2h') }}</option>
                   <option value="240">{{ __('Last 4h') }}</option>
+                  <option value="480">{{ __('Last 8h') }}</option>
                 </select>
               </li>
             </div>
@@ -630,5 +631,16 @@ function kdsDnD($wire){
   toggle.addEventListener('click',()=>apply(cur = (cur==='light'?'dark':'light')));
   const mq=window.matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener?.('change',(e)=>{ if(!localStorage.getItem('theme')) apply(e.matches?'dark':'light'); });
 })();
+
+
+// ===================== New-ticket sound (minimal, non-intrusive) =====================
+
+(() => {
+    // Play Sound
+    Livewire.on('play-sound', (payload) => {
+      try { playSound(payload?.type); } catch (e) { /* no-op if playSound missing */ }
+    });
+})();
+
 </script>
 @endpush

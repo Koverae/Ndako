@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('property_id')->nullable();
             $table->unsignedBigInteger('active_session_id')->nullable();
             $table->string('name');
             $table->boolean('has_multiple_employee')->default(false);
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->boolean('is_locked')->default(false);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
+            $table->foreign('property_id')->references('id')->on('properties')->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

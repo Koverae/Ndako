@@ -119,6 +119,9 @@ class KdsBoard extends Component
     {
         if (!array_key_exists($station, $this->stations)) return;
         $this->station = $station;
+
+        // Reset baseline so switching stations doesn't falsely "ding"
+        $this->lastSeenIds = [];
     }
 
     /* ----------------------- Drag & Drop ----------------------- */
@@ -210,10 +213,38 @@ class KdsBoard extends Component
         return $buckets;
     }
 
-
     public function render()
     {
         $data = $this->getTickets(); // ['queued'=>..,'preparing'=>..,'ready'=>..]
+
+        // -------- NEW: detect newly-arrived items in "New" column and emit event --------
+        try {
+            // collect current ids from "queued" items (i.e., tickets showing up in New column)
+            $currentQueuedIds = [];
+            foreach (($data['queued'] ?? []) as $block) {
+                foreach ($block->items as $it) {
+                    $currentQueuedIds[] = (int)$it->id;
+                }
+            }
+
+            // first render: just baseline, no sound
+            if (empty($this->lastSeenIds)) {
+                $this->lastSeenIds = $currentQueuedIds;
+            } else {
+                $newOnes = array_diff($currentQueuedIds, $this->lastSeenIds);
+                if (!empty($newOnes) && $this->soundOn) {
+                    // browser will handle sound (see Blade script)
+                    $this->dispatch('kds-new'); // payload optional
+                    $this->dispatch('play-sound', type: 'kds');
+                }
+                // update baseline
+                $this->lastSeenIds = $currentQueuedIds;
+            }
+        } catch (\Throwable $e) {
+            // be silent on detection errors
+        }
+        // -------------------------------------------------------------------------------
+
         return view('pos::livewire.interface.kds-board', array_merge($data, [
             'pos' => $this->pos,
         ]))->extends('layouts.pos');

@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ndako One · Guest Portal</title>
+  <meta name="description" content="Ndako One — a guest’s all‑in‑one digital portal. From check‑in to check‑out: profile, documents, bookings, services, and payments." />
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { inter: ['Inter', 'ui-sans-serif', 'system-ui'] },
+          colors: {
+            brand: {
+              50: '#eefdf5', 100: '#d6fae7', 200: '#aef4d0', 300: '#7aebb3',
+              400: '#45de92', 500: '#16c77a', 600: '#0da965', 700: '#0b8552',
+              800: '#0d6b45', 900: '#0d583a', 950: '#073322'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px rgba(0,0,0,.06)'
+          }
+        }
+      },
+      darkMode: 'class'
+    }
+  </script>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    .hide { display: none !important; }
+    /* minimalist sign-in background */
+    .bg-grid { background-image: linear-gradient(to right, rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.06) 1px, transparent 1px); background-size: 24px 24px; }
+    .noise { position: absolute; inset: 0; pointer-events: none; opacity: .04; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 40 40"><g fill="%23000" fill-opacity=".6"><circle cx="1" cy="1" r=".5"/><circle cx="13" cy="9" r=".5"/><circle cx="22" cy="17" r=".5"/><circle cx="9" cy="27" r=".5"/><circle cx="31" cy="33" r=".5"/><circle cx="37" cy="5" r=".5"/></g></svg>'); background-size: 200px 200px; }
+  </style>
+</head>
+<body class="h-full bg-neutral-50 text-neutral-900">
+  <!-- Sign-In Page (shown when not authenticated) -->
+  <main data-view="signin" class="min-h-screen flex items-center justify-center p-6">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-white via-brand-50 to-white"></div>
+    <div class="absolute inset-0 -z-10 bg-grid"></div>
+    <div class="noise"></div>
+
+    <div class="w-full max-w-md">
+      <div class="mb-6 flex items-center justify-center gap-3">
+        <div class="h-11 w-11 rounded-2xl bg-brand-600 text-white grid place-items-center shadow-soft">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true"><path d="M12.76 3.03a.75.75 0 0 1 .99-.27c3.86 2.06 6.56 6.09 6.75 10.68.02.55-.48.98-1.02.86-3.23-.73-6.64.53-8.79 3.13-2.16 2.61-2.93 6.08-2.05 9.3.14.53-.32 1.02-.87.93C3.71 26.78.5 22.4.5 17.38.5 10.71 5.43 5.02 11.93 3.19c.32-.09.62-.09.83-.16z"/></svg>
+        </div>
+        <div class="text-center">
+          <div class="text-xs uppercase tracking-wider text-neutral-500">Ndako One</div>
+          <div class="text-lg font-semibold">Guest Portal</div>
+        </div>
+      </div>
+
+      <div class="rounded-3xl border border-neutral-200/80 bg-white/80 backdrop-blur p-6 shadow-soft">
+        <h1 class="text-2xl font-semibold">Welcome</h1>
+        <p class="mt-1 text-neutral-600">Sign in to continue to your stays, bookings, and payments.</p>
+
+        <button id="btnGoogle" class="mt-6 w-full inline-flex items-center justify-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium hover:bg-neutral-50">
+          <svg viewBox="0 0 48 48" class="h-5 w-5" aria-hidden="true"><defs><path id="a" d="M44.5 20H24v8.5h11.8C34.9 32.6 30.1 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.8-5.8C34.3 6 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c10.4 0 19.5-7.5 20-20v-4z"/></defs><clipPath id="b"><use xlink:href="#a"/></clipPath><path clip-path="url(#b)" fill="#FBBC05" d="M0 37V11l17 13z"/><path clip-path="url(#b)" fill="#EA4335" d="M0 11l17 13 7-6.1L48 14V0H0z"/><path clip-path="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z"/><path clip-path="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z"/></svg>
+          Continue with Google
+        </button>
+
+        <p class="mt-4 text-xs text-neutral-500">By continuing you agree to our Terms and Privacy.</p>
+      </div>
+
+      <p class="mt-6 text-center text-xs text-neutral-500">Tip: this is a prototype. Google sign‑in is simulated.</p>
+    </div>
+  </main>
+
+  <!-- App Shell (hidden until signed in) -->
+  <div id="app" class="min-h-screen flex flex-col hide">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-neutral-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <div class="h-9 w-9 rounded-xl bg-brand-600 text-white grid place-items-center shadow-soft">
+            <!-- Logo (leaf) -->
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true"><path d="M12.76 3.03a.75.75 0 0 1 .99-.27c3.86 2.06 6.56 6.09 6.75 10.68.02.55-.48.98-1.02.86-3.23-.73-6.64.53-8.79 3.13-2.16 2.61-2.93 6.08-2.05 9.3.14.53-.32 1.02-.87.93C3.71 26.78.5 22.4.5 17.38.5 10.71 5.43 5.02 11.93 3.19c.32-.09.62-.09.83-.16z"/></svg>
+          </div>
+          <div>
+            <div class="text-sm uppercase tracking-wider text-neutral-500">Powered by Ndako</div>
+            <div class="font-semibold">Guest Portal</div>
+          </div>
+        </div>
+        <div class="ml-auto flex items-center gap-2">
+          <button id="toggle-theme" class="p-2 rounded-lg hover:bg-neutral-100" aria-label="Toggle theme">
+            <svg id="theme-icon" viewBox="0 0 24 24" class="h-5 w-5 text-neutral-700" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <div id="roomPill" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 text-sm">
+            <span class="inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            <span id="roomLabel">Not checked in</span>
+          </div>
+        </div>
+      </div>
+      <!-- Tabs: Home, Profile, Documents, Financials, Bookings, Services -->
+      <nav class="max-w-6xl mx-auto px-2 sm:px-6">
+        <div class="flex overflow-x-auto no-scrollbar gap-1 pb-2" role="tablist" aria-label="Sections">
+          <button data-tab="home" class="tab-btn aria-selected:bg-brand-50 aria-selected:text-brand-700 data-[active]:bg-brand-50 data-[active]:text-brand-700 px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100" aria-selected="true">Home</button>
+          <button data-tab="profile" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100">Profile</button>
+          <button data-tab="docs" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100">Important Documents</button>
+          <button data-tab="fin" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100">Financials</button>
+          <button data-tab="bookings" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100">Bookings</button>
+          <button data-tab="services" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100">Services</button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1">
+      <!-- Home -->
+      <section data-view="home" class="view max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <div class="grid gap-6 md:grid-cols-5">
+          <div class="md:col-span-3">
+            <div class="rounded-2xl bg-gradient-to-br from-brand-600 to-emerald-500 text-white p-7 shadow-soft">
+              <div class="flex items-start gap-5">
+                <div class="p-3 bg-white/10 rounded-xl">
+                  <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                    <path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM17 13h4v4"/>
+                    <path d="M13 17h4v4M17 13v4"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <h1 class="text-2xl font-semibold">Welcome<span id="guestNameWelcome"></span> 👋</h1>
+                  <p class="mt-1 text-white/90">Scan, relax, and enjoy your stay. Manage your profile, upload documents, book services, and pay — all in one place.</p>
+                  <div class="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3">
+                    <a data-goto="bookings" class="quick-btn inline-flex items-center gap-2 bg-white text-brand-700 hover:bg-white/90 px-4 py-2 rounded-xl font-medium shadow-soft cursor-pointer">Book & Order</a>
+                    <a data-goto="services" class="quick-btn inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl font-medium cursor-pointer">Request Service</a>
+                    <a data-goto="fin" class="quick-btn inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl font-medium cursor-pointer">View Financials</a>
+                    <a data-goto="docs" class="quick-btn inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl font-medium cursor-pointer">Documents</a>
+                  </div>
+                </div>
+              </div>
+              <div id="qrMeta" class="mt-6 text-sm text-white/85"></div>
+            </div>
+
+            <div class="mt-6 grid sm:grid-cols-2 gap-4">
+              <div class="rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="font-semibold">Your Room</h3>
+                    <p id="roomSummary" class="text-sm text-neutral-600">Complete your profile to check‑in.</p>
+                  </div>
+                  <button data-goto="profile" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700">Profile</button>
+                </div>
+              </div>
+              <div class="rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="font-semibold">Current Balance</h3>
+                    <p id="balanceSummary" class="text-sm text-neutral-600">€0.00</p>
+                  </div>
+                  <button data-goto="fin" class="px-3 py-1.5 rounded-lg bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800">Settle</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Cart -->
+          <aside class="md:col-span-2">
+            <div class="rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft sticky top-24">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-semibold">Your Cart</h3>
+                <button id="clearCart" class="text-sm text-neutral-600 hover:text-neutral-900">Clear</button>
+              </div>
+              <div id="cartList" class="mt-3 space-y-3 min-h-[3rem]"></div>
+              <div class="mt-4 border-t pt-4">
+                <div class="flex items-center justify-between text-sm">
+                  <span>Subtotal</span><span id="cartSubtotal">€0.00</span>
+                </div>
+                <div class="flex items-center justify-between text-sm mt-1">
+                  <span>Taxes (est.)</span><span id="cartTax">€0.00</span>
+                </div>
+                <div class="flex items-center justify-between font-semibold text-lg mt-2">
+                  <span>Total</span><span id="cartTotal">€0.00</span>
+                </div>
+                <button id="placeOrder" class="mt-4 w-full px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed">Place Order</button>
+                <div class="text-xs text-neutral-500 mt-2">Delivery in ~30–40 mins. Charges post to your room.</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Profile (was Check-In) -->
+      <section data-view="profile" class="view max-w-3xl mx-auto px-4 sm:px-6 py-8 hide">
+        <div class="rounded-2xl bg-white border border-neutral-200 p-6 shadow-soft">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-semibold">Profile & Check‑In</h2>
+              <p class="text-sm text-neutral-600 mt-1">Complete your details to unlock bookings, services, and payments.</p>
+            </div>
+            <button id="signOut" class="text-sm text-neutral-600 hover:text-neutral-900">Sign out</button>
+          </div>
+          <form id="profileForm" class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium">Full name</label>
+              <input name="name" required class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Jane Doe" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Room</label>
+              <input name="room" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="305" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Reservation code</label>
+              <input name="code" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="ABCD1234" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Email</label>
+              <input name="email" type="email" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Phone</label>
+              <input name="phone" type="tel" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="+33 6 12 34 56 78" />
+            </div>
+            <div class="sm:col-span-2 flex items-center justify-between mt-2">
+              <div class="text-xs text-neutral-500">By continuing, you agree to hotel policies.</div>
+              <button class="px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700">Save</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Important Documents -->
+      <section data-view="docs" class="view max-w-6xl mx-auto px-4 sm:px-6 py-8 hide">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold">Important Documents</h2>
+            <p class="text-sm text-neutral-600">Passport, visa, receipts, itineraries — keep them handy.</p>
+          </div>
+          <label class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-neutral-50 cursor-pointer">
+            <input id="docFile" type="file" class="hidden" />
+            <span class="text-sm font-medium">Add Document</span>
+          </label>
+        </div>
+        <div id="docsGrid" class="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <div id="docsGate" class="mt-6 hidden"><div class="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-neutral-600">Sign in & complete profile to manage documents.</div></div>
+      </section>
+
+      <!-- Financials (Bill + Payments) -->
+      <section data-view="fin" class="view max-w-4xl mx-auto px-4 sm:px-6 py-8 hide">
+        <div class="rounded-2xl bg-white border border-neutral-200 p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Financials</h2>
+            <button id="printBill" class="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-sm">Print</button>
+          </div>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-neutral-600 border-b">
+                  <th class="py-2 pr-2">Item</th>
+                  <th class="py-2 px-2 text-right">Qty</th>
+                  <th class="py-2 px-2 text-right">Unit</th>
+                  <th class="py-2 pl-2 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody id="billRows" class="divide-y"></tbody>
+            </table>
+          </div>
+          <div class="mt-4 grid sm:grid-cols-2 gap-4">
+            <div class="text-sm text-neutral-600">
+              <div>Guest: <span id="billGuest">—</span></div>
+              <div>Room: <span id="billRoom">—</span></div>
+              <div>Date: <span id="billDate">—</span></div>
+            </div>
+            <div class="sm:text-right">
+              <div class="flex items-center justify-between sm:justify-end gap-6 text-sm"><span>Subtotal</span><span id="billSubtotal">€0.00</span></div>
+              <div class="flex items-center justify-between sm:justify-end gap-6 text-sm"><span>Taxes (est.)</span><span id="billTax">€0.00</span></div>
+              <div class="flex items-center justify-between sm:justify-end gap-6 text-sm"><span>Payments</span><span id="billPayments">€0.00</span></div>
+              <div class="flex items-center justify-between sm:justify-end gap-6 font-semibold text-lg mt-1"><span>Balance</span><span id="billBalance">€0.00</span></div>
+            </div>
+          </div>
+          <div id="finGate" class="mt-6 hidden"><div class="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-neutral-600">Complete your profile to pay.</div></div>
+          <div class="mt-5 grid sm:grid-cols-2 gap-5">
+            <div class="rounded-xl border border-neutral-200 p-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="payMethod" value="card" checked>
+                <span class="font-medium">Card</span>
+              </label>
+              <div class="mt-3 grid gap-3">
+                <input id="cardName" class="rounded-xl border border-neutral-300 px-3 py-2" placeholder="Name on card" />
+                <input id="cardNumber" class="rounded-xl border border-neutral-300 px-3 py-2" placeholder="Card number" inputmode="numeric" />
+                <div class="grid grid-cols-2 gap-3">
+                  <input id="cardExp" class="rounded-xl border border-neutral-300 px-3 py-2" placeholder="MM/YY" />
+                  <input id="cardCvv" class="rounded-xl border border-neutral-300 px-3 py-2" placeholder="CVV" />
+                </div>
+                <button id="payCard" class="mt-1 px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700">Pay Now</button>
+              </div>
+            </div>
+            <div class="rounded-xl border border-neutral-200 p-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="payMethod" value="mobile">
+                <span class="font-medium">Mobile Money</span>
+              </label>
+              <div class="mt-3 grid gap-3">
+                <input id="mobilePhone" class="rounded-xl border border-neutral-300 px-3 py-2" placeholder="Phone number" inputmode="tel" />
+                <button id="payMobile" class="mt-1 px-4 py-2 rounded-xl bg-neutral-900 text-white font-medium hover:bg-neutral-800">Pay Now</button>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 p-4 rounded-xl bg-brand-50 text-brand-900 text-sm">Tip: You can also pay at Reception. Your balance updates in real‑time.</div>
+        </div>
+      </section>
+
+      <!-- Bookings (Room Service + Facilities) -->
+      <section data-view="bookings" class="view max-w-6xl mx-auto px-4 sm:px-6 py-8 hide">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Bookings</h2>
+          <div class="flex items-center gap-2">
+            <input id="menuSearch" type="search" placeholder="Search room service…" class="rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 w-56"/>
+          </div>
+        </div>
+        <p class="text-sm text-neutral-600">Order room service or reserve facilities.</p>
+        <div id="bookingsGate" class="mt-4 hidden"><div class="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-neutral-600">Please complete your profile to place orders or reservations.</div></div>
+
+        <div class="mt-6 grid lg:grid-cols-3 gap-5">
+          <div class="lg:col-span-2">
+            <h3 class="font-semibold mb-3">Room Service Menu</h3>
+            <div id="menuCats" class="flex flex-wrap gap-2"></div>
+            <div id="menuGrid" class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+          </div>
+          <div class="lg:col-span-1">
+            <div class="rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft sticky top-24">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-semibold">Your Cart</h3>
+                <button id="clearCart2" class="text-sm text-neutral-600 hover:text-neutral-900">Clear</button>
+              </div>
+              <div id="cartList2" class="mt-3 space-y-3 min-h-[3rem]"></div>
+              <div class="mt-4 border-t pt-4">
+                <div class="flex items-center justify-between text-sm">
+                  <span>Subtotal</span><span id="cartSubtotal2">€0.00</span>
+                </div>
+                <div class="flex items-center justify-between text-sm mt-1">
+                  <span>Taxes (est.)</span><span id="cartTax2">€0.00</span>
+                </div>
+                <div class="flex items-center justify-between font-semibold text-lg mt-2">
+                  <span>Total</span><span id="cartTotal2">€0.00</span>
+                </div>
+                <button id="placeOrder2" class="mt-4 w-full px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed">Place Order</button>
+                <div class="text-xs text-neutral-500 mt-2">Delivered to your room.</div>
+              </div>
+            </div>
+
+            <div class="mt-6 rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft">
+              <h3 class="font-semibold">Reserve a Facility</h3>
+              <form id="facilityForm" class="mt-4 grid gap-3">
+                <label class="text-sm">Facility
+                  <select name="facility" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option>Spa</option>
+                    <option>Gym session</option>
+                    <option>Airport shuttle</option>
+                    <option>Restaurant</option>
+                  </select>
+                </label>
+                <label class="text-sm">Date & time
+                  <input type="datetime-local" name="at" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+                </label>
+                <label class="text-sm">Notes
+                  <input name="notes" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Any preference…" />
+                </label>
+                <button class="mt-1 px-4 py-2 rounded-xl bg-neutral-900 text-white font-medium hover:bg-neutral-800">Reserve</button>
+              </form>
+              <div id="facilityList" class="mt-4 divide-y"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services (unchanged core, modernized) -->
+      <section data-view="services" class="view max-w-6xl mx-auto px-4 sm:px-6 py-8 hide">
+        <h2 class="text-xl font-semibold">Requests & Services</h2>
+        <p class="text-sm text-neutral-600">Housekeeping, amenities, wake‑up calls — we’ve got you.</p>
+        <div id="serviceGate" class="mt-4 hidden"><div class="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-neutral-600">Please complete your profile to request services.</div></div>
+        <div class="mt-6 grid md:grid-cols-3 gap-5">
+          <div class="md:col-span-1">
+            <div class="rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft">
+              <h3 class="font-semibold">New request</h3>
+              <form id="serviceForm" class="mt-4 grid gap-3">
+                <label class="text-sm">Type
+                  <select name="type" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option>Housekeeping</option>
+                    <option>Extra towels</option>
+                    <option>Wake‑up call</option>
+                    <option>Technical support</option>
+                    <option>Maintenance</option>
+                    <option>Other</option>
+                  </select>
+                </label>
+                <label class="text-sm">Preferred time
+                  <input type="time" name="time" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+                </label>
+                <label class="text-sm">Notes
+                  <textarea name="notes" rows="3" placeholder="Any details…" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                </label>
+                <button class="mt-1 px-4 py-2 rounded-xl bg-neutral-900 text-white font-medium hover:bg-neutral-800">Submit</button>
+              </form>
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <div class="rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft">
+              <div class="flex items-center justify-between">
+                <h3 class="font-semibold">My requests</h3>
+                <button id="clearRequests" class="text-sm text-neutral-600 hover:text-neutral-900">Clear</button>
+              </div>
+              <div id="requestsList" class="mt-4 divide-y"></div>
+              <p id="noRequests" class="mt-4 text-sm text-neutral-600">No requests yet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" role="status" aria-live="polite" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl shadow-soft bg-neutral-900 text-white text-sm hidden"></div>
+
+    <!-- Footer Nav (mobile) -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur border-t border-neutral-200 z-40">
+      <div class="grid grid-cols-6 text-[11px]">
+        <button data-tab="home" class="mobtab py-3 flex flex-col items-center gap-1 text-neutral-600 data-[active]:text-brand-700">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          Home
+        </button>
+        <button data-tab="profile" class="mobtab py-3 flex flex-col items-center gap-1 text-neutral-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+          Profile
+        </button>
+        <button data-tab="docs" class="mobtab py-3 flex flex-col items-center gap-1 text-neutral-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h7l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M13 2v6h6"/></svg>
+          Documents
+        </button>
+        <button data-tab="fin" class="mobtab py-3 flex flex-col items-center gap-1 text-neutral-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h18v4H3z"/><path d="M7 7v13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7"/></svg>
+          Financials
+        </button>
+        <button data-tab="bookings" class="mobtab py-3 flex flex-col items-center gap-1 text-neutral-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          Bookings
+        </button>
+        <button data-tab="services" class="mobtab py-3 flex flex-col items-center gap-1 text-neutral-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v.01M12 12a4 4 0 1 0-4-4"/></svg>
+          Services
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Utilities & State
+    // -----------------------------
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+    const STORAGE_KEY = 'ndakoOneSession:v2';
+    const TAX_RATE = 0.12; // demo tax rate (12%)
+
+    const currencySymbols = { EUR: '€', USD: '$', KES: 'KSh', GBP: '£' };
+    const url = new URL(window.location.href);
+    const CURRENCY = (url.searchParams.get('currency') || 'EUR').toUpperCase();
+    const C = currencySymbols[CURRENCY] || '€';
+
+    const fmtMoney = (n) => `${C}${(Math.round(n * 100)/100).toFixed(2)}`;
+
+    const initialState = {
+      auth: false, // signed in with Google
+      guest: null, // { name, room, email, phone, code }
+      cart: [], // { id, name, price, qty }
+      orders: [], // { id, items:[...], at }
+      requests: [], // { id, type, time, notes, status }
+      bill: { lines: [] }, // { kind:'charge'|'payment', desc, qty, unit, total, at }
+      docs: [], // { id, name, size, at }
+      facilities: [], // { id, facility, at, notes }
+      qr: { room: url.searchParams.get('room') || null, token: url.searchParams.get('token') || null },
+      activeTab: (location.hash?.slice(1)) || 'home'
+    };
+
+    let state = loadState();
+
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function loadState() {
+      try { const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); return s || structuredClone(initialState); }
+      catch { return structuredClone(initialState); }
+    }
+
+    function toast(msg) {
+      const el = $('#toast');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(el._t);
+      el._t = setTimeout(()=> el.classList.add('hidden'), 2200);
+    }
+
+    // Demo Menu Data
+    const MENU = [
+      { id:'brk1', name:'Avocado Toast', price: 8.5, cat:'Breakfast', img:'https://images.unsplash.com/photo-1541516160071-4bb0c5af65de?q=80&w=800&auto=format&fit=crop' },
+      { id:'brk2', name:'Pancakes Stack', price: 9.9, cat:'Breakfast', img:'https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=800&auto=format&fit=crop' },
+      { id:'ln1', name:'Classic Burger', price: 14.0, cat:'Mains', img:'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop' },
+      { id:'ln2', name:'Margherita Pizza', price: 13.0, cat:'Mains', img:'https://images.unsplash.com/photo-1541745537413-b804ba1c6fc7?q=80&w=800&auto=format&fit=crop' },
+      { id:'ln3', name:'Caesar Salad', price: 11.0, cat:'Mains', img:'https://images.unsplash.com/photo-1568158879083-c4280a88d8d2?q=80&w=800&auto=format&fit=crop' },
+      { id:'dr1', name:'Espresso', price: 3.0, cat:'Drinks', img:'https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=800&auto=format&fit=crop' },
+      { id:'dr2', name:'Fresh Orange Juice', price: 4.5, cat:'Drinks', img:'https://images.unsplash.com/photo-1542444459-db63c9f00332?q=80&w=800&auto=format&fit=crop' },
+      { id:'dr3', name:'Mineral Water', price: 2.5, cat:'Drinks', img:'https://images.unsplash.com/photo-1563502310703-1ffe473ad1ff?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    // -----------------------------
+    // Rendering
+    // -----------------------------
+    function renderAll() {
+      renderAuthShell();
+      if (!state.auth) return; // only sign-in page visible
+      renderTabs();
+      renderHome();
+      renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder');
+      renderMenu();
+      renderDocs();
+      renderServices();
+      renderBill();
+      renderPayGates();
+      renderHeader();
+      renderFacility();
+      // mirror cart in bookings side panel
+      renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2');
+    }
+
+    function renderAuthShell() {
+      const signedIn = !!state.auth;
+      document.querySelector('[data-view="signin"]').classList.toggle('hide', signedIn);
+      $('#app').classList.toggle('hide', !signedIn);
+    }
+
+    function setActiveTab(tab) {
+      state.activeTab = tab; saveState();
+      location.hash = tab;
+      $$(".view").forEach(v => v.classList.add('hide'));
+      const target = document.querySelector(`[data-view="${tab}"]`);
+      if (target) target.classList.remove('hide');
+      $$(".tab-btn").forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
+      $$(".tab-btn").forEach(b => b.toggleAttribute('data-active', b.dataset.tab === tab));
+      $$(".mobtab").forEach(b => b.toggleAttribute('data-active', b.dataset.tab === tab));
+    }
+
+    function renderTabs() { setActiveTab(state.activeTab); }
+
+    function renderHeader() {
+      const r = $('#roomPill');
+      const label = $('#roomLabel');
+      if (state.guest?.room) {
+        r.classList.remove('hidden');
+        label.textContent = `Room ${state.guest.room}`;
+      } else { r.classList.add('hidden'); }
+    }
+
+    function renderHome() {
+      const name = state.guest?.name ? `, ${state.guest.name}` : '';
+      $('#guestNameWelcome').textContent = name;
+
+      const rs = $('#roomSummary');
+      rs.textContent = state.guest?.room ? `Room ${state.guest.room}` : 'Complete your profile to check‑in.';
+
+      const meta = $('#qrMeta');
+      const parts = [];
+      if (state.qr.room) parts.push(`Scanned for Room ${state.qr.room}`);
+      if (state.qr.token) parts.push(`Token ${state.qr.token.slice(0,6)}…`);
+      meta.textContent = parts.length ? parts.join(' · ') : '';
+
+      const bal = computeBill();
+      $('#balanceSummary').textContent = fmtMoney(bal.balance);
+    }
+
+    function renderMenu() {
+      // gates
+      const block = !state.guest || !state.guest.name;
+      $('#bookingsGate').classList.toggle('hidden', !block);
+
+      // categories
+      const cats = [...new Set(MENU.map(m => m.cat))];
+      const catWrap = $('#menuCats');
+      if (!catWrap) return;
+      catWrap.innerHTML = '';
+      const allBtn = document.createElement('button');
+      allBtn.className = 'px-3 py-1.5 rounded-full bg-neutral-200 hover:bg-neutral-300 text-sm';
+      allBtn.textContent = 'All';
+      allBtn.addEventListener('click', ()=> renderMenuGrid(MENU));
+      catWrap.appendChild(allBtn);
+      cats.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'px-3 py-1.5 rounded-full bg-neutral-200 hover:bg-neutral-300 text-sm';
+        b.textContent = c;
+        b.addEventListener('click', ()=> renderMenuGrid(MENU.filter(m => m.cat === c)));
+        catWrap.appendChild(b);
+      });
+
+      // search
+      const search = $('#menuSearch');
+      if (search && !search._wired) {
+        search.addEventListener('input', (e)=>{
+          const q = e.target.value.toLowerCase();
+          const list = MENU.filter(m => m.name.toLowerCase().includes(q));
+          renderMenuGrid(list);
+        });
+        search._wired = true;
+      }
+
+      renderMenuGrid(MENU);
+    }
+
+    function renderMenuGrid(list) {
+      const grid = $('#menuGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      list.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'rounded-2xl bg-white border border-neutral-200 overflow-hidden shadow-soft flex flex-col';
+        card.innerHTML = `
+          <div class="h-40 bg-neutral-100 overflow-hidden">
+            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover"/>
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <div class="flex-1">
+              <div class="font-semibold">${item.name}</div>
+              <div class="text-sm text-neutral-600">${item.cat}</div>
+            </div>
+            <div class="mt-3 flex items-center justify-between">
+              <div class="font-semibold">${fmtMoney(item.price)}</div>
+              <div class="flex items-center gap-2">
+                <button data-minus="${item.id}" class="px-2 py-1 rounded-lg border">−</button>
+                <input data-qty="${item.id}" class="w-12 text-center border rounded-lg py-1" value="0" inputmode="numeric" />
+                <button data-plus="${item.id}" class="px-2 py-1 rounded-lg border">+</button>
+              </div>
+            </div>
+            <button data-add="${item.id}" class="mt-3 w-full px-3 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700">Add to cart</button>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      list.forEach(item => {
+        const qtyInput = document.querySelector(`[data-qty="${item.id}"]`);
+        document.querySelector(`[data-plus="${item.id}"]`).addEventListener('click', ()=> qtyInput.value = (+qtyInput.value||0)+1);
+        document.querySelector(`[data-minus="${item.id}"]`).addEventListener('click', ()=> qtyInput.value = Math.max(0,(+qtyInput.value||0)-1));
+        document.querySelector(`[data-add="${item.id}"]`).addEventListener('click', ()=> {
+          const qty = Math.max(1, +qtyInput.value||0);
+          addToCart(item, qty);
+          qtyInput.value = 0;
+          toast(`${item.name} ×${qty} added`);
+        });
+      });
+    }
+
+    function renderCart(listSel, subSel, taxSel, totSel, placeSel) {
+      const list = $(listSel);
+      if (!list) return;
+      list.innerHTML = '';
+      let subtotal = 0;
+      state.cart.forEach(ci => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-3';
+        subtotal += ci.price * ci.qty;
+        row.innerHTML = `
+          <div class="min-w-0">
+            <div class="font-medium truncate">${ci.name}</div>
+            <div class="text-xs text-neutral-600">${fmtMoney(ci.price)} × ${ci.qty}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button aria-label="Decrease" class="px-2 py-1 rounded-lg border" data-cartminus="${ci.id}">−</button>
+            <span class="w-6 text-center">${ci.qty}</span>
+            <button aria-label="Increase" class="px-2 py-1 rounded-lg border" data-cartplus="${ci.id}">+</button>
+            <button aria-label="Remove" class="px-2 py-1 rounded-lg border" data-cartrm="${ci.id}">×</button>
+          </div>`;
+        list.appendChild(row);
+      });
+      const tax = subtotal * TAX_RATE;
+      const total = subtotal + tax;
+      if ($(subSel)) $(subSel).textContent = fmtMoney(subtotal);
+      if ($(taxSel)) $(taxSel).textContent = fmtMoney(tax);
+      if ($(totSel)) $(totSel).textContent = fmtMoney(total);
+      if ($(placeSel)) $(placeSel).disabled = state.cart.length === 0 || !state.guest;
+
+      $$('[data-cartminus]').forEach(b => b.onclick = () => { changeCartQty(b.dataset.cartminus, -1); });
+      $$('[data-cartplus]').forEach(b => b.onclick = () => { changeCartQty(b.dataset.cartplus, +1); });
+      $$('[data-cartrm]').forEach(b => b.onclick = () => { removeFromCart(b.dataset.cartrm); });
+    }
+
+    function renderDocs() {
+      const grid = $('#docsGrid');
+      if (!grid) return;
+      const block = !state.guest || !state.guest.name;
+      $('#docsGate').classList.toggle('hidden', !block);
+      grid.innerHTML = '';
+      state.docs.slice().reverse().forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'rounded-2xl bg-white border border-neutral-200 p-5 shadow-soft';
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="font-semibold">${d.name}</div>
+              <div class="text-xs text-neutral-600">${(d.size/1024).toFixed(1)} KB · ${new Date(d.at).toLocaleString()}</div>
+            </div>
+            <button data-docrm="${d.id}" class="text-sm text-neutral-600 hover:text-neutral-900">Remove</button>
+          </div>`;
+        grid.appendChild(card);
+      });
+      $$('[data-docrm]').forEach(b => b.onclick = () => { state.docs = state.docs.filter(x => x.id !== b.dataset.docrm); saveState(); renderDocs(); });
+    }
+
+    function renderServices() {
+      const block = !state.guest || !state.guest.name;
+      $('#serviceGate').classList.toggle('hidden', !block);
+      const list = $('#requestsList');
+      const none = $('#noRequests');
+      if (!list) return;
+      list.innerHTML = '';
+      if (!state.requests.length) {
+        none.classList.remove('hidden');
+      } else {
+        none.classList.add('hidden');
+        state.requests.slice().reverse().forEach(r => {
+          const row = document.createElement('div');
+          row.className = 'py-3 flex items-start justify-between gap-3';
+          row.innerHTML = `
+            <div>
+              <div class="font-medium">${r.type}</div>
+              <div class="text-xs text-neutral-600">${r.notes || '—'}${r.time ? ' · ' + r.time : ''}</div>
+              <div class="text-xs text-neutral-500">#${r.id} · ${new Date(r.at).toLocaleString()}</div>
+            </div>
+            <span class="px-2 py-1 rounded-lg text-xs ${statusChip(r.status)}">${r.status}</span>`;
+          list.appendChild(row);
+        });
+      }
+    }
+
+    function statusChip(s) {
+      const map = {
+        pending: 'bg-amber-100 text-amber-800',
+        accepted: 'bg-blue-100 text-blue-800',
+        "on the way": 'bg-purple-100 text-purple-800',
+        done: 'bg-emerald-100 text-emerald-800'
+      };
+      return map[s] || 'bg-neutral-100 text-neutral-800';
+    }
+
+    function renderBill() {
+      const rows = $('#billRows');
+      if (!rows) return;
+      rows.innerHTML = '';
+      const now = new Date();
+      $('#billDate').textContent = now.toLocaleString();
+      $('#billGuest').textContent = state.guest?.name || '—';
+      $('#billRoom').textContent = state.guest?.room || '—';
+
+      const { subtotal, tax, payments, balance } = computeBill();
+      $('#billSubtotal').textContent = fmtMoney(subtotal);
+      $('#billTax').textContent = fmtMoney(tax);
+      $('#billPayments').textContent = fmtMoney(payments);
+      $('#billBalance').textContent = fmtMoney(balance);
+
+      state.bill.lines.forEach(l => {
+        const tr = document.createElement('tr');
+        const isPayment = l.kind === 'payment';
+        tr.innerHTML = `
+          <td class="py-2 pr-2">${l.desc} ${isPayment ? '<span class="text-xs text-neutral-500">(Payment)</span>' : ''}</td>
+          <td class="py-2 px-2 text-right">${isPayment ? '—' : l.qty}</td>
+          <td class="py-2 px-2 text-right">${isPayment ? '—' : fmtMoney(l.unit)}</td>
+          <td class="py-2 pl-2 text-right">${isPayment ? '-' + fmtMoney(l.total) : fmtMoney(l.total)}</td>`;
+        rows.appendChild(tr);
+      });
+    }
+
+    function computeBill() {
+      const charges = state.bill.lines.filter(l => l.kind === 'charge');
+      const payments = state.bill.lines.filter(l => l.kind === 'payment');
+      const subtotal = charges.reduce((s,l)=> s + l.total, 0);
+      const tax = charges.reduce((s,l)=> s + l.total * TAX_RATE, 0);
+      const paid = payments.reduce((s,l)=> s + l.total, 0);
+      const balance = Math.max(0, subtotal + tax - paid);
+      return { subtotal, tax, payments: paid, balance };
+    }
+
+    function renderPayGates() {
+      $('#finGate')?.classList.toggle('hidden', !!state.guest);
+    }
+
+    function renderFacility() {
+      const list = $('#facilityList');
+      if (!list) return;
+      list.innerHTML = '';
+      state.facilities.slice().reverse().forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'py-3 flex items-start justify-between gap-3';
+        row.innerHTML = `
+          <div>
+            <div class="font-medium">${f.facility}</div>
+            <div class="text-xs text-neutral-600">${new Date(f.at).toLocaleString()} · ${f.notes || '—'}</div>
+            <div class="text-xs text-neutral-500">#${f.id}</div>
+          </div>
+          <button data-fcrm="${f.id}" class="text-sm text-neutral-600 hover:text-neutral-900">Cancel</button>`;
+        list.appendChild(row);
+      });
+      $$('[data-fcrm]').forEach(b => b.onclick = () => { state.facilities = state.facilities.filter(x => x.id !== b.dataset.fcrm); saveState(); renderFacility(); });
+    }
+
+    // -----------------------------
+    // Cart ops
+    // -----------------------------
+    function addToCart(item, qty=1) {
+      if (!state.guest) { toast('Complete profile first'); return; }
+      const existing = state.cart.find(c => c.id === item.id);
+      if (existing) existing.qty += qty; else state.cart.push({ id:item.id, name:item.name, price:item.price, qty });
+      saveState(); renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder'); renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2'); updateBalanceSummary();
+    }
+    function changeCartQty(id, delta) {
+      const it = state.cart.find(c => c.id === id); if (!it) return;
+      it.qty += delta; if (it.qty <= 0) state.cart = state.cart.filter(c => c.id !== id);
+      saveState(); renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder'); renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2'); updateBalanceSummary();
+    }
+    function removeFromCart(id) { state.cart = state.cart.filter(c => c.id !== id); saveState(); renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder'); renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2'); updateBalanceSummary(); }
+
+    function placeOrder() {
+      if (!state.cart.length) return;
+      const orderId = Math.random().toString(36).slice(2,8).toUpperCase();
+      const items = state.cart.map(c => ({...c}));
+      state.orders.push({ id:orderId, items, at: Date.now() });
+      items.forEach(ci => state.bill.lines.push({ kind:'charge', desc: ci.name, qty: ci.qty, unit: ci.price, total: ci.qty * ci.price, at: Date.now() }));
+      state.cart = [];
+      saveState(); renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder'); renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2'); renderBill(); updateBalanceSummary();
+      toast(`Order #${orderId} placed`);
+    }
+
+    function updateBalanceSummary() {
+      const bal = computeBill();
+      $('#balanceSummary').textContent = fmtMoney(bal.balance);
+    }
+
+    // -----------------------------
+    // Events
+    // -----------------------------
+    window.addEventListener('hashchange', ()=> setActiveTab(location.hash.slice(1)||'home'));
+
+    $$("[data-tab]").forEach(b => b.addEventListener('click', ()=> setActiveTab(b.dataset.tab)));
+    $$("[data-goto]").forEach(el => el.addEventListener('click', ()=> setActiveTab(el.dataset.goto)));
+
+    $('#toggle-theme')?.addEventListener('click', ()=> {
+      document.documentElement.classList.toggle('dark');
+      $('#theme-icon').innerHTML = document.documentElement.classList.contains('dark')
+        ? '<circle cx="12" cy="12" r="5" fill="currentColor" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.7" fill="none" />'
+        : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    });
+
+    // Sign-in button
+    $('#btnGoogle')?.addEventListener('click', ()=>{
+      state.auth = true;
+      if (!state.guest) state.guest = { name: 'Guest', room: '', email: '', phone: '', code: '' };
+      saveState(); renderAll(); setActiveTab('profile');
+      toast('Signed in with Google');
+    });
+
+    // Sign out
+    $('#signOut')?.addEventListener('click', ()=>{
+      state = structuredClone(initialState); saveState();
+      document.documentElement.classList.remove('dark');
+      renderAll();
+    });
+
+    // Profile form
+    $('#profileForm')?.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      const guest = {
+        name: fd.get('name')?.toString().trim(),
+        room: fd.get('room')?.toString().trim() || '',
+        email: fd.get('email')?.toString().trim() || '',
+        phone: fd.get('phone')?.toString().trim() || '',
+        code: fd.get('code')?.toString().trim() || ''
+      };
+      if (!guest.name) { toast('Please enter your name'); return; }
+      state.guest = guest; saveState(); renderAll(); setActiveTab('home');
+      toast('Profile saved');
+    });
+
+    // Cart actions
+    $('#placeOrder')?.addEventListener('click', placeOrder);
+    $('#placeOrder2')?.addEventListener('click', placeOrder);
+    $('#clearCart')?.addEventListener('click', ()=> { state.cart = []; saveState(); renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder'); renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2'); });
+    $('#clearCart2')?.addEventListener('click', ()=> { state.cart = []; saveState(); renderCart('#cartList', '#cartSubtotal', '#cartTax', '#cartTotal', '#placeOrder'); renderCart('#cartList2', '#cartSubtotal2', '#cartTax2', '#cartTotal2', '#placeOrder2'); });
+
+    // Services form
+    $('#serviceForm')?.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if (!state.guest?.name) { toast('Complete profile first'); return; }
+      const fd = new FormData(e.currentTarget);
+      const req = {
+        id: Math.random().toString( 
+
+      </script>
+    </body>

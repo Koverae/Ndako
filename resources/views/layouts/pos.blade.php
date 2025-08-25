@@ -71,6 +71,7 @@
 
     @livewire('wire-elements-modal')
     <!-- Custom JS -->
+    <script src="{{ asset('assets/js/pos.js?'.time())}}" data-navigate-track></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @stack('scripts') <!-- This is where scripts pushed with @push('scripts') will be loaded -->
