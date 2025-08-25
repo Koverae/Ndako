@@ -1,22 +1,22 @@
-@section('title', $pos->name)
-@section('styles')
+<?php $__env->startSection('title', $pos->name); ?>
+<?php $__env->startSection('styles'); ?>
 <style>
 
 
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
 <main
   class="relative main"
-  x-data="posRoot(@entangle('isLocked'))"
-  {{-- :inert="isLocked" --}}
+  x-data="posRoot(<?php if ((object) ('isLocked') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('isLocked'->value()); ?>')<?php echo e('isLocked'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('isLocked'); ?>')<?php endif; ?>)"
+  
 >
   <!-- Lock Screen -->
   <div
     x-show="isLocked"
     x-transition.opacity
     style="z-index: 99999;"
-    class="fixed inset-0 flex items-center {{ $isLocked ? '' : 'd-none' }} justify-center bg-opacity-75 d-print-none bg-body-secondary backdrop-blur animate-fade-in"
+    class="fixed inset-0 flex items-center <?php echo e($isLocked ? '' : 'd-none'); ?> justify-center bg-opacity-75 d-print-none bg-body-secondary backdrop-blur animate-fade-in"
     role="dialog" aria-modal="true" aria-labelledby="lockscreen-time"
   >
     <div class="relative flex flex-col items-center justify-center w-full h-full bg-white">
@@ -40,7 +40,7 @@
         <!-- Logo (Right) -->
         <div>
           <img
-            src="{{ asset('assets/images/logo/ndako.png') }}"
+            src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>"
             alt="Ndako Logo"
             style="height: 60px;"
             loading="lazy" decoding="async" fetchpriority="low"
@@ -51,16 +51,17 @@
       <!-- Full screen center card: Continue Selling -->
       <div class="flex-grow d-flex justify-content-center align-items-center w-100">
         <button
-          wire:click="{{ (session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'continueSelling' : 'openRegister' }}"
+          wire:click="<?php echo e((session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'continueSelling' : 'openRegister'); ?>"
           class="gap-2 p-5 bg-white cursor-pointer text-dark fw-semibold fs-2 border-1 bg-opacity-90 align-items-center animate-fade-up"
           style="transition: box-shadow 0.2s; height: 200px; border-radius: 10px;"
         >
           <i class="fas fa-shopping-basket" style="font-size: 45px;" aria-hidden="true"></i>
           <div>
-            @php
+            <?php
               $label = (session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'Continue Selling' : 'Open Register';
-            @endphp
-            {{ $label }}
+            ?>
+            <?php echo e($label); ?>
+
           </div>
         </button>
       </div>
@@ -71,7 +72,8 @@
           wire:click="goToBackend"
           class="px-5 py-2 shadow-sm btn btn-outline-dark rounded-pill fw-semibold fs-4"
         >
-          <i class="bi bi-gear me-2" aria-hidden="true"></i> {{ __('Backend') }}
+          <i class="bi bi-gear me-2" aria-hidden="true"></i> <?php echo e(__('Backend')); ?>
+
         </button>
       </div>
     </div>
@@ -88,8 +90,8 @@
 
       <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 m-0">
         <a href="" aria-label="Home">
-          <img src="{{ asset('assets/images/logo/ndako.png') }}" alt="Ndako Logo" class="navbar-brand-image normal" loading="lazy" decoding="async">
-          <img src="{{ asset('assets/images/logo/ndako-white.png') }}" alt="Ndako Logo" class="navbar-brand-image dark" loading="lazy" decoding="async">
+          <img src="<?php echo e(asset('assets/images/logo/ndako.png')); ?>" alt="Ndako Logo" class="navbar-brand-image normal" loading="lazy" decoding="async">
+          <img src="<?php echo e(asset('assets/images/logo/ndako-white.png')); ?>" alt="Ndako Logo" class="navbar-brand-image dark" loading="lazy" decoding="async">
         </a>
       </h1>
 
@@ -103,7 +105,7 @@
 
           <div class="nav-item dropdown">
             <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
-              <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
+              <span class="avatar avatar-sm" style="background-image: url(<?php echo e(Storage::url('avatars/' . auth()->user()->avatar)); ?>)"></span>
             </a>
             <div class="p-0 dropdown-menu dark-menu pos-burger-menu-items dropdown-menu-end dropdown-menu-arrow">
               <div class="p-2 pb-3 mb-2 border-bottom">
@@ -113,19 +115,23 @@
               </div>
               <div class="p-2 rounded menu-items">
                 <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 toggle-theme">
-                  <span class="theme-label">{{ __('Switch to Dark Mode') }}</span>
+                  <span class="theme-label"><?php echo e(__('Switch to Dark Mode')); ?></span>
                 </span>
                 <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                  {{ __('Cash In/Out') }}
+                  <?php echo e(__('Cash In/Out')); ?>
+
                 </span>
                 <span wire:click="goToBackend" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                  {{ __('Backend') }}
+                  <?php echo e(__('Backend')); ?>
+
                 </span>
                 <span @click="isLocked=true" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                  {{ __('Lock Screen') }}
+                  <?php echo e(__('Lock Screen')); ?>
+
                 </span>
                 <span wire:click="closeRegister" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
-                  {{ __('Close Register') }}
+                  <?php echo e(__('Close Register')); ?>
+
                 </span>
               </div>
             </div>
@@ -138,30 +144,31 @@
           <ul class="navbar-nav">
             <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
               <li class="cursor-pointer nav-item" data-turbolinks>
-                <a class="nav-link kover-navlink {{ $interface == 'tables' ? 'selected' : '' }} dark:text-gray-200"
+                <a class="nav-link kover-navlink <?php echo e($interface == 'tables' ? 'selected' : ''); ?> dark:text-gray-200"
                    wire:click="switchInterface('tables')" style="margin-right: 5px;">
-                  <span class="nav-link-title">{{ __('Tables') }}</span>
+                  <span class="nav-link-title"><?php echo e(__('Tables')); ?></span>
                 </a>
               </li>
               <li class="cursor-pointer nav-item" data-turbolinks>
-                <a class="nav-link kover-navlink {{ $interface == 'register' ? 'selected' : '' }} dark:text-gray-200"
+                <a class="nav-link kover-navlink <?php echo e($interface == 'register' ? 'selected' : ''); ?> dark:text-gray-200"
                    wire:click="switchInterface('register')" style="margin-right: 5px;">
-                  <span class="nav-link-title">{{ __('Register') }}</span>
+                  <span class="nav-link-title"><?php echo e(__('Register')); ?></span>
                 </a>
               </li>
               <li class="cursor-pointer nav-item" data-turbolinks>
-                <a class="nav-link kover-navlink {{ $interface == 'orders' ? 'selected' : '' }} dark:text-gray-200"
+                <a class="nav-link kover-navlink <?php echo e($interface == 'orders' ? 'selected' : ''); ?> dark:text-gray-200"
                    wire:click="switchInterface('orders')" style="margin-right: 5px;">
-                  <span class="nav-link-title">{{ __('Orders') }}</span>
+                  <span class="nav-link-title"><?php echo e(__('Orders')); ?></span>
                 </a>
               </li>
-              @if($selectedTable)
+              <!--[if BLOCK]><![endif]--><?php if($selectedTable): ?>
                 <li class="nav-item" data-turbolinks>
                   <span class="text-white cursor-pointer badge rounded-pill bg-info fs-4 fw-bolder text-truncate dark:bg-blue-700">
-                    {{ $selectedTable->table_name ?? __('Direct Sale') }}
+                    <?php echo e($selectedTable->table_name ?? __('Direct Sale')); ?>
+
                   </span>
                 </li>
-              @endif
+              <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
             </div>
           </ul>
         </div>
@@ -170,51 +177,52 @@
   </nav>
 
   <!-- Register -->
-  <div class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none">
+  <div class="row <?php echo e($interface == 'register' ? '' : 'd-none'); ?> d-print-none">
     <!-- Product Section -->
-    @include('pos::partials.pos.products')
+    <?php echo $__env->make('pos::partials.pos.products', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <!-- Product Section -->
 
     <!-- Checkout Section -->
-    @include('pos::partials.pos.checkout')
+    <?php echo $__env->make('pos::partials.pos.checkout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <!--Checkout Section -->
 
     <!-- Mobile Checkout Switcher -->
-    @include('pos::partials.pos.mobile-checkout-switcher')
+    <?php echo $__env->make('pos::partials.pos.mobile-checkout-switcher', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <!-- Mobile Checkout Switcher -->
 
   </div>
   <!-- Register -->
 
   <!-- Payment -->
-  @include('pos::partials.pos.payment')
+  <?php echo $__env->make('pos::partials.pos.payment', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
   <!-- Payment -->
 
   <!-- Receipt (print) -->
-  @include('pos::partials.pos.receipt')
+  <?php echo $__env->make('pos::partials.pos.receipt', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
   <!-- Receipt -->
 
   <!-- Tables -->
-  <div class="table-container d-print-none bg-white {{ $interface == 'tables' ? '' : 'd-none' }} dark:bg-gray-800 h-screen-d">
+  <div class="table-container d-print-none bg-white <?php echo e($interface == 'tables' ? '' : 'd-none'); ?> dark:bg-gray-800 h-screen-d">
     <div class="gap-3 px-3 table-navbar d-flex flex-column gap-lg-1 d-print-none">
       <div class="gap-5 p-2 table-navbar-main d-flex flex-nowrap justify-content-between align-items-lg-start flex-grow-1">
         <div class="gap-1 table-navbar-left d-flex align-items-center order-0">
           <button wire:click="newOrder" class="new-order btn btn-primary fs-3 btn-lg lh-lg dark:bg-indigo-600">
-            <i class="bi bi-plus fs-3" aria-hidden="true"></i> <span class="d-none d-lg-flex">{{ __('New Order') }}</span>
+            <i class="bi bi-plus fs-3" aria-hidden="true"></i> <span class="d-none d-lg-flex"><?php echo e(__('New Order')); ?></span>
           </button>
         </div>
         <div id="actions" class="order-2 gap-2 d-inline-flex rounded-2 table-navbar-actions d-flex align-items-center justify-content-between order-lg-1">
           <div class="gap-3 d-flex align-items-center">
             <div class="table-navbar-buttons align-items-center">
-              @foreach ($floorPlanOptions as $plan)
+              <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <span
-                  wire:click="changeFloorPlan('{{ $plan->id }}')"
-                  class="w-auto gap-1 k_switch_view fs-3 d-lg-inline-block btn btn-secondary {{ $plan->id == $selectedPlanId ? 'active' : '' }} k-list dark:bg-gray-800 dark:text-gray-200"
+                  wire:click="changeFloorPlan('<?php echo e($plan->id); ?>')"
+                  class="w-auto gap-1 k_switch_view fs-3 d-lg-inline-block btn btn-secondary <?php echo e($plan->id == $selectedPlanId ? 'active' : ''); ?> k-list dark:bg-gray-800 dark:text-gray-200"
                   role="button"
                 >
-                  {{ $plan->name }}
+                  <?php echo e($plan->name); ?>
+
                 </span>
-              @endforeach
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
             </div>
           </div>
         </div>
@@ -225,39 +233,40 @@
     </div>
 
     <div class="p-5 overflow-y-auto table-section row h-100">
-      @foreach($floorPlanOptions->where('id', $selectedPlanId)->first()->tables as $table)
+      <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $floorPlanOptions->where('id', $selectedPlanId)->first()->tables; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $table): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <div class="floor col-md-3">
           <div class="p-0 rounded cursor-pointer floor-table flex-column justify-content-between position-absolute dark:bg-gray-700">
             <div
-              wire:click="selectTable('{{ $table->id }}')"
-              class="info {{ $selectedTable?->id == $table->id ? 'active' : '' }} w-100 h-100 overflow-hidden dark:text-gray-200"
+              wire:click="selectTable('<?php echo e($table->id); ?>')"
+              class="info <?php echo e($selectedTable?->id == $table->id ? 'active' : ''); ?> w-100 h-100 overflow-hidden dark:text-gray-200"
             >
               <div class="label top-50 start-50 fw-bolder position-absolute fs-3 translate-middle text-center">
-                {{ $table->table_name }}<br>
-                <small>{{ inverseSlug($table->status) }}</small>
+                <?php echo e($table->table_name); ?><br>
+                <small><?php echo e(inverseSlug($table->status)); ?></small>
               </div>
             </div>
-            @if($table->status == 'occupied')
+            <!--[if BLOCK]><![endif]--><?php if($table->status == 'occupied'): ?>
               <button
-                wire:click="releaseTable('{{ $table->id }}')"
+                wire:click="releaseTable('<?php echo e($table->id); ?>')"
                 class="bottom-0 m-1 btn btn-danger btn-sm position-absolute end-0 dark:bg-red-800 dark:border-red-800"
               >
-                {{ __('Release') }}
+                <?php echo e(__('Release')); ?>
+
               </button>
-            @endif
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
           </div>
         </div>
-      @endforeach
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
     </div>
   </div>
   <!-- Tables -->
 
   <!-- Orders -->
-  @include('pos::partials.pos.orders')
+  <?php echo $__env->make('pos::partials.pos.orders', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
   <!-- Orders -->
 </main>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 /* ============================================================================
    Root Alpine module: keeps lockscreen timer tidy & single-instanced
@@ -378,7 +387,7 @@ function calculatorComponent($wire) {
   (() => {
     const onKey = (e) => {
       if (e.key !== '/') return;
-      const isRegisterVisible = !document.querySelector('.row.d-print-none').classList.contains('d-none') && '{{ $interface }}' === 'register';
+      const isRegisterVisible = !document.querySelector('.row.d-print-none').classList.contains('d-none') && '<?php echo e($interface); ?>' === 'register';
       if (!isRegisterVisible) return;
       const tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
@@ -402,8 +411,8 @@ function calculatorComponent($wire) {
     localStorage.setItem('theme', mode);
     if (themeLabel) {
       themeLabel.textContent = mode === 'dark'
-        ? '{{ __('Switch to Light Mode') }}'
-        : '{{ __('Switch to Dark Mode') }}';
+        ? '<?php echo e(__('Switch to Light Mode')); ?>'
+        : '<?php echo e(__('Switch to Dark Mode')); ?>';
     }
   };
 
@@ -439,4 +448,5 @@ function calculatorComponent($wire) {
   })();
 
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/livewire/interface/home.blade.php ENDPATH**/ ?>

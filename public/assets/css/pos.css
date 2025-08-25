@@ -5,15 +5,17 @@
    ========================================================================== */
 @keyframes k-fade-in { from{opacity:0} to{opacity:1} }
 @keyframes k-fade-up { from{opacity:.4; transform:translateY(6px)} to{opacity:1; transform:none} }
+@keyframes bounce   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
 .animate-fade-in { animation:k-fade-in .18s ease }
 .animate-fade-up { animation:k-fade-up .22s ease }
+.animate-bounce  { animation:bounce 2s infinite }
 
 @media (prefers-reduced-motion:reduce){
-  .animate-fade-in, .animate-fade-up { animation:none !important }
+  .animate-fade-in, .animate-fade-up, .animate-bounce { animation:none !important }
 }
 
-/* Mobile browser safe viewport */
+/* Safe viewport height section helper */
 .h-screen-d { min-height:100dvh; height:100dvh }
 
 /* Print helpers */
@@ -24,7 +26,7 @@
    ========================================================================== */
 body{
   font-family:'Inter', Arial, sans-serif;
-  background-color:#f9fafb;
+  background:#f9fafb;
   color:#1f2937;
   font-size:14px;
   line-height:1.5;
@@ -35,14 +37,17 @@ a{ color:#045054; text-decoration:none; transition:color .2s }
 a:hover{ color:#033a3f }
 button,label{ cursor:pointer }
 
-/* Brand swap (toggled again in dark mode) */
+/* Brand swap (overridden in dark mode) */
 .navbar-brand-image.dark{ display:none }
+
+/* Nice gradient utility */
+.bg-gradient-indigo-purple{ background:linear-gradient(to right,#4f46e5,#6b21a8) }
 
 /* ==========================================================================
    2) Navbar
    ========================================================================== */
 .nav-item .nav-link{ padding:6px 12px 6px 6px; height:49px }
-.nav-item .nav-link.selected{ background-color:#E7E9ED }
+.nav-item .nav-link.selected{ background:#E7E9ED }
 .nav-item .nav-link .nav-link-title{ font-size:17px; font-weight:510 }
 
 /* ==========================================================================
@@ -68,9 +73,7 @@ button,label{ cursor:pointer }
    4) Category Buttons
    ========================================================================== */
 .category_section_buttons{ height:48px; margin:5px 0 12px }
-.section_buttons{
-  overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
-}
+.section_buttons{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none }
 .section_buttons::-webkit-scrollbar{ display:none }
 
 .category_button{
@@ -81,9 +84,7 @@ button,label{ cursor:pointer }
   transition:background-color .2s, color .2s, border-color .2s;
 }
 .category_button:hover,
-.category_button.selected{
-  background:#045054; color:#fff; border-color:#045054;
-}
+.category_button.selected{ background:#045054; color:#fff; border-color:#045054 }
 .category_button i{ font-size:18px }
 
 /* ==========================================================================
@@ -94,10 +95,10 @@ button,label{ cursor:pointer }
   max-height:500px; margin-bottom:16px; overflow-y:auto;
 }
 .product{
-  position:relative;
+  position:relative; cursor:pointer;
   background:#fff; border:1px solid #f9fafb; border-radius:6px;
   max-width:165px; box-shadow:0 2px 4px rgba(0,0,0,.1);
-  transition:transform .2s, border-color .2s; cursor:pointer;
+  transition:transform .2s, border-color .2s;
 }
 .product:hover{ transform:scale(1.03); border-color:#045054 }
 .product img{
@@ -153,9 +154,7 @@ button,label{ cursor:pointer }
    8) Buttons (Control / Calculator)
    ========================================================================== */
 .control_buttons,
-.calculator_buttons{
-  background:#d8dadd; border-top:1px solid #d8dadd; border-bottom:1px solid #d8dadd;
-}
+.calculator_buttons{ background:#d8dadd; border-block:1px solid #d8dadd }
 
 .control_buttons .btn,
 .control_buttons .k_price_list_button,
@@ -177,7 +176,7 @@ button,label{ cursor:pointer }
 .calculator_buttons #pay{
   background:#03565b; color:#fff; width:100%; height:auto;
 }
-.calculator_buttons #pay:hover{ background:#044145; color:#fff }
+.calculator_buttons #pay:hover{ background:#044145 }
 .calculator_buttons .k_price_list_button[style*="background-color: #F5D976"]{ background:#F5D976 !important }
 .calculator-divider{ background:#F5D976 }
 
@@ -238,21 +237,18 @@ button,label{ cursor:pointer }
    11) Tables (Floor Plan)
    ========================================================================== */
 .table-navbar{
-  font-size:18px; line-height:18px; background:#fff; width:auto;
+  font-size:18px; line-height:18px; background:#fff;
   min-height:38px; border-bottom:1px solid #dad8dd;
 }
 .table-navbar .table-navbar-main{
   font-size:17px; line-height:21px; height:66px; max-height:134px; margin:4px 8px 8px;
 }
 .table-navbar .table-navbar-main .table-navbar-left{ width:402px; min-width:200px }
-
-.table-navbar-actions{
-  font-size:15px; min-width:383px; border:1px solid #dad8dd;
-}
+.table-navbar-actions{ font-size:15px; min-width:383px; border:1px solid #dad8dd }
 
 .table-navbar-buttons .k_switch_view{
   width:35px; padding:12px; background:#fff; color:#000;
-  border:1px solid #dad8dd; margin:0 0 0 1px;
+  border:1px solid #dad8dd; margin-inline-start:1px;
 }
 .table-navbar-buttons .k_switch_view:hover,
 .table-navbar-buttons .k_switch_view.active{ background:#E6F2F3 }
@@ -274,8 +270,8 @@ button,label{ cursor:pointer }
    12) Dark Mode
    ========================================================================== */
 [data-theme="dark"]{
-  background-color:#1a202c; /* gray-900 */
-  color:#9ea8b6;            /* gray-200 */
+  background:#1a202c;            /* gray-900 */
+  color:#9ea8b6;                  /* gray-200 */
 }
 [data-theme="dark"] main{ background:#1B1D26 }         /* gray-800 */
 [data-theme="dark"] .bg-white{ background:#262A36 }     /* gray-800 */
@@ -349,23 +345,45 @@ button,label{ cursor:pointer }
 }
 #checkout-box .card{ display:flex; flex-direction:column; border-radius:16px }
 
+/* Section header */
 .co-section-head{
   display:flex; align-items:center; justify-content:space-between;
   padding:10px var(--pad); border-bottom:1px solid var(--divider);
 }
 .co-title{ margin:0; font-weight:800; letter-spacing:.015em; font-size:clamp(1.05rem,1.2vw,1.25rem) }
-.co-subtle{ color:var(--muted); font-size:.92rem }
+.co-subtle{ color:var(--muted); font-size:.92rem; display:flex }
 
+/* Toolbar & actions */
 .co-actions{
-  display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;
-  padding:10px var(--pad); border-bottom:1px solid var(--divider); background:var(--surface);
+  display:flex; align-items:center; flex-wrap:wrap; gap:.5rem;
+  padding:10px var(--pad); background:var(--surface); border-bottom:1px solid var(--divider);
 }
-.co-actions .btn{ border-radius:12px }
+.co-actions .btn{ border-radius:12px; padding:.65rem 1rem; font-weight:700; font-size:.85rem; gap:.4rem }
+.co-toolbar{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap }
+.btn-slim{ padding:.38rem .6rem; border-radius:10px; font-weight:600 }
+.btn-ghost{ background:#fff; border:1px solid var(--divider) }
+.dropdown-menu.co-menu .dropdown-item{ padding:.45rem .75rem; font-weight:600 }
+.dropdown-menu.co-menu .dropdown-item i{ width:1.1rem }
+.note-chip{ border:1px solid var(--divider); background:#fff; border-radius:999px; padding:.15rem .6rem; font-weight:700 }
+.note-chip:focus{ outline:2px solid rgba(0,0,0,.08) }
+.tip-group{ display:flex; flex-wrap:wrap; gap:.35rem }
+.tip-group .btn{ border-radius:10px }
 
+@media (max-width:480px){
+  .co-toolbar{
+    overflow:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;
+    scroll-snap-type:x proximity; gap:.35rem;
+    mask-image:linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  }
+  .co-toolbar > *{ scroll-snap-align:start }
+}
+
+/* Content blocks */
 .soft-panel{ background:var(--surface-2); border-top:1px solid var(--divider) }
 #customer-note .form-label{ font-weight:700 }
 #customer-note .form-control{ border-radius:12px }
 
+/* Cart list */
 .cart-scroll{
   padding:.75rem; display:flex; flex-direction:column; gap:.6rem;
   max-height:30%; overflow:auto;
@@ -380,18 +398,21 @@ button,label{ cursor:pointer }
 .orderline .meta{ color:var(--muted); font-size:.95rem }
 .orderline .line-total{ font-weight:800; font-size:clamp(1rem,1.2vw,1.08rem); white-space:nowrap }
 
+/* Sticky footer with totals */
 .checkout-footer{
   position:sticky; bottom:0; inset-inline:0; z-index:1;
   background:var(--surface); border-top:1px solid var(--divider);
   padding:12px var(--pad);
 }
-.co-totals{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap }
+.co-totals{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; flex-wrap:wrap }
 .co-amount{ font-weight:900; font-size:clamp(1.15rem,1.8vw,1.35rem) }
 .pay-cta{ min-width:180px; padding:.8rem 1.15rem; border-radius:14px; font-weight:800 }
 
 @media (max-width:576px){
   .co-actions .btn{ padding:.5rem .6rem }
-  .pay-cta{ width:100% }
+  .co-totals{ align-items:stretch }
+  .co-totals > div:last-child{ width:100%; display:flex; justify-content:flex-end; flex-wrap:wrap; gap:.5rem }
+  .pay-cta{ flex:1 1 auto; min-width:160px }
 }
 
 /* ==========================================================================
@@ -400,6 +421,7 @@ button,label{ cursor:pointer }
 #product-box{
   --px:14px; --gap:10px; --divider:rgba(0,0,0,.08); --muted:#6b7280;
   background:#fff; display:flex; flex-direction:column;
+  padding-bottom:3rem; overflow-y:auto;
 }
 .prod-toolbar{
   position:sticky; top:0; z-index:2; background:#fff;
@@ -407,6 +429,7 @@ button,label{ cursor:pointer }
   display:flex; flex-direction:column; gap:10px;
 }
 .prod-toolbar.stuck{ box-shadow:0 .35rem .8rem rgba(0,0,0,.05) }
+
 .prod-search{ position:relative }
 .prod-search .form-control{ height:44px; border-radius:12px; padding-left:40px; padding-right:38px }
 .prod-search .bi-search{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:1rem }
@@ -416,22 +439,25 @@ button,label{ cursor:pointer }
 }
 .prod-search .btn-clear:hover{ color:#6b7280 }
 
+/* Category pills scroller */
 .cat-scroll{
   display:flex; gap:8px; overflow:auto; padding:2px 2px 2px 0;
   -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;
 }
 .cat-pill{
-  white-space:nowrap; scroll-snap-align:start;
+  white-space:nowrap; scroll-snap-align:start; user-select:none;
   border:1px solid var(--divider); border-radius:999px; padding:.35rem .75rem;
   font-weight:700; font-size:.92rem; color:#374151; background:#fafafa;
-  transition:background .12s ease, border-color .12s ease, color .12s ease; user-select:none;
+  transition:background .12s ease, border-color .12s ease, color .12s ease;
 }
 .cat-pill:hover{ background:#f3f4f6 }
-.cat-pill.active{ background:#0d6efd10; border-color:#0d6efd40; color:#0d6efd }
+.cat-pill.active{ background:#338b9010; border-color:#338b9040; color:#338b90 }
 
+/* Product grid */
 .product-grid{ padding:12px var(--px) 16px }
 .product-grid .row{ row-gap:12px }
 
+/* Product card */
 .p-card{
   border:1px solid var(--divider); border-radius:14px; overflow:hidden; background:#fff;
   height:100%; display:flex; flex-direction:column;
@@ -444,7 +470,7 @@ button,label{ cursor:pointer }
 }
 .p-media img{ width:100%; height:100%; object-fit:cover }
 .p-badge{
-  position:absolute; top:10px; left:10px; background:#0d6efd; color:#fff;
+  position:absolute; top:10px; left:10px; background:#338b90; color:#fff;
   font-weight:800; font-size:.72rem; border-radius:999px; padding:.2rem .45rem; opacity:.92;
 }
 .p-info{ padding:10px; display:flex; gap:8px; justify-content:space-between; align-items:flex-start }
@@ -490,11 +516,11 @@ button,label{ cursor:pointer }
   transition:background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
 }
 #m-mobile-switcher .btn-tab:active{ transform:translateY(1px) }
-#m-mobile-switcher .btn-tab.active{ background:#0d6efd10; border-color:#0d6efd33; box-shadow:0 0 0 3px #0d6efd1c }
+#m-mobile-switcher .btn-tab.active{ background:#338b9010; border-color:#338b9033; box-shadow:0 0 0 3px #338b901c }
 #m-mobile-switcher .btn-tab .title{ font-size:1rem }
 #m-mobile-switcher .btn-tab .sub{ font-size:.85rem; color:#6b7280; font-weight:600 }
-#m-mobile-switcher .btn-pay{ background:#0d6efd; color:#fff; border-color:#0d6efd; box-shadow:none }
-#m-mobile-switcher .btn-pay.active{ box-shadow:0 0 0 3px #0d6efd26 }
+#m-mobile-switcher .btn-pay{ background:#338b90; color:#fff; border-color:#338b90; box-shadow:none }
+#m-mobile-switcher .btn-pay.active{ box-shadow:0 0 0 3px #338b9026 }
 #m-mobile-switcher .btn-pay[disabled]{ background:#a7b0bb; border-color:#a7b0bb; color:#fff; opacity:.85 }
 #m-mobile-switcher .icon{ font-size:1.25rem; opacity:.9 }
 
@@ -516,14 +542,4 @@ button,label{ cursor:pointer }
     padding-bottom:calc(var(--mobile-bar-h) + 8px) !important;
   }
   .m-mobile-switcher-spacer{ height:var(--mobile-bar-h) }
-}
-
-/* ==========================================================================
-   17) Extra Animations & Utilities
-   ========================================================================== */
-@keyframes bounce{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-.animate-bounce{ animation:bounce 2s infinite }
-
-.bg-gradient-indigo-purple{
-  background:linear-gradient(to right,#4f46e5,#6b21a8);
 }

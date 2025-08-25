@@ -1,18 +1,23 @@
 <?php
+declare(strict_types=1);
 
 namespace Modules\Pos\Livewire\Interface;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
+
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+use Livewire\Attributes\On;
+
 use Modules\Pos\Models\Pos\Pos;
 use Modules\Pos\Models\Product\Product;
 use Modules\Pos\Models\Product\ProductCategory;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
-use Livewire\Attributes\On;
 use Modules\ChannelManager\Models\Guest\Guest;
 use Modules\Pos\Models\Floor\FloorPlan;
 use Modules\Pos\Models\Floor\Table;
@@ -20,70 +25,158 @@ use Modules\Pos\Models\Order\PosOrder;
 use Modules\Pos\Models\Order\PosOrderDetail;
 use Modules\Pos\Models\Order\PosOrderPayment;
 use Modules\Pos\Models\Pos\PosSession;
-use Modules\RevenueManager\Models\Accounting\Journal;
 
+/**
+ * POS Front interface (Tables / Register / Orders / Payment)
+ *
+ * Key goals:
+ *  - Keep DB writes safe (tx + guards), reads lean (selects + eager)
+ *  - Keep session, cart, and DB state in sync
+ *  - Fail loudly to logs, fail softly to UI
+ */
 class Home extends Component
 {
-    public Pos $pos;
-    public string $interface = 'tables', $tab = 'pay', $calculatorMode = 'qty', $toPrint = 'receipt';
-    public ?int $selectedCategoryId = null, $selectedProductId = null, $selectedPlanId = null, $selectedCustomerId = null;
-    public Collection $productCategoryOptions;
-    public Collection $productOptions;
-    public Collection $orders;
-    public Collection $customers;
-    public ?PosOrder $order = null;
-    public ?Guest $guest = null;
+    // ---- Constants ---------------------------------------------------------
 
-    public $floorPlanOptions, $selectedTable = null;
-    public array $cart = [], $selectedService = [];
+    private const SESSION_CART_PREFIX   = 'pos_cart_';
+    private const SESSION_ID_PREFIX     = 'pos_session_id_';
+    private const TAX_RATE              = 0.16; // NOTE: consider making this hotel/company-configurable
+    private const ORDERS_PAGE_SIZE      = 50;
+
+    // ---- Public state (Livewire) ------------------------------------------
+
+    public Pos $pos;
+
+    public string $interface = 'tables';
+    public string $tab = 'pay';
+    public string $calculatorMode = 'qty';
+    public string $toPrint = 'receipt';
+
+    public ?int $selectedCategoryId = null;
+    public ?int $selectedProductId  = null;
+    public ?int $selectedPlanId     = null;
+    public ?int $selectedCustomerId = null;
+
+    /** @var Collection<int, ProductCategory> */
+    public Collection $productCategoryOptions;
+
+    /** @var Collection<int, Product> */
+    public Collection $productOptions;
+
+    /** @var Collection<int, PosOrder> */
+    public Collection $orders;
+
+    /** @var Collection<int, Guest> */
+    public Collection $customers;
+
+    public ?PosOrder $order = null;
+    public ?Guest    $guest = null;
+
+    /** @var Collection<int, FloorPlan>|null */
+    public $floorPlanOptions = null;
+
+    public ?Table $selectedTable = null;
+
+    /** Cart is keyed by productId */
+    public array $cart = [];
+
+    /** Current service selection (eat-in/take-away/in-room) */
+    public array $selectedService = [];
+
+    /** Service menu */
     public array $services = [
-        'eat-in' => ['key'=> 'eat-in', 'label' => 'Eat-In', 'icon' => 'fas fa-utensils'],
-        'take-away' => ['key'=> 'take-away', 'label' => 'Take-Away', 'icon' => 'bi bi-bag-fill'],
-        'in-room' => ['key'=> 'in-room', 'label' => 'In-Room Service', 'icon' => 'bi bi-door-closed-fill'],
+        'eat-in'     => ['key'=> 'eat-in',     'label' => 'Eat-In',         'icon' => 'fas fa-utensils'],
+        'take-away'  => ['key'=> 'take-away',  'label' => 'Take-Away',      'icon' => 'bi bi-bag-fill'],
+        'in-room'    => ['key'=> 'in-room',    'label' => 'In-Room Service','icon' => 'bi bi-door-closed-fill'],
     ];
 
-    public float $cartTotal = 0, $cartTax = 0;
-    public $calculatorInput = 0;
-    public string $searchQuery = '', $customerSearch = '';
-    public ?string $orderNote = '';
-    public string $orderStatusFilter = '', $paymentStatusFilter = '';
-    public bool $isLocked = false;
-    public $dateFilter, $searchOrderQuery = '';
+    /** Totals (computed) */
+    public float $cartTotal = 0.0;
+    public float $cartTax   = 0.0;
 
-    public function mount(Pos $pos)
+    public string $searchQuery = '';
+    public string $customerSearch = '';
+    public ?string $orderNote = '';
+
+    public string $orderStatusFilter = '';
+    public string $paymentStatusFilter = '';
+
+    public bool $isLocked = false;
+
+    public ?string $dateFilter = null;
+    public string $searchOrderQuery = '';
+
+    public bool $onHold = false;
+    public bool $rush   = false;
+
+    public ?float $serviceCharge = null;
+    public ?float $tipAmount     = null;
+
+    /** Calculator input (string to allow empty) */
+    public string $calculatorInput = '';
+
+    // ---- Lifecycle ---------------------------------------------------------
+
+    /**
+     * Mount component with initial state from session and DB.
+     */
+    public function mount(Pos $pos): void
     {
         $this->pos = $pos;
-        if(!session()->has("pos_session_id_{$this->pos->id}") || !$this->pos->active_session_id) {
+
+        // POS lock if no active session or session not in browser session bag
+        if (!session()->has($this->sessionIdKey()) || !$this->pos->active_session_id) {
             $this->isLocked = true;
         }
 
-        $sessionKey = "pos_cart_{$this->pos->id}";
-        $sessionData = session()->get($sessionKey, ['cart' => [], 'table_id' => null, 'active_order_id' => null]);
+        // Restore per-POS UI session
+        $sessionData = session()->get($this->cartSessionKey(), [
+            'cart' => [],
+            'table_id' => null,
+            'active_order_id' => null,
+        ]);
 
-        if (!is_array($sessionData) || !isset($sessionData['cart']) || !array_key_exists('table_id', $sessionData) || !array_key_exists('active_order_id', $sessionData)) {
-            $cart = is_array($sessionData) && !array_key_exists('cart', $sessionData) ? $sessionData : [];
-            $sessionData = ['cart' => $cart, 'table_id' => null, 'active_order_id' => null];
-            session()->put($sessionKey, $sessionData);
+        // Repair malformed session structures gracefully
+        if (!is_array($sessionData) ||
+            !array_key_exists('cart', $sessionData) ||
+            !array_key_exists('table_id', $sessionData) ||
+            !array_key_exists('active_order_id', $sessionData)) {
+            $sessionData = ['cart' => [], 'table_id' => null, 'active_order_id' => null];
+            session()->put($this->cartSessionKey(), $sessionData);
         }
 
-        $this->cart = $sessionData['cart'];
-        $this->selectedTable = $sessionData['table_id'] ? Table::find($sessionData['table_id']) : null;
-        $this->order = $sessionData['active_order_id'] ? PosOrder::find($sessionData['active_order_id']) : null;
+        $this->cart = (array) ($sessionData['cart'] ?? []);
+        $this->selectedTable = isset($sessionData['table_id'])
+            ? Table::query()
+                ->where('company_id', current_company()->id)
+                ->find($sessionData['table_id'])
+            : null;
+
+        $this->order = isset($sessionData['active_order_id'])
+            ? PosOrder::query()
+                ->with(['details.product'])
+                ->where('company_id', current_company()->id)
+                ->find($sessionData['active_order_id'])
+            : null;
 
         if ($this->order) {
-            $this->syncCartWithOrder();
+            $this->syncCartWithOrder(); // Ensures cart matches DB, avoids stale lines
         }
 
         $this->dateFilter = Carbon::today()->format('Y-m-d');
 
+        // Initial loads (lean selects + scopes)
         $this->loadFloors();
         $this->loadCategories();
         $this->loadProducts();
         $this->loadOrders();
         $this->loadCustomers();
+
         $this->recalculateTotals();
         $this->loadActiveOrder();
     }
+
+    // ---- UI state changes --------------------------------------------------
 
     public function changeTab(string $tab): void
     {
@@ -93,31 +186,37 @@ class Home extends Component
     public function changeInterface(string $interface): void
     {
         $this->interface = $interface;
+
         if ($interface === 'orders') {
             $this->loadOrders();
+        } elseif ($interface === 'tables') {
+            $this->loadActiveOrder();
         }
     }
 
-    public function changeFloorPlan($floorPlan): void
+    public function changeFloorPlan(?int $floorPlanId): void
     {
-        $this->selectedPlanId = $floorPlan;
+        $this->selectedPlanId = $floorPlanId;
     }
 
-    public function selectCategory($categoryId): void
+    public function selectCategory(?int $categoryId): void
     {
         $this->selectedCategoryId = $categoryId ?: null;
         $this->loadProducts();
     }
 
+    // ---- Notes -------------------------------------------------------------
 
-    // keep session + db in sync whenever the user types
+    /**
+     * Persist order note to session and DB (if an order is active).
+     */
     public function updatedOrderNote($val): void
     {
         session(["pos_order_note_{$this->pos->id}" => $val]);
 
         if ($this->order) {
-            PosOrder::whereKey($this->order?->id)->update(['note' => $val]);
-            $this->dispatch('kds-updated'); // lets KDS refresh quickly
+            PosOrder::whereKey($this->order->id)->update(['note' => (string) $val]);
+            $this->dispatch('kds-updated'); // e.g., to refresh KDS
         }
     }
 
@@ -127,39 +226,34 @@ class Home extends Component
         session()->flash('note_saved', __('Note saved'));
     }
 
-    // when you create/confirm an order, also persist the note:
-    protected function persistOrder(array $attrs): int
-    {
-        // ...$attrs you already set (totals, table, guest, etc.)
-        $attrs['note'] = $this->orderNote ?? '';
-        $order = PosOrder::create($attrs);
-        $this->order->id = $order->id;
+    // ---- Tables & Orders ---------------------------------------------------
 
-        return $order->id;
-    }
-
-    public function selectTable($tableId): void
+    /**
+     * Assign an order to a table; create order if needed.
+     */
+    public function selectTable(int $tableId): void
     {
-        $table = Table::find($tableId);
+        $table = Table::query()
+            ->where('company_id', current_company()->id)
+            ->find($tableId);
+
         if (!$table) {
-            LivewireAlert::title('Table not found!')
-                ->text('Selected table does not exist.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            $this->toastError('Table not found!', 'Selected table does not exist.');
             return;
         }
 
-        $this->selectedTable = $table;
-        $this->order = PosOrder::where('pos_id', $this->pos->id)
+        // Existing ongoing order for that table?
+        $this->order = PosOrder::query()
+            ->with(['details.product'])
             ->where('company_id', current_company()->id)
+            ->where('pos_id', $this->pos->id)
             ->where('table_id', $tableId)
             ->where('status', 'ongoing')
             ->first();
 
+        $this->selectedTable = $table;
         $this->selectServiceType('eat-in');
+
         if ($this->order) {
             $this->syncCartWithOrder();
             $this->selectedCustomerId = $this->order->customer_id;
@@ -171,77 +265,51 @@ class Home extends Component
         $this->interface = 'register';
         $this->saveCartToSession();
 
-        LivewireAlert::title('Table assigned!')
-            ->text("Order assigned to {$table->table_name}")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-
+        $this->toastSuccess('Table assigned!', "Order assigned to {$table->table_name}");
     }
 
-    public function selectProduct($productId): void
+    /**
+     * Select an order from the Orders list.
+     */
+    public function selectOrder(int $orderId): void
     {
-        if ($this->selectedProductId == $productId) {
-            $this->selectedProductId = null;
-            $this->calculatorInput = '';
+        $order = PosOrder::query()
+            ->with(['details.product'])
+            ->where('company_id', current_company()->id)
+            ->find($orderId);
+
+        if (!$order) {
+            $this->toastError('Order not found!', 'Selected order does not exist.');
             return;
         }
 
-        $this->calculatorInput = '';
-        $this->selectedProductId = $productId;
+        $this->order = $order;
+        $this->selectedTable = $order->table_id
+            ? Table::query()
+                ->where('company_id', current_company()->id)
+                ->find($order->table_id)
+            : null;
 
-        $item = $this->cart[$productId] ?? null;
-
-        if ($item) {
-            $this->calculatorInput = match ($this->calculatorMode) {
-                'qty' => $item['quantity'],
-                'price' => $item['unit_price'],
-                'discount' => $item['discount'],
-                default => '',
-            };
-
-        } else {
-            $this->calculatorInput = '';
-        }
-
-    }
-
-    public function selectOrder($orderId): void
-    {
-        $this->order = PosOrder::find($orderId);
-        if (!$this->order) {
-            LivewireAlert::title('Order not found!')
-                ->text('Selected order does not exist.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-            return;
-        }
-
-        $this->selectedTable = $this->order->table_id ? Table::find($this->order->table_id) : null;
-        $this->selectedCustomerId = $this->order->customer_id;
+        $this->selectedCustomerId = $order->customer_id;
         $this->syncCartWithOrder();
         $this->interface = 'register';
         $this->saveCartToSession();
 
-        LivewireAlert::title('Order selected!')
-            ->text('Order is now active.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+        $this->toastSuccess('Order selected!', 'Order is now active.');
     }
 
-    public function releaseTable($tableId): void
+    /**
+     * Release a table and clear active state if it was selected.
+     */
+    public function releaseTable(int $tableId): void
     {
-        $table = Table::find($tableId);
+        $table = Table::query()
+            ->where('company_id', current_company()->id)
+            ->find($tableId);
+
         if ($table && $table->status !== 'available') {
             $table->update(['status' => 'available']);
+
             if ($this->selectedTable?->id === $tableId) {
                 $this->selectedTable = null;
                 $this->order = null;
@@ -249,36 +317,63 @@ class Home extends Component
                 $this->recalculateTotals();
                 $this->saveCartToSession();
             }
-            LivewireAlert::title('Table released!')
-                ->text("Table {$table->table_name} is now available.")
-                ->success()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+
+            $this->toastSuccess('Table released!', "Table {$table->table_name} is now available.");
         }
     }
 
+    // ---- Cart --------------------------------------------------------------
+
+    /**
+     * Select or deselect a product for calculator editing.
+     */
+    public function selectProduct(int $productId): void
+    {
+        if ($this->selectedProductId === $productId) {
+            $this->selectedProductId = null;
+            $this->calculatorInput = '';
+            return;
+        }
+
+        $this->selectedProductId = $productId;
+        $item = $this->cart[$productId] ?? null;
+
+        if ($item) {
+            $this->calculatorInput = match ($this->calculatorMode) {
+                'qty'      => (string) $item['quantity'],
+                'price'    => (string) $item['unit_price'],
+                'discount' => (string) $item['discount'],
+                default    => '',
+            };
+        } else {
+            $this->calculatorInput = '';
+        }
+    }
+
+    /**
+     * Save cart snapshot to session.
+     */
     protected function saveCartToSession(): void
     {
-        session()->put("pos_cart_{$this->pos->id}", [
-            'cart' => $this->cart,
-            'table_id' => $this->selectedTable?->id,
+        session()->put($this->cartSessionKey(), [
+            'cart'            => $this->cart,
+            'table_id'        => $this->selectedTable?->id,
             'active_order_id' => $this->order?->id,
         ]);
     }
 
-    public function addToCart($productId): void
+    /**
+     * Add a product line to cart and persist to DB (create order if needed).
+     */
+    public function addToCart(int $productId): void
     {
-        $product = Product::find($productId);
+        $product = Product::query()
+            ->select(['id', 'product_name', 'product_price', 'product_category_id'])
+            ->where('company_id', current_company()->id)
+            ->find($productId);
+
         if (!$product) {
-            LivewireAlert::title('Product not found!')
-                ->text('Product selected does not exist')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            $this->toastError('Product not found!', 'Product selected does not exist.');
             return;
         }
 
@@ -286,183 +381,253 @@ class Home extends Component
             $this->createOrder();
         }
 
-        if (isset($this->cart[$productId])) {
-            $this->cart[$productId]['quantity']++;
-            PosOrderDetail::where('pos_order_id', $this->order->id)
-                ->where('product_id', $productId)
-                ->update([
-                    'quantity' => $this->cart[$productId]['quantity'],
-                    'sub_total' => $this->cart[$productId]['quantity'] * $this->cart[$productId]['unit_price'],
-                ]);
-        } else {
-            $this->cart[$productId] = [
-                'id' => $product->id,
-                'name' => $product->product_name,
-                'unit_price' => $product->product_price,
-                'quantity' => 1,
-                'discount' => 0
-            ];
-            PosOrderDetail::create([
-                'pos_order_id' => $this->order->id,
-                'company_id' => current_company()->id,
-                'product_id' => $product->id,
-                'quantity' => 1,
-                'unit_price' => $product->product_price,
-                'sub_total' => $product->product_price,
-                'product_discount_amount' => 0,
-                'kds_station' => $product->category->kds_station ?? 'kitchen',
-                'kds_status' => 'queued',
-            ]);
-        }
+        try {
+            DB::transaction(function () use ($product) {
+                if (isset($this->cart[$product->id])) {
+                    // Increment quantity
+                    $this->cart[$product->id]['quantity']++;
 
-        if ($this->selectedTable) {
-            $this->selectedTable->update(['status' => 'occupied']);
-        }
+                    PosOrderDetail::query()
+                        ->where('pos_order_id', $this->order->id)
+                        ->where('product_id', $product->id)
+                        ->update([
+                            'quantity'  => $this->cart[$product->id]['quantity'],
+                            'sub_total' => $this->cart[$product->id]['quantity'] * $this->cart[$product->id]['unit_price'],
+                        ]);
+                } else {
+                    // New line
+                    $this->cart[$product->id] = [
+                        'id'         => $product->id,
+                        'name'       => $product->product_name,
+                        'unit_price' => (float) $product->product_price,
+                        'quantity'   => 1,
+                        'discount'   => 0, // NOTE: interpret as % or amount consistently later
+                    ];
 
-        $this->recalculateTotals();
-        $this->order->update([
-            'total_amount' => $this->cartTotal,
-            'due_amount' => $this->cartTotal,
-        ]);
-        $this->saveCartToSession();
-
-        LivewireAlert::title('Product added!')
-            ->text('Product added to cart')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-
-        $this->dispatch('play-sound', type: 'beep');
-        Log::info('played beep sound');
-    }
-
-    public function removeFromCart($productId): void
-    {
-        if (isset($this->cart[$productId])) {
-            unset($this->cart[$productId]);
-            PosOrderDetail::where('pos_order_id', $this->order->id)
-                ->where('product_id', $productId)
-                ->delete();
-            if(empty($this->cart)) {
-                $this->order->delete();
-                $this->order = null;
-            } else {
-                $this->recalculateTotals();
-                $this->order->update([
-                    'total_amount' => $this->cartTotal,
-                    'due_amount' => $this->cartTotal,
-                ]);
-            }
-            $this->saveCartToSession();
-            LivewireAlert::title('Product removed!')
-                ->text('Product removed from cart')
-                ->success()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-        }
-    }
-
-    public function updateQuantity($productId, $quantity): void
-    {
-        if (isset($this->cart[$productId])) {
-            $quantity = max(1, (int) $quantity);
-            $product = Product::find($productId);
-
-            $this->cart[$productId]['quantity'] = $quantity;
-            PosOrderDetail::where('pos_order_id', $this->order->id)
-                ->where('product_id', $productId)
-                ->update([
-                    'quantity' => $quantity
-                ]);
-            $this->recalculateTotals();
-            $this->order->update([
-                'total_amount' => $this->cartTotal,
-                'due_amount' => $this->cartTotal,
-            ]);
-            $this->saveCartToSession();
-        }
-    }
-
-    public function cancelOrder($orderId){
-        // Ensure the order is loaded
-        if (!$this->order || $this->order->id != $orderId) {
-            $this->order = PosOrder::find($orderId);
-        }
-
-        if ($this->order) {
-            // Restore inventory for each order detail before deleting
-            foreach ($this->order->details as $detail) {
-                $product = $detail->product;
-                if ($product) {
-                    $product->increment('product_quantity', $detail->quantity);
+                    PosOrderDetail::create([
+                        'pos_order_id'            => $this->order->id,
+                        'company_id'              => current_company()->id,
+                        'product_id'              => $product->id,
+                        'quantity'                => 1,
+                        'unit_price'              => (float) $product->product_price,
+                        'sub_total'               => (float) $product->product_price,
+                        'product_discount_amount' => 0,
+                        'kds_station'             => optional($product->category)->kds_station ?? 'kitchen',
+                        'kds_status'              => 'queued',
+                    ]);
                 }
-            }
-            // Delete all related order details
-            $this->order->details()->delete();
-            // Delete the order itself
-            $this->order->delete();
-            $this->order = null;
+
+                if ($this->selectedTable) {
+                    $this->selectedTable->update(['status' => 'occupied']);
+                }
+
+                $this->recalculateTotals();
+                $this->persistOrderTotals();
+                $this->saveCartToSession();
+            });
+        } catch (Throwable $e) {
+            Log::error('POS addToCart failed', [
+                'pos_id' => $this->pos->id,
+                'company_id' => current_company()->id,
+                'product_id' => $productId,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not add product', 'Please try again.');
+            return;
+        }
+
+        $this->toastSuccess('Product added!', 'Product added to cart');
+        $this->dispatch('play-sound', type: 'beep');
+    }
+
+    /**
+     * Remove a product line from cart and DB.
+     */
+    public function removeFromCart(int $productId): void
+    {
+        if (!isset($this->cart[$productId]) || !$this->order) {
+            return;
+        }
+
+        try {
+            DB::transaction(function () use ($productId) {
+                unset($this->cart[$productId]);
+
+                PosOrderDetail::query()
+                    ->where('pos_order_id', $this->order->id)
+                    ->where('product_id', $productId)
+                    ->delete();
+
+                if (empty($this->cart)) {
+                    // No lines left: remove the order
+                    $this->order->delete();
+                    $this->order = null;
+                } else {
+                    $this->recalculateTotals();
+                    $this->persistOrderTotals();
+                }
+
+                $this->saveCartToSession();
+            });
+        } catch (Throwable $e) {
+            Log::error('POS removeFromCart failed', [
+                'pos_id' => $this->pos->id,
+                'company_id' => current_company()->id,
+                'product_id' => $productId,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not remove product', 'Please try again.');
+            return;
+        }
+
+        $this->toastSuccess('Product removed!', 'Product removed from cart');
+    }
+
+    /**
+     * Update quantity (min 1) and persist.
+     */
+    public function updateQuantity(int $productId, $quantity): void
+    {
+        if (!$this->order || !isset($this->cart[$productId])) {
+            return;
+        }
+
+        $qty = max(1, (int) $quantity);
+
+        try {
+            DB::transaction(function () use ($productId, $qty) {
+                $this->cart[$productId]['quantity'] = $qty;
+
+                PosOrderDetail::query()
+                    ->where('pos_order_id', $this->order->id)
+                    ->where('product_id', $productId)
+                    ->update(['quantity' => $qty, 'sub_total' => $qty * $this->cart[$productId]['unit_price']]);
+
+                $this->recalculateTotals();
+                $this->persistOrderTotals();
+                $this->saveCartToSession();
+            });
+        } catch (Throwable $e) {
+            Log::error('POS updateQuantity failed', [
+                'pos_id' => $this->pos->id,
+                'company_id' => current_company()->id,
+                'product_id' => $productId,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not update quantity', 'Please try again.');
+        }
+    }
+
+    /**
+     * Cancel & delete an order (restores inventory).
+     */
+    public function cancelOrder(int $orderId): void
+    {
+        if (!$this->order || $this->order->id !== $orderId) {
+            $this->order = PosOrder::query()
+                ->with('details.product')
+                ->where('company_id', current_company()->id)
+                ->find($orderId);
+        }
+
+        if (!$this->order) {
+            $this->toastError('Order not found!', 'Selected order does not exist.');
+            return;
+        }
+
+        try {
+            DB::transaction(function () {
+                // Restore inventory per line
+                foreach ($this->order->details as $detail) {
+                    if ($detail->product) {
+                        $detail->product->increment('product_quantity', $detail->quantity);
+                    }
+                }
+
+                $this->order->details()->delete();
+                $this->order->delete();
+
+                $this->order = null;
+            });
+        } catch (Throwable $e) {
+            Log::error('POS cancelOrder failed', [
+                'pos_id' => $this->pos->id,
+                'order_id' => $orderId,
+                'company_id' => current_company()->id,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not delete order', 'Please try again.');
+            return;
         }
 
         $this->resetCart();
         $this->interface = 'tables';
-
-        LivewireAlert::title('Order Delete!')
-            ->text('The order has been deleted')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-
+        $this->toastSuccess('Order deleted!', 'The order has been deleted.');
     }
 
+    /**
+     * Reset the whole cart & UI selection.
+     */
     public function resetCart(): void
     {
         $this->cart = [];
         $this->selectedTable = null;
         $this->selectedCustomerId = null;
         $this->guest = null;
+
         $this->recalculateTotals();
         $this->saveCartToSession();
-        LivewireAlert::title('Cart reset!')
-            ->text('Cart has been cleared.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+
+        $this->toastSuccess('Cart reset!', 'Cart has been cleared.');
     }
+
+    // ---- Totals ------------------------------------------------------------
 
     public function getTotalProperty(): float
     {
-        return collect($this->cart)->sum(fn($item) => $item['unit_price'] * $item['quantity']);
+        // NOTE: Currently ignores 'discount' in cart. Align with DB discount semantics before changing.
+        return collect($this->cart)
+            ->sum(fn ($item) => (float) $item['unit_price'] * (int) $item['quantity']);
     }
 
     public function getTaxProperty(): float
     {
-        return $this->cartTotal * 0.16;
+        return $this->cartTotal * self::TAX_RATE;
     }
 
     protected function recalculateTotals(): void
     {
         $this->cartTotal = $this->getTotalProperty();
-        $this->cartTax = $this->getTaxProperty();
+        $this->cartTax   = $this->getTaxProperty();
     }
+
+    protected function persistOrderTotals(): void
+    {
+        if ($this->order) {
+            $this->order->update([
+                'total_amount' => $this->cartTotal,
+                'due_amount'   => $this->cartTotal, // NOTE: adjust if you later subtract paid/discounts/tips here
+            ]);
+        }
+    }
+
+    // ---- Loads (lean + scoped) --------------------------------------------
 
     protected function loadFloors(): void
     {
-        $this->floorPlanOptions = FloorPlan::isCompany(current_company()->id)->get();
+        $this->floorPlanOptions = FloorPlan::isCompany(current_company()->id)
+            ->select(['id', 'name'])
+            ->get();
+
         $this->selectedPlanId = $this->floorPlanOptions->first()->id ?? null;
     }
 
     protected function loadCategories(): void
     {
-        $this->productCategoryOptions = ProductCategory::isCompany(current_company()->id)->get();
+        $this->productCategoryOptions = ProductCategory::isCompany(current_company()->id)
+            ->select(['id', 'category_name'])
+            ->orderBy('category_name')
+            ->get();
     }
 
     public function updatedSearchQuery($value): void
@@ -472,301 +637,315 @@ class Home extends Component
 
     protected function loadProducts(): void
     {
-        $query = Product::isCompany(current_company()->id);
+        $query = Product::query()
+            ->select(['id', 'product_name', 'product_price', 'product_category_id'])
+            ->where('company_id', current_company()->id);
+
         if ($this->selectedCategoryId) {
             $query->where('product_category_id', $this->selectedCategoryId);
         }
-        if ($this->searchQuery) {
-            $query->where('product_name', 'like', "%{$this->searchQuery}%");
+
+        if ($this->searchQuery !== '') {
+            $q = trim($this->searchQuery);
+            $query->where('product_name', 'like', "%{$q}%");
         }
-        $this->productOptions = $query->get();
+
+        $this->productOptions = $query->orderBy('product_name')->get();
     }
 
     public function loadOrders(): void
     {
-        $query = PosOrder::where('pos_id', $this->pos->id)
+        $query = PosOrder::query()
+            ->with([
+                'table:id,table_name',
+                'guest:id,name',
+            ])
+            ->where('pos_id', $this->pos->id)
             ->where('company_id', current_company()->id);
+
         if ($this->orderStatusFilter) {
             $query->where('status', $this->orderStatusFilter);
-        }
-
-        if ($this->dateFilter) {
-            $date = Carbon::parse($this->dateFilter);
-            $query->whereDate('date', $date);
-        }
-
-        if ($this->searchOrderQuery) {
-            $query->where(function ($q) {
-            $q->where('receipt_number', 'like', "%{$this->searchOrderQuery}%")
-              ->orWhereHas('table', function ($t) {
-                  $t->where('table_name', 'like', "%{$this->searchOrderQuery}%");
-              })
-              ->orWhereHas('guest', function ($c) {
-                  $c->where('name', 'like', "%{$this->searchOrderQuery}%");
-              });
-            });
         }
 
         if ($this->paymentStatusFilter) {
             $query->where('payment_status', $this->paymentStatusFilter);
         }
-        $this->orders = $query->latest()->take(50)->get();
+
+        if ($this->dateFilter) {
+            $date = Carbon::parse($this->dateFilter)->toDateString();
+            $query->whereDate('date', $date);
+        }
+
+        if ($this->searchOrderQuery) {
+            $needle = trim($this->searchOrderQuery);
+            $query->where(function ($q) use ($needle) {
+                $q->where('receipt_number', 'like', "%{$needle}%")
+                  ->orWhereHas('table', fn ($t) => $t->where('table_name', 'like', "%{$needle}%"))
+                  ->orWhereHas('guest', fn ($g) => $g->where('name', 'like', "%{$needle}%"));
+            });
+        }
+
+        $this->orders = $query->latest('id')->take(self::ORDERS_PAGE_SIZE)->get();
     }
 
-    public function updatedPaymentStatusFilter($value){
-        $this->loadOrders();
-    }
-
-    public function updatedOrderStatusFilter($value){
-        $this->loadOrders();
-    }
-
-    public function updatedSearchOrderQuery($value){
-        $this->loadOrders();
-    }
-
-    public function updatedDateFilter($value){
-        $this->loadOrders();
-    }
+    public function updatedPaymentStatusFilter($value): void { $this->loadOrders(); }
+    public function updatedOrderStatusFilter($value): void   { $this->loadOrders(); }
+    public function updatedSearchOrderQuery($value): void    { $this->loadOrders(); }
+    public function updatedDateFilter($value): void          { $this->loadOrders(); }
 
     protected function loadCustomers(): void
     {
-        $this->customers = Guest::where('company_id', current_company()->id)
-            ->when($this->customerSearch, fn($query) => $query->where('name', 'like', "%{$this->customerSearch}%"))
+        $this->customers = Guest::query()
+            ->select(['id', 'name', 'phone'])
+            ->where('company_id', current_company()->id)
+            ->when($this->customerSearch !== '', fn ($q) =>
+                $q->where('name', 'like', '%' . trim($this->customerSearch) . '%')
+            )
+            ->orderBy('name')
             ->take(10)
             ->get();
     }
 
-    public function createCustomer(): void
-    {
-        $this->dispatch('alert', type: 'success', message: 'Customer created.');
-    }
-
-    public function refundOrder($orderId): void
-    {
-        $order = PosOrder::find($orderId);
-        if (!$order) {
-            LivewireAlert::title('Order not found!')
-                ->text('Order does not exist.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-            return;
-        }
-        if ($order->status === 'refunded') {
-            LivewireAlert::title('Already refunded!')
-                ->text('Order has already been refunded.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
-            return;
-        }
-        $order->update(['status' => 'refunded']);
-        LivewireAlert::title('Order refunded!')
-            ->text('Order has been refunded successfully.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-    }
+    // ---- Calculator --------------------------------------------------------
 
     public function selectCalculatorMode(string $mode): void
     {
         $this->calculatorMode = $mode;
 
         if ($this->selectedProductId && isset($this->cart[$this->selectedProductId])) {
-            switch ($mode) {
-                case 'qty':
-                    $this->calculatorInput = $this->cart[$this->selectedProductId]['quantity'];
-                    break;
-                case 'price':
-                    $this->calculatorInput = $this->cart[$this->selectedProductId]['unit_price'];
-                    break;
-                case 'discount':
-                    $this->calculatorInput = $this->cart[$this->selectedProductId]['discount'];
-                    break;
-            }
+            $this->calculatorInput = match ($mode) {
+                'qty'      => (string) $this->cart[$this->selectedProductId]['quantity'],
+                'price'    => (string) $this->cart[$this->selectedProductId]['unit_price'],
+                'discount' => (string) $this->cart[$this->selectedProductId]['discount'],
+                default    => '',
+            };
         } else {
             $this->calculatorInput = '';
         }
     }
 
-    public function applyCalculatorInput()
+    /**
+     * Apply calculator input to the selected cart line.
+     */
+    public function applyCalculatorInput(): void
     {
-        if (!$this->selectedProductId || !isset($this->cart[$this->selectedProductId])) {
-            LivewireAlert::title('No product selected!')
-                ->text('Please select a product.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+        $pid = $this->selectedProductId;
+
+        if (!$pid || !isset($this->cart[$pid]) || !$this->order) {
+            $this->toastError('No product selected!', 'Please select a product.');
             return;
         }
 
-        $value = $this->calculatorInput;
-        if (!is_numeric($value) && $value !== '') {
-            LivewireAlert::title('Invalid input!')
-                ->text('The value entered is invalid.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+        $raw = $this->calculatorInput;
+
+        if ($raw !== '' && !is_numeric($raw)) {
+            $this->toastError('Invalid input!', 'The value entered is invalid.');
             return;
         }
 
-        switch ($this->calculatorMode) {
-            case 'qty':
-                $quantity = (int) $value;
-                if ($quantity < 1) {
-                    $this->removeFromCart($this->selectedProductId);
-                    $this->selectedProductId = null;
-                    $this->calculatorInput = '';
-                } else {
-                    $product = Product::find($this->selectedProductId);
-                    $this->cart[$this->selectedProductId]['quantity'] = $quantity;
-                    $price = $this->cart[$this->selectedProductId]['unit_price'];
-                    PosOrderDetail::where('pos_order_id', $this->order->id)
-                        ->where('product_id', $this->selectedProductId)
-                        ->update([
-                            'quantity' => $quantity,
-                            'sub_total' => $quantity * $price,
-                        ]);
-                }
-                break;
-            case 'price':
-                $price = max(0, (float) $value);
-                $this->cart[$this->selectedProductId]['unit_price'] = $price;
-                $quantity = $this->cart[$this->selectedProductId]['quantity'];
-                PosOrderDetail::where('pos_order_id', $this->order->id)
-                    ->where('product_id', $this->selectedProductId)
-                    ->update([
-                        'unit_price' => $price,
-                        'sub_total' => $quantity * $price,
-                    ]);
-                break;
-            case 'discount':
-                $discount = max(0, (float) $value);
-                $maxDiscount = Auth::user()->hasPermissionTo('apply_high_discount') ? 100 : 50;
-                if ($discount > $maxDiscount) {
-                    LivewireAlert::title('Discount limit exceeded!')
-                        ->text("Discount cannot exceed {$maxDiscount}%.")
-                        ->error()
-                        ->position('top-end')
-                        ->timer(4000)
-                        ->toast()
-                        ->show();
-                    return;
-                }
-                $this->cart[$this->selectedProductId]['discount'] = $discount;
-                PosOrderDetail::where('pos_order_id', $this->order->id)
-                    ->where('product_id', $this->selectedProductId)
-                    ->update(['product_discount_amount' => $discount]);
-                break;
-        }
+        try {
+            DB::transaction(function () use ($pid, $raw) {
+                switch ($this->calculatorMode) {
+                    case 'qty':
+                        $qty = (int) $raw;
+                        if ($qty < 1) {
+                            $this->removeFromCart($pid);
+                            $this->selectedProductId = null;
+                            $this->calculatorInput = '';
+                            return;
+                        }
 
-        $this->recalculateTotals();
-        $this->order->update([
-            'total_amount' => $this->cartTotal,
-            'due_amount' => $this->cartTotal,
-        ]);
-        $this->saveCartToSession();
+                        $this->cart[$pid]['quantity'] = $qty;
+
+                        PosOrderDetail::query()
+                            ->where('pos_order_id', $this->order->id)
+                            ->where('product_id', $pid)
+                            ->update([
+                                'quantity'  => $qty,
+                                'sub_total' => $qty * $this->cart[$pid]['unit_price'],
+                            ]);
+                        break;
+
+                    case 'price':
+                        $price = max(0, (float) $raw);
+                        $this->cart[$pid]['unit_price'] = $price;
+
+                        $qty = (int) $this->cart[$pid]['quantity'];
+
+                        PosOrderDetail::query()
+                            ->where('pos_order_id', $this->order->id)
+                            ->where('product_id', $pid)
+                            ->update([
+                                'unit_price' => $price,
+                                'sub_total'  => $qty * $price,
+                            ]);
+                        break;
+
+                    case 'discount':
+                        $discount = max(0, (float) $raw);
+                        $maxDiscount = Auth::user()?->hasPermissionTo('apply_high_discount') ? 100 : 50;
+                        if ($discount > $maxDiscount) {
+                            $this->toastError('Discount limit exceeded!', "Discount cannot exceed {$maxDiscount}%.");
+                            return;
+                        }
+                        $this->cart[$pid]['discount'] = $discount;
+
+                        // NOTE: DB column is "product_discount_amount" – clarify if % or absolute; here we mirror as-is.
+                        PosOrderDetail::query()
+                            ->where('pos_order_id', $this->order->id)
+                            ->where('product_id', $pid)
+                            ->update(['product_discount_amount' => $discount]);
+                        break;
+                }
+
+                $this->recalculateTotals();
+                $this->persistOrderTotals();
+                $this->saveCartToSession();
+            });
+        } catch (Throwable $e) {
+            Log::error('POS applyCalculatorInput failed', [
+                'pos_id' => $this->pos->id,
+                'company_id' => current_company()->id,
+                'product_id' => $pid,
+                'mode' => $this->calculatorMode,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not apply change', 'Please try again.');
+        }
     }
 
-    // #[On('processPayment')]
+    // ---- Payment -----------------------------------------------------------
+
     #[On('processPayment')]
-    public function processPayment()
+    public function processPayment(): void
     {
         $this->selectedProductId = null;
 
         if (!$this->order || empty($this->cart)) {
-            LivewireAlert::title('No order to process!')
-                ->text('Please add products to the cart before processing payment.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            $this->toastError('No order to process!', 'Please add products to the cart before processing payment.');
             return;
         }
 
         if (!$this->guest && !$this->selectedCustomerId) {
-            LivewireAlert::title('No guest selected!')
-                ->text('Please select a guest before processing payment.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            $this->toastError('No guest selected!', 'Please select a guest before processing payment.');
             return;
         }
 
-        // Refresh order totals before payment
+        // Recompute totals just before taking payment
         $this->recalculateTotals();
-        $this->order->update([
-            'total_amount' => $this->cartTotal,
-            'due_amount' => $this->cartTotal,
-        ]);
+        $this->persistOrderTotals();
         $this->saveCartToSession();
+
         $this->toPrint = 'receipt';
 
         $this->dispatch('openModal', component: 'pos::modal.payment-modal', arguments: ['order' => $this->order->id]);
     }
 
     #[On('posOrderPaymentCompleted')]
-    public function PosPaymentCompleted($data){
-        $this->order = PosOrder::find($data['orderId']) ?? null;
+    public function posPaymentCompleted(array $data): void
+    {
+        $orderId = (int) ($data['orderId'] ?? 0);
+        $reference = (string) ($data['reference'] ?? '');
+        $amount = (float) ($data['amount'] ?? 0.0);
+        $method = (string) ($data['method'] ?? 'paystack');
 
-        $this->handlePayment([
-            'orderId' => $this->order->id,
-            'payment_method' => 'paystack',
-            'reference' => $data['reference'],
-            'amount' => $data['amount'],
-            'method' => $data['method'] ?? 'paystack',
+        $this->order = PosOrder::query()
+            ->where('company_id', current_company()->id)
+            ->find($orderId);
+
+        if (!$this->order) {
+            $this->toastError('Order not found!', 'Payment cannot be recorded.');
+            return;
+        }
+
+        $ok = $this->handlePayment([
+            'orderId'  => $this->order->id,
+            'reference'=> $reference,
+            'amount'   => $amount,
+            'method'   => $method,
         ]);
+
+        if (!$ok) {
+            return; // handlePayment already alerted/logged
+        }
 
         $this->resetCart();
         $this->interface = 'payment';
         $this->toPrint = 'receipt';
-        LivewireAlert::title('Order completed!')
-            ->text('Order has been processed successfully.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
 
+        $this->toastSuccess('Order completed!', 'Order has been processed successfully.');
         $this->dispatch('play-sound', type: 'cashier');
     }
 
+    /**
+     * Create payment + update order balances atomically.
+     *
+     * @param  array{orderId:int, method:string, amount:float, reference?:string} $data
+     * @return bool
+     */
+    public function handlePayment(array $data): bool
+    {
+        if (!isset($data['orderId']) || !$this->order || $this->order->id !== (int) $data['orderId']) {
+            session()->flash('error', 'Invalid order ID.');
+            return false;
+        }
+
+        try {
+            DB::transaction(function () use ($data) {
+                $payment = PosOrderPayment::create([
+                    'company_id'     => current_company()->id,
+                    'pos_id'         => $this->order->pos_id,
+                    'pos_order_id'   => $this->order->id,
+                    'pos_session_id' => $this->order->pos_session_id ?? null,
+                    'guest_id'       => $this->order->guest_id ?? null,
+                    'payment_method' => (string) $data['method'],
+                    'amount'         => (float) ($data['amount'] ?? 0),
+                    'date'           => now(),
+                    'transaction_id' => (string) ($data['reference'] ?? Str::upper(Str::random(16))),
+                    'label'          => 'Payment Received for Order #' . $this->order->receipt_number,
+                ]);
+
+                // Recalculate due & status
+                $due = max(0, (float) $this->order->due_amount - (float) $payment->amount);
+                $paid = (float) $this->order->paid_amount + (float) $payment->amount;
+
+                $paymentStatus = $due <= 0 ? 'paid' : ($due < $this->order->total_amount ? 'partial' : 'unpaid');
+
+                $this->order->update([
+                    'status'         => 'receipt',
+                    'payment_method' => (string) $data['method'],
+                    'payment_status' => $paymentStatus,
+                    'paid_amount'    => $paid,
+                    'due_amount'     => $due,
+                ]);
+            });
+        } catch (Throwable $e) {
+            Log::error('POS handlePayment failed', [
+                'pos_id' => $this->pos->id,
+                'order_id' => $this->order->id ?? null,
+                'company_id' => current_company()->id,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Payment failed', 'Could not record payment. Please try again.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // ---- Misc actions ------------------------------------------------------
+
     #[On('switchInterface')]
-    public function switchInterface($interface){
-        $this->interface = $interface;
-        if ($interface === 'tables') {
-            $this->loadActiveOrder();
-        }
-        if ($interface === 'orders') {
-            $this->loadOrders();
-        }
+    public function switchInterface(string $interface): void
+    {
+        $this->changeInterface($interface);
     }
 
     public function unlock(): void
     {
         $this->isLocked = false;
         $this->dispatch('reset-inactivity-timer');
-        LivewireAlert::title('Unlocked!')
-            ->text('POS is now active.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+        $this->toastSuccess('Unlocked!', 'POS is now active.');
     }
 
     public function newOrder(): void
@@ -776,111 +955,98 @@ class Home extends Component
         $this->selectedTable = null;
         $this->selectedCustomerId = null;
         $this->orderNote = '';
-        LivewireAlert::title('New order started!')
-            ->text('Ready to create a new order.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+        $this->toastSuccess('New order started!', 'Ready to create a new order.');
     }
 
     #[On('assigned-guest')]
-    public function assignGuest($guest): void
+    public function assignGuest(int $guestId): void
     {
-        $this->selectedCustomerId = $guest;
-        $this->guest = Guest::find($this->selectedCustomerId);
-        if($this->order){
-            $this->order->update([
-                'customer_id' => $this->selectedCustomerId
-            ]);
+        $this->selectedCustomerId = $guestId;
+        $this->guest = Guest::query()
+            ->where('company_id', current_company()->id)
+            ->find($guestId);
+
+        if ($this->order) {
+            $this->order->update(['customer_id' => $this->selectedCustomerId]);
         }
 
-        LivewireAlert::title('New guest selected!')
-            ->text("{$this->guest->name} has been selected!")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+        if ($this->guest) {
+            $this->toastSuccess('New guest selected!', "{$this->guest->name} has been selected!");
+        }
     }
 
     #[On('assign-created-guest')]
-    public function assignCreatedGuest($guestId): void
+    public function assignCreatedGuest(int $guestId): void
     {
-        $this->selectedCustomerId = $guestId;
-        $this->guest = Guest::find($this->selectedCustomerId);
-        if($this->order){
-            $this->order->update([
-                'customer_id' => $this->selectedCustomerId
-            ]);
-        }
-
-        LivewireAlert::title('New guest selected!')
-            ->text("{$this->guest->name} has been selected!")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+        $this->assignGuest($guestId);
     }
 
-    public function deleteOrder($orderId){
-        $order = PosOrder::find($orderId);
-        $receipt_number = $order->receipt_number;
-        $order->details()->delete();
-        $order->delete();
+    public function deleteOrder(int $orderId): void
+    {
+        $order = PosOrder::query()
+            ->where('company_id', current_company()->id)
+            ->find($orderId);
 
-        LivewireAlert::title('Order has been deleted!')
-            ->text("Order {$receipt_number} has been deleted")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-
-        $this->loadOrders();
-    }
-
-    public function printPreBill($orderId){
-        $this->order = PosOrder::find($orderId);
-        if (!$this->order) {
-            LivewireAlert::title('Order not found!')
-                ->text('Selected order does not exist.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+        if (!$order) {
+            $this->toastError('Order not found!', 'Selected order does not exist.');
             return;
         }
 
-        $this->selectedTable = $this->order->table_id ? Table::find($this->order->table_id) : null;
-        $this->selectedCustomerId = $this->order->customer_id;
+        try {
+            DB::transaction(function () use ($order) {
+                $receipt = $order->receipt_number;
+                $order->details()->delete();
+                $order->delete();
+
+                $this->toastSuccess('Order has been deleted!', "Order {$receipt} has been deleted");
+                $this->loadOrders();
+            });
+        } catch (Throwable $e) {
+            Log::error('POS deleteOrder failed', [
+                'pos_id' => $this->pos->id,
+                'order_id' => $orderId,
+                'company_id' => current_company()->id,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not delete order', 'Please try again.');
+        }
+    }
+
+    public function printPreBill(int $orderId): void
+    {
+        $order = PosOrder::query()
+            ->with(['details.product'])
+            ->where('company_id', current_company()->id)
+            ->find($orderId);
+
+        if (!$order) {
+            $this->toastError('Order not found!', 'Selected order does not exist.');
+            return;
+        }
+
+        $this->order = $order;
+        $this->selectedTable = $order->table_id
+            ? Table::query()->where('company_id', current_company()->id)->find($order->table_id)
+            : null;
+
+        $this->selectedCustomerId = $order->customer_id;
         $this->syncCartWithOrder();
-        // $this->interface = 'register';
         $this->saveCartToSession();
         $this->toPrint = 'bill';
 
-        LivewireAlert::title('Bill printing has been launched!')
-            ->text('Bill printing has been launched.')
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-
-
+        $this->toastSuccess('Bill printing has been launched!', 'Bill printing has been launched.');
         $this->dispatch('print-bill');
     }
 
     protected function loadActiveOrder(): void
     {
-        $this->order = PosOrder::where('pos_id', $this->pos->id)
+        $this->order = PosOrder::query()
+            ->with(['details.product'])
+            ->where('pos_id', $this->pos->id)
             ->where('company_id', current_company()->id)
             ->where('status', 'ongoing')
-            ->when($this->selectedTable, fn($query) => $query->where('table_id', $this->selectedTable->id))
-            ->when(!$this->selectedTable, fn($query) => $query->whereNull('table_id'))
+            ->when($this->selectedTable, fn ($q) => $q->where('table_id', $this->selectedTable->id))
+            ->when(!$this->selectedTable, fn ($q) => $q->whereNull('table_id'))
             ->first();
 
         if ($this->order && !empty($this->cart)) {
@@ -888,223 +1054,227 @@ class Home extends Component
         }
     }
 
+    /**
+     * Hydrate cart from DB order details to avoid drift.
+     */
     protected function syncCartWithOrder(): void
     {
+        if (!$this->order) {
+            return;
+        }
+
         $this->cart = [];
+
         foreach ($this->order->details as $detail) {
             $this->cart[$detail->product_id] = [
-                'id' => $detail->product_id,
-                'name' => $detail->product->product_name,
-                'unit_price' => $detail->unit_price,
-                'quantity' => $detail->quantity,
-                'discount' => $detail->product_discount_amount,
+                'id'         => $detail->product_id,
+                'name'       => $detail->product?->product_name ?? ('#' . $detail->product_id),
+                'unit_price' => (float) $detail->unit_price,
+                'quantity'   => (int) $detail->quantity,
+                'discount'   => (float) $detail->product_discount_amount,
             ];
         }
+
         $this->recalculateTotals();
         $this->saveCartToSession();
     }
 
+    /**
+     * Create an ongoing order bound to POS/session/table/customer.
+     */
     protected function createOrder(): void
     {
-        if (!$this->order) {
+        if ($this->order) {
+            return;
+        }
+
+        try {
             $this->order = PosOrder::create([
-                'pos_id' => $this->pos->id,
-                'pos_session_id' => session("pos_session_id_{$this->pos->id}") ?? null,
-                'company_id' => current_company()->id,
-                'cashier_id' => Auth::id(),
-                'table_id' => $this->selectedTable?->id,
-                'customer_id' => $this->selectedCustomerId,
-                'total_amount' => $this->cartTotal,
-                'due_amount' => $this->cartTotal,
-                'status' => 'ongoing',
-                'receipt_number' => 'ORD-' . uniqid(),
-                'date' => now(),
-                'service_type' => $this->selectedService['key'] ?? 'eat-in'
+                'pos_id'         => $this->pos->id,
+                'pos_session_id' => session($this->sessionIdKey()),
+                'company_id'     => current_company()->id,
+                'cashier_id'     => Auth::id(),
+                'table_id'       => $this->selectedTable?->id,
+                'customer_id'    => $this->selectedCustomerId,
+                'total_amount'   => $this->cartTotal,
+                'due_amount'     => $this->cartTotal,
+                'status'         => 'ongoing',
+                'receipt_number' => $this->generateReceiptNumber(),
+                'date'           => now(),
+                'service_type'   => $this->selectedService['key'] ?? 'eat-in',
+                'note'           => (string) ($this->orderNote ?? ''),
             ]);
+
             if ($this->selectedTable) {
                 $this->selectedTable->update(['status' => 'occupied']);
             }
+
             $this->saveCartToSession();
+        } catch (Throwable $e) {
+            Log::error('POS createOrder failed', [
+                'pos_id' => $this->pos->id,
+                'company_id' => current_company()->id,
+                'error' => $e->getMessage(),
+            ]);
+            $this->toastError('Could not start order', 'Please try again.');
         }
     }
 
     #[On('selectServiceType')]
-    public function selectServiceType($service){
-        $this->selectedService = $this->services[$service];
-        if($this->order){
-            $this->order->update([
-                'service_type' => $this->selectedService['key']
-            ]);
-        }
-    }
-
-    public function handlePayment($data)
+    public function selectServiceType(string $service): void
     {
-        if (!isset($data['orderId'])) {
-            session()->flash('error', 'Invalid order ID.');
+        if (!isset($this->services[$service])) {
             return;
         }
 
-        $payment = PosOrderPayment::create([
-            'company_id'     => current_company()->id,
-            'pos_id'         => $this->order->pos_id,
-            'pos_order_id'   => $this->order->id,
-            'pos_session_id' => $this->order->pos_session_id ?? null,
-            'guest_id'       => $this->order->guest_id ?? null,
-            'payment_method' => $data['method'],
-            'amount'         => $data['amount'] ?? 0,
-            'date'           => now(),
-            'transaction_id' => $data['reference'] ?? Str::random(16),
-            'label'          => 'Payment Received for Order #' . $this->order->receipt_number,
-        ]);
+        $this->selectedService = $this->services[$service];
 
-        $dueAmount = $this->order->due_amount - $payment->amount;
-
-        $paymentStatus = match (true) {
-            $dueAmount == $this->order->total_amount => 'unpaid',
-            $dueAmount > 0 => 'partial',
-            default => 'paid',
-        };
-
-        $paidAmount = $this->order->paid_amount + $payment->amount;
-
-        $this->order->update([
-            'status' => 'receipt',
-            'payment_method' => $data['method'],
-            'payment_status' => $paymentStatus,
-            'paid_amount'    => $paidAmount,
-            'due_amount'     => $dueAmount,
-        ]);
+        if ($this->order) {
+            $this->order->update(['service_type' => $this->selectedService['key']]);
+        }
     }
 
-    public function goToBackend(){
-        return $this->redirect(route('pos.overview'), true);
+    // Stubs (keep existing UX hooks)
+    public function sendOrderToKds()       { /* route to KDS by station; dispatch event; toast */ }
+    public function toggleHold()           { $this->onHold = !$this->onHold; /* persist */ }
+    public function openSplitBill()        { $this->dispatch('openModal', ['component'=>'pos::modal.split-bill']); }
+    public function printKitchenTicket()   { $this->dispatch('print-kot'); }
+    public function openTransferOrder()    { $this->dispatch('openModal', ['component'=>'pos::modal.transfer-order']); }
+    public function setTipPercent(int $p)  { $this->tipAmount = round(($this->cartTotal ?? 0) * $p / 100, 2); }
+    public function openMultiTender()      { $this->dispatch('openModal', ['component'=>'pos::modal.multi-tender','arguments'=>['total'=>$this->cartTotal,'tip'=>$this->tipAmount]]); }
+    public function fireCourse(string $c)  { /* mark items by course + send to KDS */ }
+    public function toggleRush()           { $this->rush = !$this->rush; /* persist; include in KDS payload */ }
+    public function openFireSchedule()     { $this->dispatch('openModal', ['component'=>'pos::modal.fire-schedule']); }
+    public function openMoveTable()        { $this->dispatch('openModal', ['component'=>'pos::modal.move-table']); }
+    public function openMergeBills()       { $this->dispatch('openModal', ['component'=>'pos::modal.merge-bills']); }
+    public function openReceiptOptions()   { $this->dispatch('openModal', ['component'=>'pos::modal.receipt-options']); }
+
+    public function goToBackend()
+    {
+        return $this->redirect(route('pos.overview'), navigate: true);
     }
 
-    public function closeRegister(){
+    public function closeRegister(): void
+    {
         $this->dispatch('openModal', component: 'pos::modal.closing-register-modal', arguments: ['pos' => $this->pos, 'session' => $this->pos->active_session_id]);
     }
 
-    public function openRegister(){
+    public function openRegister(): void
+    {
         $this->dispatch('openModal', component: 'pos::modal.opening-control-modal', arguments: ['pos' => $this->pos]);
     }
 
-    public function continueSelling()
+    public function continueSelling(): void
     {
-        $sessionID = $this->pos->active_session_id;
-        $existingSession = PosSession::find($sessionID);
+        $existingSession = PosSession::find($this->pos->active_session_id);
+
         if ($existingSession) {
-            session()->put("pos_session_id_{$this->pos->id}", $existingSession->id);
+            session()->put($this->sessionIdKey(), $existingSession->id);
         } else {
-            LivewireAlert::title('No active session found!')
-                ->text('Please open a session to continue selling.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            $this->toastError('No active session found!', 'Please open a session to continue selling.');
             return;
         }
+
         $this->isLocked = false;
         $this->dispatch('reset-inactivity-timer');
-        LivewireAlert::title("POS {$this->pos->name} is now open.")
-            ->text("POS {$this->pos->name} is now open. You can start processing orders.")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+
+        $this->toastSuccess("POS {$this->pos->name} is now open.", "POS {$this->pos->name} is now open. You can start processing orders.");
     }
 
     #[On('posOpened')]
-    public function posOpened($data)
+    public function posOpened($data): void
     {
         $this->isLocked = false;
         $this->dispatch('reset-inactivity-timer');
-        LivewireAlert::title("POS {$this->pos->name} is now open.")
-            ->text("POS {$this->pos->name} is now open. You can start processing orders.")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
+        $this->toastSuccess("POS {$this->pos->name} is now open.", "POS {$this->pos->name} is now open. You can start processing orders.");
     }
 
-    public function posClosed($data)
+    public function posClosed($data): void
     {
         $this->isLocked = true;
         $this->dispatch('reset-inactivity-timer');
-        LivewireAlert::title("POS {$this->pos->name} is now closed.")
-            ->text("POS {$this->pos->name} is now closed. You can no longer process orders.")
-            ->success()
-            ->position('top-end')
-            ->timer(4000)
-            ->toast()
-            ->show();
-
+        $this->toastSuccess("POS {$this->pos->name} is now closed.", "POS {$this->pos->name} is now closed. You can no longer process orders.");
     }
 
     #[On('posClosed')]
-    public function closePos($dat)
+    public function closePos($data)
     {
-        // Check for ongoing orders
-        $ongoingOrders = PosOrder::where('pos_id', $this->pos->id)
-            ->where('company_id', current_company()->id)
-            ->where('status', 'ongoing')
-            ->count();
+        // Optional: prevent close if ongoing orders exist
+        // $ongoing = PosOrder::query()
+        //     ->where('pos_id', $this->pos->id)
+        //     ->where('company_id', current_company()->id)
+        //     ->where('status', 'ongoing')
+        //     ->exists();
+        // if ($ongoing) { ...return; }
 
-        // if ($ongoingOrders > 0) {
-        //     LivewireAlert::title('Cannot close POS!')
-        //         ->text('There are ongoing orders. Please complete or cancel all orders before closing the POS.')
-        //         ->error()
-        //         ->position('top-end')
-        //         ->timer(4000)
-        //         ->toast()
-        //         ->show();
-        //     return;
-        // }
-
-        // Get the active session
         $session = PosSession::find($this->pos->active_session_id);
         if (!$session) {
-            LivewireAlert::title('No active session!')
-                ->text('No active session found for this POS.')
-                ->error()
-                ->position('top-end')
-                ->timer(4000)
-                ->toast()
-                ->show();
+            $this->toastError('No active session!', 'No active session found for this POS.');
             return;
         }
 
-            // Clear session data
-            session()->forget("pos_cart_{$this->pos->id}");
-            session()->forget("pos_session_id_{$this->pos->id}");
+        // Clear browser session for this POS
+        session()->forget($this->cartSessionKey());
+        session()->forget($this->sessionIdKey());
 
-            // Update POS to remove active session
-            $this->pos->update([
-                'active_session_id' => null,
-                'status' => 'inactive'
-            ]);
+        // Deactivate POS
+        $this->pos->update([
+            'active_session_id' => null,
+            'status'            => 'inactive',
+        ]);
 
-            // Reset component state
-            $this->resetCart();
-            $this->isLocked = true;
+        // Reset component state
+        $this->resetCart();
+        $this->isLocked = true;
 
-        LivewireAlert::title('POS closed successfully!')
-            ->text("POS {$this->pos->name} has been closed.")
+        $this->toastSuccess('POS closed successfully!', "POS {$this->pos->name} has been closed.");
+        return $this->redirect(route('pos.overview'), navigate: true);
+    }
+
+    // ---- Render ------------------------------------------------------------
+
+    public function render()
+    {
+        return view('pos::livewire.interface.home')->extends('layouts.pos');
+    }
+
+    // ---- Private helpers ---------------------------------------------------
+
+    private function cartSessionKey(): string
+    {
+        return self::SESSION_CART_PREFIX . $this->pos->id;
+    }
+
+    private function sessionIdKey(): string
+    {
+        return self::SESSION_ID_PREFIX . $this->pos->id;
+    }
+
+    private function generateReceiptNumber(): string
+    {
+        // Example: ORD-24-00012345 (yy + random)
+        return 'ORD-' . now()->format('y') . '-' . str_pad((string) random_int(1, 99999999), 8, '0', STR_PAD_LEFT);
+    }
+
+    private function toastSuccess(string $title, string $text): void
+    {
+        LivewireAlert::title($title)
+            ->text($text)
             ->success()
             ->position('top-end')
             ->timer(4000)
             ->toast()
             ->show();
-        // Redirect to POS overview
-        return $this->redirect(route('pos.overview'), true);
     }
 
-    public function render()
+    private function toastError(string $title, string $text): void
     {
-        return view('pos::livewire.interface.home')
-            ->extends('layouts.pos');
+        LivewireAlert::title($title)
+            ->text($text)
+            ->error()
+            ->position('top-end')
+            ->timer(4000)
+            ->toast()
+            ->show();
     }
 }
