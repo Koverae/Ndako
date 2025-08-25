@@ -490,7 +490,7 @@ button,label{ cursor:pointer }
 }
 @keyframes shimmer{ 0%{background-position:100% 0} 100%{background-position:-100% 0} }
 .s-card{ border-radius:14px; border:1px solid rgba(0,0,0,.08); overflow:hidden; height:100% }
-.s-media{ aspect-ratio:4/3 }
+.s-media img{ width:100%; height:100%; object-fit:cover }
 .s-line{ height:14px; border-radius:8px }
 .s-gap{ height:8px }
 

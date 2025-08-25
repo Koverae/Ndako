@@ -4,6 +4,8 @@ namespace Modules\Pos\Livewire\Interface;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Modules\Pos\Models\Order\PosOrder;
 use Modules\Pos\Models\Order\PosOrderDetail;
@@ -16,13 +18,22 @@ class KdsBoard extends Component
     public $lastSeenIds = [];
 
     public bool $isLocked = false; // for lock screen entangle
+    public bool $bootstrapped = false; // Ignore only the very first render
     public string $station = 'kitchen'; // kitchen | bar | pass
     public array $stations = ['kitchen'=>'Kitchen','bar'=>'Bar','pass'=>'Pass'];
 
     public int $sinceMins = 240; // window
     public bool $soundOn = true;
+    /** Play-sound throttle to avoid audio spam (in milliseconds) */
+    public int $soundThrottleMs = 900;
+
+    /** Last timestamp we played a sound (ms since epoch) */
+    public ?int $lastSoundAtMs = null;
 
     protected array $allowed = ['queued','preparing','ready','delivered']; //for "new ticket" sound
+    protected $casts = [
+        'lastSeenIds' => 'array',   // NEW: ensure stable hydration
+    ];
 
     public function mount(?string $station = 'kitchen', ?int $posId = null)
     {
@@ -43,10 +54,11 @@ class KdsBoard extends Component
         $d = PosOrderDetail::find($detailId);
         if (!$d) return;
         $d->update([
-            'kds_status'      => 'preparing',
-            'kds_user_id'     => Auth::id(),
-            'kds_preparing_at'=> now(),
+            'kds_status'       => 'preparing',
+            'kds_user_id'      => Auth::id(),
+            'kds_preparing_at' => now(),
         ]);
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function markReady(int $detailId): void
@@ -58,6 +70,7 @@ class KdsBoard extends Component
             'kds_user_id' => Auth::id(),
             'kds_ready_at'=> now(),
         ]);
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function bump(int $detailId): void
@@ -65,10 +78,11 @@ class KdsBoard extends Component
         $d = PosOrderDetail::find($detailId);
         if (!$d) return;
         $d->update([
-            'kds_status'     => 'delivered',
-            'kds_user_id'    => Auth::id(),
-            'kds_delivered_at'=> now(),
+            'kds_status'       => 'delivered',
+            'kds_user_id'      => Auth::id(),
+            'kds_delivered_at' => now(),
         ]);
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function prepareAll(int $orderId): void
@@ -81,6 +95,7 @@ class KdsBoard extends Component
                 'kds_user_id'      => Auth::id(),
                 'kds_preparing_at' => now(),
             ]);
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function readyAll(int $orderId): void
@@ -89,10 +104,11 @@ class KdsBoard extends Component
             ->forStation($this->station)
             ->whereIn('kds_status',['queued','preparing'])
             ->update([
-                'kds_status'   => 'ready',
-                'kds_user_id'  => Auth::id(),
-                'kds_ready_at' => now(),
+                'kds_status'  => 'ready',
+                'kds_user_id' => Auth::id(),
+                'kds_ready_at'=> now(),
             ]);
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function bumpOrder(int $orderId): void
@@ -101,15 +117,54 @@ class KdsBoard extends Component
             ->forStation($this->station)
             ->whereIn('kds_status',['ready'])
             ->update([
-                'kds_status'      => 'delivered',
-                'kds_user_id'     => Auth::id(),
-                'kds_delivered_at'=> now(),
+                'kds_status'       => 'delivered',
+                'kds_user_id'      => Auth::id(),
+                'kds_delivered_at' => now(),
             ]);
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function toggleSound(): void
     {
         $this->soundOn = !$this->soundOn;
+    }
+
+    /**
+     * Dispatch the standard KDS update event and (optionally) a sound cue.
+     * The sound is throttled and respects the user's sound toggle.
+     */
+
+    private function notifyKdsUpdate(bool $withSound = true): void
+    {
+        // Always notify listeners that KDS state changed
+        $this->dispatch('kds-updated');
+
+        // Optional sound (guarded + throttled)
+        if (!$withSound || !$this->soundOn) {
+            return;
+        }
+
+        $now = (int) floor(microtime(true) * 1000);
+        if ($this->lastSoundAtMs !== null && ($now - $this->lastSoundAtMs) < $this->soundThrottleMs) {
+            return; // too soon — skip sound
+        }
+        $this->lastSoundAtMs = $now;
+
+        // Front-end already listens to 'play-sound' to trigger audio
+        $this->dispatch('play-sound', type: 'kds');
+    }
+
+    // Defensive: swallow accidental server events (if any client calls Livewire.dispatch('kds-updated'))
+    // #[On('kds-updated')]
+    // public function _swallowKdsUpdated(): void
+    // {
+    //     // no-op on purpose
+    // }
+    #[On('refresh-kds')]
+    public function refreshKds(): void
+    {
+        // Front-end already listens to 'play-sound' to trigger audio
+        $this->dispatch('play-sound', type: 'kds');
     }
 
     /* ----------------------- Drag & Drop actions ----------------------- */
@@ -122,6 +177,7 @@ class KdsBoard extends Component
 
         // Reset baseline so switching stations doesn't falsely "ding"
         $this->lastSeenIds = [];
+        $this->bootstrapped = false; // NEW
     }
 
     /* ----------------------- Drag & Drop ----------------------- */
@@ -148,7 +204,7 @@ class KdsBoard extends Component
         };
 
         $d->update($attrs);
-        $this->dispatch('kds-updated');
+        $this->notifyKdsUpdate(); // NEW
     }
 
     public function moveOrder(int $orderId, string $to): void
@@ -172,8 +228,10 @@ class KdsBoard extends Component
             ->whereIn('kds_status', ['queued','preparing','ready'])
             ->update($attrs);
 
-        $this->dispatch('kds-updated');
+        $this->notifyKdsUpdate(); // NEW
     }
+
+
 
     /* -------------------------- Data -------------------------- */
 
@@ -217,32 +275,50 @@ class KdsBoard extends Component
     {
         $data = $this->getTickets(); // ['queued'=>..,'preparing'=>..,'ready'=>..]
 
-        // -------- NEW: detect newly-arrived items in "New" column and emit event --------
+        // -------- Detect newly-arrived items in "New" (queued) column --------
         try {
-            // collect current ids from "queued" items (i.e., tickets showing up in New column)
+            // 1) Gather queued detail IDs
             $currentQueuedIds = [];
             foreach (($data['queued'] ?? []) as $block) {
                 foreach ($block->items as $it) {
-                    $currentQueuedIds[] = (int)$it->id;
+                    $currentQueuedIds[] = (int) $it->id;
                 }
             }
 
-            // first render: just baseline, no sound
-            if (empty($this->lastSeenIds)) {
+            // 2) Normalize to avoid false diffs (order/duplicates)
+            sort($currentQueuedIds);
+            $currentQueuedIds = array_values(array_unique($currentQueuedIds));
+
+            // 3) First render ever → baseline only (no sound)
+            if (!$this->bootstrapped) {
                 $this->lastSeenIds = $currentQueuedIds;
+                $this->bootstrapped = true; // we’re now “live”
             } else {
-                $newOnes = array_diff($currentQueuedIds, $this->lastSeenIds);
-                if (!empty($newOnes) && $this->soundOn) {
-                    // browser will handle sound (see Blade script)
-                    $this->dispatch('kds-new'); // payload optional
-                    $this->dispatch('play-sound', type: 'kds');
+                // 4) Compute real "new" set
+                $prev = $this->lastSeenIds ?: [];
+                $newOnes = array_values(array_diff($currentQueuedIds, $prev));
+
+                // 5) Play a sound when:
+                //    - there's at least one brand-new ID, OR
+                //    - we transitioned from 0 → N after we already bootstrapped
+                $isZeroToSome = empty($prev) && !empty($currentQueuedIds);
+                if (($isZeroToSome || !empty($newOnes)) && $this->soundOn) {
+                    $this->notifyKdsUpdate(); // emits kds-updated + throttled play-sound
+                    Log::info('KDS new queued items', [
+                        'new_ids' => $newOnes,
+                        'prev'    => $prev,
+                        'curr'    => $currentQueuedIds,
+                    ]);
                 }
-                // update baseline
+
+                // 6) Update baseline
                 $this->lastSeenIds = $currentQueuedIds;
             }
         } catch (\Throwable $e) {
-            // be silent on detection errors
+            // Be silent on detection errors, but you can log if you want:
+            // Log::warning('KDS new detection failed', ['err' => $e->getMessage()]);
         }
+
         // -------------------------------------------------------------------------------
 
         return view('pos::livewire.interface.kds-board', array_merge($data, [

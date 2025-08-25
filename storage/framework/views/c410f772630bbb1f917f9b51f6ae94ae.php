@@ -58,8 +58,8 @@
 
       
       <div class="co-toolbar d-none d-sm-flex">
-        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('send_to_kitchen')): ?>
         <button class="btn btn-slim fw-semibold btn-ghost" wire:click="sendOrderToKds"><i class="bi bi-send"></i> <?php echo e(__('Send to KDS')); ?></button>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('send_to_kitchen')): ?>
         <?php endif; ?>
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('hold_resume_order')): ?>
         <button class="btn btn-slim fw-semibold btn-ghost" wire:click="toggleHold"><i class="bi bi-pause-circle"></i> <?php echo e($onHold ? __('Resume') : __('Hold')); ?></button>

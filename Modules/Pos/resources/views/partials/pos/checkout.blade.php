@@ -54,8 +54,8 @@
 
       {{-- Advanced actions (inline on ≥sm) --}}
       <div class="co-toolbar d-none d-sm-flex">
-        @can('send_to_kitchen')
         <button class="btn btn-slim fw-semibold btn-ghost" wire:click="sendOrderToKds"><i class="bi bi-send"></i> {{ __('Send to KDS') }}</button>
+        @can('send_to_kitchen')
         @endcan
         @can('hold_resume_order')
         <button class="btn btn-slim fw-semibold btn-ghost" wire:click="toggleHold"><i class="bi bi-pause-circle"></i> {{ $onHold ? __('Resume') : __('Hold') }}</button>

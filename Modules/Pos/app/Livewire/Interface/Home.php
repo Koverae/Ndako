@@ -115,6 +115,7 @@ class Home extends Component
     /** Calculator input (string to allow empty) */
     public string $calculatorInput = '';
 
+
     // ---- Lifecycle ---------------------------------------------------------
 
     /**
@@ -201,6 +202,9 @@ class Home extends Component
 
     public function selectCategory(?int $categoryId): void
     {
+        if($categoryId === 0) {
+            $categoryId = null;
+        }
         $this->selectedCategoryId = $categoryId ?: null;
         $this->loadProducts();
     }
@@ -216,10 +220,15 @@ class Home extends Component
 
         if ($this->order) {
             PosOrder::whereKey($this->order->id)->update(['note' => (string) $val]);
-            $this->dispatch('kds-updated'); // e.g., to refresh KDS
+            $this->dispatch('refresh-kds'); // e.g., to refresh KDS
         }
     }
 
+    /**
+     * Save Customer/Kitchen note (visible on KDS).
+     * - Writes to `customer_note` if present, otherwise tries `note` or `kitchen_note`.
+     * - Emits a small flash the UI already listens for.
+     */
     public function saveOrderNote(): void
     {
         $this->updatedOrderNote($this->orderNote);
@@ -412,8 +421,8 @@ class Home extends Component
                         'unit_price'              => (float) $product->product_price,
                         'sub_total'               => (float) $product->product_price,
                         'product_discount_amount' => 0,
-                        'kds_station'             => optional($product->category)->kds_station ?? 'kitchen',
-                        'kds_status'              => 'queued',
+                        // 'kds_station'             => optional($product->category)->kds_station ?? 'kitchen',
+                        // 'kds_status'              => 'queued',
                     ]);
                 }
 
@@ -581,6 +590,35 @@ class Home extends Component
         $this->toastSuccess('Cart reset!', 'Cart has been cleared.');
     }
 
+
+    /**
+     * Recalculate tip amount whenever the cart or tip percent changes.
+     * Call this after cart updates or when setTipPercent() is used.
+     */
+    protected function recalcTip(): void
+    {
+        $base = (float) ($this->cartTotal ?? 0);
+        $this->tipAmount = round($base * ((float)$this->tipPercent / 100), 2);
+    }
+
+    /**
+     * Persist arbitrary, safe meta fields to the order if column(s) exist.
+     * Falls back silently if the column is not present in your schema.
+     */
+    protected function persistOrderMeta(array $attrs): void
+    {
+        $order = $this->order;
+        if (!$order) return;
+
+        // Only set attributes that actually exist on the model
+        $fillable = method_exists($order, 'getFillable') ? $order->getFillable() : [];
+        $toSet    = array_intersect_key($attrs, array_flip($fillable));
+
+        if (!empty($toSet)) {
+            $order->fill($toSet)->save();
+        }
+    }
+
     // ---- Totals ------------------------------------------------------------
 
     public function getTotalProperty(): float
@@ -625,8 +663,8 @@ class Home extends Component
     protected function loadCategories(): void
     {
         $this->productCategoryOptions = ProductCategory::isCompany(current_company()->id)
-            ->select(['id', 'category_name'])
-            ->orderBy('category_name')
+            ->select(['id', 'name'])
+            ->orderBy('name')
             ->get();
     }
 
@@ -638,7 +676,7 @@ class Home extends Component
     protected function loadProducts(): void
     {
         $query = Product::query()
-            ->select(['id', 'product_name', 'product_price', 'product_category_id'])
+            ->select(['id', 'product_name', 'product_price', 'product_category_id', 'image_path'])
             ->where('company_id', current_company()->id);
 
         if ($this->selectedCategoryId) {
@@ -1134,20 +1172,187 @@ class Home extends Component
         }
     }
 
-    // Stubs (keep existing UX hooks)
-    public function sendOrderToKds()       { /* route to KDS by station; dispatch event; toast */ }
-    public function toggleHold()           { $this->onHold = !$this->onHold; /* persist */ }
-    public function openSplitBill()        { $this->dispatch('openModal', ['component'=>'pos::modal.split-bill']); }
-    public function printKitchenTicket()   { $this->dispatch('print-kot'); }
-    public function openTransferOrder()    { $this->dispatch('openModal', ['component'=>'pos::modal.transfer-order']); }
-    public function setTipPercent(int $p)  { $this->tipAmount = round(($this->cartTotal ?? 0) * $p / 100, 2); }
-    public function openMultiTender()      { $this->dispatch('openModal', ['component'=>'pos::modal.multi-tender','arguments'=>['total'=>$this->cartTotal,'tip'=>$this->tipAmount]]); }
-    public function fireCourse(string $c)  { /* mark items by course + send to KDS */ }
-    public function toggleRush()           { $this->rush = !$this->rush; /* persist; include in KDS payload */ }
-    public function openFireSchedule()     { $this->dispatch('openModal', ['component'=>'pos::modal.fire-schedule']); }
-    public function openMoveTable()        { $this->dispatch('openModal', ['component'=>'pos::modal.move-table']); }
-    public function openMergeBills()       { $this->dispatch('openModal', ['component'=>'pos::modal.merge-bills']); }
-    public function openReceiptOptions()   { $this->dispatch('openModal', ['component'=>'pos::modal.receipt-options']); }
+
+
+    /**
+     * Receipt share options (email / SMS / WhatsApp etc.)
+     */
+    public function openReceiptOptions(): void
+    {
+        $orderId = $this->order?->id;
+        $this->dispatch('openModal', component: 'pos::modal.receipt-options', arguments: ['orderId' => $orderId]);
+    }
+
+    /**
+     * Toggle order hold/resume.
+     * - Persists to `on_hold` if your orders table has the column.
+     * - Falls back to component state only when column missing.
+     */
+    public function toggleHold(): void
+    {
+        $this->onHold = !$this->onHold;
+
+        $order = $this->order;
+        if ($order && in_array('on_hold', $order->getFillable() ?? [], true)) {
+            $order->on_hold = $this->onHold;
+            $order->save();
+        }
+    }
+
+    /**
+     * Send all current items to KDS as "queued".
+     * Requires `send_to_kitchen` permission in your policies/guards.
+     */
+    public function sendOrderToKds(): void
+    {
+        $order = $this->order;
+
+        if (! $order) {
+            return; // stop if no order is set
+        }
+
+        // If you have policies/permissions, check here (pseudo):
+        // $this->authorize('send_to_kitchen');
+
+      PosOrderDetail::where('pos_order_id', $order->id)
+        ->whereNull('kds_status')
+            ->update([
+                'kds_status'       => 'queued',
+                'kds_station'      => 'kitchen',
+                'kds_user_id'      => Auth::id(),
+                'kds_preparing_at' => null,
+                'kds_ready_at'     => null,
+                'kds_delivered_at' => null,
+            ]);
+
+        $this->dispatch('refresh-kds');
+
+        $this->toastSuccess('Order sent to kitchen!', 'All items have been sent to KDS.');
+
+    }
+
+    /**
+     * Fire a specific course to KDS (e.g., starters, mains, desserts).
+     * You can adapt the selection criteria to your schema (tags/modifiers).
+     */
+    public function fireCourse(string $course): void
+    {
+        $order = $this->order;
+        if (!$order) return;
+
+        $course = strtolower($course);
+        if (!in_array($course, ['starters','mains','desserts'], true)) return;
+
+        // Example: if you store course on detail row (adjust to your schema)
+      PosOrderDetail::query()
+            ->where('pos_order_id', $order->id)
+            ->where('course', $course)
+            ->whereIn('kds_status', [null, '', 'queued']) // not yet in prep/ready
+            ->update([
+                'kds_status'       => 'queued',
+                'kds_station'      => 'kitchen',
+                'kds_user_id'      => Auth::id(),
+                'kds_preparing_at' => null,
+                'kds_ready_at'     => null,
+                'kds_delivered_at' => null,
+            ]);
+
+        $this->dispatch('refresh-kds');
+    }
+
+    /**
+     * Toggle “Rush” (high priority) flag for the order.
+     * If the DB has an `is_rush` column, persist it.
+     */
+    public function toggleRush(): void
+    {
+        $this->rush = !$this->rush;
+
+        $order = $this->order;
+        if ($order && in_array('is_rush', $order->getFillable() ?? [], true)) {
+            $order->is_rush = $this->rush;
+            $order->save();
+        }
+
+        // Optionally ping KDS to visually highlight
+        $this->dispatch('refresh-kds');
+    }
+
+    /**
+     * Open a lightweight “schedule fire” modal to program tickets at a time.
+     * Implement the scheduling in that modal (cron/queue or delayed job).
+     */
+    public function openFireSchedule(): void
+    {
+        $orderId = $this->order?->id;
+        $this->dispatch('openModal', component: 'pos::modal.fire-schedule', arguments: ['orderId' => $orderId]);
+    }
+
+    /**
+     * Open split-bill workflow (choose items, create child bills).
+     */
+    public function openSplitBill(): void
+    {
+        $orderId = $this->order?->id;
+        $this->dispatch('openModal', component: 'pos::modal.split-bill', arguments: ['orderId' => $orderId]);
+    }
+
+    /**
+     * Print Kitchen Order Ticket (KOT) on demand.
+     * If you already generate KOT server-side, call that here instead.
+     */
+    public function printKitchenTicket(): void
+    {
+        // Example browser trigger; replace with your KOT print pipeline
+        $this->dispatch('print-kot');
+    }
+
+    /**
+     * Open “transfer order” (to another waiter) modal.
+     */
+    public function openTransferOrder(): void
+    {
+        $orderId = $this->order?->id;
+        $this->dispatch('openModal', component: 'pos::modal.transfer-order', arguments: ['orderId' => $orderId]);
+    }
+
+    /**
+     * Open “move table” modal.
+     */
+    public function openMoveTable(): void
+    {
+        $orderId = $this->order?->id;
+        $this->dispatch('openModal', component: 'pos::modal.move-table', arguments: ['orderId' => $orderId]);
+    }
+
+    /**
+     * Open “merge bills” modal.
+     */
+    public function openMergeBills(): void
+    {
+        $orderId = $this->order?->id;
+        $this->dispatch('openModal', component: 'pos::modal.merge-bills', arguments: ['orderId' => $orderId]);
+    }
+
+
+    /**
+     * Whenever the cart changes (items/qty/price), recompute the tip.
+     * If your property is named differently, adjust the method name:
+     * Livewire will call updated{Name}() automatically.
+     */
+    public function updatedCart(): void
+    {
+        $this->recalcTip();
+    }
+
+    /**
+     * Also recompute if the raw cart total is recalculated elsewhere.
+     * Call this helper from your existing methods that change totals.
+     */
+    protected function afterCartRecalculation(): void
+    {
+        $this->recalcTip();
+    }
 
     public function goToBackend()
     {

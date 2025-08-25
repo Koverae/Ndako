@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pos_order_details', function (Blueprint $table) {
-            $table->string('kds_status')->default('queued')->index();   // queued|preparing|ready|delivered|void
-            $table->string('kds_station')->default('kitchen')->index(); // kitchen|bar|pass|other
+            $table->string('kds_status')->nullable()->index();   // queued|preparing|ready|delivered|void
+            $table->string('kds_station')->nullable()->index(); // kitchen|bar|pass|other
             $table->foreignId('kds_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('kds_preparing_at')->nullable();
             $table->timestamp('kds_ready_at')->nullable();
