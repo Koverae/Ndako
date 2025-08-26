@@ -42,87 +42,145 @@
       </div>
 
       <!-- Orders Table -->
-      <div class="overflow-x-auto">
-        <table class="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Order ID') }}</th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Table') }}</th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Guest') }}</th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Total') }}</th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Status') }}</th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Payment') }}</th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Actions') }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            @forelse($orders as $order)
-              <tr class="transition duration-150 hover:bg-gray-50">
-                <td class="px-4 py-3 text-sm">{{ $order->receipt_number }}</td>
-                <td class="px-4 py-3 text-sm">{{ $order->table->table_name ?? 'Direct Sale' }}</td>
-                <td class="px-4 py-3 text-sm">{{ $order->guest->name ?? 'N/A' }}</td>
-                <td class="px-4 py-3 text-sm">{{ format_currency($order->total_amount + ($order->tax_amount ?? 0)) }}</td>
-                <td class="px-4 py-3 text-sm">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full {{ $order->status == 'ongoing' ? 'bg-yellow-100 text-yellow-800' : ($order->status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
-                    {{ ucfirst($order->status) }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-sm">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full {{ $order->payment_status == 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                    {{ ucfirst($order->payment_status) }}
-                  </span>
-                </td>
-                <td class="flex gap-2 px-4 py-3 text-sm">
-                  @php $cartData = session("pos_cart_{$pos->id}"); @endphp
-                  @if ($order->status === 'ongoing' && ($cartData['active_order_id'] ?? null) != $order->id)
-                    <button
-                      wire:click="selectOrder('{{ $order->id }}')"
-                      class="relative transition duration-150 btn btn-primary btn-sm group hover:bg-indigo-600"
-                      title="{{ __('Select this order') }}"
-                    >
-                      {{ __('Select') }}
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2">{{ __('Select this order') }}</span>
-                    </button>
-                  @endif
+<div class="relative overflow-x-auto">
+  <!-- subtle dim on load -->
+  <div wire:loading.delay.class="opacity-60" class="transition-opacity duration-200">
+
+    <table class="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+      <thead class="sticky top-0 z-10 bg-gray-100">
+        <tr>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Order ID') }}</th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Table') }}</th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Guest') }}</th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Total') }}</th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Status') }}</th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Payment') }}</th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">{{ __('Actions') }}</th>
+        </tr>
+      </thead>
+
+      {{-- Skeleton (smooth, minimal) --}}
+      <tbody class="divide-y divide-gray-200" wire:loading.delay wire:target="orderStatusFilter,paymentStatusFilter,dateFilter,searchOrderQuery,selectOrder,cancelOrder,printPreBill,confirmRefund">
+        @for($i=0;$i<6;$i++)
+          <tr class="animate-pulse">
+            @for($c=0;$c<7;$c++)
+              <td class="px-4 py-3">
+                <div class="h-3.5 w-24 bg-gray-200 rounded"></div>
+              </td>
+            @endfor
+          </tr>
+        @endfor
+      </tbody>
+
+      {{-- Data --}}
+      <tbody class="divide-y divide-gray-200" wire:loading.remove>
+        @forelse($orders as $order)
+          <tr class="transition-colors duration-150 hover:bg-gray-50" wire:key="order-row-{{ $order->id }}">
+            <td class="px-4 py-3 text-sm font-medium text-gray-800">#{{ $order->receipt_number }}</td>
+            <td class="px-4 py-3 text-sm">{{ $order->table->table_name ?? 'Direct Sale' }}</td>
+            <td class="px-4 py-3 text-sm">{{ $order->guest->name ?? 'N/A' }}</td>
+            <td class="px-4 py-3 text-sm">{{ format_currency($order->total_amount + ($order->tax_amount ?? 0)) }}</td>
+            <td class="px-4 py-3 text-sm">
+              @php
+                $status = $order->status;
+                $statusClasses = [
+                  'ongoing'   => 'bg-amber-100 text-amber-800',
+                  'completed' => 'bg-green-100 text-green-800',
+                  'receipt'   => 'bg-green-100 text-green-800',
+                  'refunded'  => 'bg-red-100 text-red-800',
+                  'canceled'  => 'bg-red-100 text-red-800',
+                ][$status] ?? 'bg-gray-100 text-gray-800';
+              @endphp
+              <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold leading-5 rounded-full {{ $statusClasses }}">
+                <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
+                {{ ucfirst($status) }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              @php
+                $p = $order->payment_status;
+                $payClasses = $p === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+              @endphp
+              <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold leading-5 rounded-full {{ $payClasses }}">
+                <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
+                {{ ucfirst($p) }}
+              </span>
+            </td>
+
+            {{-- Actions (icon-first, labels appear on md+) --}}
+            <td class="px-4 py-3 text-sm">
+              <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
+                @php $cartData = session("pos_cart_{$pos->id}"); @endphp
+
+                {{-- Select --}}
+                @if ($order->status === 'ongoing' && ($cartData['active_order_id'] ?? null) != $order->id)
+                  <button
+                    wire:click="selectOrder('{{ $order->id }}')"
+                    class="inline-flex items-center gap-1 btn btn-primary btn-sm transition duration-150 hover:bg-indigo-600"
+                    title="{{ __('Select this order') }}"
+                  >
+                    <i class="bi bi-check2-circle text-base"></i>
+                    <span class="d-none d-md-inline">{{ __('Select') }}</span>
+                  </button>
+                @endif
+
+                {{-- Delete (ongoing only) --}}
+                @can('cancel_pos_order')
                   @if($order->status == 'ongoing')
                     <button
                       wire:click="cancelOrder('{{ $order->id }}')"
                       wire:confirm="{{ __('Do you really want to delete this order?') }}"
-                      class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600"
+                      class="inline-flex items-center gap-1 btn btn-danger btn-sm transition duration-150 hover:bg-red-600"
                       title="{{ __('Delete this order') }}"
                     >
-                      {{ __('Delete') }}
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2">{{ __('Delete this order') }}</span>
+                      <i class="bi bi-trash text-base"></i>
+                      <span class="d-none d-md-inline">{{ __('Delete') }}</span>
                     </button>
+                  @endif
+                @endcan
+
+                {{-- Pre-Bill (ongoing only) --}}
+                @can('reprint_last_receipt')
+                  @if($order->status == 'ongoing')
                     <button
                       wire:click="printPreBill('{{ $order->id }}')"
-                      class="relative transition duration-150 btn btn-info btn-sm group hover:bg-blue-600"
+                      class="inline-flex items-center gap-1 btn btn-info btn-sm transition duration-150 hover:bg-blue-600"
                       title="{{ __('Print pre-bill') }}"
                     >
-                      {{ __('Pre-Bill') }}
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2">{{ __('Print pre-bill') }}</span>
+                      <i class="bi bi-printer text-base"></i>
+                      <span class="d-none d-md-inline">{{ __('Pre-Bill') }}</span>
                     </button>
                   @endif
-                  @if($order->status != 'refunded' && $order->payment_status == 'paid')
-                    <button
-                      wire:click="confirmRefund('{{ $order->id }}')"
-                      class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600"
-                      title="{{ __('Refund this order') }}"
-                    >
-                      {{ __('Refund') }}
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2">{{ __('Refund this order') }}</span>
-                    </button>
-                  @endif
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="7" class="px-4 py-3 text-sm text-center text-gray-500">{{ __('No orders found.') }}</td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
+                @endcan
+
+                {{-- Refund (paid & not refunded) --}}
+                @can('refund_pos_order')
+                @if($order->status != 'refunded' && $order->payment_status == 'paid')
+                  <button
+                    wire:click="confirmRefund('{{ $order->id }}')"
+                    class="inline-flex items-center gap-1 btn btn-danger btn-sm transition duration-150 hover:bg-red-600"
+                    title="{{ __('Refund this order') }}"
+                  >
+                    <i class="bi bi-arrow-counterclockwise text-base"></i>
+                    <span class="d-none d-md-inline">{{ __('Refund') }}</span>
+                  </button>
+                @endif
+                @endcan
+              </div>
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="7" class="px-4 py-6 text-sm text-center text-gray-500">
+              {{ __('No orders found.') }}
+            </td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
       <!-- Pagination -->
       <div class="mt-4">

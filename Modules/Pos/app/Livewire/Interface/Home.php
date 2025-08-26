@@ -64,7 +64,7 @@ class Home extends Component
     public Collection $productOptions;
 
     /** @var Collection<int, PosOrder> */
-    public Collection $orders;
+    public $orders;
 
     /** @var Collection<int, Guest> */
     public Collection $customers;
@@ -121,6 +121,8 @@ class Home extends Component
 
     // OPTIONAL: if you want all-stations vs only kitchen, add a filter
     public ?string $kdsStation = null; // e.g. 'kitchen' | 'bar' | 'pass' | null (all)
+
+    public bool $isOnline = true;
 
 
     // ---- Lifecycle ---------------------------------------------------------
@@ -1235,6 +1237,7 @@ class Home extends Component
 
         $this->dispatch('refresh-kds');
 
+        $this->refreshKdsSummary();
         $this->toastSuccess('Order sent to kitchen!', 'All items have been sent to KDS.');
 
     }
@@ -1532,4 +1535,93 @@ class Home extends Component
             ->toast()
             ->show();
     }
+
+    // Offline-first cart
+    #[On('net:status')]
+    public function updateNetworkStatus(bool $online): void
+    {
+        $this->isOnline = $online;
+    }
+    /**
+     * Sync a client offline cart to DB when we reconnect.
+     * Shape example (from JS): { 12: {quantity: 2}, 47: {quantity: 1} }
+     */
+    public function syncOfflineCart(array $clientCart): void
+    {
+        // 1) Ensure we have (or create) an order
+        if (!$this->order) {
+            $this->createOrder(); // uses current table/customer context
+            if (!$this->order) {
+                $this->toastError('Sync failed', 'Could not create order.');
+                return;
+            }
+        }
+
+        // 2) Normalize + validate
+        $ids = array_map('intval', array_keys($clientCart));
+        $ids = array_filter($ids, fn($id) => $id > 0);
+
+        if (empty($ids)) {
+            // If client cart is empty, clear order & session
+            DB::transaction(function () {
+                $this->order->details()->delete();
+                $this->order->update(['total_amount' => 0, 'due_amount' => 0]);
+            });
+            $this->cart = [];
+            $this->recalculateTotals();
+            $this->saveCartToSession();
+            $this->dispatch('cart-synced');
+            return;
+        }
+
+        $products = Product::query()
+            ->select(['id','product_name','product_price'])
+            ->where('company_id', current_company()->id)
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+
+        // 3) Apply snapshot atomically
+        DB::transaction(function () use ($products, $clientCart, $ids) {
+            // Remove lines not present anymore
+            $this->order->details()->whereNotIn('product_id', $ids)->delete();
+
+            // Upsert each line (server decides unit_price)
+            foreach ($ids as $pid) {
+                if (!$products->has($pid)) {
+                    continue; // skip unknown ids
+                }
+
+                $qty = max(1, (int) ($clientCart[$pid]['quantity'] ?? 1));
+                $unit = (float) $products[$pid]->product_price;
+                $sub  = $unit * $qty;
+
+                PosOrderDetail::updateOrCreate(
+                    ['pos_order_id' => $this->order->id, 'product_id' => $pid],
+                    [
+                        'company_id'              => current_company()->id,
+                        'quantity'                => $qty,
+                        'unit_price'              => $unit,
+                        'sub_total'               => $sub,
+                        'product_discount_amount' => 0,
+                    ]
+                );
+            }
+
+            // Recompute totals from DB (authoritative)
+            $sum = $this->order->details()->sum('sub_total');
+            $this->order->update([
+                'total_amount' => $sum,
+                'due_amount'   => $sum, // adjust if you track paid/discounts/tips elsewhere
+            ]);
+        });
+
+        // 4) Rebuild Livewire cart from DB, persist to session
+        $this->syncCartWithOrder();
+
+        // 5) Let the browser clear its local queue
+        $this->dispatch('cart-synced');
+        $this->toastSuccess('Back online', 'Cart synced successfully.');
+    }
+
 }

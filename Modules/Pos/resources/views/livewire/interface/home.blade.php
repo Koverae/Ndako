@@ -167,10 +167,54 @@
         </div>
       </div>
     </div>
+    {{-- Offline banner (sticky, responsive, accessible) --}}
+<div x-data="offlineBanner()" x-init="init()" class="position-relative">
+  <!-- subtle 'back online' toast -->
+  <div x-show="flashOnline"
+       x-transition.opacity.duration.250ms
+       class="net-toast alert alert-success py-1 px-2 small shadow-sm"
+       role="status" aria-live="polite">
+    <i class="bi bi-wifi"></i> {{ __('Back online') }}
+  </div>
+
+  <!-- main offline banner -->
+  <div x-show="!online && !dismissed"
+       x-transition.duration.200ms
+       class="net-banner border-top border-bottom"
+       role="status" aria-live="polite">
+    <div class="container-fluid d-flex flex-wrap align-items-center gap-2">
+      <div class="d-flex align-items-center gap-2 flex-grow-1">
+        <i class="bi bi-wifi-off fs-5" aria-hidden="true"></i>
+        <div class="d-flex flex-column">
+          <strong class="net-title">{{ __('You’re offline') }}</strong>
+          <span class="net-subtle">
+            {{ __('We’ll reconnect automatically. Some actions may be delayed.') }}
+          </span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+                @click="manualRetry()">
+          <i class="bi bi-arrow-clockwise"></i> {{ __('Retry') }}
+        </button>
+        <button type="button" class="btn btn-sm btn-link text-decoration-none"
+                @click="dismissed = true">
+          {{ __('Hide') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
   </nav>
 
   <!-- Register -->
-  <div class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none">
+  <div
+    x-data="cartStore(@entangle('cart').defer, @entangle('isOnline').defer, {{ $pos->id }})"
+        x-init="init()"
+            class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none"
+                >
     <!-- Product Section -->
     @include('pos::partials.pos.products')
     <!-- Product Section -->
@@ -437,6 +481,136 @@ function calculatorComponent($wire) {
     // In case Livewire re-renders the footer
     document.addEventListener('livewire:navigated', updateBarHeight, { passive: true });
   })();
+
+
+  // Alpine helper for network awareness
+  function offlineBanner(){
+    return {
+      online: navigator.onLine,
+      dismissed: false,
+      flashOnline: false,
+      timer: null,
+
+      init(){
+        window.addEventListener('online',  () => this.onOnline(),  {passive:true});
+        window.addEventListener('offline', () => this.onOffline(), {passive:true});
+        // gentle auto-retry ping while offline (optional)
+        this.pulse();
+      },
+
+      onOnline(){
+        this.online = true;
+        this.dismissed = false; // show again next time if it drops
+        this.flash();           // brief "Back online" toast
+      },
+
+      onOffline(){
+        this.online = false;
+      },
+
+      manualRetry(){
+        // lightweight ping instead of full reload
+        fetch(window.location.href, { method:'HEAD', cache:'no-store' })
+          .then(() => this.onOnline())
+          .catch(() => this.onOffline());
+      },
+
+      pulse(){
+        clearInterval(this.timer);
+        this.timer = setInterval(() => {
+          if (!this.online) this.manualRetry();
+        }, 8000);
+      },
+
+      flash(){
+        this.flashOnline = true;
+        setTimeout(() => this.flashOnline = false, 1600);
+      }
+    }
+  }
+  
+  // Online-first cart with offline fallback + replay queue
+  function cartStore(cartEntangle, posId) {
+    return {
+      online: navigator.onLine,
+      syncing: false,
+      // local shadow so the UI still feels live when offline
+      shadowCart: JSON.parse(localStorage.getItem(`pos:${posId}:cart`) || '{}'),
+      queue:      JSON.parse(localStorage.getItem(`pos:${posId}:queue`) || '[]'),
+
+      init() {
+        // Track connectivity
+        window.addEventListener('online',  () => { this.online = true;  this.flushQueue() });
+        window.addEventListener('offline', () => { this.online = false });
+
+        // Try a quick flush on load if we’re already online
+        if (this.online) this.flushQueue();
+      },
+
+      // ---------- helpers ----------
+      persist() {
+        localStorage.setItem(`pos:${posId}:cart`,  JSON.stringify(this.shadowCart));
+        localStorage.setItem(`pos:${posId}:queue`, JSON.stringify(this.queue));
+      },
+      itemsCount() {
+        return Object.values(this.shadowCart).reduce((t, i) => t + Number(i.quantity || 0), 0);
+      },
+      localAdd({ id, name, price }) {
+        const line = this.shadowCart[id] || { id, name, unit_price: price, quantity: 0, discount: 0 };
+        line.quantity += 1;
+        this.shadowCart[id] = line;
+        this.persist();
+      },
+      enqueue(op) { this.queue.push(op); this.persist(); },
+
+      // ---------- online-first actions with fallback ----------
+      async add({ id, name, price }) {
+        if (this.online) {
+          try {
+            await $wire.addToCart(id); // Livewire is the source of truth when online
+            return; // UI will hydrate from server normally
+          } catch (e) {
+            // Fall back to local if server call fails
+          }
+        }
+        // Offline (or server failed): queue & update local shadow
+        this.enqueue({ type: 'add', id, name, price });
+        this.localAdd({ id, name, price });
+      },
+
+      // (extend later) updateQty/remove/discount with same pattern
+
+      // ---------- replay queue on reconnect ----------
+      async flushQueue() {
+        if (!this.online || !this.queue.length) return;
+        this.syncing = true;
+
+        // Replay FIFO
+        while (this.queue.length && this.online) {
+          const op = this.queue[0];
+          try {
+            if (op.type === 'add')  await $wire.addToCart(op.id);
+            // (extend later) other types...
+            this.queue.shift();
+            this.persist();
+          } catch (e) {
+            // Stop on first error to avoid thrashing the server
+            break;
+          }
+        }
+
+        this.syncing = false;
+        try { await $wire.$refresh(); } catch (e) {}
+      },
+
+      // expose the API under `cart.*` to match your current template usage
+      cart: {
+        add:     (args) => this.add(args),
+        items:   () => this.itemsCount(),
+        syncing: () => this.syncing
+      }
+    }
+  }
 
 </script>
 @endpush

@@ -17,7 +17,8 @@
         placeholder="<?php echo e(__('Search products, e.g. “Latte”, “Burger”...')); ?>"
         aria-label="<?php echo e(__('Search products')); ?>"
         wire:model.live="searchQuery"
-        id="prod-search-input">
+        id="prod-search-input"
+        :disabled="!online" :title="!online ? '<?php echo e(__('Unavailable offline')); ?>' : ''">
       <!--[if BLOCK]><![endif]--><?php if(!empty($searchQuery)): ?>
         <button class="btn-clear" type="button" aria-label="<?php echo e(__('Clear search')); ?>"
                 wire:click="$set('searchQuery','')">
@@ -32,7 +33,8 @@
         type="button"
         class="cat-pill <?php echo e($selectedCategoryId == null ? 'active' : ''); ?>"
         wire:click="selectCategory('<?php echo e(0); ?>')"
-        role="tab" aria-selected="<?php echo e($selectedCategoryId == null ? 'true' : 'false'); ?>">
+        role="tab" aria-selected="<?php echo e($selectedCategoryId == null ? 'true' : 'false'); ?>"
+        :disabled="!online" :title="!online ? '<?php echo e(__('Unavailable offline')); ?>' : ''">
         <i class="bi bi-house-fill me-1" aria-hidden="true"></i><?php echo e(__('All')); ?>
 
       </button>
@@ -42,7 +44,8 @@
           type="button"
           class="cat-pill <?php echo e($selectedCategoryId == $category->id ? 'active' : ''); ?>"
           wire:click="selectCategory('<?php echo e($category->id); ?>')"
-          role="tab" aria-selected="<?php echo e($selectedCategoryId == $category->id ? 'true' : 'false'); ?>">
+          role="tab" aria-selected="<?php echo e($selectedCategoryId == $category->id ? 'true' : 'false'); ?>"
+          :disabled="!online" :title="!online ? '<?php echo e(__('Unavailable offline')); ?>' : ''">
           <?php echo e($category->name); ?>
 
         </button>
@@ -62,7 +65,6 @@
           <article class="p-card"
                    role="button"
                    tabindex="0"
-                   wire:click="addToCart('<?php echo e($product->id); ?>')"
                    wire:key="prod-<?php echo e($product->id); ?>">
             <div class="p-media">
               
@@ -84,10 +86,14 @@
             </div>
 
             <div class="p-cta pt-0 pb-2 px-2">
-              <button type="button" class="btn btn-light btn-sm fw-semibold w-100" aria-label="<?php echo e(__('Add to cart')); ?>">
-                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> <?php echo e(__('Add')); ?>
+                <button 
+                    type="button" 
+                        class="btn btn-light btn-sm fw-semibold w-100"
+                            wire:click="addToCart('<?php echo e($product->id); ?>')" 
+                                aria-label="<?php echo e(__('Add to cart')); ?>">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> <?php echo e(__('Add')); ?>
 
-              </button>
+                </button>
             </div>
           </article>
         </div>

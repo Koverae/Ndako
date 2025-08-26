@@ -119,8 +119,8 @@ return new class extends Migration
             $table->decimal('extra_charge', 8, 2)->default(0);
 
             // Additional fields for check-in/check-out process
-            $table->datetime('actual_check_in')->nullable(); // Exact time of check-in
-            $table->datetime('actual_check_out')->nullable(); // Exact time of check-out
+            $table->timestamp('actual_check_in')->nullable(); // Exact time of check-in
+            $table->timestamp('actual_check_out')->nullable(); // Exact time of check-out
             $table->enum('check_in_status', ['pending', 'checked_in'])->default('pending'); // Track check-in status
             $table->enum('check_out_status', ['pending', 'checked_out'])->default('pending'); // Track check-out status
 

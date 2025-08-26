@@ -20,7 +20,7 @@
 
         
         <!--[if BLOCK]><![endif]--><?php if($kdsOverall): ?>
-            <span class="kds-pill kds-<?php echo e($kdsOverall); ?>">
+            <span class="kds-pill kds-<?php echo e($kdsOverall); ?> cursor-pointer" wire:click="refreshKdsSummary">
             <!--[if BLOCK]><![endif]--><?php switch($kdsOverall):
                 case ('ready'): ?>      <i class="bi bi-check2-circle"></i> <?php echo e(__('Ready')); ?> <?php break; ?>
                 <?php case ('queued'): ?>     <i class="bi bi-clock"></i> <?php echo e(__('Queued')); ?> <?php break; ?>
@@ -31,7 +31,7 @@
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
         
-        <span class="kds-counts">
+        <span class="kds-counts d-sm-none">
             <span class="kds-chip" title="<?php echo e(__('Queued')); ?>"><i class="bi bi-clock"></i> <?php echo e($kdsSummary['queued']); ?></span>
             <span class="kds-chip" title="<?php echo e(__('Preparing')); ?>"><i class="bi bi-tools"></i> <?php echo e($kdsSummary['preparing']); ?></span>
             <span class="kds-chip" title="<?php echo e(__('Ready')); ?>"><i class="bi bi-check2-circle"></i> <?php echo e($kdsSummary['ready']); ?></span>
@@ -78,8 +78,8 @@
 
       
       <div class="co-toolbar d-none d-sm-flex">
-        <button class="btn btn-slim fw-semibold btn-ghost" wire:click="sendOrderToKds"><i class="bi bi-send"></i> <?php echo e(__('Send to KDS')); ?></button>
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('send_to_kitchen')): ?>
+        <button class="btn btn-slim fw-semibold btn-ghost" wire:click="sendOrderToKds"><i class="bi bi-send"></i> <?php echo e(__('Send to KDS')); ?></button>
         <?php endif; ?>
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('hold_resume_order')): ?>
         <button class="btn btn-slim fw-semibold btn-ghost" wire:click="toggleHold"><i class="bi bi-pause-circle"></i> <?php echo e($onHold ? __('Resume') : __('Hold')); ?></button>

@@ -43,93 +43,148 @@
       </div>
 
       <!-- Orders Table -->
-      <div class="overflow-x-auto">
-        <table class="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Order ID')); ?></th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Table')); ?></th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Guest')); ?></th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Total')); ?></th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Status')); ?></th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Payment')); ?></th>
-              <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Actions')); ?></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-              <tr class="transition duration-150 hover:bg-gray-50">
-                <td class="px-4 py-3 text-sm"><?php echo e($order->receipt_number); ?></td>
-                <td class="px-4 py-3 text-sm"><?php echo e($order->table->table_name ?? 'Direct Sale'); ?></td>
-                <td class="px-4 py-3 text-sm"><?php echo e($order->guest->name ?? 'N/A'); ?></td>
-                <td class="px-4 py-3 text-sm"><?php echo e(format_currency($order->total_amount + ($order->tax_amount ?? 0))); ?></td>
-                <td class="px-4 py-3 text-sm">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->status == 'ongoing' ? 'bg-yellow-100 text-yellow-800' : ($order->status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')); ?>">
-                    <?php echo e(ucfirst($order->status)); ?>
+<div class="relative overflow-x-auto">
+  <!-- subtle dim on load -->
+  <div wire:loading.delay.class="opacity-60" class="transition-opacity duration-200">
 
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-sm">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($order->payment_status == 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'); ?>">
-                    <?php echo e(ucfirst($order->payment_status)); ?>
+    <table class="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+      <thead class="sticky top-0 z-10 bg-gray-100">
+        <tr>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Order ID')); ?></th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Table')); ?></th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Guest')); ?></th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Total')); ?></th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Status')); ?></th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Payment')); ?></th>
+          <th class="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"><?php echo e(__('Actions')); ?></th>
+        </tr>
+      </thead>
 
-                  </span>
-                </td>
-                <td class="flex gap-2 px-4 py-3 text-sm">
-                  <?php $cartData = session("pos_cart_{$pos->id}"); ?>
-                  <!--[if BLOCK]><![endif]--><?php if($order->status === 'ongoing' && ($cartData['active_order_id'] ?? null) != $order->id): ?>
-                    <button
-                      wire:click="selectOrder('<?php echo e($order->id); ?>')"
-                      class="relative transition duration-150 btn btn-primary btn-sm group hover:bg-indigo-600"
-                      title="<?php echo e(__('Select this order')); ?>"
-                    >
-                      <?php echo e(__('Select')); ?>
+      
+      <tbody class="divide-y divide-gray-200" wire:loading.delay wire:target="orderStatusFilter,paymentStatusFilter,dateFilter,searchOrderQuery,selectOrder,cancelOrder,printPreBill,confirmRefund">
+        <!--[if BLOCK]><![endif]--><?php for($i=0;$i<6;$i++): ?>
+          <tr class="animate-pulse">
+            <!--[if BLOCK]><![endif]--><?php for($c=0;$c<7;$c++): ?>
+              <td class="px-4 py-3">
+                <div class="h-3.5 w-24 bg-gray-200 rounded"></div>
+              </td>
+            <?php endfor; ?><!--[if ENDBLOCK]><![endif]-->
+          </tr>
+        <?php endfor; ?><!--[if ENDBLOCK]><![endif]-->
+      </tbody>
 
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('Select this order')); ?></span>
-                    </button>
-                  <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+      
+      <tbody class="divide-y divide-gray-200" wire:loading.remove>
+        <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+          <tr class="transition-colors duration-150 hover:bg-gray-50" wire:key="order-row-<?php echo e($order->id); ?>">
+            <td class="px-4 py-3 text-sm font-medium text-gray-800">#<?php echo e($order->receipt_number); ?></td>
+            <td class="px-4 py-3 text-sm"><?php echo e($order->table->table_name ?? 'Direct Sale'); ?></td>
+            <td class="px-4 py-3 text-sm"><?php echo e($order->guest->name ?? 'N/A'); ?></td>
+            <td class="px-4 py-3 text-sm"><?php echo e(format_currency($order->total_amount + ($order->tax_amount ?? 0))); ?></td>
+            <td class="px-4 py-3 text-sm">
+              <?php
+                $status = $order->status;
+                $statusClasses = [
+                  'ongoing'   => 'bg-amber-100 text-amber-800',
+                  'completed' => 'bg-green-100 text-green-800',
+                  'receipt'   => 'bg-green-100 text-green-800',
+                  'refunded'  => 'bg-red-100 text-red-800',
+                  'canceled'  => 'bg-red-100 text-red-800',
+                ][$status] ?? 'bg-gray-100 text-gray-800';
+              ?>
+              <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($statusClasses); ?>">
+                <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
+                <?php echo e(ucfirst($status)); ?>
+
+              </span>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <?php
+                $p = $order->payment_status;
+                $payClasses = $p === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+              ?>
+              <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold leading-5 rounded-full <?php echo e($payClasses); ?>">
+                <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
+                <?php echo e(ucfirst($p)); ?>
+
+              </span>
+            </td>
+
+            
+            <td class="px-4 py-3 text-sm">
+              <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
+                <?php $cartData = session("pos_cart_{$pos->id}"); ?>
+
+                
+                <!--[if BLOCK]><![endif]--><?php if($order->status === 'ongoing' && ($cartData['active_order_id'] ?? null) != $order->id): ?>
+                  <button
+                    wire:click="selectOrder('<?php echo e($order->id); ?>')"
+                    class="inline-flex items-center gap-1 btn btn-primary btn-sm transition duration-150 hover:bg-indigo-600"
+                    title="<?php echo e(__('Select this order')); ?>"
+                  >
+                    <i class="bi bi-check2-circle text-base"></i>
+                    <span class="d-none d-md-inline"><?php echo e(__('Select')); ?></span>
+                  </button>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
+                
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('cancel_pos_order')): ?>
                   <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
                     <button
                       wire:click="cancelOrder('<?php echo e($order->id); ?>')"
                       wire:confirm="<?php echo e(__('Do you really want to delete this order?')); ?>"
-                      class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600"
+                      class="inline-flex items-center gap-1 btn btn-danger btn-sm transition duration-150 hover:bg-red-600"
                       title="<?php echo e(__('Delete this order')); ?>"
                     >
-                      <?php echo e(__('Delete')); ?>
-
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('Delete this order')); ?></span>
+                      <i class="bi bi-trash text-base"></i>
+                      <span class="d-none d-md-inline"><?php echo e(__('Delete')); ?></span>
                     </button>
+                  <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <?php endif; ?>
+
+                
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('reprint_last_receipt')): ?>
+                  <!--[if BLOCK]><![endif]--><?php if($order->status == 'ongoing'): ?>
                     <button
                       wire:click="printPreBill('<?php echo e($order->id); ?>')"
-                      class="relative transition duration-150 btn btn-info btn-sm group hover:bg-blue-600"
+                      class="inline-flex items-center gap-1 btn btn-info btn-sm transition duration-150 hover:bg-blue-600"
                       title="<?php echo e(__('Print pre-bill')); ?>"
                     >
-                      <?php echo e(__('Pre-Bill')); ?>
-
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('Print pre-bill')); ?></span>
+                      <i class="bi bi-printer text-base"></i>
+                      <span class="d-none d-md-inline"><?php echo e(__('Pre-Bill')); ?></span>
                     </button>
                   <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                  <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded' && $order->payment_status == 'paid'): ?>
-                    <button
-                      wire:click="confirmRefund('<?php echo e($order->id); ?>')"
-                      class="relative transition duration-150 btn btn-danger btn-sm group hover:bg-red-600"
-                      title="<?php echo e(__('Refund this order')); ?>"
-                    >
-                      <?php echo e(__('Refund')); ?>
+                <?php endif; ?>
 
-                      <span class="absolute hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-800 rounded group-hover:block -top-8 left-1/2"><?php echo e(__('Refund this order')); ?></span>
-                    </button>
-                  <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                </td>
-              </tr>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-              <tr>
-                <td colspan="7" class="px-4 py-3 text-sm text-center text-gray-500"><?php echo e(__('No orders found.')); ?></td>
-              </tr>
-            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-          </tbody>
-        </table>
-      </div>
+                
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('refund_pos_order')): ?>
+                <!--[if BLOCK]><![endif]--><?php if($order->status != 'refunded' && $order->payment_status == 'paid'): ?>
+                  <button
+                    wire:click="confirmRefund('<?php echo e($order->id); ?>')"
+                    class="inline-flex items-center gap-1 btn btn-danger btn-sm transition duration-150 hover:bg-red-600"
+                    title="<?php echo e(__('Refund this order')); ?>"
+                  >
+                    <i class="bi bi-arrow-counterclockwise text-base"></i>
+                    <span class="d-none d-md-inline"><?php echo e(__('Refund')); ?></span>
+                  </button>
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+                <?php endif; ?>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+          <tr>
+            <td colspan="7" class="px-4 py-6 text-sm text-center text-gray-500">
+              <?php echo e(__('No orders found.')); ?>
+
+            </td>
+          </tr>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
       <!-- Pagination -->
       <div class="mt-4">
@@ -171,4 +226,5 @@
         </div>
       </div>
     </div>
-  </div><?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/partials/pos/orders.blade.php ENDPATH**/ ?>
+  </div>
+<?php /**PATH D:\My Laravel Startup\ndako\Modules/Pos\resources/views/partials/pos/orders.blade.php ENDPATH**/ ?>

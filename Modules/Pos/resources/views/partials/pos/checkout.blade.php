@@ -17,7 +17,7 @@
 
         {{-- NEW: overall KDS status pill --}}
         @if($kdsOverall)
-            <span class="kds-pill kds-{{ $kdsOverall }}">
+            <span class="kds-pill kds-{{ $kdsOverall }} cursor-pointer" wire:click="refreshKdsSummary">
             @switch($kdsOverall)
                 @case('ready')      <i class="bi bi-check2-circle"></i> {{ __('Ready') }} @break
                 @case('queued')     <i class="bi bi-clock"></i> {{ __('Queued') }} @break
@@ -27,7 +27,7 @@
         @endif
 
         {{-- NEW: compact counts (Queued · Prep · Ready) --}}
-        <span class="kds-counts">
+        <span class="kds-counts d-sm-none">
             <span class="kds-chip" title="{{ __('Queued') }}"><i class="bi bi-clock"></i> {{ $kdsSummary['queued'] }}</span>
             <span class="kds-chip" title="{{ __('Preparing') }}"><i class="bi bi-tools"></i> {{ $kdsSummary['preparing'] }}</span>
             <span class="kds-chip" title="{{ __('Ready') }}"><i class="bi bi-check2-circle"></i> {{ $kdsSummary['ready'] }}</span>
@@ -73,8 +73,8 @@
 
       {{-- Advanced actions (inline on ≥sm) --}}
       <div class="co-toolbar d-none d-sm-flex">
-        <button class="btn btn-slim fw-semibold btn-ghost" wire:click="sendOrderToKds"><i class="bi bi-send"></i> {{ __('Send to KDS') }}</button>
         @can('send_to_kitchen')
+        <button class="btn btn-slim fw-semibold btn-ghost" wire:click="sendOrderToKds"><i class="bi bi-send"></i> {{ __('Send to KDS') }}</button>
         @endcan
         @can('hold_resume_order')
         <button class="btn btn-slim fw-semibold btn-ghost" wire:click="toggleHold"><i class="bi bi-pause-circle"></i> {{ $onHold ? __('Resume') : __('Hold') }}</button>

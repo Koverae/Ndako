@@ -562,3 +562,35 @@ button,label{ cursor:pointer }
   }
   .m-mobile-switcher-spacer{ height:var(--mobile-bar-h) }
 }
+
+/* Offline banner styling (subtle, modern, no flashy) */
+.net-banner{
+  background: #fff8e6;                      /* soft amber tint */
+  backdrop-filter: saturate(110%) blur(2px);
+  padding: .55rem .75rem;
+  z-index: 1040;                            /* above content, below modals */
+  position: sticky; top: 0;                 /* stays at the top when scrolling */
+}
+.net-title{ line-height: 1; }
+.net-subtle{ font-size: .85rem; color: #6c757d; }
+
+/* Compact on very small screens */
+@media (max-width: 480px){
+  .net-banner{ padding: .5rem .6rem; }
+  .net-subtle{ display:block; margin-top: .15rem; }
+}
+
+/* Dark mode (if you toggle data-theme="dark" elsewhere) */
+[data-theme="dark"] .net-banner{
+  background: #3a3122;                      /* low-contrast warm tint */
+  color: #e9ecef;
+  border-color: rgba(255,255,255,.1)!important;
+}
+[data-theme="dark"] .net-subtle{ color:#c9ced6; }
+
+/* Back-online toast */
+.net-toast{
+  position: fixed; right: .75rem; bottom: .75rem;
+  border: 1px solid rgba(25,135,84,.25);
+  border-radius: .5rem;
+}

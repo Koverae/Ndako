@@ -17,7 +17,8 @@
         placeholder="{{ __('Search products, e.g. “Latte”, “Burger”...') }}"
         aria-label="{{ __('Search products') }}"
         wire:model.live="searchQuery"
-        id="prod-search-input">
+        id="prod-search-input"
+        :disabled="!online" :title="!online ? '{{ __('Unavailable offline') }}' : ''">
       @if(!empty($searchQuery))
         <button class="btn-clear" type="button" aria-label="{{ __('Clear search') }}"
                 wire:click="$set('searchQuery','')">
@@ -32,7 +33,8 @@
         type="button"
         class="cat-pill {{ $selectedCategoryId == null ? 'active' : '' }}"
         wire:click="selectCategory('{{ 0 }}')"
-        role="tab" aria-selected="{{ $selectedCategoryId == null ? 'true' : 'false' }}">
+        role="tab" aria-selected="{{ $selectedCategoryId == null ? 'true' : 'false' }}"
+        :disabled="!online" :title="!online ? '{{ __('Unavailable offline') }}' : ''">
         <i class="bi bi-house-fill me-1" aria-hidden="true"></i>{{ __('All') }}
       </button>
 
@@ -41,7 +43,8 @@
           type="button"
           class="cat-pill {{ $selectedCategoryId == $category->id ? 'active' : '' }}"
           wire:click="selectCategory('{{ $category->id }}')"
-          role="tab" aria-selected="{{ $selectedCategoryId == $category->id ? 'true' : 'false' }}">
+          role="tab" aria-selected="{{ $selectedCategoryId == $category->id ? 'true' : 'false' }}"
+          :disabled="!online" :title="!online ? '{{ __('Unavailable offline') }}' : ''">
           {{ $category->name }}
         </button>
       @endforeach
@@ -96,7 +99,6 @@
           <article class="p-card"
                    role="button"
                    tabindex="0"
-                   wire:click="addToCart('{{ $product->id }}')"
                    wire:key="prod-{{ $product->id }}">
             <div class="p-media">
               {{-- badge (example: popular/infinite stock flag) --}}
@@ -118,9 +120,13 @@
             </div>
 
             <div class="p-cta pt-0 pb-2 px-2">
-              <button type="button" class="btn btn-light btn-sm fw-semibold w-100" aria-label="{{ __('Add to cart') }}">
-                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> {{ __('Add') }}
-              </button>
+                <button 
+                    type="button" 
+                        class="btn btn-light btn-sm fw-semibold w-100"
+                            wire:click="addToCart('{{ $product->id }}')" 
+                                aria-label="{{ __('Add to cart') }}">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> {{ __('Add') }}
+                </button>
             </div>
           </article>
         </div>

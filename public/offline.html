@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>You're offline</title>
+  <style>
+    :root{--bg:#f8f9fa;--fg:#212529;--muted:#6c757d;--card:#ffffff;--border:rgba(0,0,0,.08)}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:min(640px,96vw);background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 .5rem 1rem rgba(0,0,0,.06);padding:22px}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .brand img{height:36px;width:auto}
+    h1{margin:.25rem 0 .35rem 0;font-size:1.25rem;letter-spacing:.01em}
+    p{margin:.25rem 0;color:var(--muted)}
+    .actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:14px}
+    .btn{appearance:none;border:1px solid var(--border);border-radius:10px;background:#fff;padding:.6rem .9rem;font-weight:600;cursor:pointer}
+    .btn.primary{background:#0d6efd;border-color:#0d6efd;color:#fff}
+    .muted{font-size:.875rem;color:var(--muted)}
+    .small{font-size:.82rem}
+    @media (max-width:480px){ .card{padding:16px} }
+    @media (prefers-color-scheme: dark){
+      :root{--bg:#0f1115;--fg:#e9ecef;--muted:#b3bcc7;--card:#151922;--border:rgba(255,255,255,.08)}
+      .btn{background:#1a2030;color:#e9ecef;border-color:var(--border)}
+      .btn.primary{background:#0d6efd;border-color:#0d6efd}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="status" aria-live="polite">
+      <div class="brand">
+        <!-- If you have a logo, this path will be pre-cached in the SW below -->
+        <img src="/assets/images/logo/ndako.png" alt="Logo" />
+        <span class="small muted">Ndako POS</span>
+      </div>
+
+      <h1>You’re offline</h1>
+      <p>We couldn’t reach the network. Your work is safe; try reconnecting and reload when ready.</p>
+
+      <div class="actions">
+        <button class="btn primary" onclick="location.reload()">
+          Try again
+        </button>
+        <button class="btn" onclick="history.length ? history.back() : location.assign('/')">
+          Go back
+        </button>
+      </div>
+
+      <p class="muted small" style="margin-top:12px;">
+        Tip: If this keeps happening, check Wi-Fi or mobile data, then retry.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

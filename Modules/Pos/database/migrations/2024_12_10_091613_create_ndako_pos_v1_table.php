@@ -211,7 +211,7 @@ return new class extends Migration
             $table->string('reference')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('label')->nullable();
-            $table->enum('payment_method', ['cash','card','mpesa','mobile-money','paystack'])->default('cash');
+            $table->enum('payment_method', ['cash','card','mpesa', 'mpesa_offline','mobile-money','paystack'])->default('cash');
             $table->unsignedBigInteger('payment_method_id')->nullable();
             $table->decimal('amount', $precision = 12, $scale = 2)->default(0);
             $table->decimal('due_amount', $precision = 12, $scale = 2)->default(0);

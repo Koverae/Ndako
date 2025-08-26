@@ -32,11 +32,13 @@ class AddUnitWizard extends SimpleWizard
         $this->properties = toSelectOptions(Property::isCompany(current_company()->id)->get(), 'id', 'name');
 
         $unitTypes = [
+            // ─────────────────────────────────────────────────────────────
             // Basic & Standard Rooms
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'single-room',          'label' => 'Single Room 🛏️'],
             ['id' => 'double-room',          'label' => 'Double Room 🛏️🛏️'],
             ['id' => 'twin-room',            'label' => 'Twin Room 🛏️🛏️'],
-            ['id' => 'double-double-room',   'label' => 'Double-Double Room 🛏️🛏️'], // two double beds
+            ['id' => 'double-double-room',   'label' => 'Double-Double Room 🛏️🛏️'],
             ['id' => 'queen-room',           'label' => 'Queen Room 👑🛏️'],
             ['id' => 'king-room',            'label' => 'King Room 👑🛏️'],
             ['id' => 'triple-room',          'label' => 'Triple Room 🛏️🛏️🛏️'],
@@ -46,7 +48,9 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'connecting-room',      'label' => 'Connecting Rooms 🔗'],
             ['id' => 'adjoining-room',       'label' => 'Adjoining Room 🚪'],
 
+            // ─────────────────────────────────────────────────────────────
             // Premium & Luxury Rooms
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'standard-room',        'label' => 'Standard Room 🌟'],
             ['id' => 'deluxe-room',          'label' => 'Deluxe Room 🌟'],
             ['id' => 'superior-room',        'label' => 'Superior Room ✨'],
@@ -61,7 +65,9 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'presidential-suite',   'label' => 'Presidential Suite 🏆'],
             ['id' => 'penthouse',            'label' => 'Penthouse 🌆'],
 
+            // ─────────────────────────────────────────────────────────────
             // Specialty & Themed Rooms
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'honeymoon-suite',      'label' => 'Honeymoon Suite 💕'],
             ['id' => 'wellness-room',        'label' => 'Wellness Room 🧘'],
             ['id' => 'accessible-room',      'label' => 'Accessible Room ♿'],
@@ -71,13 +77,17 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'cave-suite',           'label' => 'Cave Suite 🪨'],
             ['id' => 'riad-room',            'label' => 'Riad Room 🕌'],
 
+            // ─────────────────────────────────────────────────────────────
             // Apartment & Long-Stay Options (Hotel-style)
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'studio-room',          'label' => 'Studio Room 🏢'],
             ['id' => 'loft-room',            'label' => 'Loft Room 🏙️'],
             ['id' => 'duplex-room',          'label' => 'Duplex Room 🏠'],
             ['id' => 'efficiency-apartment', 'label' => 'Efficiency Apartment 🔄'],
 
+            // ─────────────────────────────────────────────────────────────
             // Budget & Shared Accommodation
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'shared-dormitory',     'label' => 'Shared Dormitory 🏘️'],
             ['id' => 'mixed-dorm',           'label' => 'Mixed Dorm 🛌'],
             ['id' => 'female-dorm',          'label' => 'Female Dorm 🚺'],
@@ -88,7 +98,9 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'micro-room',           'label' => 'Micro Room 🚪'],
             ['id' => 'pod-dorm',             'label' => 'Pod Dorm 🧩'],
 
+            // ─────────────────────────────────────────────────────────────
             // Alternative Lodging / Resort
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'bungalow',             'label' => 'Bungalow 🏖️'],
             ['id' => 'cottage',              'label' => 'Cottage 🏡'],
             ['id' => 'chalet',               'label' => 'Chalet 🏔️'],
@@ -99,7 +111,9 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'safari-tent',          'label' => 'Safari Tent 🐘'],
             ['id' => 'overwater-bungalow',   'label' => 'Overwater Bungalow 🌊'],
 
+            // ─────────────────────────────────────────────────────────────
             // Villas & Homes
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'one-bedroom-villa',    'label' => 'One-Bedroom Villa 🏠'],
             ['id' => 'two-bedroom-villa',    'label' => 'Two-Bedroom Villa 🏠🏠'],
             ['id' => 'three-bedroom-villa',  'label' => 'Three-Bedroom Villa 🏠🏠🏠'],
@@ -107,7 +121,9 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'beach-villa',          'label' => 'Beach Villa 🏝️'],
             ['id' => 'garden-villa',         'label' => 'Garden Villa 🌿'],
 
+            // ─────────────────────────────────────────────────────────────
             // Apartments (Residential / Serviced)
+            // ─────────────────────────────────────────────────────────────
             ['id' => 'studio-apartment',     'label' => 'Studio Apartment 🏢'],
             ['id' => 'alcove-studio',        'label' => 'Alcove Studio 🧩'],
             ['id' => 'one-bedroom-apartment','label' => 'One-Bedroom Apartment 🛏️'],
@@ -122,13 +138,131 @@ class AddUnitWizard extends SimpleWizard
             ['id' => 'corporate-apartment',  'label' => 'Corporate Apartment 💼'],
             ['id' => 'luxury-apartment',     'label' => 'Luxury Apartment 🌟'],
             ['id' => 'smart-apartment',      'label' => 'Smart Apartment 🤖'],
-            ['id' => 'serviced-apartment',   'label' => 'Serviced Apartment 🏡'], // kept one; removed duplicate
+            ['id' => 'serviced-apartment',   'label' => 'Serviced Apartment 🏡'],
 
-            // Townhouses & Multi-Story Living
-            ['id' => 'duplex',               'label' => 'Duplex 🏠🏠'],
-            ['id' => 'triplex',              'label' => 'Triplex 🏡🏡🏡'],
-            ['id' => 'townhouse',            'label' => 'Townhouse 🏘️'],
+            // ─────────────────────────────────────────────────────────────
+            // Meetings, Conferences & Event Spaces (MICE)
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'conference-center',    'label' => 'Conference Center 🏢'],
+            ['id' => 'conference-hall',      'label' => 'Conference Hall 🎤'],
+            ['id' => 'ballroom',             'label' => 'Ballroom 💃'],
+            ['id' => 'banquet-hall',         'label' => 'Banquet Hall 🍽️'],
+            ['id' => 'auditorium',           'label' => 'Auditorium 🎭'],
+            ['id' => 'exhibition-hall',      'label' => 'Exhibition Hall 🖼️'],
+            ['id' => 'multipurpose-hall',    'label' => 'Multipurpose Hall 🧩'],
+            ['id' => 'meeting-room-small',   'label' => 'Meeting Room (Small) 🗣️'],
+            ['id' => 'meeting-room-medium',  'label' => 'Meeting Room (Medium) 🗣️'],
+            ['id' => 'meeting-room-large',   'label' => 'Meeting Room (Large) 🗣️'],
+            ['id' => 'boardroom',            'label' => 'Boardroom 🧷'],
+            ['id' => 'breakout-room',        'label' => 'Breakout Room 🔀'],
+            ['id' => 'training-room',        'label' => 'Training Room 🧑‍🏫'],
+            ['id' => 'seminar-room',         'label' => 'Seminar Room 🎓'],
+            ['id' => 'classroom',            'label' => 'Classroom 🪑'],
+            ['id' => 'press-room',           'label' => 'Press Room 📰'],
+            ['id' => 'green-room',           'label' => 'Green Room 🎬'],
+            ['id' => 'vip-lounge',           'label' => 'VIP Lounge ⭐'],
+            ['id' => 'av-studio',            'label' => 'AV/Recording Studio 🎙️'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Weddings & Social Events
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'wedding-venue',        'label' => 'Wedding Venue 💍'],
+            ['id' => 'wedding-chapel',       'label' => 'Wedding Chapel ⛪'],
+            ['id' => 'reception-hall',       'label' => 'Reception Hall 🥂'],
+            ['id' => 'bridal-dressing-room', 'label' => 'Bridal Dressing Room 👰'],
+            ['id' => 'grooms-lounge',        'label' => "Groom's Lounge 🤵"],
+            ['id' => 'garden-pavilion',      'label' => 'Garden Pavilion 🌿'],
+            ['id' => 'marquee-tent',         'label' => 'Marquee Tent ⛺'],
+            ['id' => 'gazebo',               'label' => 'Gazebo 🏡'],
+            ['id' => 'event-lawn',           'label' => 'Event Lawn 🌱'],
+            ['id' => 'beachfront-venue',     'label' => 'Beachfront Venue 🏖️'],
+            ['id' => 'rooftop-terrace',      'label' => 'Rooftop Terrace 🌇'],
+            ['id' => 'pool-deck',            'label' => 'Pool Deck 🏊‍♂️'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Workspaces & Offices
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'coworking-hot-desk',   'label' => 'Coworking Hot Desk 💻'],
+            ['id' => 'coworking-dedicated-desk','label' => 'Dedicated Desk 💻'],
+            ['id' => 'private-office',       'label' => 'Private Office 🗄️'],
+            ['id' => 'project-room',         'label' => 'Project Room 🧩'],
+            ['id' => 'computer-lab',         'label' => 'Computer Lab 🖥️'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Wellness, Spa & Fitness
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'spa-treatment-room',   'label' => 'Spa Treatment Room 💆'],
+            ['id' => 'couple-treatment-room','label' => 'Couple Treatment Room 💆‍♀️💆‍♂️'],
+            ['id' => 'sauna',                'label' => 'Sauna ♨️'],
+            ['id' => 'steam-room',           'label' => 'Steam Room 🌫️'],
+            ['id' => 'hammam',               'label' => 'Hammam 🧖'],
+            ['id' => 'yoga-studio',          'label' => 'Yoga Studio 🧘'],
+            ['id' => 'fitness-studio',       'label' => 'Fitness Studio 🏋️'],
+            ['id' => 'salt-room',            'label' => 'Salt Room 🧂'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Food & Beverage Private Spaces
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'private-dining-room',  'label' => 'Private Dining Room 🍽️'],
+            ['id' => 'chefs-table',          'label' => "Chef's Table 👨‍🍳"],
+            ['id' => 'wine-cellar-room',     'label' => 'Wine Cellar/Tasting Room 🍷'],
+            ['id' => 'lounge',               'label' => 'Lounge 🛋️'],
+            ['id' => 'sky-bar',              'label' => 'Sky Bar 🌃'],
+            ['id' => 'pool-bar',             'label' => 'Pool Bar 🍹'],
+            ['id' => 'beach-club-cabana',    'label' => 'Beach Club Cabana 🏖️'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Outdoor, Rooftop & Specialty Venues
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'courtyard',            'label' => 'Courtyard 🪴'],
+            ['id' => 'terrace',              'label' => 'Terrace 🌤️'],
+            ['id' => 'pavilion',             'label' => 'Pavilion 🏛️'],
+            ['id' => 'amphitheater',         'label' => 'Amphitheater 🪗'],
+            ['id' => 'firepit-area',         'label' => 'Firepit Area 🔥'],
+            ['id' => 'bbq-area',             'label' => 'BBQ Area 🍖'],
+            ['id' => 'game-room',            'label' => 'Game Room 🎮'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Camping, Caravan & RV
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'campsite-pitch',       'label' => 'Campsite Pitch 🏕️'],
+            ['id' => 'caravan-site',         'label' => 'Caravan Site 🚐'],
+            ['id' => 'rv-site',              'label' => 'RV Site 🚌'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Marina & Water
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'boat-slip',            'label' => 'Boat Slip / Berth 🚤'],
+            ['id' => 'pontoon',              'label' => 'Pontoon 🛥️'],
+            ['id' => 'kayak-rental',         'label' => 'Kayak Rental 🛶'],
+            ['id' => 'sup-rental',           'label' => 'SUP Board Rental 🏄'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Day Use & Passes
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'day-use-room',         'label' => 'Day-Use Room 🕘'],
+            ['id' => 'pool-day-pass',        'label' => 'Pool Day Pass 🏊'],
+            ['id' => 'spa-day-pass',         'label' => 'Spa Day Pass 💆'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Sports & Leisure Facilities
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'tennis-court',         'label' => 'Tennis Court 🎾'],
+            ['id' => 'padel-court',          'label' => 'Padel Court 🥎'],
+            ['id' => 'squash-court',         'label' => 'Squash Court 🥍'],
+            ['id' => 'basketball-court',     'label' => 'Basketball Court 🏀'],
+            ['id' => 'mini-golf',            'label' => 'Mini Golf ⛳'],
+            ['id' => 'golf-simulator',       'label' => 'Golf Simulator 🖥️⛳'],
+            ['id' => 'bowling-lane',         'label' => 'Bowling Lane 🎳'],
+            ['id' => 'billiard-room',        'label' => 'Billiard Room 🎱'],
+
+            // ─────────────────────────────────────────────────────────────
+            // Parking & Transport
+            // ─────────────────────────────────────────────────────────────
+            ['id' => 'parking-space',        'label' => 'Parking Space 🚗'],
+            ['id' => 'ev-charging-bay',      'label' => 'EV Charging Bay ⚡🚘'],
         ];
+
 
         $this->unitTypes = toSelectOptions($unitTypes, 'id', 'label');
 

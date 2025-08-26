@@ -54,6 +54,13 @@ class Booking extends Model
         'check_out_status',
     ];
 
+    protected $casts = [
+        'actual_check_in'   => 'datetime',
+        'actual_check_out'  => 'datetime',
+        'check_in'          => 'datetime',
+        'check_out'         => 'datetime',
+    ];
+
     public static function boot() {
         parent::boot();
 
