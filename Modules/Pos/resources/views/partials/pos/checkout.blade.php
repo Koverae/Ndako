@@ -14,6 +14,25 @@
         @else
           <i class="bi bi-bag"></i> {{ __('Direct Sale') }}
         @endif
+
+        {{-- NEW: overall KDS status pill --}}
+        @if($kdsOverall)
+            <span class="kds-pill kds-{{ $kdsOverall }}">
+            @switch($kdsOverall)
+                @case('ready')      <i class="bi bi-check2-circle"></i> {{ __('Ready') }} @break
+                @case('queued')     <i class="bi bi-clock"></i> {{ __('Queued') }} @break
+                @default            <i class="bi bi-tools"></i> {{ __('Preparing') }}
+            @endswitch
+            </span>
+        @endif
+
+        {{-- NEW: compact counts (Queued · Prep · Ready) --}}
+        <span class="kds-counts">
+            <span class="kds-chip" title="{{ __('Queued') }}"><i class="bi bi-clock"></i> {{ $kdsSummary['queued'] }}</span>
+            <span class="kds-chip" title="{{ __('Preparing') }}"><i class="bi bi-tools"></i> {{ $kdsSummary['preparing'] }}</span>
+            <span class="kds-chip" title="{{ __('Ready') }}"><i class="bi bi-check2-circle"></i> {{ $kdsSummary['ready'] }}</span>
+        </span>
+
         <button
           wire:click="cancelOrder('{{ $this->order?->id }}')"
           wire:confirm="{{ __('Are you sure to reset the cart?') }}"

@@ -115,6 +115,13 @@ class Home extends Component
     /** Calculator input (string to allow empty) */
     public string $calculatorInput = '';
 
+    // Summary + overall status
+    public array $kdsSummary = ['queued' => 0, 'preparing' => 0, 'ready' => 0];
+    public ?string $kdsOverall = null;
+
+    // OPTIONAL: if you want all-stations vs only kitchen, add a filter
+    public ?string $kdsStation = null; // e.g. 'kitchen' | 'bar' | 'pass' | null (all)
+
 
     // ---- Lifecycle ---------------------------------------------------------
 
@@ -175,6 +182,7 @@ class Home extends Component
 
         $this->recalculateTotals();
         $this->loadActiveOrder();
+        $this->refreshKdsSummary(); // NEW
     }
 
     // ---- UI state changes --------------------------------------------------
@@ -1434,6 +1442,48 @@ class Home extends Component
 
         $this->toastSuccess('POS closed successfully!', "POS {$this->pos->name} has been closed.");
         return $this->redirect(route('pos.overview'), navigate: true);
+    }
+
+    // Keep the summary fresh whenever KDS updates anywhere
+    #[On('kds-updated')]
+    public function refreshKdsSummary(): void
+    {
+        if (!$this->order?->id) {
+            $this->kdsSummary = ['queued' => 0, 'preparing' => 0, 'ready' => 0];
+            $this->kdsOverall = null;
+            return;
+        }
+
+        $q = PosOrderDetail::query()
+            ->where('pos_order_id', $this->order->id)
+            ->whereIn('kds_status', ['queued','preparing','ready']);
+
+        if ($this->kdsStation) {
+            $q->where('kds_station', $this->kdsStation);
+        }
+
+        $counts = $q->selectRaw('kds_status, COUNT(*) as c')
+            ->groupBy('kds_status')
+            ->pluck('c', 'kds_status')
+            ->all();
+
+        // normalize
+        $this->kdsSummary = array_merge(['queued'=>0,'preparing'=>0,'ready'=>0], $counts);
+
+        $total = array_sum($this->kdsSummary);
+        if ($total === 0) {
+            $this->kdsOverall = null;
+            return;
+        }
+
+        // overall: all ready → ready; all queued → queued; otherwise preparing
+        if ($this->kdsSummary['ready'] === $total) {
+            $this->kdsOverall = 'ready';
+        } elseif ($this->kdsSummary['queued'] === $total) {
+            $this->kdsOverall = 'queued';
+        } else {
+            $this->kdsOverall = 'preparing';
+        }
     }
 
     // ---- Render ------------------------------------------------------------

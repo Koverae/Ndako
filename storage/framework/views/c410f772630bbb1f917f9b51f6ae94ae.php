@@ -17,6 +17,26 @@
           <i class="bi bi-bag"></i> <?php echo e(__('Direct Sale')); ?>
 
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
+        
+        <!--[if BLOCK]><![endif]--><?php if($kdsOverall): ?>
+            <span class="kds-pill kds-<?php echo e($kdsOverall); ?>">
+            <!--[if BLOCK]><![endif]--><?php switch($kdsOverall):
+                case ('ready'): ?>      <i class="bi bi-check2-circle"></i> <?php echo e(__('Ready')); ?> <?php break; ?>
+                <?php case ('queued'): ?>     <i class="bi bi-clock"></i> <?php echo e(__('Queued')); ?> <?php break; ?>
+                <?php default: ?>            <i class="bi bi-tools"></i> <?php echo e(__('Preparing')); ?>
+
+            <?php endswitch; ?><!--[if ENDBLOCK]><![endif]-->
+            </span>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+
+        
+        <span class="kds-counts">
+            <span class="kds-chip" title="<?php echo e(__('Queued')); ?>"><i class="bi bi-clock"></i> <?php echo e($kdsSummary['queued']); ?></span>
+            <span class="kds-chip" title="<?php echo e(__('Preparing')); ?>"><i class="bi bi-tools"></i> <?php echo e($kdsSummary['preparing']); ?></span>
+            <span class="kds-chip" title="<?php echo e(__('Ready')); ?>"><i class="bi bi-check2-circle"></i> <?php echo e($kdsSummary['ready']); ?></span>
+        </span>
+
         <button
           wire:click="cancelOrder('<?php echo e($this->order?->id); ?>')"
           wire:confirm="<?php echo e(__('Are you sure to reset the cart?')); ?>"

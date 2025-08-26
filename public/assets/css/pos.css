@@ -415,6 +415,25 @@ button,label{ cursor:pointer }
   .pay-cta{ flex:1 1 auto; min-width:160px }
 }
 
+/* KDS status – soft, readable, not flashy */
+.kds-pill{
+  display:inline-flex; align-items:center; gap:.35rem;
+  padding:.18rem .5rem; border-radius:999px;
+  font-weight:700; font-size:.75rem;
+  border:1px solid rgba(0,0,0,.08); background:#f8f9fa; color:#374151;
+}
+.kds-pill.kds-ready{     background:#eef8ef; border-color:rgba(25,135,84,.25);  color:#146c43; }
+.kds-pill.kds-preparing{ background:#fff7e6; border-color:rgba(255,193,7,.35); color:#7a5a00; }
+.kds-pill.kds-queued{    background:#eef2ff; border-color:rgba(13,110,253,.25); color:#294266; }
+
+.kds-counts{ display:inline-flex; gap:.25rem; }
+.kds-chip{
+  display:inline-flex; align-items:center; gap:.25rem;
+  padding:.15rem .45rem; border-radius:999px;
+  font-weight:600; font-size:.72rem;
+  background:#fafafa; border:1px solid rgba(0,0,0,.06); color:#555;
+}
+
 /* ==========================================================================
    14) Product Box (toolbar, grid, pills)
    ========================================================================== */
