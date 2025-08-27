@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php echo e(asset('assets/images/logo/favicon.ico')); ?>">
-    <title><?php echo e(current_company()->name); ?> - <?php echo $__env->yieldContent('title'); ?></title>
+    <title><?php echo $__env->yieldContent('title'); ?></title>
 
     <!-- CSS -->
     <link href="<?php echo e(asset('assets/css/koverae.css?'.time())); ?>" rel="stylesheet"/>
+    <link href="<?php echo e(asset('assets/css/pos.css?'.time())); ?>" rel="stylesheet"/>
     <link href="<?php echo e(asset('assets/css/koverae-flags.min.css?'.time())); ?>" rel="stylesheet"/>
-    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- CSS -->
 
@@ -17,6 +17,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
+
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha384-kr7knlC+7+03I2GzYDBHmxOStG8VIEyq6whWqn2oBoo1ddubZe6UjI+P5bn/f8O5" data-navigate-track/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha384-kgpA7T5GkjxAeLPMFlGLlQQGqMAwq8ciFnjsbPvZaFUHZvbRYPftvBcRea/Gozbo" data-navigate-track></script>
+    <!-- Leaflet.js CSS -->
 
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/de3e85d402.js" crossorigin="anonymous"></script>
@@ -26,6 +31,7 @@
     <!-- Libs JS -->
     <script src="<?php echo e(asset('assets/libs/list.js/dist/list.min.js')); ?>" data-navigate-track ></script>
     <script src="<?php echo e(asset('assets/libs/apexcharts/dist/apexcharts.min.js')); ?>" data-navigate-track ></script>
+    
     <!-- Libs JS -->
     <?php echo $__env->yieldContent('styles'); ?>
     <!-- Scripts -->
@@ -56,47 +62,12 @@
 <body>
     <script src="<?php echo e(asset('assets/js/demo-theme.min.js')); ?>" data-navigate-track></script>
     <main class="page">
-        <!-- Navbar -->
-        <?php echo $__env->make('layouts.navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
         <!-- Navbar End -->
 
         <!-- Page Content -->
         <?php echo $__env->yieldContent('content'); ?>
         <!-- Page Content End -->
-
-        <?php
-$__split = function ($name, $params = []) {
-    return [$name, $params];
-};
-[$__name, $__params] = $__split('app::components.notification-bell', []);
-
-$__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-0', $__slots ?? [], get_defined_vars());
-
-echo $__html;
-
-unset($__html);
-unset($__name);
-unset($__params);
-unset($__split);
-if (isset($__slots)) unset($__slots);
-?>
-
-        <?php
-$__split = function ($name, $params = []) {
-    return [$name, $params];
-};
-[$__name, $__params] = $__split('app::components.chat-widget', []);
-
-$__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-1', $__slots ?? [], get_defined_vars());
-
-echo $__html;
-
-unset($__html);
-unset($__name);
-unset($__params);
-unset($__split);
-if (isset($__slots)) unset($__slots);
-?>
 
     </main>
 
@@ -106,7 +77,7 @@ $__split = function ($name, $params = []) {
 };
 [$__name, $__params] = $__split('wire-elements-modal');
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-2', $__slots ?? [], get_defined_vars());
+$__html = app('livewire')->mount($__name, $__params, 'lw-176856119-0', $__slots ?? [], get_defined_vars());
 
 echo $__html;
 
@@ -117,6 +88,7 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
     <!-- Custom JS -->
+    <script src="<?php echo e(asset('assets/js/koverae.js?'.time())); ?>" data-navigate-track></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <?php echo $__env->yieldPushContent('scripts'); ?> <!-- This is where scripts pushed with <?php $__env->startPush('scripts'); ?> will be loaded -->
@@ -124,4 +96,4 @@ if (isset($__slots)) unset($__slots);
 </body>
 
 </html>
-<?php /**PATH D:\My Laravel Startup\ndako\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\My Laravel Startup\ndako\resources\views/layouts/pos.blade.php ENDPATH**/ ?>

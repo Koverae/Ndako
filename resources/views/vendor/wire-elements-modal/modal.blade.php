@@ -7,6 +7,16 @@
         <style>{!! file_get_contents($cssPath) !!}</style>
         <style>
             #modal-container { vertical-align: middle !important; }
+            /* --- vertical scroll improvements (no visual changes) --- */
+            .modal-scroll{
+                max-height: calc(100dvh - 4rem);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch; /* momentum on iOS */
+                overscroll-behavior: contain;      /* keep scroll inside modal */
+            }
+            @media (min-width: 640px){ /* sm and up */
+                .modal-scroll{ max-height: 80vh; }
+            }
         </style>
     @endisset
 
@@ -33,7 +43,7 @@
         ></div>
 
         <!-- Wrapper: bottom sheet on mobile, centered on >= sm -->
-        <div class="fixed inset-0 flex items-end sm:items-center sm:justify-center p-0 md:py-4 modal sm:p-4">
+        <div class="fixed inset-0 flex items-end sm:items-center sm:justify-center p-0 md:py-4 modal sm:p-4 overflow-y-auto">
             <div
                 x-show="show && showActiveComponent"
 
@@ -53,7 +63,7 @@
                 aria-modal="true"
             >
                 <!-- Scrollable content area -->
-                <div class="max-h-[calc(100dvh-4rem)] sm:max-h-[80vh] overflow-y-auto">
+                <div class="modal-scroll">
                     @forelse($components as $id => $component)
                         <div x-show.immediate="activeComponent == '{{ $id }}'" x-ref="{{ $id }}" wire:key="{{ $id }}">
                             @livewire($component['name'], $component['arguments'], key($id))

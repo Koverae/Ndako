@@ -64,6 +64,8 @@
 
         <livewire:app::components.notification-bell />
 
+        <livewire:app::components.chat-widget />
+
     </main>
 
     @livewire('wire-elements-modal')

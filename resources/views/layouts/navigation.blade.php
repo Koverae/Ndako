@@ -15,13 +15,6 @@
         <!-- Navbar Buttons -->
         <div class="flex-row navbar-nav order-md-last">
             <div class="d-md-flex d-flex">
-                <!-- Translate -->
-                <div class="nav-item dropdown d-md-flex me-3">
-                    <a href="#" class="px-0 nav-link" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-placement="bottom">
-                        <i class="bi bi-translate" style="font-size: 16px;"></i>
-                    </a>
-                </div>
-                <!-- Translate End -->
 
                 <!-- Shortcuts (role-specific) -->
                 <div class="nav-item dropdown d-md-flex me-3">
@@ -498,7 +491,7 @@
         </div>
     </div>
     @endif
-    
+
     {{-- Trial banner --}}
     @if(current_company()->team->subscription('main')->isOnTrial())
     @php
