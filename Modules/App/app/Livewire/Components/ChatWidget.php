@@ -47,9 +47,15 @@ class ChatWidget extends Component
     {
         $this->open = ! $this->open;
 
-        if ($this->open && is_null($this->selectedConversationId) && !empty($this->conversations)) {
-            $this->selectConversation($this->conversations[0]['id']);
-        }
+        // if ($this->open && is_null($this->selectedConversationId) && !empty($this->conversations)) {
+        //     $this->selectConversation($this->conversations[0]['id']);
+        // }
+    }
+
+    // Is typing
+    public function typingPing(): void
+    {
+        // TODO: broadcast typing event to conversation participants
     }
 
     /** Determine the current actor (user or guest). Adjust guards as per your app. */
