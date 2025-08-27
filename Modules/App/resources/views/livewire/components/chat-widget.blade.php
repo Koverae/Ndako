@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 <div class="ndako-chat" wire:ignore.self x-data
      x-on:message-sent.window="setTimeout(() => $dispatch('scroll-bottom'), 50)"
      x-on:scroll-bottom.window="
@@ -19,44 +23,168 @@
         <aside class="ndako-chat__sidebar {{ $showThread ? '' : 'is-full' }}">
             <div class="ndako-chat__sidebar-header">
                 <div class="ndako-chat__title">Chats</div>
-                <button class="ndako-chat__tiny" title="New chat" @click="$wire.showContacts=true; setTimeout(()=>document.getElementById('ndako-search').focus(),0)">+</button>
+                <button class="ndako-chat__tiny" title="New chat"
+                        @click="$wire.showContacts=true; setTimeout(()=>document.getElementById('ndako-search').focus(),0)">+</button>
             </div>
 
             {{-- Contact Search --}}
             <div class="ndako-chat__search">
-                <input id="ndako-search" type="text" placeholder="Search contacts..."
-                       wire:model.debounce.300ms="search">
+                <div class="ndako-input-wrap">
+                    <input id="ndako-search" type="text" placeholder="Search contacts..."
+                           wire:model.live.debounce.300ms="search">
+                    <span class="ndako-spin" wire:loading wire:target="search"></span>
+                </div>
+
                 @if($showContacts)
-                    <div class="ndako-chat__search-pop">
+                    {{-- Results --}}
+                    <div class="ndako-chat__search-pop" wire:loading.remove wire:target="search">
                         @forelse($contacts as $c)
                             <button class="ndako-chat__contact"
                                     wire:click="startConversationWith('{{ $c['type'] }}', {{ $c['id'] }})">
-                                <div class="ndako-chat__contact-name">{{ $c['name'] }}</div>
-                                <div class="ndako-chat__contact-label">{{ $c['label'] }}</div>
+                                @if (!empty($c['avatar']))
+                                    <img src="{{ Storage::url('avatars/' . $c['avatar']) }}"
+                                         class="ndako-chip {{ $c['type'] === 'user' ? 'chip-user' : 'chip-guest' }}"
+                                         alt="">
+                                @else
+                                    <div class="ndako-chip {{ $c['type'] === 'user' ? 'chip-user' : 'chip-guest' }}">
+                                        {{ strtoupper($c['type'][0]) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <div class="ndako-chat__contact-name">{{ $c['name'] }}</div>
+                                    <div class="ndako-chat__contact-label">{{ $c['label'] }}</div>
+                                </div>
                             </button>
                         @empty
                             <div class="ndako-chat__empty">No matching contacts</div>
                         @endforelse
                     </div>
+
+                    {{-- Skeleton while searching --}}
+                    <div class="ndako-chat__search-pop" wire:loading wire:target="search">
+                        @for($i=0; $i<4; $i++)
+                            <div class="ndako-skel-line"></div>
+                        @endfor
+                    </div>
                 @endif
             </div>
 
-            {{-- Conversation list --}}
+            {{-- Conversation list with swipe actions --}}
             <div class="ndako-chat__convos">
-                @foreach($conversations as $c)
-                    <button class="ndako-chat__convo {{ $selectedConversationId === $c['id'] ? 'is-active' : '' }}"
-                            wire:click="selectConversation({{ $c['id'] }})"
-                            @click="$wire.showThread=true">
-                        <div class="ndako-chat__convo-title">{{ $c['subject'] ?? 'Chat' }}</div>
-                        <div class="ndako-chat__convo-meta">
-                            <span class="ndako-chat__muted">{{ $c['updated'] }}</span>
-                            @if($c['unread'] > 0)
-                                <span class="ndako-chat__pill">{{ $c['unread'] }}</span>
-                            @endif
+
+                {{-- Skeleton while switching thread --}}
+                <div wire:loading wire:target="selectConversation" class="ndako-skeleton">
+                    @for($i=0;$i<6;$i++)
+                        <div class="ndako-skel-row"></div>
+                    @endfor
+                </div>
+
+                <div wire:loading.remove wire:target="selectConversation">
+                    @forelse($conversations as $c)
+                        <div class="ndako-convo-wrap"
+                             x-data="ndakoSwipe({
+                                id: {{ $c['id'] }},
+                                width: () => window.innerWidth < 460 ? 168 : 224,
+                                onOpen: () => {}, onClose: () => {}
+                             })"
+                             x-on:ndako-close-all-swipes.window="close()"
+                             @keydown.escape.window="close()">
+
+                            {{-- ACTION RAIL --}}
+                            <div class="ndako-actions"
+                                :class="{ 'is-open': opened }"
+                                :style="`width:${railWidth}px`"
+                                aria-hidden="true">
+
+                                <button class="ndako-act ndako-act--pin" title="{{ ($c['pinned'] ?? false) ? 'Unpin' : 'Pin' }}"
+                                        wire:click="togglePin({{ $c['id'] }})" @click.stop="close()">
+                                    <i class="bi bi-pin-angle-fill"></i>
+                                </button>
+
+                                <button class="ndako-act ndako-act--mute" title="{{ ($c['muted'] ?? false) ? 'Unmute' : 'Mute' }}"
+                                        wire:click="toggleMute({{ $c['id'] }})" @click.stop="close()">
+                                    <i class="bi bi-bell-slash-fill"></i>
+                                </button>
+
+                                @if(($c['unread'] ?? 0) > 0)
+                                    <button class="ndako-act ndako-act--read" title="Mark as read"
+                                            wire:click="markAsRead({{ $c['id'] }})" @click.stop="close()">
+                                        <i class="bi bi-check2-all"></i>
+                                    </button>
+                                @else
+                                    <button class="ndako-act ndako-act--read" title="Mark as unread"
+                                            wire:click="markAsUnread({{ $c['id'] }})" @click.stop="close()">
+                                        <i class="bi bi-dot"></i>
+                                    </button>
+                                @endif
+
+                                <button class="ndako-act ndako-act--danger" title="Delete"
+                                        wire:click="deleteConversation({{ $c['id'] }})" wire:confirm="Are you sure to delete this conversation?" @click.stop="close()">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+
+                            {{-- SWIPEABLE TILE --}}
+                            <div class="ndako-convo {{ $selectedConversationId === $c['id'] ? 'is-active' : '' }}"
+                                 role="button" tabindex="0"
+                                 x-on:touchstart.passive="start($event)"
+                                 x-on:touchmove.passive="move($event)"
+                                 x-on:touchend="end()"
+                                 x-on:mousedown="start($event)" x-on:mousemove="move($event)" x-on:mouseup="end()"
+                                 x-on:mouseleave="cancel()"
+                                 x-on:click.outside="close()"
+                                 :style="`transform: translateX(${translateX}px)`"
+                                 @keydown.enter.prevent="$wire.selectConversation({{ $c['id'] }}); $wire.showThread = true; $dispatch('ndako-close-all-swipes')">
+
+                                {{-- Left: avatar / type chip --}}
+                                <button class="ndako-convo__avatar"
+                                        wire:click="selectConversation({{ $c['id'] }})"
+                                        @click="$wire.showThread=true; $dispatch('ndako-close-all-swipes')">
+                                    @if(!empty($c['avatar']))
+                                        <img src="{{ Storage::url('avatars/' . $c['avatar']) }}" alt="">
+                                    @else
+                                        <div class="ndako-convo__fallback">
+                                            {{ strtoupper(mb_substr($c['other_name'], 0, 1)) }}
+                                        </div>
+                                    @endif
+                                    <span class="ndako-convo__chip {{ ($c['other_type'] ?? 'user') === 'user' ? 'chip-user' : 'chip-guest' }}">
+                                        {{ strtoupper(mb_substr($c['other_type'] ?? 'u', 0, 1)) }}
+                                    </span>
+                                </button>
+
+                                {{-- Middle: recipient title + last line --}}
+                                <button class="ndako-convo__main"
+                                        wire:click="selectConversation({{ $c['id'] }})"
+                                        @click="$wire.showThread=true; $dispatch('ndako-close-all-swipes')">
+                                    <div class="ndako-convo__row1">
+                                        <div class="ndako-convo__title">
+                                            @if(($c['pinned'] ?? false)) <span class="ndako-pin">📌</span> @endif
+                                            {{ $c['other_name'] }}
+                                        </div>
+                                        <div class="ndako-convo__time">{{ $c['last_at'] }}</div>
+                                    </div>
+                                    <div class="ndako-convo__row2">
+                                        <div class="ndako-convo__last">{{ $c['last_line'] }}</div>
+                                        <div class="ndako-convo__badges">
+                                            @if(($c['muted'] ?? false)) <span class="ndako-convo__mute" title="Muted">🔕</span> @endif
+                                            @if(($c['unread'] ?? 0) > 0) <span class="ndako-convo__unread">{{ $c['unread'] }}</span> @endif
+                                        </div>
+                                    </div>
+                                </button>
+
+                                {{-- Desktop "..." --}}
+                                <div class="ndako-convo__kebab kebab-inline">
+                                    <button class="ndako-kebab__btn"
+                                            title="More"
+                                            @click.stop="openRail()"
+                                            aria-label="More options">⋮</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="ndako-chat__convo-snippet">{{ \Illuminate\Support\Str::limit($c['last'] ?? '—', 50) }}</div>
-                    </button>
-                @endforeach
+                    @empty
+                        <div class="ndako-chat__empty">No conversations yet.</div>
+                    @endforelse
+                </div>
             </div>
         </aside>
 
@@ -69,7 +197,8 @@
                     </button>
                     <div class="ndako-chat__title">
                         @php $current = collect($conversations)->firstWhere('id', $selectedConversationId); @endphp
-                        {{ $current['subject'] ?? 'Chat' }}
+                        <img src="{{ Storage::url('avatars/' . $current['avatar']) }}" class="ndako-chip" alt="">
+                        {{ $current['other_name'] ?? 'Chat' }}
                     </div>
                 </div>
                 <div class="ndako-chat__actions">
@@ -81,66 +210,72 @@
             </header>
 
             <div class="ndako-chat__body" id="ndako-body">
-                @php $act = auth()->user(); @endphp
                 @foreach($this->messages as $m)
-                    <div class="ndako-chat__msg {{ $m->sender_type === 'user' && optional(auth()->user())->id === $m->sender_id ? 'is-user' : ($m->sender_type === 'guest' ? 'is-guest' : 'is-agent') }}">
+                    <div class="ndako-chat__msg
+                        {{ ($m->sender_type === 'user' && optional(auth()->user())->id === $m->sender_id) ? 'is-user' : 'is-agent' }}">
                         <div class="ndako-chat__bubble">
                             @if($m->body)
                                 <div class="ndako-chat__text">{!! nl2br(e($m->body)) !!}</div>
                             @endif
+
                             @if($m->attachments->count())
                                 <div class="ndako-chat__files">
                                     @foreach($m->attachments as $a)
-                                        <a href="{{ Storage::disk('public')->url($a->path) }}" target="_blank" class="ndako-chat__file">
+                                        <a href="{{ Storage::disk('public')->url($a->path) }}"
+                                           target="_blank" class="ndako-chat__file">
                                             {{ $a->original_name }}
                                         </a>
                                     @endforeach
                                 </div>
                             @endif
+
                             <div class="ndako-chat__time">{{ $m->created_at->format('M d, H:i') }}</div>
                         </div>
                     </div>
                 @endforeach
             </div>
 
-            {{-- Input bar with WhatsApp-like attachment menu --}}
+            {{-- Input bar --}}
             <form class="ndako-chat__inputbar" wire:submit.prevent="send">
-                <button type="button" class="ndako-chat__clip" title="Attach" @click="$wire.toggleAttachmentMenu()">
+                <button type="button" class="ndako-chat__clip" title="Attach"
+                        wire:click="toggleAttachmentMenu"
+                        wire:loading.attr="disabled" wire:target="send,uploads">
                     <svg viewBox="0 0 24 24" width="20" height="20"><path d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l9.19-9.19a3.5 3.5 0 014.95 4.95l-9.19 9.19a2 2 0 11-2.83-2.83l8.49-8.49" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
 
                 @if($attachmentMenu)
                     <div class="ndako-attach">
-                        {{-- Photo/Video --}}
                         <label class="ndako-attach__item">
                             <input type="file" wire:model="uploads" multiple accept="image/*,video/*" hidden>
                             <span>Photo/Video</span>
                         </label>
-                        {{-- Document --}}
                         <label class="ndako-attach__item">
                             <input type="file" wire:model="uploads" multiple accept=".pdf,.doc,.docx,application/*" hidden>
                             <span>Document</span>
                         </label>
-                        {{-- Camera (mobile) --}}
                         <label class="ndako-attach__item">
                             <input type="file" wire:model="uploads" accept="image/*" capture="environment" hidden>
                             <span>Camera</span>
                         </label>
                     </div>
-                @endif>
+                @endif
 
                 <input type="text" class="ndako-chat__input" placeholder="Type a message…"
                        wire:model.defer="messageText" @disabled(!$selectedConversationId)>
 
-                <button type="submit" class="ndako-chat__send" title="Send" @disabled(!$selectedConversationId)>
-                    <svg viewBox="0 0 24 24" width="18" height="18">
-                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-                        <path d="M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>
-                    </svg>
+                <button type="submit" class="ndako-chat__send" title="Send"
+                        @disabled(!$selectedConversationId)
+                        wire:loading.attr="disabled" wire:target="send,uploads">
+                    <span wire:loading.remove wire:target="send">➤</span>
+                    <span class="ndako-btnspin" wire:loading wire:target="send"></span>
                 </button>
             </form>
 
-            {{-- Optional: show names of selected files --}}
+            <div wire:loading wire:target="uploads" class="ndako-progress">
+                Uploading…
+                <span class="ndako-bar"></span>
+            </div>
+
             @if(count($uploads) > 0)
                 <div class="ndako-attach__preview">
                     @foreach($uploads as $i => $f)
@@ -150,6 +285,58 @@
             @endif
         </section>
     </div>
+
+    {{-- Alpine mini-controller for swipe --}}
+    <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('ndakoSwipe', (opts) => ({
+        translateX: 0,
+        startX: 0,
+        dragging: false,
+        railWidth: 0,
+        opened: false,
+        id: opts.id,
+        width: opts.width,
+        onOpen: opts.onOpen || (()=>{}),
+        onClose: opts.onClose || (()=>{}),
+
+        init() {
+          this.railWidth = this.width();
+          window.addEventListener('resize', () => this.railWidth = this.width());
+        },
+        start(e) {
+          const point = e.touches ? e.touches[0] : e;
+          this.dragging = true;
+          this.startX = point.clientX - this.translateX;
+          this.$dispatch('ndako-close-all-swipes');
+        },
+        move(e) {
+          if (!this.dragging) return;
+          const point = e.touches ? e.touches[0] : e;
+          let next = point.clientX - this.startX;
+          // allow tiny right rubber-band (+20), clamp left to -railWidth
+          next = Math.min(20, Math.max(next, -this.railWidth));
+          this.translateX = next;
+        },
+        end() {
+          if (!this.dragging) return;
+          this.dragging = false;
+          const threshold = -this.railWidth * 0.3; // 30% snap open
+          // swipe right or not far enough => close
+          if (this.translateX >= 0) {
+            this.close();
+          } else {
+            this.translateX <= threshold ? this.open() : this.close();
+          }
+        },
+        cancel() { if (this.dragging) this.end(); },
+        open()  { this.translateX = -this.railWidth; if (!this.opened) { this.opened = true;  this.onOpen(); } },
+        openRail() { this.open(); },
+        close() { this.translateX = 0;          if (this.opened) { this.opened = false; this.onClose(); } },
+      }))
+    })
+    </script>
+
     <style>
 /* Base + FAB */
 .ndako-chat { position: fixed; right: 20px; bottom: 20px; z-index: 9999; font-family: system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif; }
@@ -171,25 +358,98 @@
 .ndako-chat__sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#f9fafb; border-bottom:1px solid #e5e7eb; }
 .ndako-chat__title { font-weight:600; color:#111827; }
 .ndako-chat__tiny { width:26px; height:26px; border-radius:6px; border:1px solid #111827; background:#111827; color:#fff; cursor:pointer; }
+
 .ndako-chat__search { position:relative; padding:8px; border-bottom:1px solid #e5e7eb; }
+.ndako-input-wrap { position:relative; }
 .ndako-chat__search input { width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; outline:none; }
+.ndako-spin { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:16px; height:16px; border:2px solid #d1d5db; border-top-color:#111827; border-radius:50%; animation: ndako-spin .8s linear infinite; }
 .ndako-chat__search-pop { position:absolute; left:8px; right:8px; top:48px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,.12); max-height:260px; overflow:auto; z-index:20; }
-.ndako-chat__contact { display:block; width:100%; text-align:left; padding:10px 12px; border:none; background:#fff; cursor:pointer; }
+.ndako-chat__contact { display:flex; align-items:center; gap:10px; width:100%; text-align:left; padding:10px 12px; border:none; background:#fff; cursor:pointer; }
 .ndako-chat__contact:hover { background:#f8fafc; }
 .ndako-chat__contact-name { font-weight:600; }
 .ndako-chat__contact-label { font-size:12px; color:#6b7280; }
+.ndako-chip { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:999px; font-size:12px; object-fit:cover; }
+.chip-user  { background:#111827; color:#fff; }
+.chip-guest { background:#e5e7eb; color:#111827; }
 
-/* Conversation list */
-.ndako-chat__convos { overflow:auto; padding:6px; }
-.ndako-chat__convo { width:100%; text-align:left; border:1px solid transparent; border-radius:10px; padding:8px; margin:6px 0; background:#fff; cursor:pointer; }
-.ndako-chat__convo:hover { background:#f3f4f6; }
-.ndako-chat__convo.is-active { border-color:#111827; background:#f9fafb; }
-.ndako-chat__convo-title { font-weight:600; }
-.ndako-chat__convo-meta { display:flex; gap:6px; align-items:center; margin-top:2px; }
-.ndako-chat__muted { color:#6b7280; font-size:12px; }
-.ndako-chat__pill { background:#111827; color:#fff; border-radius:999px; padding:0 6px; font-size:12px; line-height:18px; }
-.ndako-chat__convo-snippet { color:#374151; font-size:13px; margin-top:4px; }
-.ndako-chat__empty { padding:14px; text-align:center; color:#6b7280; }
+/* Conversation list — scrollable */
+.ndako-chat__convos { overflow-y: auto; padding: 0; }
+
+/* Swipe container + action rail */
+.ndako-convo-wrap { position: relative; overflow: hidden; }
+.ndako-actions {
+  position: absolute; inset: 0 0 0 auto;
+  display: grid; grid-auto-flow: column; align-items: center; justify-items: center;
+  gap: 8px; padding: 6px;
+  background: #f0f2f5;  /* lighter background */
+  z-index: 0; pointer-events: none;
+}
+.ndako-actions.is-open { pointer-events: auto; }
+
+.ndako-act {
+  border: none; border-radius: 12px; cursor: pointer;
+  font-size: 18px; color: #fff; display: flex;
+  align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  transition: transform .12s ease, opacity .12s ease, background .2s ease;
+}
+.ndako-act:hover { transform: scale(1.05); }
+.ndako-act:active { transform: scale(0.95); opacity: .9; }
+
+/* Specific action colors */
+.ndako-act--pin    { background: #fbbf24; color:#fff; }   /* amber */
+.ndako-act--mute   { background: #9ca3af; color:#fff; }   /* neutral gray */
+.ndako-act--read   { background: #2563eb; color:#fff; }   /* blue */
+.ndako-act--danger { background: #ef4444; color:#fff; }   /* red */
+
+
+/* Swipeable row sits above the rail */
+.ndako-convo {
+  display:grid; grid-template-columns: 56px 1fr 34px; align-items:center; gap:8px;
+  padding:10px 10px; border-bottom:1px solid #f1f5f9; background:#fff;
+  position: relative; will-change: transform; transition: transform .18s cubic-bezier(.2,.8,.2,1);
+  z-index: 1;
+}
+.ndako-convo.is-active { background:#f9fafb; }
+.ndako-convo:hover { background:#f8fafc; }
+
+/* Avatar block */
+.ndako-convo__avatar { position:relative; width:46px; height:46px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  overflow:hidden; border:none; background:#e5e7eb; cursor:pointer; }
+.ndako-convo__avatar img { width:100%; height:100%; object-fit:cover; }
+.ndako-convo__fallback { font-weight:600; color:#111827; }
+.ndako-convo__chip {
+  position:absolute; right:-4px; bottom:-4px; width:18px; height:18px;
+  border-radius:999px; display:flex; align-items:center; justify-content:center;
+  font-size:10px; border:2px solid #fff;
+}
+
+/* Middle block */
+.ndako-convo__main { text-align:left; border:none; background:transparent; cursor:pointer; padding:0; margin:0; }
+.ndako-convo__row1 { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.ndako-convo__title { font-weight:600; color:#0f172a; display:flex; align-items:center; gap:6px; }
+.ndako-pin { font-size:14px; opacity:.85; }
+.ndako-convo__time { font-size:12px; color:#64748b; white-space:nowrap; }
+.ndako-convo__row2 { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:2px; }
+.ndako-convo__last { font-size:13px; color:#374151; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ndako-convo__badges { display:flex; align-items:center; gap:8px; }
+.ndako-convo__unread { min-width:20px; padding:0 6px; height:20px; line-height:20px; font-size:12px; border-radius:999px; color:#fff; background:#111827; text-align:center; }
+.ndako-convo__mute { font-size:14px; color:#94a3b8; }
+
+/* Desktop kebab (inline … button) */
+.ndako-convo__kebab { display:none; justify-content:center; align-items:center; }
+.ndako-kebab__btn { width:28px; height:28px; border-radius:8px; border:none; background:transparent; cursor:pointer; color:#475569; }
+.ndako-kebab__btn:hover { background:#eef2f7; }
+@media (hover:hover) and (pointer:fine) { .ndako-convo__kebab.kebab-inline { display:flex; } }
+
+/* Skeletons */
+.ndako-skeleton .ndako-skel-row,
+.ndako-skel-line { border-radius:10px; background: linear-gradient(90deg,#f3f4f6, #e5e7eb, #f3f4f6); background-size: 200% 100%; animation: ndako-shimmer 1.2s infinite; }
+.ndako-skeleton .ndako-skel-row { height:46px; margin:6px 0; }
+.ndako-skel-line { height:38px; margin:6px 8px; }
+@keyframes ndako-shimmer { 0% {background-position:200% 0} 100% {background-position:-200% 0} }
+@keyframes ndako-spin { to { transform: rotate(360deg);} }
 
 /* Thread header/body */
 .ndako-chat__header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid #e5e7eb; background:#f9fafb; }
@@ -214,7 +474,7 @@
 /* Input bar + attachment menu */
 .ndako-chat__inputbar { display:flex; align-items:center; gap:8px; padding:10px; border-top:1px solid #e5e7eb; background:#f9fafb; position:relative; }
 .ndako-chat__clip { border:none; background:transparent; cursor:pointer; padding:6px; border-radius:10px; }
-.ndako-attach { position:absolute; bottom:52px; left:10px; display:flex; gap:8px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:8px; box-shadow:0 16px 40px rgba(0,0,0,.12); }
+.ndako-attach { position:absolute; bottom:52px; left:10px; display:flex; gap:8px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:8px; box-shadow:0 16px 40px rgba(0,0,0,.12); z-index:10; }
 .ndako-attach__item { border:1px dashed #9ca3af; border-radius:10px; padding:6px 10px; font-size:13px; color:#111827; cursor:pointer; background:#fff; }
 .ndako-attach__preview { padding:6px 10px; background:#fff; border-top:1px solid #e5e7eb; display:flex; gap:6px; flex-wrap:wrap; }
 .ndako-attach__chip { font-size:12px; background:#f3f4f6; padding:4px 8px; border-radius:999px; }
@@ -222,8 +482,13 @@
 .ndako-chat__input { flex:1; padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb; outline:none; font-size:14px; }
 .ndako-chat__input:focus { border-color:#111827; box-shadow:0 0 0 3px rgba(17,24,39,.08); }
 .ndako-chat__send { padding:0 12px; border-radius:10px; border:1px solid #111827; background:#111827; color:#fff; cursor:pointer; }
+.ndako-btnspin { display:inline-block; width:16px; height:16px; border:2px solid #d1d5db; border-top-color:#fff; border-radius:50%; animation: ndako-spin .8s linear infinite; margin-left:2px; }
 
-/* Responsive: mobile shows either sidebar OR thread; back btn appears */
+/* Upload progress */
+.ndako-progress { display:flex; align-items:center; gap:10px; padding:8px 12px; font-size:13px; color:#111827; background:#fff; border-top:1px solid #e5e7eb; }
+.ndako-bar { flex:1; height:4px; border-radius:999px; background:linear-gradient(90deg,#111827 0%, #9ca3af 50%, #111827 100%); background-size:200% 100%; animation: ndako-shimmer 1.2s infinite; opacity:.5; }
+
+/* Responsive tweaks */
 @media (max-width: 900px) {
   .ndako-chat__panel { width: calc(100vw - 20px); right: 10px; height: 70vh; bottom: 82px; }
   .ndako-chat { right: 10px; bottom: 10px; }
@@ -231,7 +496,11 @@
   .ndako-chat__thread { width: 100%; }
   .ndako-chat__back { display:inline-flex; }
 }
-</style>
+@media (max-width: 460px) {
+  .ndako-convo__title { font-size: 14px; }
+  .ndako-convo__last  { font-size: 12px; }
+  .ndako-convo__time  { font-size: 11px; }
+  .ndako-act { min-width: 36px; }
+}
+    </style>
 </div>
-
-
