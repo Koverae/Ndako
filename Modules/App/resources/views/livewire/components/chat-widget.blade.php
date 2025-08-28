@@ -28,6 +28,7 @@
         <aside class="ndako-chat__sidebar {{ $showThread ? '' : 'is-full' }}">
             <div class="ndako-chat__sidebar-header">
                 <div class="ndako-chat__title">Chats</div>
+                
                 <button class="ndako-chat__ghost" wire:click="refreshConversations">Refresh</button>
                 <button class="ndako-chat__tiny" title="New chat"
                         @click="$wire.showContacts=true; setTimeout(()=>document.getElementById('ndako-search').focus(),0)">+
@@ -77,6 +78,7 @@
             {{-- Conversation list with swipe actions --}}
             <div class="ndako-chat__convos">
 
+                {{-- Skeleton while switching thread --}}
                 <div wire:loading wire:target="selectConversation" class="ndako-skeleton">
                     @for($i=0;$i<6;$i++)
                         <div class="ndako-skel-row"></div>
@@ -93,7 +95,7 @@
                              x-on:ndako-close-all-swipes.window="close()"
                              @keydown.escape.window="close()">
 
-                            {{-- ACTION RAIL --}}
+                            {{-- ACTION RAIL (incl. Close) --}}
                             <div class="ndako-actions"
                                  :class="{ 'is-open': opened }"
                                  :style="`width:${railWidth}px`"
@@ -139,7 +141,7 @@
                                  :style="`transform: translateX(${translateX}px)`"
                                  @keydown.enter.prevent="$wire.selectConversation({{ $c['id'] }}); $wire.showThread = true; $dispatch('ndako-close-all-swipes')">
 
-                                {{-- Left: avatar --}}
+                                {{-- Left: avatar / type chip --}}
                                 <button class="ndako-convo__avatar"
                                         wire:click="selectConversation({{ $c['id'] }})"
                                         @click="$wire.showThread=true; $dispatch('ndako-close-all-swipes')">
@@ -155,7 +157,7 @@
                                     </span>
                                 </button>
 
-                                {{-- Middle --}}
+                                {{-- Middle: recipient title + last line --}}
                                 <button class="ndako-convo__main"
                                         wire:click="selectConversation({{ $c['id'] }})"
                                         @click="$wire.showThread=true; $dispatch('ndako-close-all-swipes')">
@@ -216,7 +218,7 @@
                             </div>
                             @if($selectedConversationId)
                                 <div class="ndako-title-sub">
-                                    <span x-show="$wire.remoteTyping" x-cloak>typing…</span>
+                                    <span x-show="remoteTyping" x-cloak>typing…</span>
                                 </div>
                             @endif
                         </div>
@@ -249,18 +251,13 @@
                 <div class="ndako-chat__body" id="ndako-body"
                      x-data="ndakoMenus($wire)"
                      @contextmenu.prevent="openConvMenu($event)"
-                     @click="hideAll()"
-                     @scroll.passive="onBodyScroll($event)">
-
-                    {{-- Pull older on reaching top --}}
-                    <div class="ndako-load-older" x-show="canLoadOlder" @click="$wire.loadOlder(); $nextTick(()=>scrollToAnchor())">
-                        <i class="bi bi-chevron-up"></i> Older messages
-                    </div>
+                     @click="hideAll()">
 
                     @php
                         $prevDayKey = null;
                         $today = Carbon::today();
                         $yesterday = Carbon::yesterday();
+
                         $labelForDate = function(Carbon $d) use ($today, $yesterday) {
                             if ($d->isSameDay($today)) return 'Today';
                             if ($d->isSameDay($yesterday)) return 'Yesterday';
@@ -326,7 +323,7 @@
                     </div>
                 </div>
 
-                {{-- Input --}}
+                {{-- Typing bar / Input --}}
                 <form class="ndako-chat__inputbar" wire:submit.prevent="send"
                       x-data="ndakoInput($wire)" @click.away="hidePopovers()">
 
@@ -337,6 +334,7 @@
                         <i class="bi bi-paperclip"></i>
                     </button>
 
+                    {{-- Attach palette --}}
                     <template x-if="attachOpen">
                         <div class="ndako-attach ndako-attach--grid" x-transition.scale.origin.bottom.left>
                             <label class="ndako-attach__item">
@@ -372,7 +370,7 @@
                             </div>
                             <div class="ndako-emoji-grid">
                                 <template x-for="emo in currentEmojis" :key="emo">
-                                    <button type="button" @click="$wire.messageText += emo"><span x-text="emo"></span></button>
+                                    <button type="button" @click="$wire.messageText += emo">{{ ' ' }}<span x-text="emo"></span>{{ ' ' }}</button>
                                 </template>
                             </div>
                         </div>
@@ -406,6 +404,12 @@
                     </template>
                 </form>
 
+                {{-- Typing indicator (self/local UX) --}}
+                {{--<div class="ndako-typing" x-show="localTyping" x-cloak>
+                    <span>Typing…</span>
+                    <span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span>
+                </div>--}}
+
                 <div wire:loading wire:target="uploads" class="ndako-progress">
                     Uploading… <span class="ndako-bar"></span>
                 </div>
@@ -424,6 +428,7 @@
     {{-- Alpine controllers --}}
     <script>
       document.addEventListener('alpine:init', () => {
+
         // Swipe rail
         Alpine.data('ndakoSwipe', (opts) => ({
           translateX: 0, startX: 0, dragging: false,
@@ -439,44 +444,41 @@
           close(){ this.translateX = 0; this.opened = false; },
         }));
 
-        // Context menus + older loader
+        // Context menus (conversation vs message)
         Alpine.data('ndakoMenus', ($wire) => ({
           convMenu:{open:false,x:0,y:0},
           msgMenu:{open:false,x:0,y:0,id:null,mine:false},
           pressTimer:null,
-          canLoadOlder:true,
-          openConvMenu(e){ if (e.target.closest('.ndako-chat__bubble')) return; this.hideAll(); this.convMenu={open:true,x:e.clientX,y:e.clientY}; },
-          openMsgMenu(e,id,mine){ this.hideAll(); this.msgMenu={open:true,x:e.clientX,y:e.clientY,id:id,mine:mine}; },
+          openConvMenu(e){ // background context
+            // only if not on a bubble
+            if (e.target.closest('.ndako-chat__bubble')) return;
+            this.hideAll();
+            this.convMenu.open = true; this.convMenu.x = e.clientX; this.convMenu.y = e.clientY;
+          },
+          openMsgMenu(e,id,mine){
+            this.hideAll();
+            this.msgMenu.open = true; this.msgMenu.x = e.clientX; this.msgMenu.y = e.clientY; this.msgMenu.id=id; this.msgMenu.mine=mine;
+          },
           press(e,id,mine){ this.clearPress(); this.pressTimer=setTimeout(()=>{ const p=e.touches?e.touches[0]:e; this.openMsgMenu(p,id,mine); },450); },
           clearPress(){ if(this.pressTimer){ clearTimeout(this.pressTimer); this.pressTimer=null; } },
           hideAll(){ this.convMenu.open=false; this.msgMenu.open=false; this.msgMenu.id=null; },
           copy(){ navigator.clipboard?.writeText(document.getSelection()?.toString() || ''); this.hideAll(); },
-          reply(){ this.hideAll(); /* plug reply UI if needed */ },
-          forward(){ this.hideAll(); /* plug forward UI if needed */ },
-          remove(){ this.hideAll(); /* plug deleteMessage(msgMenu.id) */ },
+          reply(){ this.hideAll(); /* stub */ },
+          forward(){ this.hideAll(); /* stub */ },
+          remove(){ this.hideAll(); /* hook deleteMessage(msgMenu.id) if needed */ },
           closeConvo(){ this.hideAll(); $wire.closeConversation($wire.selectedConversationId); },
           deleteConvo(){ this.hideAll(); $wire.deleteConversation($wire.selectedConversationId); },
-          onBodyScroll(e){
-            const el = e.target;
-            // enable button when scrolled near top
-            this.canLoadOlder = el.scrollTop <= 32;
-          },
-          scrollToAnchor(){
-            // keep context roughly stable after loading older
-            const body = document.getElementById('ndako-body');
-            body && (body.scrollTop = 60);
-          }
         }));
 
         // Input + emojis + typing + voice UI
         Alpine.data('ndakoInput', ($wire) => ({
           attachOpen:false, emojiOpen:false, tab:'smileys',
-          sending:false, typingDebounce:null,
+          sending:false, localTyping:false, typingDebounce:null,
           canSend:false, focused:false,
           recording:false, recSec:0, recTimer:null,
           get recTime(){ const m=String(Math.floor(this.recSec/60)).padStart(2,'0'); const s=String(this.recSec%60).padStart(2,'0'); return `${m}:${s}`; },
           get currentEmojis(){
-            const smileys = '😀😃😄😁😆😅😂🤣😊🙂🙃😉😍😘😗😚😙😋😛😜🤪😝🫠🤗🤭🤫🤔🤐🤨😐😑😶🫥😏😒🙄😬😮‍💨🤥😌😴🤤😪😮😯😲😳🥵🥶🥴🤯😕😟🙁☹️'.split('');
+            const smileys = '😀😃😄😁😆😅😂🤣😊🙂🙃😉😍😘😗😚😙😋😛😜🤪😝🫠🤗🤭🤫🤔🤐🤨😐😑😶🫥😏😒🙄😬😮‍💨🤥😌😴🤤😪😮😯😲😳🥵🥶🥴🤯😕😟🙁☹️😮‍🧓'.split('');
             const gestures = '👍👎👏🙌🙏🤝💪👌🤌🤏✌️🤘🤙👋🤚✋🖐️🖖👈👉👆👇☝️✊👊🤛🤜'.split('');
             const symbols = '❤️🧡💛💚💙💜🤎🖤🤍💔❣️💕💞💓💗💖💘💝💟✨⭐🌟🔥🎉✅❌⚠️❗❓💯🕒📌📎'.split('');
             return this.tab==='smileys'?smileys : this.tab==='gestures'?gestures : symbols;
@@ -486,17 +488,23 @@
           hidePopovers(){ this.attachOpen=false; this.emojiOpen=false; },
           onInput(){
             this.canSend = ($wire.messageText || '').trim().length>0;
+            this.localTyping = this.canSend;
             clearTimeout(this.typingDebounce);
-            this.typingDebounce = setTimeout(()=>{ /* optional $wire.typingPing() */ }, 500);
+            // Debounced typing ping – plug into realtime if you like
+            this.typingDebounce = setTimeout(()=>{ this.localTyping=false; }, 1200);
           },
-          // Voice UI (UI only – wire MediaRecorder later)
+          // Voice UI (UI only)
           startRec(){ if(! $wire.selectedConversationId) return; if(this.recording) return;
             this.recording=true; this.recSec=0; this.recTimer=setInterval(()=>this.recSec++,1000);
           },
-          stopRec(){ if(!this.recording) return; this.recording=false; clearInterval(this.recTimer); },
+          stopRec(){ if(!this.recording) return; this.recording=false; clearInterval(this.recTimer);
+            // TODO: integrate MediaRecorder + upload audio file to Livewire (out of scope here)
+          },
         }));
 
-        Alpine.data('ndakoChat', () => ({ /* for global state if needed */ }));
+        Alpine.data('ndakoChat', () => ({
+          remoteTyping:false // placeholder for future realtime
+        }));
       })
     </script>
 
@@ -520,7 +528,6 @@
 /* Sidebar header + search */
 .ndako-chat__sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#f9fafb; border-bottom:1px solid #e5e7eb; }
 .ndako-chat__title { font-weight:600; color:#111827; }
-.ndako-chat__ghost { background:#fff; border:1px solid #111827; color:#111827; border-radius:8px; padding:6px 10px; cursor:pointer; }
 .ndako-chat__tiny { width:26px; height:26px; border-radius:6px; border:1px solid #111827; background:#111827; color:#fff; cursor:pointer; }
 
 .ndako-chat__search { position:relative; padding:8px; border-bottom:1px solid #e5e7eb; }
@@ -536,28 +543,56 @@
 .chip-user  { background:#111827; color:#fff; }
 .chip-guest { background:#e5e7eb; color:#111827; }
 
-/* Conversation list */
-.ndako-chat__convos { overflow-y:auto; padding:0; }
+/* Conversation list — scrollable */
+.ndako-chat__convos { overflow-y: auto; padding: 0; }
 
-/* Action rail */
-.ndako-convo-wrap { position:relative; overflow:hidden; }
-.ndako-actions { position:absolute; inset:0 0 0 auto; display:grid; grid-auto-flow:column; align-items:center; justify-items:center; gap:8px; padding:6px; background:#f0f2f5; z-index:0; pointer-events:none; }
-.ndako-actions.is-open { pointer-events:auto; }
-.ndako-act { border:none; border-radius:12px; cursor:pointer; font-size:18px; color:#fff; display:flex; align-items:center; justify-content:center; width:40px; height:40px; transition:transform .12s ease, opacity .12s ease, background .2s ease; }
-.ndako-act:hover { transform:scale(1.05); }
-.ndako-act:active { transform:scale(.95); opacity:.9; }
-.ndako-act--pin{background:#fbbf24;} .ndako-act--mute{background:#9ca3af;} .ndako-act--read{background:#2563eb;} .ndako-act--close{background:#64748b;} .ndako-act--danger{background:#ef4444;}
+/* Swipe container + action rail */
+.ndako-convo-wrap { position: relative; overflow: hidden; }
+.ndako-actions {
+  position: absolute; inset: 0 0 0 auto;
+  display: grid; grid-auto-flow: column; align-items: center; justify-items: center;
+  gap: 8px; padding: 6px;
+  background: #f0f2f5;
+  z-index: 0; pointer-events: none;
+}
+.ndako-actions.is-open { pointer-events: auto; }
 
-/* Row */
-.ndako-convo { display:grid; grid-template-columns:56px 1fr 34px; align-items:center; gap:8px; padding:10px 10px; border-bottom:1px solid #f1f5f9; background:#fff; position:relative; will-change:transform; transition:transform .18s cubic-bezier(.2,.8,.2,1); z-index:1; }
+.ndako-act {
+  border: none; border-radius: 12px; cursor: pointer;
+  font-size: 18px; color: #fff; display: flex;
+  align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  transition: transform .12s ease, opacity .12s ease, background .2s ease;
+}
+.ndako-act:hover { transform: scale(1.05); }
+.ndako-act:active { transform: scale(0.95); opacity: .9; }
+.ndako-act--pin    { background: #fbbf24; color:#fff; }
+.ndako-act--mute   { background: #9ca3af; color:#fff; }
+.ndako-act--read   { background: #2563eb; color:#fff; }
+.ndako-act--close  { background: #64748b; color:#fff; }
+.ndako-act--danger { background: #ef4444; color:#fff; }
+
+/* Swipeable row sits above the rail */
+.ndako-convo {
+  display:grid; grid-template-columns: 56px 1fr 34px; align-items:center; gap:8px;
+  padding:10px 10px; border-bottom:1px solid #f1f5f9; background:#fff;
+  position: relative; will-change: transform; transition: transform .18s cubic-bezier(.2,.8,.2,1);
+  z-index: 1;
+}
 .ndako-convo.is-active { background:#f9fafb; }
 .ndako-convo:hover { background:#f8fafc; }
 
 /* Avatar block */
-.ndako-convo__avatar { position:relative; width:46px; height:46px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; overflow:hidden; border:none; background:#e5e7eb; cursor:pointer; }
+.ndako-convo__avatar { position:relative; width:46px; height:46px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  overflow:hidden; border:none; background:#e5e7eb; cursor:pointer; }
 .ndako-convo__avatar img { width:100%; height:100%; object-fit:cover; }
 .ndako-convo__fallback { font-weight:600; color:#111827; }
-.ndako-convo__chip { position:absolute; right:-4px; bottom:-4px; width:18px; height:18px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:10px; border:2px solid #fff; }
+.ndako-convo__chip {
+  position:absolute; right:-4px; bottom:-4px; width:18px; height:18px;
+  border-radius:999px; display:flex; align-items:center; justify-content:center;
+  font-size:10px; border:2px solid #fff;
+}
 
 /* Middle block */
 .ndako-convo__main { text-align:left; border:none; background:transparent; cursor:pointer; padding:0; margin:0; }
@@ -571,13 +606,13 @@
 .ndako-convo__unread { min-width:20px; padding:0 6px; height:20px; line-height:20px; font-size:12px; border-radius:999px; color:#fff; background:#111827; text-align:center; }
 .ndako-convo__mute { font-size:14px; color:#94a3b8; }
 
-/* Kebab */
+/* Desktop kebab (inline … button) */
 .ndako-convo__kebab { display:none; justify-content:center; align-items:center; }
 .ndako-kebab__btn { width:28px; height:28px; border-radius:8px; border:none; background:transparent; cursor:pointer; color:#475569; }
 .ndako-kebab__btn:hover { background:#eef2f7; }
 @media (hover:hover) and (pointer:fine) { .ndako-convo__kebab.kebab-inline { display:flex; } }
 
-/* Header + title */
+/* Header: rich title + icons */
 .ndako-chat__header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid #e5e7eb; background:#f9fafb; }
 .ndako-chat__left { display:flex; align-items:center; gap:10px; }
 .ndako-chat__back { display:none; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:6px; cursor:pointer; }
@@ -593,56 +628,64 @@
 .ndako-chat__close { background:transparent; border:none; color:#6b7280; cursor:pointer; padding:6px; border-radius:8px; }
 .ndako-chat__close:hover { background:#f3f4f6; color:#111827; }
 
-/* Empty */
+/* Empty placeholder */
 .ndako-thread-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; background:#fff; }
 .ndako-empty-logo { width:10em; height:auto; opacity:.9; }
 .ndako-empty-title { font-weight:700; color:#0f172a; font-size:18px; }
 .ndako-empty-sub { color:#64748b; font-size:13px; }
 
-/* Body wallpaper */
-.ndako-chat__body { flex:1; padding:12px 12px 4px; overflow:auto;
+/* Messages body (refined elegant wallpaper) */
+.ndako-chat__body {
+  flex:1; padding:12px 12px 4px; overflow:auto;
   background:
     radial-gradient(circle at 25% 20%, rgba(255,255,255,0.9) 0 40px, transparent 41px),
-    radial-gradient(circle at 75% 0%, rgba(255,255,255,0.85) 0 60px, transparent 61px),
+    radial-gradient(circle at 75% 0%, rgba(255,255,255,0.8) 0 60px, transparent 61px),
     linear-gradient(180deg, #e8f0e8, #e4efe8);
-  scroll-behavior:smooth;
 }
-.ndako-load-older { display:flex; align-items:center; justify-content:center; gap:6px; margin:6px 0 8px; }
-.ndako-load-older i { font-size:14px; }
-.ndako-load-older { color:#475569; font-size:12px; cursor:pointer; }
 
-/* Timeline */
+/* Timeline chip */
 .ndako-timeline { display:flex; justify-content:center; margin:10px 0 14px; }
 .ndako-timeline span { background:#f1f5f9; color:#475569; font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid #e2e8f0; }
 
-/* Bubbles */
+/* Message bubbles (WhatsApp-like) */
 .ndako-chat__msg { display:flex; margin:6px 0; }
 .ndako-chat__msg.is-user { justify-content:flex-end; }
 .ndako-chat__bubble { max-width:78%; position:relative; padding:6px 8px 18px; border-radius:10px; box-shadow:0 1px 0 rgba(0,0,0,.06); }
 .ndako-chat__bubble.b-peer { background:#ffffff; border-top-left-radius:4px; }
 .ndako-chat__bubble.b-user { background:#dcf8c6; border-top-right-radius:4px; }
-.ndako-chat__msg.is-agent .ndako-chat__bubble::after { content:""; position:absolute; left:-6px; top:8px; width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-right:6px solid #ffffff; }
-.ndako-chat__msg.is-user .ndako-chat__bubble::after { content:""; position:absolute; right:-6px; top:8px; width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:6px solid #dcf8c6; }
+
+/* Remove black tail artifacts: use drop-shadow-free pseudo triangles with matching bg */
+.ndako-chat__msg.is-agent .ndako-chat__bubble::after {
+  content:""; position:absolute; left:-6px; top:8px; width:0; height:0;
+  border-top:6px solid transparent; border-bottom:6px solid transparent; border-right:6px solid #ffffff;
+}
+.ndako-chat__msg.is-user .ndako-chat__bubble::after {
+  content:""; position:absolute; right:-6px; top:8px; width:0; height:0;
+  border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:6px solid #dcf8c6;
+}
+
 .ndako-chat__text { white-space:pre-wrap; word-wrap:break-word; color:#111827; }
 .ndako-chat__files { margin-top:4px; display:flex; gap:6px; flex-wrap:wrap; }
 .ndako-chat__file { font-size:12px; text-decoration:underline; color:#0f172a; }
 .ndako-chat__time { position:absolute; bottom:4px; right:6px; font-size:11px; opacity:.6; }
 
-/* Menus */
+/* Message context menus */
 .ndako-msgmenu { position:fixed; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 18px 40px rgba(15,23,42,.12); padding:6px; z-index:99999; min-width:180px; }
 .ndako-msgmenu button { width:100%; text-align:left; border:none; background:#fff; padding:8px 10px; border-radius:8px; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px; }
 .ndako-msgmenu button:hover { background:#f8fafc; }
 .ndako-msgmenu .danger { color:#b91c1c; }
 
-/* Input, attach, emoji */
+/* Input bar + modern attach & emoji */
 .ndako-chat__inputbar { display:flex; align-items:center; gap:8px; padding:10px; border-top:1px solid #e5e7eb; background:#f9fafb; position:relative; }
 .ndako-chat__clip, .ndako-emoji-btn { border:1px solid #e5e7eb; background:#fff; cursor:pointer; padding:6px; border-radius:10px; }
 .ndako-chat__clip:hover, .ndako-emoji-btn:hover { background:#f3f4f6; }
+
 .ndako-attach { position:absolute; bottom:52px; left:10px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; box-shadow:0 16px 40px rgba(0,0,0,.12); z-index:10; }
 .ndako-attach--grid { display:grid; grid-template-columns: repeat(2, minmax(120px,1fr)); gap:10px; }
 .ndako-attach__item { display:flex; align-items:center; gap:8px; border:1px dashed #cbd5e1; border-radius:10px; padding:8px 10px; font-size:13px; color:#111827; cursor:pointer; background:#fff; transition: background .15s; }
 .ndako-attach__item:hover { background:#f8fafc; }
 .ndako-attach__item i { font-size:18px; }
+
 .ndako-emoji-pop { position:absolute; bottom:52px; left:56px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:8px; box-shadow:0 16px 40px rgba(0,0,0,.12); z-index:10; width:max-content; }
 .ndako-emoji-tabs { display:flex; gap:6px; margin-bottom:6px; }
 .ndako-emoji-tabs button { border:1px solid #e5e7eb; background:#fff; border-radius:8px; padding:4px 6px; cursor:pointer; }
@@ -651,7 +694,8 @@
 .ndako-emoji-grid button { width:24px; height:24px; line-height:24px; border:none; background:#fff; border-radius:6px; cursor:pointer; }
 .ndako-emoji-grid button:hover { background:#f3f4f6; }
 
-.ndako-rec-dot { display:inline-block; width:8px; height:8px; border-radius:999px; background:#ef4444; margin-right:6px; animation:pulse 1s infinite; }
+/* Voice note UI bits */
+.ndako-rec-dot { display:inline-block; width:8px; height:8px; border-radius:999px; background:#ef4444; margin-right:6px; animation: pulse 1s infinite; }
 .ndako-rec-time { font-size:12px; }
 @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
 
@@ -664,11 +708,18 @@
 .ndako-chat__send i { font-size:16px; }
 .ndako-btnspin { display:inline-block; width:16px; height:16px; border:2px solid #d1d5db; border-top-color:#fff; border-radius:50%; animation: ndako-spin .8s linear infinite; margin-left:2px; }
 
+/* Typing indicator bar */
+.ndako-typing { display:flex; align-items:center; gap:6px; padding:6px 10px; font-size:12px; color:#64748b; background:#fff; border-top:1px solid #e5e7eb; }
+.ndako-typing .dot { width:4px; height:4px; border-radius:999px; background:#9ca3af; display:inline-block; animation: bounce 1s infinite; }
+.ndako-typing .dot2 { animation-delay:.2s; }
+.ndako-typing .dot3 { animation-delay:.4s; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+
 /* Upload progress */
 .ndako-progress { display:flex; align-items:center; gap:10px; padding:8px 12px; font-size:13px; color:#111827; background:#fff; border-top:1px solid #e5e7eb; }
 .ndako-bar { flex:1; height:4px; border-radius:999px; background:linear-gradient(90deg,#111827 0%, #9ca3af 50%, #111827 100%); background-size:200% 100%; animation: ndako-shimmer 1.2s infinite; opacity:.5; }
 
-/* Responsive */
+/* Responsive tweaks */
 @media (max-width: 900px) {
   .ndako-chat__panel { width: calc(100vw - 20px); right: 10px; height: 70vh; bottom: 82px; }
   .ndako-chat { right: 10px; bottom: 10px; }

@@ -2,7 +2,22 @@
 
 <!-- Control Panel -->
 <?php $__env->startSection('control-panel'); ?>
+<?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('channelmanager::navbar.control-panel.guest-panel', ['guest' => $guest,'event' => 'update-guest','isForm' => true]);
 
+$__html = app('livewire')->mount($__name, $__params, 'lw-3719340597-0', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
 <?php $__env->stopSection(); ?>
 <!-- Page Content -->
 <section class="">
@@ -12,7 +27,7 @@ $__split = function ($name, $params = []) {
 };
 [$__name, $__params] = $__split('channelmanager::guest-form', ['guest' => $guest]);
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-3719340597-0', $__slots ?? [], get_defined_vars());
+$__html = app('livewire')->mount($__name, $__params, 'lw-3719340597-1', $__slots ?? [], get_defined_vars());
 
 echo $__html;
 

@@ -7,7 +7,7 @@
 <style>
 /* ---- Scoped polish ---- */
 .k_inner_group { --k-gap: 10px; }
-.k_horizontal_separator{letter-spacing:.08em;color:#6b7280}
+.k_horizontal_separator{letter-spacing:.08em;}
 .k_kanban_view{position:relative;background:#fafafa;border:1px solid #eee;border-radius:12px}
 
 /* CAROUSEL */
@@ -79,6 +79,47 @@
   .k_dl{grid-template-columns:1fr} /* readable stack */
   .k_actions{gap:6px}
 }
+/* --- Card content UX upgrade --- */
+.k_kanban_card_content{display:flex; align-items:flex-start; gap:12px}
+.k_title{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.k_header{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.k_subtitle{font-size:.875rem;color:#6b7280}
+
+/* Status pill */
+.k_status{
+  display:inline-flex; align-items:center; gap:6px;
+  border:1px solid #e5e7eb; background:#f9fafb; color:#374151;
+  padding:2px 8px; border-radius:999px; font-size:.75rem; white-space:nowrap;
+}
+.k_status[data-status="checked-in"]{background:#ecfdf5; color:#065f46; border-color:#d1fae5}
+.k_status[data-status="confirmed"]{background:#eff6ff; color:#1e40af; border-color:#dbeafe}
+.k_status[data-status="checked-out"]{background:#f3f4f6; color:#374151; border-color:#e5e7eb}
+.k_status[data-status="cancelled"]{background:#fef2f2; color:#991b1b; border-color:#fee2e2}
+
+/* Facts grid */
+.k_meta_list{
+  display:grid; grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:8px 14px; margin-top:6px;
+}
+.k_meta_item{
+  display:grid; grid-template-columns:18px 1fr auto; align-items:center; gap:8px;
+  font-size:.9rem; color:#4b5563;
+}
+.k_meta_item i{font-size:.95rem}
+.k_meta_item strong{color:#111827}
+
+/* Stay progress (subtle) */
+.k_progress{margin-top:8px}
+.k_progress_track{height:6px; background:#f3f4f6; border-radius:999px; overflow:hidden}
+.k_progress_bar{height:100%; background:#0E6163; width:0%}
+.k_progress_hint{font-size:.75rem; color:#6b7280; margin-top:4px}
+
+/* Small screens */
+@media (max-width: 480px){
+  .k_kanban_card_content{flex-direction:column}
+  .k_meta_list{grid-template-columns:1fr}
+  .k_status{margin-left:auto}
+}
 </style>
 
 <!-- Left Side -->
@@ -99,41 +140,101 @@
             <div id="{{ $carouselId }}" class="k_kanban_renderer" tabindex="0" aria-label="Active stays carousel">
               @foreach ($bookings as $b)
                 <div class="mb-1 k_kanban_card">
-                  <div class="k_kanban_card_content">
-                    <img class="rounded cursor-pointer k_kanban_image k_image_62_cover" style="height:100px; width:100px" src="{{ asset('assets/images/default/property.jpeg') }}">
-                    <div class="k_kanban_details k_stack">
-                      <div class="k_kanban_record_title">
-                        <div class="gap-2 d-flex align-items-center flex-wrap">
-                          <h2 class="h2 m-0">{{ $b->hotel->name ?? 'Hotel' }} <i class="bi bi-pencil-square" title="Edit hotel"></i></h2>
-                          <span class="k_room_badge"><i class="bi bi-door-closed"></i> {{ $b->room->number ?? '—' }}</span>
+                    <div class="k_kanban_card_content">
+                        <img
+                            class="rounded cursor-pointer k_kanban_image k_image_62_cover"
+                            style="height:100px; width:100px"
+                            src="{{ asset('assets/images/default/property.jpeg') }}"
+                        >
+
+                        <div class="k_kanban_details k_stack">
+                            @php
+                                $checkIn    = $b->check_in ?? null;
+                                $checkOut   = $b->check_out ?? null;
+                                $nights     = ($checkIn && $checkOut) ? $checkIn->diffInDays($checkOut) : 0;
+                                $status     = $b->status ?? 'confirmed';
+                                $rate       = $this->rateService->getDefaultRate($b->unit->unitType->id);
+                                $unitPrice  = $rate->price ?? 0;
+
+                                $progress = 0;
+                                if ($checkIn && $checkOut) {
+                                    $total = max(1, $checkIn->diffInSeconds($checkOut));
+                                    $elapsed = now()->lt($checkIn) ? 0 : min($total, $checkIn->diffInSeconds(now()));
+                                    $progress = round(($elapsed / $total) * 100);
+                                }
+                            @endphp
+
+                            <!-- Header -->
+                            <div class="k_header">
+                                <div class="k_title">
+                                    <h2 class="h2 m-0">
+                                        {{ $b->unit->property?->name ?? 'Hotel' }}
+                                        <i class="bi bi-pencil-square" title="Edit hotel"></i>
+                                    </h2>
+                                    <span class="k_room_badge" title="Room number">
+                                        <i class="bi bi-door-closed"></i> {{ $b->unit->name ?? '—' }}
+                                    </span>
+                                </div>
+                                <span class="k_status" data-status="{{ $status }}">
+                                    <i class="bi {{ $status === 'checked-in' ? 'bi-patch-check-fill' : ($status === 'cancelled' ? 'bi-x-circle' : 'bi-circle') }}"></i>
+                                    {{ ucfirst($status) }}
+                                </span>
+                            </div>
+
+                            <!-- Subtitle -->
+                            <div class="k_subtitle">
+                                {{ $b->unit->label ?? 'Room' }} {{ $b->unit->name }} · {{ $b->unit->unitType->name ?? 'Type' }} ·
+                                Nightly: <strong>{{ format_currency($unitPrice) }}</strong>
+                            </div>
+
+                            <!-- Iconized facts -->
+                            <div class="k_meta_list">
+                                <div class="k_meta_item">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Check-in</span>
+                                    <strong>{{ optional($checkIn)->format('M d, Y') ?? '—' }}</strong>
+                                </div>
+                                <div class="k_meta_item">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Check-out</span>
+                                    <strong>{{ optional($checkOut)->format('M d, Y') ?? '—' }}</strong>
+                                </div>
+                                <div class="k_meta_item">
+                                    <i class="bi bi-moon"></i>
+                                    <span>Nights</span>
+                                    <strong>{{ $nights }}</strong>
+                                </div>
+                                <div class="k_meta_item">
+                                    <i class="bi bi-cash-coin"></i>
+                                    <span>Amount Due</span>
+                                    <strong class="k_total">{{ format_currency($b->due_amount ?? 0) }}</strong>
+                                </div>
+                            </div>
+
+                            <!-- Stay progress (shown only if both dates exist) -->
+                            @if($checkIn && $checkOut)
+                                <div class="k_progress" aria-label="Stay progress">
+                                    <div class="k_progress_track">
+                                        <div class="k_progress_bar" style="width: {{ $progress }}%"></div>
+                                    </div>
+                                    <div class="k_progress_hint">{{ $checkIn->format('M d') }} – {{ $checkOut->format('M d') }}</div>
+                                </div>
+                            @endif
+
+                            <div class="k_sep"></div>
+
+                            <!-- Tags/actions/help -->
+                            <div class="k_actions">
+                                <span class="k_tag"><i class="bi bi-person-badge"></i> {{ ucfirst($b->origin ?? 'walk-in') }}</span>
+                                <span class="k_tag"><i class="bi bi-credit-card"></i> {{ $b->pay_method_label ?? 'On-site payment' }}</span>
+                                <span class="k_tag"><i class="bi bi-clock-history"></i> {{ $b->policy_label ?? 'Flexible checkout' }}</span>
+                            </div>
+                            <div class="k_inline_help">
+                                Tip: Click the hotel or room badge to edit assignment, rates, or dates.
+                            </div>
                         </div>
-                        <span>{{ $b->room->label ?? 'Room' }} · {{ $b->room->type ?? 'Type' }}</span>
-                        <span class="mb-1 d-block">Nightly rate: <strong>{{ format_currency($b->rate ?? 5700) }}</strong></span>
-                      </div>
-
-                      <div class="k_meta">
-                        <dl class="k_dl">
-                          <dt>Check-in</dt><dd><strong>{{ optional($b->check_in)->format('M d, Y') ?? '—' }}</strong></dd>
-                          <dt>Check-out</dt><dd><strong>{{ optional($b->check_out)->format('M d, Y') ?? '—' }}</strong></dd>
-                          <dt>Nights</dt>
-                          <dd>
-                            @php $n = ($b->check_in && $b->check_out) ? $b->check_in->diffInDays($b->check_out) : 0; @endphp
-                            <strong>{{ $n }}</strong> <span class="k_hint">(auto-calculated)</span>
-                          </dd>
-                          <dt>Amount Due</dt><dd class="k_total">{{ format_currency($b->amount_due ?? 0) }}</dd>
-                        </dl>
-
-                        <div class="k_sep"></div>
-                        <div class="k_actions">
-                          <span class="k_tag"><i class="bi bi-person-badge"></i> {{ ucfirst($b->origin ?? 'walk-in') }}</span>
-                          <span class="k_tag"><i class="bi bi-credit-card"></i> {{ $b->pay_method_label ?? 'On-site payment' }}</span>
-                          <span class="k_tag"><i class="bi bi-clock-history"></i> {{ $b->policy_label ?? 'Flexible checkout' }}</span>
-                        </div>
-
-                        <div class="k_inline_help">Tip: Click the hotel or room badge to edit assignment, rates, or dates.</div>
-                      </div>
                     </div>
-                  </div>
+
                 </div>
               @endforeach
             </div>
@@ -182,7 +283,11 @@
 @push('scripts')
 <script>
 (function(){
+  if (window.__kCarouselBound) return; // Global guard
+  window.__kCarouselBound = true;
+
   const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
   function getCards(scroller){ return Array.from(scroller.children).filter(n => n.classList.contains('k_kanban_card')); }
   function getIndexFromScroll(scroller, cards){
@@ -197,7 +302,7 @@
   }
   function scrollToIndex(scroller, cards, idx, ms=320){
     idx = Math.max(0, Math.min(idx, cards.length-1));
-    const target = cards[idx].offsetLeft - 6; // small padding compensation
+    const target = cards[idx].offsetLeft - 6;
     const start = scroller.scrollLeft;
     const dist = target - start;
     if(Math.abs(dist) < 1){ scroller.scrollLeft = target; return Promise.resolve(); }
@@ -229,7 +334,7 @@
   }
 
   function wireCarousel(root){
-    if(root.dataset.kInit === '1') return; // avoid double-binding
+    if(root.dataset.kInit === '1') return;
     root.dataset.kInit = '1';
 
     const scroller = root.querySelector('.k_kanban_renderer');
@@ -247,25 +352,31 @@
       scrollToIndex(scroller, cards, idx).then(() => updateUI(root, scroller));
     };
 
-    prev && prev.addEventListener('click', () => go('prev'));
-    next && next.addEventListener('click', () => go('next'));
+    // Stop propagation so outside Livewire handlers aren’t hijacked
+    const safeClick = (el, dir) => {
+      if(!el) return;
+      el.addEventListener('mousedown', e => e.stopPropagation());
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        go(dir);
+      });
+    };
+    safeClick(prev, 'prev');
+    safeClick(next, 'next');
 
     scroller.addEventListener('scroll', () => updateUI(root, scroller), { passive:true });
     window.addEventListener('resize', () => updateUI(root, scroller));
 
-    // keyboard support
     scroller.addEventListener('keydown', (e) => {
-      if(e.key === 'ArrowRight'){ e.preventDefault(); go('next'); }
-      if(e.key === 'ArrowLeft'){  e.preventDefault(); go('prev'); }
+      if(e.key === 'ArrowRight'){ e.preventDefault(); e.stopPropagation(); go('next'); }
+      if(e.key === 'ArrowLeft'){  e.preventDefault(); e.stopPropagation(); go('prev'); }
     });
 
-    // initial paint
     requestAnimationFrame(() => updateUI(root, scroller));
   }
 
-  function initAll(){
-    document.querySelectorAll('[data-carousel-root]').forEach(wireCarousel);
-  }
+  function initAll(){ qsa('[data-carousel-root]').forEach(wireCarousel); }
 
   document.addEventListener('DOMContentLoaded', initAll);
   window.addEventListener('load', initAll);

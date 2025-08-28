@@ -17,39 +17,56 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('name')->nullable();
+            $table->string('name');
             $table->string('company_name')->nullable();
+            $table->string('company_address')->nullable();
+            $table->decimal('monthly_income', 12, 2)->default(0);
             $table->unsignedBigInteger('language_id')->nullable();
+            $table->date('birthday')->nullable();
+            $table->string('gender')->default('male');
+
             // Address
             $table->string('street')->nullable();
             $table->string('street2')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
-            $table->unsignedBigInteger('country_id')->nullable();
             $table->string('zip')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->unsignedBigInteger('nationality_id')->nullable();
+
             // Contact Info
-            $table->enum('identity_proof', ['id_card', 'passport'])->default(('passport'));
+            $table->enum('identity_proof', ['id-card', 'passport', 'driving-license', 'resident-permit'])->default('passport');
             $table->string('identity')->nullable();
             $table->string('phone')->nullable();
             $table->string('mobile')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->string('tags')->nullable();
+            $table->string('kin_name')->nullable();
+            $table->string('kin_email')->nullable();
+            $table->string('kin_address')->nullable();
+            $table->string('kin_phone')->nullable();
+
             // Individual
             $table->string('job')->nullable();
             $table->boolean('has_receipt_reminder')->default(false);
             $table->integer('days_before')->default(0);
+
             // MISC
             $table->string('companyID')->nullable();
             $table->string('reference')->nullable();
             $table->mediumText('note')->nullable();
             $table->enum('type', ['individual', 'company', 'agent'])->default('individual');
+
+            $table->json('documents')->nullable();
+            $table->enum('verification_status', ['pending', 'approved', 'rejected'])->default('approved');
             $table->boolean('status')->default(true);
 
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
+
         Schema::create('channels', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();

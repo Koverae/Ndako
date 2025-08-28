@@ -14,11 +14,10 @@ use Modules\ChannelManager\Models\Guest\Guest;
 class GuestPanel extends ControlPanel
 {
 
-    public function mount($isForm = false)
+    public function mount($guest = null, $isForm = false)
     {
         $this->showBreadcrumbs = true;
         $this->generateBreadcrumbs();
-        // $this->showIndicators = true;
             $this->currentPage = "Guests";
 
         $this->filterTypes = [
@@ -32,6 +31,10 @@ class GuestPanel extends ControlPanel
                 0 => 'inactive',  // int filter for inactive status (1 = active, 0 = inactive)
             ],
         ];
+        if($guest){
+            $this->currentPage = $guest->name;
+            $this->showIndicators = true;
+        }
     }
 
     public function actionButtons(): array

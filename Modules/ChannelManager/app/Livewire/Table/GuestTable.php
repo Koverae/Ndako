@@ -26,7 +26,7 @@ class GuestTable extends Table
 
     public function showRoute($id) : string
     {
-        return route('channels.show', ['channel' => $id]);
+        return route('guests.show', ['guest' => $id]);
     }
 
     public function emptyTitle(): string
@@ -48,17 +48,18 @@ class GuestTable extends Table
             // Search both the booking's name and the related guest's name
             $query = Guest::query()
             ->where('name', 'like', '%' . $this->searchQuery . '%')
-            ->orWhere('email', 'like', '%' . $this->searchQuery . '%');
+            ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
+            ->orWhere('identity', 'like', '%' . $this->searchQuery . '%');
         }
 
-        // 🎯 Filters
+        // Filters
         if (!empty($this->filters)) {
             foreach ($this->filters as $field => $value) {
                 $query->where($field, $value);
             }
         }
 
-        // 📦 Grouping (disabled for now)
+        // Grouping (disabled for now)
         if (!empty($this->groupBy)) {
             foreach ($this->groupBy as $field => $value) {
                 $query->groupBy($field);
@@ -72,7 +73,7 @@ class GuestTable extends Table
     public function columns() : array
     {
         return [
-            Column::make('name', __('Name')),
+            Column::make('name', __('Name'))->component('app::table.column.special.show-title-link'),
             Column::make('email', __('Email')),
             Column::make('street', __('Address')),
         ];
