@@ -108,7 +108,7 @@ return new class extends Migration
             $table->enum('payment_type', ['debit', 'credit'])->default('credit');
             $table->enum('payment_status', ['unpaid', 'partial', 'paid'])->default('unpaid');
             $table->string('payment_method')->default('cash');
-            $table->enum('status', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'ongoing', 'completed', 'canceled'])->default('pending');
             $table->string('source')->default('direct-booking');
             $table->enum('invoice_status', ['not_invoiced', 'partial', 'invoiced'])->default('not_invoiced');
 

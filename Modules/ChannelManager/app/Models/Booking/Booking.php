@@ -79,7 +79,7 @@ class Booking extends Model
 
     public function scopeIsActive(Builder $query)
     {
-        return $query->where('status', 'confirmed');
+        return $query->whereIn('status', ['confirmed', 'ongoing']);
     }
 
     public function scopeIsPending(Builder $query)

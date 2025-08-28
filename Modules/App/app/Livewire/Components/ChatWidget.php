@@ -5,9 +5,6 @@ namespace Modules\App\Livewire\Components;
 use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
 use Modules\App\Models\Chat\Conversation;
 use Modules\App\Models\Chat\ConversationParticipant;
@@ -21,8 +18,8 @@ class ChatWidget extends Component
 
     // Panel & layout
     public bool $open = false;
-    public bool $showThread = true;       // show/hide right panel (mobile back behavior)
-    public bool $attachmentMenu = false;  // WhatsApp-like menu
+    public bool $showThread = true;       // mobile back behavior
+    public bool $attachmentMenu = false;  // kept for BC (UI now uses Alpine)
 
     // Sidebar + contacts
     public array $conversations = [];
@@ -38,6 +35,13 @@ class ChatWidget extends Component
     public array $uploads = [];
     public int $unreadTotal = 0;
 
+    // Messages paging (smoothness: fetch in chunks, pull older on scroll)
+    public int $pageSize = 40;
+    public int $loadedMessages = 0; // how many we currently render
+
+    // Typing (hooks ready for realtime)
+    public bool $remoteTyping = false;
+
     public function mount(): void
     {
         $this->refreshConversations();
@@ -46,151 +50,140 @@ class ChatWidget extends Component
     public function toggle(): void
     {
         $this->open = ! $this->open;
-
-        // if ($this->open && is_null($this->selectedConversationId) && !empty($this->conversations)) {
-        //     $this->selectConversation($this->conversations[0]['id']);
-        // }
+        // Do not auto-select a conversation
+        if (! $this->open) {
+            // optional: collapse thread on close for mobile
+            $this->showThread = true;
+        }
     }
 
-    // Is typing
+    /** noop you can connect to broadcast/echo */
     public function typingPing(): void
     {
-        // TODO: broadcast typing event to conversation participants
+        // hook to broadcast typing to other participant(s) if you wire events
     }
 
-    /** Determine the current actor (user or guest). Adjust guards as per your app. */
+    /** Determine actor (user/guest) */
     protected function actor(): array
     {
         if (Auth::guard('web')->check()) {
-            return ['type' => 'user', 'id' => Auth::id(), 'name' => Auth::user()->name ?? 'User'];
+            return ['type' => 'user', 'id' => (int) Auth::id(), 'name' => Auth::user()->name ?? 'User'];
         }
-        // Guard: guest
-        // if (Auth::guard('guest')->check()) {
-        //     $g = Auth::guard('guest')->user();
-        //     return ['type' => 'guest', 'id' => $g->id, 'name' => $g->name ?? 'Guest'];
-        // }
-        // fallback: assume web
-        return ['type' => 'user', 'id' => Auth::id(), 'name' => Auth::user()->name ?? 'User'];
+        // If you later add a guest guard, adapt here.
+        return ['type' => 'user', 'id' => (int) Auth::id(), 'name' => Auth::user()->name ?? 'User'];
     }
 
     public function refreshConversations(): void
     {
         $actor = $this->actor();
 
-        // 1) Pull convos + participants + last message (no nested eager on polymorphic)
         $items = Conversation::with([
                 'participants',
                 'messages' => fn($q) => $q->latest()->limit(1),
             ])
             ->whereHas('participants', function ($q) use ($actor) {
                 $q->where('participant_type', $actor['type'])
-                ->where('participant_id', $actor['id']);
+                  ->where('participant_id', $actor['id']);
             })
             ->orderByDesc('updated_at')
-            ->limit(50)
+            ->limit(100)
             ->get();
 
-        // 2) Collect IDs to batch-fetch: "other participant" per convo + last message senders
+        // Batch collect ids for names/avatars
         $otherIds = ['user' => [], 'guest' => []];
         $senderIds = ['user' => [], 'guest' => []];
 
         foreach ($items as $c) {
-            // find the other participant for this convo
             $other = $c->participants->first(function ($p) use ($actor) {
                 return !($p->participant_type === $actor['type'] && (int)$p->participant_id === (int)$actor['id']);
             });
-            if ($other) {
-                $otherIds[$other->participant_type][] = (int)$other->participant_id;
-            }
+            if ($other) { $otherIds[$other->participant_type][] = (int) $other->participant_id; }
 
-            // collect sender of the last message (if any)
             $last = $c->messages->first();
             if ($last && in_array($last->sender_type, ['user','guest'], true)) {
-                $senderIds[$last->sender_type][] = (int)$last->sender_id;
+                $senderIds[$last->sender_type][] = (int) $last->sender_id;
             }
         }
 
-        // 3) Batch load users/guests into maps
         $userMap  = !empty($otherIds['user']) || !empty($senderIds['user'])
             ? User::query()->whereIn('id', array_unique(array_merge($otherIds['user'], $senderIds['user'])))->get()->keyBy('id')
             : collect();
-
         $guestMap = !empty($otherIds['guest']) || !empty($senderIds['guest'])
             ? Guest::query()->whereIn('id', array_unique(array_merge($otherIds['guest'], $senderIds['guest'])))->get()->keyBy('id')
             : collect();
 
-        // Use maps (no extra queries)
-        $nameFromMap = fn(?string $type, ?int $id) =>
-            !$type || !$id ? null :
-            ($type === 'user' ? optional($userMap->get($id))->name : ($type === 'guest' ? optional($guestMap->get($id))->name : null));
-        $avatarFromMap = fn(?string $type, ?int $id) =>
-            !$type || !$id ? null :
-            ($type === 'user' ? optional($userMap->get($id))->avatar ?? null : ($type === 'guest' ? optional($guestMap->get($id))->avatar ?? null : null));
+        $nameFromMap = function (?string $type, ?int $id) use ($userMap, $guestMap) {
+            if (!$type || !$id) return null;
+            return $type === 'user'
+                ? optional($userMap->get($id))->name
+                : ($type === 'guest' ? optional($guestMap->get($id))->name : null);
+        };
+        $avatarFromMap = function (?string $type, ?int $id) use ($userMap, $guestMap) {
+            if (!$type || !$id) return null;
+            return $type === 'user'
+                ? (optional($userMap->get($id))->avatar ?? null)
+                : ($type === 'guest' ? (optional($guestMap->get($id))->avatar ?? null) : null);
+        };
 
-        // 5) Build lightweight array for the sidebar
         $this->conversations = $items->map(function ($c) use ($actor, $nameFromMap, $avatarFromMap) {
-            // other participant (recipient)
             $other = $c->participants->first(fn($p) =>
                 !($p->participant_type === $actor['type'] && (int)$p->participant_id === (int)$actor['id'])
             );
             $otherType = $other?->participant_type;
             $otherId   = $other?->participant_id ? (int)$other->participant_id : null;
 
-            $otherName = $nameFromMap($otherType, $otherId)
-                ?? ($otherType === 'guest' ? 'Guest' : 'User');
+            $otherName = $nameFromMap($otherType, $otherId) ?? ($otherType === 'guest' ? 'Guest' : 'User');
 
-            // last message + sender prefix
             $last = $c->messages->first();
             $isMe = $last && $last->sender_type === $actor['type'] && (int)$last->sender_id === (int)$actor['id'];
-            $senderName = $isMe
-                ? 'You'
-                : ($nameFromMap($last?->sender_type, $last?->sender_id) ?? '');
-            $lastText = $last?->body ?? '—';
-            $lastLine = trim($isMe && $senderName !== '' ? "{$senderName}: {$lastText}" : $lastText);
+            $senderName = $isMe ? 'You' : ($nameFromMap($last?->sender_type, $last?->sender_id) ?? '');
+            $lastText = trim((string) ($last?->body ?? ''));
+            $lastLine = $lastText !== '' ? ($isMe && $senderName !== '' ? "{$senderName}: {$lastText}" : $lastText) : '—';
 
-            // avatar (fallback to initial; your view already handles that)
             $avatar = $avatarFromMap($otherType, $otherId);
-
-            // Fix last_at: get the last message's updated_at if exists
             $lastAt = $last?->updated_at ? $last->updated_at->diffForHumans() : null;
 
             return [
-                'id'          => $c->id,
-                'title'       => $c->subject ?: $otherName,   // keep subject override if present
+                'id'          => (int) $c->id,
+                'title'       => $c->subject ?: $otherName,
                 'other_name'  => $otherName,
                 'other_type'  => $otherType,
                 'avatar'      => $avatar,
-                'last_line'   => \Illuminate\Support\Str::limit($lastLine, 60),
+                'last_line'   => \Illuminate\Support\Str::limit($lastLine, 80),
                 'last_at'     => $lastAt,
                 'unread'      => $c->unreadCountForParticipant($actor['type'], $actor['id']),
                 'status'      => $c->status,
+                // demo flags (persist later if you want)
                 'muted'       => false,
                 'pinned'      => false,
             ];
         })->toArray();
 
         $this->unreadTotal = collect($this->conversations)->sum('unread');
+
+        // If current conversation was closed/deleted, unselect it safely
+        if ($this->selectedConversationId && !collect($this->conversations)->firstWhere('id', $this->selectedConversationId)) {
+            $this->selectedConversationId = null;
+            $this->loadedMessages = 0;
+        }
     }
 
-
-    /** Quick actions used by the kebab menu (no-ops you can expand later) */
     public function markAsRead(int $conversationId): void
     {
         $actor = $this->actor();
-        ConversationParticipant::where('conversation_id',$conversationId)
-            ->where('participant_type',$actor['type'])
-            ->where('participant_id',$actor['id'])
+        ConversationParticipant::where('conversation_id', $conversationId)
+            ->where('participant_type', $actor['type'])
+            ->where('participant_id', $actor['id'])
             ->update(['last_read_at' => now()]);
         $this->refreshConversations();
     }
 
     public function markAsUnread(int $conversationId): void
     {
-        // Set last_read_at to a past time so everything appears unread
         $actor = $this->actor();
-        ConversationParticipant::where('conversation_id',$conversationId)
-            ->where('participant_type',$actor['type'])
-            ->where('participant_id',$actor['id'])
+        ConversationParticipant::where('conversation_id', $conversationId)
+            ->where('participant_type', $actor['type'])
+            ->where('participant_id', $actor['id'])
             ->update(['last_read_at' => now()->subYears(20)]);
         $this->refreshConversations();
     }
@@ -200,25 +193,27 @@ class ChatWidget extends Component
         if ($c = Conversation::find($conversationId)) {
             $c->update(['status' => 'closed']);
         }
+        if ($this->selectedConversationId === $conversationId) {
+            $this->selectedConversationId = null;
+            $this->loadedMessages = 0;
+        }
         $this->refreshConversations();
     }
 
     public function deleteConversation(int $conversationId): void
     {
-        // If you want soft deletes, change this to softDelete on a column
         if ($c = Conversation::find($conversationId)) {
             $c->delete();
         }
-        // Reset selection if we deleted the current one
         if ($this->selectedConversationId === $conversationId) {
             $this->selectedConversationId = null;
+            $this->loadedMessages = 0;
         }
         $this->refreshConversations();
     }
 
     public function togglePin(int $conversationId): void
     {
-        // For demo UX only; you can persist a 'pinned' column on conversations later.
         $this->conversations = collect($this->conversations)->map(function($row) use ($conversationId){
             if ($row['id'] === $conversationId) { $row['pinned'] = !($row['pinned'] ?? false); }
             return $row;
@@ -243,16 +238,25 @@ class ChatWidget extends Component
             })
             ->findOrFail($id);
 
-        $this->selectedConversationId = $conversation->id;
+        $this->selectedConversationId = (int) $conversation->id;
 
         ConversationParticipant::where('conversation_id', $conversation->id)
             ->where('participant_type', $actor['type'])
             ->where('participant_id', $actor['id'])
             ->update(['last_read_at' => now()]);
 
+        $this->loadedMessages = $this->pageSize; // reset window
         $this->refreshConversations();
+
         $this->dispatch('scroll-bottom');
-        $this->showThread = true; // on mobile, ensure thread is shown
+        $this->showThread = true;
+    }
+
+    public function loadOlder(): void
+    {
+        if (!$this->selectedConversationId) return;
+        $total = Message::where('conversation_id', $this->selectedConversationId)->count();
+        $this->loadedMessages = min($total, $this->loadedMessages + $this->pageSize);
     }
 
     /** Search contacts across Users & Guests */
@@ -288,7 +292,7 @@ class ChatWidget extends Component
             ->map(function ($item) {
                 return [
                     'type'  => $item instanceof User ? 'user' : 'guest',
-                    'id'    => $item->id,
+                    'id'    => (int) $item->id,
                     'name'  => $item->name ?? ($item instanceof User ? 'User' : 'Guest'),
                     'label' => $item->email ?? ($item->phone ?? ''),
                     'avatar' => $item->avatar ?? null
@@ -302,13 +306,8 @@ class ChatWidget extends Component
     public function startConversationWith(string $participantType, int $participantId): void
     {
         $me = $this->actor();
+        if ($participantType === $me['type'] && $participantId === $me['id']) return;
 
-        // Prevent self-chat
-        if ($participantType === $me['type'] && $participantId === $me['id']) {
-            return;
-        }
-
-        // Reuse an existing 1:1 between me and them
         $existing = Conversation::whereHas('participants', function ($q) use ($me) {
                 $q->where('participant_type', $me['type'])->where('participant_id', $me['id']);
             })
@@ -319,9 +318,7 @@ class ChatWidget extends Component
 
         if ($existing) {
             $this->selectConversation($existing->id);
-            $this->open = true;
-            $this->showContacts = false;
-            $this->search = '';
+            $this->open = true; $this->showContacts = false; $this->search = '';
             return;
         }
 
@@ -331,7 +328,6 @@ class ChatWidget extends Component
             'created_by' => Auth::id() ?: null,
         ]);
 
-        // Me
         ConversationParticipant::firstOrCreate(
             [
                 'conversation_id'  => $conv->id,
@@ -341,7 +337,6 @@ class ChatWidget extends Component
             ['role' => $me['type'] === 'user' ? 'support' : 'guest']
         );
 
-        // Other side
         ConversationParticipant::firstOrCreate(
             [
                 'conversation_id'  => $conv->id,
@@ -352,9 +347,7 @@ class ChatWidget extends Component
         );
 
         $this->selectConversation($conv->id);
-        $this->open = true;
-        $this->showContacts = false;
-        $this->search = '';
+        $this->open = true; $this->showContacts = false; $this->search = '';
     }
 
     public function toggleThread(): void
@@ -379,8 +372,6 @@ class ChatWidget extends Component
         }
 
         $me = $this->actor();
-
-        // Skip empty if no text and no files
         if (trim($this->messageText) === '' && count($this->uploads) === 0) {
             return;
         }
@@ -407,24 +398,29 @@ class ChatWidget extends Component
         $this->messageText = '';
         $this->uploads = [];
 
+        // Nudge paging window down
+        $this->loadedMessages = max($this->pageSize, $this->loadedMessages + 1);
+
         $this->refreshConversations();
         $this->dispatch('message-sent');
         $this->dispatch('scroll-bottom');
     }
 
+    /** Messages accessor – returns the most recent N (loadedMessages) */
     public function getMessagesProperty()
     {
         if (!$this->selectedConversationId) {
             return collect();
         }
 
+        $count = $this->loadedMessages ?: $this->pageSize;
+
         return Message::with('attachments', 'sender')
             ->where('conversation_id', $this->selectedConversationId)
             ->orderBy('created_at')
-            ->take(300)
+            ->take($count)
             ->get();
     }
-
 
     public function render()
     {

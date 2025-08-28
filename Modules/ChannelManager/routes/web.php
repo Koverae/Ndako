@@ -12,6 +12,7 @@ use Modules\ChannelManager\Livewire\BookingInvoices\Lists as InvoiceLists;
 use Modules\ChannelManager\Livewire\BookingInvoices\Create as InvoiceCreate;
 use Modules\ChannelManager\Livewire\BookingInvoices\Show as InvoiceShow;
 use Modules\ChannelManager\Livewire\Guests\Lists as GuestLists;
+use Modules\ChannelManager\Livewire\Guests\Show as GuestShow;
 use Modules\ChannelManager\Livewire\BookingPayments\Lists as PaymentLists;
 
 /*
@@ -31,6 +32,14 @@ Route::middleware('identify-kover')->group(function () {
     // Route::get('channels', ChannelLists::class)->name('channels.lists');
     // Route::get('channels/{channel}', ChannelShow::class)->name('channels.show');
     Route::get('/guests', GuestLists::class)->middleware('can:manage_guest_profiles')->name('guests.lists');
+
+    // Guest
+    Route::prefix('/guests')->middleware('can:manage_guest_profiles')->name('guests.')->group(function() {
+        Route::get('/', GuestLists::class)->name('lists');
+        // Route::get('/create', GuestCreate::class)->name('create');
+        Route::get('/{guest}', GuestShow::class)->name('show');
+
+    });
 
     // Bookings
     Route::prefix('/bookings')->middleware('can:view_reservations')->name('bookings.')->group(function() {
