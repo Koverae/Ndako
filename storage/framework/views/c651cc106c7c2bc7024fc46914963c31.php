@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css','resources/js/app.tsx']); ?>
     <link rel="shortcut icon" href="<?php echo e(asset('assets/images/logo/favicon.ico')); ?>">
     <title><?php echo e(current_company()->name); ?> - <?php echo $__env->yieldContent('title'); ?></title>
 
@@ -81,22 +82,9 @@ unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
 
-        <?php
-$__split = function ($name, $params = []) {
-    return [$name, $params];
-};
-[$__name, $__params] = $__split('app::components.chat-widget', []);
+        
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-1', $__slots ?? [], get_defined_vars());
-
-echo $__html;
-
-unset($__html);
-unset($__name);
-unset($__params);
-unset($__split);
-if (isset($__slots)) unset($__slots);
-?>
+        <div id="ndako-chat"></div>
 
     </main>
 
@@ -106,7 +94,7 @@ $__split = function ($name, $params = []) {
 };
 [$__name, $__params] = $__split('wire-elements-modal');
 
-$__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-2', $__slots ?? [], get_defined_vars());
+$__html = app('livewire')->mount($__name, $__params, 'lw-2222323684-1', $__slots ?? [], get_defined_vars());
 
 echo $__html;
 

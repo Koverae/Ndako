@@ -5,7 +5,8 @@
       --k-primary-10:rgba(1,126,132,.1);
       --k-ok:#017e84;
       --k-warn:#fbc02d;
-      --k-info:#1e88e5;
+      --k-ongoing: #317efa;
+      --k-info:#025eaf;
       --k-danger:#e53935;
       --k-fallback:#757575;
 
@@ -212,6 +213,9 @@
           <span class="swatch" style="background:var(--k-ok)"></span><span>{{ __('Confirmed') }}</span>
         </div>
         <div class="item active" data-status="completed">
+          <span class="swatch" style="background:var(--k-ongoing)"></span><span>{{ __('Ongoing') }}</span>
+        </div>
+        <div class="item active" data-status="completed">
           <span class="swatch" style="background:var(--k-info)"></span><span>{{ __('Completed') }}</span>
         </div>
         <div class="item active" data-status="canceled">
@@ -345,6 +349,7 @@
   const STATUS_COLORS = {
     pending:   '#fbc02d',
     confirmed: '#017e84',
+    ongoing: '#3b82f6',
     completed: '#1e88e5',
     canceled:  '#e53935',
     fallback:  '#757575'
@@ -352,7 +357,7 @@
 
   const state = {
     filters: {
-      statuses: new Set(['pending','confirmed','completed','canceled','fallback']),
+      statuses: new Set(['pending','confirmed', 'ongoing','completed','canceled','fallback']),
       search: ''
     },
     density: 'cozy' // 'cozy' | 'compact'
@@ -435,12 +440,16 @@
         right: 'dayGridMonth,timeGridWeek,timeGridDay'
       },
 
-      select: (info) => {
-        Livewire.dispatch('openModal', {
-          component: 'channelmanager::modal.add-booking-modal',
-          arguments: { startDate: info.startStr, endDate: info.endStr }
-        });
-      },
+        select: (info) => {
+          window.location.href = "{{ route('bookings.create') }}?startDate=" + encodeURIComponent(info.startStr) + "&endDate=" + encodeURIComponent(info.endStr);
+        },
+
+    //   select: (info) => {
+    //     Livewire.dispatch('openModal', {
+    //       component: 'channelmanager::modal.add-booking-modal',
+    //       arguments: { startDate: info.startStr, endDate: info.endStr }
+    //     });
+    //   },
 
       events: eventsData.map(e => ({ ...e, end: e.displayEnd })),
 

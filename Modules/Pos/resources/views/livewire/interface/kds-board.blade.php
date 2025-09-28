@@ -176,7 +176,7 @@
             </a>
           </div>
 
-          <div class="nav-item dropdown">
+          <div class="nav-item dropdown" wire:ignore>
             <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="{{ __('Open user menu') }}">
               <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
             </a>
@@ -190,7 +190,7 @@
                 <span class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 toggle-theme">
                   <span class="theme-label">{{ __('Switch to Dark Mode') }}</span>
                 </span>
-                <span wire:click="$dispatch('go-backend')" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
+                <span wire:click="goToBackend" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
                   {{ __('Backend') }}
                 </span>
                 <span @click="isLocked=true" class="cursor-pointer dropdown-item fs-4 kover-navlink rounded-1 dark:text-gray-200">
@@ -226,6 +226,7 @@
               </li>
             </div>
           </ul>
+          
         </div>
       </div>
       {{-- /responsive station chips --}}

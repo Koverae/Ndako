@@ -22,7 +22,7 @@ class UserForm extends SimpleAvatarForm
 {
     use ActionBarButtonTrait;
     public $user;
-    public $name, $email, $phone, $role, $language, $timezone, $selectedPermission;
+    public $name, $email, $phone, $role, $pin, $language, $timezone, $selectedPermission;
     public array $rolesOptions = [], $permissionOptions = [], $userPermissions = [], $frontOptions = [], $employeeOptions = [], $languageOptions = [], $timezoneOptions = [];
 
     // Define validation rules
@@ -50,6 +50,7 @@ class UserForm extends SimpleAvatarForm
             $this->name = $user->name;
             $this->email = $user->email;
             $this->phone = $user->phone;
+            $this->pin = $user->pin;
             $this->role = $user->getRoleNames()->first() ?? ''; // Default to 'owner' if no role is assigned
             $this->image_path = $user->avatar;
             $this->language = $user->language_id;
@@ -206,6 +207,7 @@ class UserForm extends SimpleAvatarForm
             Input::make('email', "Email", 'email', 'email', 'top-title', 'none', 'none', __('e.g. email@yourcompany.com'))->component('app::form.input.ke-title-2'),
             Input::make('phone', "Phone", 'tel', 'phone', 'top-title', 'none', 'none', __('e.g. +254745908026'))->component('app::form.input.ke-title-2'),
 
+            Input::make('pin', 'Pin', 'text', 'pin', 'top-title', 'general', 'roles', "******", "")->component('app::form.input.pin_code'),
             Input::make('role', 'Role', 'select', 'role', 'top-title', 'general', 'roles', "", "", $this->rolesOptions),
 
             // Access Rights
@@ -319,6 +321,22 @@ class UserForm extends SimpleAvatarForm
             Log::info('Permission removed from user: ' . $this->user->id . ', Permission ID: ' . $permissionId);
 
         }
+    }
+
+
+    public function generatePinCode()
+    {
+        do {
+        // Always 6-digit numeric PIN (000001 - 999999)
+            $pin = str_pad(random_int(0, 9999), 6, '0', STR_PAD_LEFT);
+        } while (
+            User::where('company_id', $this->user->company_id)
+                ->where('pin', $pin)
+                ->exists()
+        );
+
+        $this->user->update(['pin' => $pin]);
+
     }
 
     public function updatedPhoto(){

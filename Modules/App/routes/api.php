@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\App\Http\Controllers\Api\Chat\ChatController;
 use Modules\App\Http\Controllers\Api\V1\Payment\DarajaCallbackController;
 use Modules\App\Http\Controllers\AppController;
 use Modules\App\Http\Controllers\PaymentGateway\PesapalController;
@@ -16,9 +17,9 @@ use Modules\App\Http\Controllers\PaymentGateway\PesapalController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('app', AppController::class)->names('app');
-});
+// Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+//     Route::apiResource('app', AppController::class)->names('app');
+// });
 
 // Daraja API
 Route::prefix('v1/payments/mpesa')->group(function () {
@@ -32,3 +33,22 @@ Route::prefix('v1/payments/mpesa')->group(function () {
 
 // Pesapal IPN route
 Route::post('/pesapal/ipn', [PesapalController::class, 'handleIPN']);
+
+Route::prefix('chat')->group(function () {
+    Route::get('/conversations', [ChatController::class, 'indexConversations']);
+    Route::get('/conversations/{conversation}', [ChatController::class, 'showConversation']);
+    Route::post('/conversations', [ChatController::class, 'startConversation']);
+
+
+    Route::get('/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+    Route::post('/conversations/{conversation}/message', [ChatController::class, 'send']);
+
+
+    Route::post('/conversations/{conversation}/read', [ChatController::class, 'markRead']);
+    Route::post('/conversations/{conversation}/unread', [ChatController::class, 'markUnread']);
+    Route::post('/conversations/{conversation}/close', [ChatController::class, 'close']);
+    Route::delete('/conversations/{conversation}', [ChatController::class, 'destroy']);
+
+
+    Route::get('/contacts/search', [ChatController::class, 'searchContacts']);
+});

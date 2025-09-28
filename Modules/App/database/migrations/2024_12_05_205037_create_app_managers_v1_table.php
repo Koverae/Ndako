@@ -44,6 +44,17 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
+
+        // Printers
+        Schema::create('printers', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');       // "Counter", "Kitchen", "Bar"
+            $table->string('ip_address');
+            $table->integer('port')->default(9100);
+            $table->string('location')->nullable(); // optional: map to department
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
     }
 
     /**

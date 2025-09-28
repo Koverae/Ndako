@@ -92,6 +92,13 @@ class Guest extends Model
         'initials',
     ];
 
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar
+            ? asset('storage/avatars/'.$this->avatar)
+            : null;
+    }
+
     /** -----------------------------------------------------------------
      *  Relationships
      *  ----------------------------------------------------------------- */

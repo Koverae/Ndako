@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css','resources/js/app.tsx'])
     <link rel="shortcut icon" href="{{asset('assets/images/logo/favicon.ico')}}">
     <title>{{ current_company()->name }} - @yield('title')</title>
 
@@ -64,7 +65,9 @@
 
         <livewire:app::components.notification-bell />
 
-        <livewire:app::components.chat-widget />
+        {{-- <livewire:app::components.chat-widget /> --}}
+
+        <div id="ndako-chat"></div>
 
     </main>
 

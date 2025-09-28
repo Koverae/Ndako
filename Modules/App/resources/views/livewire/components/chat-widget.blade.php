@@ -28,7 +28,7 @@
         <aside class="ndako-chat__sidebar {{ $showThread ? '' : 'is-full' }}">
             <div class="ndako-chat__sidebar-header">
                 <div class="ndako-chat__title">Chats</div>
-                
+
                 <button class="ndako-chat__ghost" wire:click="refreshConversations">Refresh</button>
                 <button class="ndako-chat__tiny" title="New chat"
                         @click="$wire.showContacts=true; setTimeout(()=>document.getElementById('ndako-search').focus(),0)">+

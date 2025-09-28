@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace Modules\Pos\Livewire\Interface;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -133,6 +136,8 @@ class Home extends Component
     public function mount(Pos $pos): void
     {
         $this->pos = $pos;
+
+        $this->isLocked = true;
 
         // POS lock if no active session or session not in browser session bag
         if (!session()->has($this->sessionIdKey()) || !$this->pos->active_session_id) {
@@ -1412,6 +1417,21 @@ class Home extends Component
         $this->toastSuccess("POS {$this->pos->name} is now closed.", "POS {$this->pos->name} is now closed. You can no longer process orders.");
     }
 
+    /**
+     * Toggle the POS lock screen state.
+     */
+    public function lockScreen(): void
+    {
+        $this->isLocked = !$this->isLocked;
+        $this->dispatch('reset-inactivity-timer');
+
+        if ($this->isLocked) {
+            $this->toastSuccess('Screen locked!', 'POS is now locked.');
+        } else {
+            $this->toastSuccess('Screen unlocked!', 'POS is now active.');
+        }
+    }
+
     #[On('posClosed')]
     public function closePos($data)
     {
@@ -1622,6 +1642,90 @@ class Home extends Component
         // 5) Let the browser clear its local queue
         $this->dispatch('cart-synced');
         $this->toastSuccess('Back online', 'Cart synced successfully.');
+    }
+
+    /**
+     * Unlock POS using only a PIN (no employee pre-selection).
+     * - Finds employee whose hashed `pos_pin` matches.
+     * - Throttles attempts (5 / minute per IP).
+     * - If session exists: continue. Else: open register.
+     * - Unlocks the overlay.
+     *
+     * @return array{ok:bool, message?:string}
+     */
+    public function unlockWithPin(string $pin): array
+    {
+        // --- 1) Throttle by IP
+        $throttleKey = sprintf('pos:pin:%s:%d', request()->ip(), $this->pos->id);
+        $attempts = (int) Cache::get($throttleKey, 0);
+        if ($attempts >= 5) {
+            return ['ok' => false, 'message' => __('Too many attempts. Try again in a minute.')];
+        }
+
+        // --- 2) Find matching employee (hashed PIN)
+        // Limit search to company staff; add any role/active filters you need.
+        $candidates = User::query()
+            ->isCompany(current_company()->id)
+            ->whereNotNull('pin')
+            ->get();
+
+        $user = null;
+        foreach ($candidates as $cand) {
+            if (Hash::check($pin, $cand->pos_pin)) {
+                $user = $cand;
+                break;
+            }
+        }
+
+        if (!$user) {
+            Cache::put($throttleKey, $attempts + 1, now()->addSeconds(60));
+            return ['ok' => false, 'message' => __('Invalid PIN')];
+        }
+
+        // Success: clear throttle
+        Cache::forget($throttleKey);
+
+        // --- 3) Bind cashier context
+        $sessionKey = "pos_session_id_{$this->pos->id}";
+        session()->put("pos_cashier_id_{$this->pos->id}", $user->id);
+        session()->put("pos_cashier_name_{$this->pos->id}", $user->name);
+
+        // --- 4) Continue existing session OR open a new one
+        $activeId = $this->pos->active_session_id ?: session()->get($sessionKey);
+
+        try {
+            if ($activeId) {
+                // ensure key exists locally too
+                session()->put($sessionKey, $activeId);
+
+                // Optional: persist cashier on model session
+                // if (class_exists(PosSession::class)) {
+                //     PosSession::where('id', $activeId)->update(['cashier_id' => $user->id]);
+                // }
+
+                if (method_exists($this, 'continueSelling')) {
+                    $this->continueSelling();
+                }
+            } else {
+                if (method_exists($this, 'openRegister')) {
+                    // If openRegister can accept cashier, you can pass $user there and use it.
+                    $this->openRegister();
+                } else {
+                    // Fallback minimal local session so UI can proceed
+                    $fake = (string) Str::uuid();
+                    session()->put($sessionKey, $fake);
+                    // Optionally persist and set $this->pos->active_session_id here
+                }
+            }
+        } catch (Throwable $e) {
+            report($e);
+            return ['ok' => false, 'message' => __('Could not create or continue session')];
+        }
+
+        // --- 5) Unlock overlay
+        $this->isLocked = false;
+
+        return ['ok' => true];
     }
 
 }

@@ -158,6 +158,7 @@ class BookingService
         $booking->update([
             'check_in_status' => 'checked_in',
             'actual_check_in' => now(),
+            'status'          => 'ongoing'  
         ]);
 
         // 6️⃣ Success message

@@ -23,12 +23,14 @@ class PosForm extends LightWeightForm
     public $pos;
     public $name, $warehouse;
     public bool $multiple_employee = false, $is_restaurant = true;
+    public $statusOptions = [];
 
     protected $rules = [
         'name' => 'required|string|max:60',
         'multiple_employee' => 'boolean|required',
         'is_restaurant' => 'boolean|required',
     ];
+
 
     public function mount($pos = null){
         if($pos){
@@ -37,13 +39,19 @@ class PosForm extends LightWeightForm
             $this->multiple_employee = $pos->multiple_employee ?? true;
             $this->is_restaurant = $pos->is_restaurant ?? true;
         }
-    }
+        $status = [
+            ['id' => 'active', 'label' => 'Active'],
+            ['id' => 'inactive', 'label' => 'Inactive'],
+        ];
+        $this->statusOptions = toSelectOptions($status, 'id', 'label');
 
+    }
     public function groups() : array
     {
         return  [
-            // make($key, $label, $tabs = null)
-            Group::make('info',"Additional Information", 'none'),
+            Group::make('info', "Additional Information", 'none'),
+            Group::make('printers', "POS Printer", 'none'),
+            Group::make('kitchen', "Kitchen Printer", 'none'),
         ];
     }
 
@@ -51,7 +59,17 @@ class PosForm extends LightWeightForm
     {
         return [
             Input::make('name', "Restaurant", 'text', 'name', 'top-title', 'none', 'none', __('e.g. Mamba Resorts Restaurant'))->component('app::form.input.ke-title'),
-            Input::make('is_restaurant',"Is restaurant/bar", 'select', 'is_restaurant', 'left', 'none', 'info')->component('app::form.input.checkbox.simple'),
+            Input::make('is_restaurant', "Is restaurant/bar", 'select', 'is_restaurant', 'left', 'none', 'info')->component('app::form.input.checkbox.simple'),
+
+            // POS Printer
+            Input::make('pos_printer_ip', "Printer IP", 'text', 'pos_printer_ip', 'left', 'none', 'printers'),
+            Input::make('pos_printer_location', "Printer Location", 'text', 'pos_printer_location', 'left', 'none', 'printers'),
+            Input::make('pos_printer_status', "Printer Status", 'select', 'pos_printer_status', 'left', 'none', 'printers', null, null, $this->statusOptions),
+
+            // KDS Printers (Kitchen, Bar, Pass)
+            Input::make('kds_kitchen_ip', "Printer IP", 'text', 'kds_kitchen_ip', 'left', 'none', 'kitchen'),
+            Input::make('kds_kitchen_location', "Printer Location", 'text', 'kds_kitchen_location', 'left', 'none', 'kitchen'),
+            Input::make('kds_kitchen_status', "Printer Status", 'select', 'kds_kitchen_status', 'left', 'none', 'kitchen', null, null, $this->statusOptions),
         ];
     }
 

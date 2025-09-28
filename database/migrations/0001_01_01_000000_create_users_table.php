@@ -39,6 +39,7 @@ return new class extends Migration
             $table->string('social_id')->nullable();
             $table->string('social_type')->nullable();
             $table->string('password');
+            $table->string('pin')->nullable(); // Useful for POS, and biometric authentification
             $table->timestamp('password_updated_at')->nullable();
             $table->boolean('two_factor_enabled')->default(true);
             $table->string('two_factor_code')->nullable();

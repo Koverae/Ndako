@@ -1,15 +1,97 @@
 @section('title', $pos->name)
 @section('styles')
 <style>
+/* =========================
+   Employee login (lockscreen)
+   ========================= */
+.emp-login-wrap{
+  width:100%;
+  max-width:980px;
+  margin-inline:auto;
+  padding:0 16px;
+}
+.emp-login{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:16px;
+  width:100%;
+}
+@media (min-width: 992px){
+  .emp-login{ grid-template-columns: 1fr 1fr; }
+}
 
+/* card */
+.emp-card{
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+.emp-head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin-bottom:10px;
+}
+.emp-title{ margin:0; font-weight:800; letter-spacing:.015em; font-size:1.15rem }
+.emp-subtle{ color:#6b7280; font-size:.9rem }
 
+/* pin pad */
+.emp-pin{
+  display:flex; flex-direction:column; gap:10px;
+}
+.emp-pin-display{
+  display:flex; align-items:center; gap:8px; justify-content:space-between;
+  border:1px solid #e5e7eb; border-radius:12px; padding:10px 12px; background:#fff;
+}
+.emp-pin-dots{ display:flex; gap:8px; flex:1; justify-content:center }
+.emp-dot{
+  width:12px; height:12px; border-radius:50%; background:#e5e7eb;
+  transition:background .12s ease, transform .12s ease;
+}
+.emp-dot.filled{ background:#045054; transform:scale(1.1) }
+.emp-pin-ctas{ display:flex; gap:8px; }
+.emp-keypad{
+  display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:8px;
+}
+.emp-key{
+  border:1px solid #e5e7eb; background:#fff; border-radius:12px;
+  height:52px; font-weight:800; font-size:1.15rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .05s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.emp-key:active{ transform:translateY(1px) }
+.emp-key:hover{ background:#f7fafc }
+.emp-key--ok{
+  background:#045054; color:#fff; border-color:#045054;
+}
+.emp-key--ok:hover{ filter:brightness(1.05) }
+.emp-key--ghost{ background:#fafafa }
+
+/* subtle link row */
+.emp-help{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  font-size:.9rem; color:#6b7280; margin-top:6px;
+}
+.emp-help a{ color:#045054; text-decoration:none; font-weight:700 }
+.emp-help a:hover{ color:#033a3f }
+
+/* dark mode */
+[data-theme="dark"] .emp-card{ background:#262A36; border-color:#4a5568; box-shadow:none }
+[data-theme="dark"] .emp-title{ color:#e2e8f0 }
+[data-theme="dark"] .emp-subtle{ color:#cbd5e0 }
+[data-theme="dark"] .emp-pin-display{ background:#262A36; border-color:#4a5568 }
+[data-theme="dark"] .emp-dot{ background:#4a5568 }
+[data-theme="dark"] .emp-dot.filled{ background:#78d1d3 }
+[data-theme="dark"] .emp-key{ background:#2b3040; border-color:#4a5568; color:#e2e8f0 }
+[data-theme="dark"] .emp-key:hover{ background:#32384a }
+[data-theme="dark"] .emp-key--ok{ background:#2a8a90; border-color:#2a8a90 }
+[data-theme="dark"] .emp-help{ color:#cbd5e0 }
 </style>
 @endsection
 
 <main
   class="relative main"
   x-data="posRoot(@entangle('isLocked'))"
-  {{-- :inert="isLocked" --}}
 >
   <!-- Lock Screen -->
   <div
@@ -22,7 +104,6 @@
     <div class="relative flex flex-col items-center justify-center w-full h-full bg-white">
       <!-- Top Bar: Date/Time (left) and Logo (right) -->
       <div class="top-0 px-4 py-4 position-absolute start-0 end-0 d-flex justify-content-between align-items-center" style="width: 100%;">
-        <!-- Date & Time (Left) -->
         <div>
           <div id="lockscreen-datetime"
                class="justify-between px-4 py-3 bg-opacity-75 d-flex align-items-center rounded-3"
@@ -37,7 +118,6 @@
             </div>
           </div>
         </div>
-        <!-- Logo (Right) -->
         <div>
           <img
             src="{{ asset('assets/images/logo/ndako.png') }}"
@@ -48,21 +128,59 @@
         </div>
       </div>
 
-      <!-- Full screen center card: Continue Selling -->
-      <div class="flex-grow d-flex justify-content-center align-items-center w-100">
-        <button
-          wire:click="{{ (session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'continueSelling' : 'openRegister' }}"
-          class="gap-2 p-5 bg-white cursor-pointer text-dark fw-semibold fs-2 border-1 bg-opacity-90 align-items-center animate-fade-up"
-          style="transition: box-shadow 0.2s; height: 200px; border-radius: 10px;"
-        >
-          <i class="fas fa-shopping-basket" style="font-size: 45px;" aria-hidden="true"></i>
-          <div>
-            @php
-              $label = (session()->has("pos_session_id_{$this->pos->id}") || $this->pos->active_session_id) ? 'Continue Selling' : 'Open Register';
-            @endphp
-            {{ $label }}
+      <!-- Center: PIN only -->
+      <div class="flex-grow d-flex flex-column align-items-center justify-content-center w-100">
+        <div class="emp-login-wrap w-100">
+          <div class="emp-login" x-data="employeeLogin()">
+            <!-- PIN pad only -->
+            <div class="emp-card">
+              <div class="emp-head">
+                <h3 class="emp-title">{{ __('Enter PIN') }}</h3>
+                <div class="emp-subtle" x-show="error" x-text="error" style="color:#c0392b"></div>
+              </div>
+
+              <div class="emp-pin">
+                <div class="emp-pin-display" aria-live="polite">
+                  <div class="emp-pin-dots" :aria-label="'{{ __('Digits entered') }}: ' + pin.length">
+                    <template x-for="i in 6" :key="i">
+                      <span class="emp-dot" :class="{ 'filled': i <= pin.length }"></span>
+                    </template>
+                  </div>
+                  <div class="emp-pin-ctas">
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill" @click="clear()" type="button">
+                      {{ __('Clear') }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill" @click="backspace()" type="button" aria-label="{{ __('Backspace') }}">
+                      <i class="bi bi-backspace"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="emp-keypad" @keydown.stop.prevent="
+                      if($event.key >= '0' && $event.key <= '9') press($event.key);
+                      else if($event.key==='Backspace') backspace();
+                      else if($event.key==='Enter') submit();
+                    " tabindex="0">
+                  <template x-for="n in [1,2,3,4,5,6,7,8,9]" :key="'k'+n">
+                    <button type="button" class="emp-key" @click="press(String(n))" x-text="n"></button>
+                  </template>
+                  <button type="button" class="emp-key emp-key--ghost" @click="press('0')">0</button>
+                  <button type="button" class="emp-key" @click="backspace()" aria-label="{{ __('Backspace') }}"><i class="bi bi-arrow-left"></i></button>
+                  <button type="button" class="emp-key emp-key--ok" @click="submit()" :disabled="loading" x-bind:aria-busy="loading ? 'true' : 'false'">
+                    <span x-show="!loading">{{ __('Unlock') }}</span>
+                    <span x-show="loading"><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>{{ __('Checking…') }}</span>
+                  </button>
+                </div>
+
+                <div class="emp-help">
+                  <span>{{ __('Forgot your PIN? Ask a manager to reset it.') }}</span>
+                  <a href="javascript:void(0)" @click="$wire.goToBackend()">{{ __('Go to backend') }}</a>
+                </div>
+              </div>
+            </div>
+            <!-- /PIN pad -->
           </div>
-        </button>
+        </div>
       </div>
 
       <!-- Bottom Bar: Backend Button -->
@@ -95,13 +213,7 @@
 
       <div class="flex-row navbar-nav order-md-last">
         <div class="d-md-flex d-flex">
-          <div class="nav-item dropdown d-md-flex me-3">
-            <a href="#" class="px-0 nav-link text-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" title="Translate" data-bs-placement="bottom" aria-label="Translate">
-              <i class="bi bi-translate" style="font-size: 16px;"></i>
-            </a>
-          </div>
-
-          <div class="nav-item dropdown">
+          <div class="nav-item dropdown" wire:ignore>
             <a href="#" class="p-0 nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
               <span class="avatar avatar-sm" style="background-image: url({{ Storage::url('avatars/' . auth()->user()->avatar) }})"></span>
             </a>
@@ -167,76 +279,58 @@
         </div>
       </div>
     </div>
-    {{-- Offline banner (sticky, responsive, accessible) --}}
-<div x-data="offlineBanner()" x-init="init()" class="position-relative">
-  <!-- subtle 'back online' toast -->
-  <div x-show="flashOnline"
-       x-transition.opacity.duration.250ms
-       class="net-toast alert alert-success py-1 px-2 small shadow-sm"
-       role="status" aria-live="polite">
-    <i class="bi bi-wifi"></i> {{ __('Back online') }}
-  </div>
 
-  <!-- main offline banner -->
-  <div x-show="!online && !dismissed"
-       x-transition.duration.200ms
-       class="net-banner border-top border-bottom"
-       role="status" aria-live="polite">
-    <div class="container-fluid d-flex flex-wrap align-items-center gap-2">
-      <div class="d-flex align-items-center gap-2 flex-grow-1">
-        <i class="bi bi-wifi-off fs-5" aria-hidden="true"></i>
-        <div class="d-flex flex-column">
-          <strong class="net-title">{{ __('You’re offline') }}</strong>
-          <span class="net-subtle">
-            {{ __('We’ll reconnect automatically. Some actions may be delayed.') }}
-          </span>
+    {{-- Offline banner (sticky, responsive, accessible) --}}
+    <div x-data="offlineBanner()" x-init="init()" class="position-relative">
+      <div x-show="flashOnline"
+           x-transition.opacity.duration.250ms
+           class="net-toast alert alert-success py-1 px-2 small shadow-sm"
+           role="status" aria-live="polite">
+        <i class="bi bi-wifi"></i> {{ __('Back online') }}
+      </div>
+      <div x-show="!online && !dismissed"
+           x-transition.duration.200ms
+           class="net-banner border-top border-bottom"
+           role="status" aria-live="polite">
+        <div class="container-fluid d-flex flex-wrap align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2 flex-grow-1">
+            <i class="bi bi-wifi-off fs-5" aria-hidden="true"></i>
+            <div class="d-flex flex-column">
+              <strong class="net-title">{{ __('You’re offline') }}</strong>
+              <span class="net-subtle">
+                {{ __('We’ll reconnect automatically. Some actions may be delayed.') }}
+              </span>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2 ms-auto">
+            <button type="button" class="btn btn-sm btn-outline-secondary"
+                    @click="manualRetry()">
+              <i class="bi bi-arrow-clockwise"></i> {{ __('Retry') }}
+            </button>
+            <button type="button" class="btn btn-sm btn-link text-decoration-none"
+                    @click="dismissed = true">
+              {{ __('Hide') }}
+            </button>
+          </div>
         </div>
       </div>
-
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <button type="button" class="btn btn-sm btn-outline-secondary"
-                @click="manualRetry()">
-          <i class="bi bi-arrow-clockwise"></i> {{ __('Retry') }}
-        </button>
-        <button type="button" class="btn btn-sm btn-link text-decoration-none"
-                @click="dismissed = true">
-          {{ __('Hide') }}
-        </button>
-      </div>
     </div>
-  </div>
-</div>
-
   </nav>
 
   <!-- Register -->
   <div
     x-data="cartStore(@entangle('cart').defer, @entangle('isOnline').defer, {{ $pos->id }})"
-        x-init="init()"
-            class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none"
-                >
-    <!-- Product Section -->
+    x-init="init()"
+    class="row {{ $interface == 'register' ? '' : 'd-none' }} d-print-none"
+  >
     @include('pos::partials.pos.products')
-    <!-- Product Section -->
-
-    <!-- Checkout Section -->
     @include('pos::partials.pos.checkout')
-    <!--Checkout Section -->
-
-    <!-- Mobile Checkout Switcher -->
     @include('pos::partials.pos.mobile-checkout-switcher')
-    <!-- Mobile Checkout Switcher -->
-
   </div>
   <!-- Register -->
 
-  <!-- Payment -->
   @include('pos::partials.pos.payment')
-  <!-- Payment -->
-
-  <!-- Receipt (print) -->
   @include('pos::partials.pos.receipt')
-  <!-- Receipt -->
 
   <!-- Tables -->
   <div class="table-container d-print-none bg-white {{ $interface == 'tables' ? '' : 'd-none' }} dark:bg-gray-800 h-screen-d">
@@ -296,16 +390,14 @@
   </div>
   <!-- Tables -->
 
-  <!-- Orders -->
   @include('pos::partials.pos.orders')
-  <!-- Orders -->
 </main>
 
 @push('scripts')
 <script>
-/* ============================================================================
-   Root Alpine module: keeps lockscreen timer tidy & single-instanced
-   ========================================================================== */
+/* ============================================================================ */
+/* posRoot (unchanged)                                                          */
+/* ============================================================================ */
 function posRoot(lockedEntangle){
   return {
     isLocked: lockedEntangle,
@@ -313,10 +405,7 @@ function posRoot(lockedEntangle){
 
     init(){
       this.startClock();
-      // Clean up on page cache restore (e.g., bfcache)
-      window.addEventListener('pageshow', (e) => {
-        if (e.persisted) this.startClock();
-      }, { passive: true });
+      window.addEventListener('pageshow', (e) => { if (e.persisted) this.startClock(); }, { passive: true });
       window.addEventListener('pagehide', () => this.stopClock(), { passive: true });
     },
 
@@ -325,7 +414,6 @@ function posRoot(lockedEntangle){
       const weekdayEl = document.getElementById('lockscreen-weekday');
       const fullDateEl = document.getElementById('lockscreen-full-date');
       if (!timeEl || !weekdayEl || !fullDateEl) return;
-
       const render = () => {
         const now = new Date();
         timeEl.textContent = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
@@ -333,7 +421,7 @@ function posRoot(lockedEntangle){
         fullDateEl.textContent = now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
       };
       render();
-      this.stopClock(); // prevent duplicate intervals
+      this.stopClock();
       this.clockInterval = setInterval(render, 1000);
     },
 
@@ -343,98 +431,88 @@ function posRoot(lockedEntangle){
   }
 }
 
-/* ============================================================================
-   Livewire bridge: sound + print (idempotent, avoids duplicate listeners)
-   ========================================================================== */
+/* ============================================================================ */
+/* Employee login Alpine (PIN only)                                             */
+/* ============================================================================ */
+function employeeLogin(){
+  return {
+    pin: '', loading: false, error: '',
+    press(d){ if(this.pin.length >= 6) return; this.pin += d; this.error = ''; },
+    backspace(){ this.pin = this.pin.slice(0,-1) }, clear(){ this.pin = ''; this.error = '' },
+    async submit(){
+      if(this.pin.length < 4){ this.error = '{{ __('PIN must be at least 4 digits') }}'; return; }
+      this.loading = true; this.error = '';
+      try{
+        const res = await $wire.unlockWithPin(this.pin);
+        if(res && res.ok){
+          // Server handles continue/open + unlock. Nothing else to do.
+          return;
+        }
+        this.error = res?.message || '{{ __('Invalid PIN') }}'; this.shake();
+      }catch(e){ this.error = '{{ __('Something went wrong') }}'; }
+      finally{ this.loading = false; }
+    },
+    shake(){
+      const el = document.querySelector('.emp-pin-display'); if(!el) return;
+      el.animate([{transform:'translateX(0)'},{transform:'translateX(-3px)'},{transform:'translateX(3px)'},{transform:'translateX(0)'}], { duration: 180, iterations: 1 });
+    }
+  }
+}
+
+/* ============================================================================ */
+/* Livewire bridge (unchanged)                                                  */
+/* ============================================================================ */
 (() => {
   if (!window.__POS_LW_BOUND__) {
     window.__POS_LW_BOUND__ = true;
-
-    // Play Sound
-    Livewire.on('play-sound', (payload) => {
-      try { playSound(payload?.type); } catch (e) { /* no-op if playSound missing */ }
-    });
-
-    // Print (bill/receipt)
-    Livewire.on('print-bill', () => {
-      console.log("Printing launched");
-      window.print();
-    });
+    Livewire.on('play-sound', (payload) => { try { playSound(payload?.type); } catch (e) {} });
+    Livewire.on('print-bill', () => { window.print(); });
   }
 })();
 
-/* ============================================================================
-   Calculator (Alpine) — responsive, guarded, and Livewire-friendly
-   ========================================================================== */
+/* ============================================================================ */
+/* Calculator / shortcuts / theme / offline / cartStore (unchanged)            */
+/* ============================================================================ */
 function calculatorComponent($wire) {
   return {
     input: '',
     keys: [
-      { label: '1', value: '1' },
-      { label: '2', value: '2' },
-      { label: '3', value: '3' },
-      { label: 'Qty', value: 'qty', class: 'btn-light', mode: true },
-      { label: '4', value: '4' },
-      { label: '5', value: '5' },
-      { label: '6', value: '6' },
-      { label: 'Disc', value: 'discount', icon: 'bi bi-percent', class: 'btn-light', mode: true },
-      { label: '7', value: '7' },
-      { label: '8', value: '8' },
-      { label: '9', value: '9' },
-      { label: 'Price', value: 'price', class: 'btn-light', mode: true },
-      { label: '÷', value: '/', style: 'background-color: #F5D976;' },
-      { label: '0', value: '0' },
-      { label: '.', value: '.', style: 'background-color: #F5D7CB;' },
-      { label: '', value: 'Backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
+      { label: '1', value: '1' }, { label: '2', value: '2' }, { label: '3', value: '3' }, { label: 'Qty', value: 'qty', class: 'btn-light', mode: true },
+      { label: '4', value: '4' }, { label: '5', value: '5' }, { label: '6', value: '6' }, { label: 'Disc', value: 'discount', icon: 'bi bi-percent', class: 'btn-light', mode: true },
+      { label: '7', value: '7' }, { label: '8', value: '8' }, { label: '9', value: '9' }, { label: 'Price', value: 'price', class: 'btn-light', mode: true },
+      { label: '÷', value: '/', style: 'background-color: #F5D976;' }, { label: '0', value: '0' }, { label: '.', value: '.', style: 'background-color: #F5D7CB;' }, { label: '', value: 'Backspace', icon: 'bi bi-backspace', style: 'background-color: #FAA0A0;' },
     ],
-
     press(value) {
-      // Guard: require selected product
       if (!$wire.selectedProductId) return;
-
-      // Mode keys (sticky)
-      if (['qty', 'discount', 'price'].includes(value)) {
-        $wire.selectCalculatorMode(value);
-        return;
-      }
-
-      // Hotkeys
+      if (['qty','discount','price'].includes(value)) { $wire.selectCalculatorMode(value); return; }
       switch (value) {
         case 'q': $wire.selectCalculatorMode('qty'); return;
         case 'p': $wire.selectCalculatorMode('price'); return;
         case 'd': $wire.selectCalculatorMode('discount'); return;
         case '/': this.input += '/'; break;
         case 'Backspace': this.input = this.input.slice(0, -1); break;
-        case 'Enter': /* hook for confirm if needed */ return;
-        default:
-          if (/^[0-9]$/.test(value) || value === '.') this.input += value;
-          else return; // ignore unknown keys
+        case 'Enter': return;
+        default: if (/^[0-9]$/.test(value) || value === '.') this.input += value; else return;
       }
-
-      // Push to Livewire every keypress (keeps UI snappy)
       $wire.set('calculatorInput', this.input);
       $wire.applyCalculatorInput();
     },
   };
 }
 
-  // Press "/" to focus product search (when register is visible & not typing elsewhere)
-  (() => {
-    const onKey = (e) => {
-      if (e.key !== '/') return;
-      const isRegisterVisible = !document.querySelector('.row.d-print-none').classList.contains('d-none') && '{{ $interface }}' === 'register';
-      if (!isRegisterVisible) return;
-      const tag = (e.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
-      e.preventDefault();
-      document.getElementById('prod-search-input')?.focus();
-    };
-    window.addEventListener('keydown', onKey, { passive: false });
-  })();
+(() => {
+  const onKey = (e) => {
+    if (e.key !== '/') return;
+    const isRegisterVisible = !document.querySelector('.row.d-print-none').classList.contains('d-none') && '{{ $interface }}' === 'register';
+    if (!isRegisterVisible) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+    e.preventDefault();
+    document.getElementById('prod-search-input')?.focus();
+  };
+  window.addEventListener('keydown', onKey, { passive: false });
+})();
 
-/* ============================================================================
-   Theme toggle (light/dark) — resilient and single-instanced
-   ========================================================================== */
 (() => {
   const html = document.documentElement;
   const toggleButton = document.querySelector('.toggle-theme');
@@ -452,165 +530,117 @@ function calculatorComponent($wire) {
   };
 
   let currentTheme = localStorage.getItem('theme');
-  if (!currentTheme) {
-    currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
+  if (!currentTheme) currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   apply(currentTheme);
 
   toggleButton.addEventListener('click', () => apply(currentTheme = (currentTheme === 'light' ? 'dark' : 'light')));
 
-  // Sync with system if user didn't set an explicit preference
   const mq = window.matchMedia('(prefers-color-scheme: dark)');
   mq.addEventListener?.('change', (e) => {
     if (!localStorage.getItem('theme')) apply(e.matches ? 'dark' : 'light');
   });
 })();
 
-  // Measure the actual mobile switcher height and update the CSS var for perfect spacing
-  (function(){
-    const updateBarHeight = () => {
-      const el = document.getElementById('m-mobile-switcher');
-      if(!el) return;
-      const h = el.offsetHeight || 72;
-      document.documentElement.style.setProperty('--mobile-bar-h', `${h}px`);
-    };
-    // Run on load and on resize/orientation changes
-    window.addEventListener('load', updateBarHeight, { passive: true });
-    window.addEventListener('resize', updateBarHeight, { passive: true });
-    window.addEventListener('orientationchange', updateBarHeight, { passive: true });
-    // In case Livewire re-renders the footer
-    document.addEventListener('livewire:navigated', updateBarHeight, { passive: true });
-  })();
+(function(){
+  const updateBarHeight = () => {
+    const el = document.getElementById('m-mobile-switcher');
+    if(!el) return;
+    const h = el.offsetHeight || 72;
+    document.documentElement.style.setProperty('--mobile-bar-h', `${h}px`);
+  };
+  window.addEventListener('load', updateBarHeight, { passive: true });
+  window.addEventListener('resize', updateBarHeight, { passive: true });
+  window.addEventListener('orientationchange', updateBarHeight, { passive: true });
+  document.addEventListener('livewire:navigated', updateBarHeight, { passive: true });
+})();
 
+function offlineBanner(){
+  return {
+    online: navigator.onLine,
+    dismissed: false,
+    flashOnline: false,
+    timer: null,
 
-  // Alpine helper for network awareness
-  function offlineBanner(){
-    return {
-      online: navigator.onLine,
-      dismissed: false,
-      flashOnline: false,
-      timer: null,
+    init(){
+      window.addEventListener('online',  () => this.onOnline(),  {passive:true});
+      window.addEventListener('offline', () => this.onOffline(), {passive:true});
+      this.pulse();
+    },
 
-      init(){
-        window.addEventListener('online',  () => this.onOnline(),  {passive:true});
-        window.addEventListener('offline', () => this.onOffline(), {passive:true});
-        // gentle auto-retry ping while offline (optional)
-        this.pulse();
-      },
+    onOnline(){ this.online = true; this.dismissed = false; this.flash(); },
+    onOffline(){ this.online = false; },
 
-      onOnline(){
-        this.online = true;
-        this.dismissed = false; // show again next time if it drops
-        this.flash();           // brief "Back online" toast
-      },
+    manualRetry(){
+      fetch(window.location.href, { method:'HEAD', cache:'no-store' })
+        .then(() => this.onOnline())
+        .catch(() => this.onOffline());
+    },
 
-      onOffline(){
-        this.online = false;
-      },
+    pulse(){
+      clearInterval(this.timer);
+      this.timer = setInterval(() => { if (!this.online) this.manualRetry(); }, 8000);
+    },
 
-      manualRetry(){
-        // lightweight ping instead of full reload
-        fetch(window.location.href, { method:'HEAD', cache:'no-store' })
-          .then(() => this.onOnline())
-          .catch(() => this.onOffline());
-      },
+    flash(){ this.flashOnline = true; setTimeout(() => this.flashOnline = false, 1600); }
+  }
+}
 
-      pulse(){
-        clearInterval(this.timer);
-        this.timer = setInterval(() => {
-          if (!this.online) this.manualRetry();
-        }, 8000);
-      },
+function cartStore(cartEntangle, posId) {
+  return {
+    online: navigator.onLine,
+    syncing: false,
+    shadowCart: JSON.parse(localStorage.getItem(`pos:${posId}:cart`) || '{}'),
+    queue:      JSON.parse(localStorage.getItem(`pos:${posId}:queue`) || '[]'),
 
-      flash(){
-        this.flashOnline = true;
-        setTimeout(() => this.flashOnline = false, 1600);
+    init() {
+      window.addEventListener('online',  () => { this.online = true;  this.flushQueue() });
+      window.addEventListener('offline', () => { this.online = false });
+      if (this.online) this.flushQueue();
+    },
+
+    persist() {
+      localStorage.setItem(`pos:${posId}:cart`,  JSON.stringify(this.shadowCart));
+      localStorage.setItem(`pos:${posId}:queue`, JSON.stringify(this.queue));
+    },
+    itemsCount() {
+      return Object.values(this.shadowCart).reduce((t, i) => t + Number(i.quantity || 0), 0);
+    },
+    localAdd({ id, name, price }) {
+      const line = this.shadowCart[id] || { id, name, unit_price: price, quantity: 0, discount: 0 };
+      line.quantity += 1;
+      this.shadowCart[id] = line;
+      this.persist();
+    },
+    enqueue(op) { this.queue.push(op); this.persist(); },
+
+    async add({ id, name, price }) {
+      if (this.online) {
+        try { await $wire.addToCart(id); return; } catch (e) {}
       }
+      this.enqueue({ type: 'add', id, name, price });
+      this.localAdd({ id, name, price });
+    },
+
+    async flushQueue() {
+      if (!this.online || !this.queue.length) return;
+      this.syncing = true;
+      while (this.queue.length && this.online) {
+        const op = this.queue[0];
+        try {
+          if (op.type === 'add')  await $wire.addToCart(op.id);
+          this.queue.shift(); this.persist();
+        } catch (e) { break; }
+      }
+      this.syncing = false;
+      try { await $wire.$refresh(); } catch (e) {}
+    },
+
+    cart: {
+      add:     (args) => this.add(args),
+      items:   () => this.itemsCount(),
+      syncing: () => this.syncing
     }
   }
-  
-  // Online-first cart with offline fallback + replay queue
-  function cartStore(cartEntangle, posId) {
-    return {
-      online: navigator.onLine,
-      syncing: false,
-      // local shadow so the UI still feels live when offline
-      shadowCart: JSON.parse(localStorage.getItem(`pos:${posId}:cart`) || '{}'),
-      queue:      JSON.parse(localStorage.getItem(`pos:${posId}:queue`) || '[]'),
-
-      init() {
-        // Track connectivity
-        window.addEventListener('online',  () => { this.online = true;  this.flushQueue() });
-        window.addEventListener('offline', () => { this.online = false });
-
-        // Try a quick flush on load if we’re already online
-        if (this.online) this.flushQueue();
-      },
-
-      // ---------- helpers ----------
-      persist() {
-        localStorage.setItem(`pos:${posId}:cart`,  JSON.stringify(this.shadowCart));
-        localStorage.setItem(`pos:${posId}:queue`, JSON.stringify(this.queue));
-      },
-      itemsCount() {
-        return Object.values(this.shadowCart).reduce((t, i) => t + Number(i.quantity || 0), 0);
-      },
-      localAdd({ id, name, price }) {
-        const line = this.shadowCart[id] || { id, name, unit_price: price, quantity: 0, discount: 0 };
-        line.quantity += 1;
-        this.shadowCart[id] = line;
-        this.persist();
-      },
-      enqueue(op) { this.queue.push(op); this.persist(); },
-
-      // ---------- online-first actions with fallback ----------
-      async add({ id, name, price }) {
-        if (this.online) {
-          try {
-            await $wire.addToCart(id); // Livewire is the source of truth when online
-            return; // UI will hydrate from server normally
-          } catch (e) {
-            // Fall back to local if server call fails
-          }
-        }
-        // Offline (or server failed): queue & update local shadow
-        this.enqueue({ type: 'add', id, name, price });
-        this.localAdd({ id, name, price });
-      },
-
-      // (extend later) updateQty/remove/discount with same pattern
-
-      // ---------- replay queue on reconnect ----------
-      async flushQueue() {
-        if (!this.online || !this.queue.length) return;
-        this.syncing = true;
-
-        // Replay FIFO
-        while (this.queue.length && this.online) {
-          const op = this.queue[0];
-          try {
-            if (op.type === 'add')  await $wire.addToCart(op.id);
-            // (extend later) other types...
-            this.queue.shift();
-            this.persist();
-          } catch (e) {
-            // Stop on first error to avoid thrashing the server
-            break;
-          }
-        }
-
-        this.syncing = false;
-        try { await $wire.$refresh(); } catch (e) {}
-      },
-
-      // expose the API under `cart.*` to match your current template usage
-      cart: {
-        add:     (args) => this.add(args),
-        items:   () => this.itemsCount(),
-        syncing: () => this.syncing
-      }
-    }
-  }
-
+}
 </script>
 @endpush

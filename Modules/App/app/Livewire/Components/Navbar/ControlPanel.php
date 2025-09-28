@@ -60,39 +60,19 @@ abstract class ControlPanel extends Component
         $this->dispatch('emptyArray');
     }
 
-    public function generateBreadcrumbs()
+    public function generateBreadcrumbs(): void
     {
-        // Get all the URL segments from the current request
-        $segments = request()->segments();
+        $builder = (new Breadcrumb())
+            ->urlPrefix((string) $this->urlPrefix)
+            ->skipIdLike(true)
+            ->overrides([
+                // optional: prettify specific segments if you want
+                // 'dashboard' => 'Dashboard',
+                // 'ndako'     => 'Ndako',
+            ]);
 
-        // Initialize an empty array to hold the breadcrumbs
-        $breadcrumbs = [];
-
-        // Start from the root and loop through each segment in the URL
-        $currentUrl = ''; // Initialize an empty string to store the accumulated URL
-
-        foreach ($segments as $index => $segment) {
-            // Append the current segment to the accumulated URL
-            $currentUrl .= '/' . $segment;
-
-            // If a URL prefix is set, add it before the URL
-            $fullUrl = $this->urlPrefix ? "{$this->urlPrefix}{$currentUrl}" : $currentUrl;
-
-            // Append each breadcrumb as an associative array with 'url' and 'label'
-            $breadcrumbs[] = [
-                'url' => url($fullUrl), // Generate the full URL for this segment
-                'label' => Str::of($segment) // Format the segment into a human-readable label
-                            ->replace(['-', '_'], ' ') // Replace hyphens and underscores with spaces
-                            ->title() // Capitalize the first letter of each word
-                            ->toString(), // Convert the result to a string
-            ];
-        }
-
-        // Debugging the output
-        Log::debug('Breadcrumbs: ',$breadcrumbs); // Log breadcrumbs
-
-        // Store the generated breadcrumbs in the object's breadcrumbs property
-        $this->breadcrumbs = $breadcrumbs;
+        $this->breadcrumbs = $builder->generate();
+        // $this->currentPage = $this->breadcrumbs ? end($this->breadcrumbs)['label'] : ($this->currentPage ?? '');
     }
 
 

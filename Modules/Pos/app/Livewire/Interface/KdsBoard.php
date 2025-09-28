@@ -320,9 +320,16 @@ class KdsBoard extends Component
         }
 
         // -------------------------------------------------------------------------------
+        
 
         return view('pos::livewire.interface.kds-board', array_merge($data, [
             'pos' => $this->pos,
         ]))->extends('layouts.pos');
+    }
+
+
+    public function goToBackend()
+    {
+        return $this->redirect(route('pos.overview'), navigate: true);
     }
 }

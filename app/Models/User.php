@@ -66,6 +66,12 @@ class User extends Authenticatable
             $model->generateAvatar();
         });
     }
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar
+            ? asset('storage/avatars/'.$this->avatar)
+            : null;
+    }
 
     public function scopeIsCompany(Builder $query, $company_id)
     {

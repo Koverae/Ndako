@@ -18,7 +18,7 @@ abstract  class AppHandler
      * Each module should define its own specific uninstallation logic.
      */
     abstract protected function handleUninstallation();
-    
+
     /**
      * Retrieve the module slug - to be implemented by each module.
      */
